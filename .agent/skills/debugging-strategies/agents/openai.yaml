@@ -1,0 +1,7 @@
+interface:
+  display_name: "Debugging Strategies"
+  short_description: "Systematic debugging and root-cause analysis"
+  icon_small: "./assets/icon-small.svg"
+  icon_large: "./assets/icon-large.svg"
+  brand_color: "#F59E0B"
+  default_prompt: "Use $debugging-strategies to troubleshoot this issue."
