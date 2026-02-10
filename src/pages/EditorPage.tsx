@@ -206,8 +206,13 @@ export default function EditorPage() {
     return (
         <>
             <header className="app-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                    <button className="btn btn--ghost btn--icon" onClick={() => navigate(-1)}>
+                <div className="flex-row-center">
+                    <button
+                        className="btn btn--ghost btn--icon"
+                        onClick={() => navigate(-1)}
+                        aria-label="Voltar"
+                        title="Voltar"
+                    >
                         <ArrowLeft size={18} />
                     </button>
                     <h2 className="app-header__title">
@@ -231,7 +236,7 @@ export default function EditorPage() {
             </header>
 
             <div className="app-content">
-                <div style={{ maxWidth: '800px' }}>
+                <div className="editor-form--constrained">
                     {/* --- Informações Básicas --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
@@ -248,8 +253,10 @@ export default function EditorPage() {
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Categoria</label>
+                            <label className="form-label" htmlFor="editor-category">Categoria</label>
                             <select
+                                id="editor-category"
+                                aria-label="Selecione a categoria"
                                 value={form.categoryId}
                                 onChange={(e) => updateField('categoryId', Number(e.target.value))}
                             >
@@ -318,7 +325,7 @@ export default function EditorPage() {
                             <Settings size={18} /> Contextos Pré-configurados
                         </h3>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+                        <div className="editor-menus-grid">
                             {(['tom', 'publico', 'idioma', 'estilo'] as MenuKey[]).map((key) => (
                                 <div key={key} className="form-group">
                                     <label className="form-label">{MENU_LABELS[key]}</label>
@@ -408,8 +415,10 @@ export default function EditorPage() {
                         </h3>
 
                         <div className="form-group">
-                            <label className="form-label">Formato</label>
+                            <label className="form-label" htmlFor="editor-formato">Formato</label>
                             <select
+                                id="editor-formato"
+                                aria-label="Selecione o formato de saída"
                                 value={form.outputSchema.formato}
                                 onChange={(e) => updateOutputSchema('formato', e.target.value)}
                             >
@@ -437,31 +446,11 @@ export default function EditorPage() {
                             <span className="form-label__hint">(Pares de entrada/saída para guiar o modelo)</span>
                         </h3>
 
-                        <div className="dynamic-list" style={{ gap: 'var(--space-4)' }}>
+                        <div className="dynamic-list dynamic-list--spaced">
                             {form.fewShotExamples.map((ex, i) => (
-                                <div
-                                    key={i}
-                                    style={{
-                                        background: 'var(--color-surface-2)',
-                                        borderRadius: 'var(--radius-sm)',
-                                        padding: 'var(--space-4)',
-                                        border: '1px solid var(--color-border)',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            marginBottom: 'var(--space-3)',
-                                        }}
-                                    >
-                                        <span
-                                            style={{
-                                                fontSize: 'var(--font-size-xs)',
-                                                fontWeight: 'var(--font-weight-semibold)',
-                                                color: 'var(--color-text-muted)',
-                                            }}
-                                        >
+                                <div key={i} className="fewshot-card">
+                                    <div className="fewshot-card__header">
+                                        <span className="fewshot-card__label">
                                             Exemplo {i + 1}
                                         </span>
                                         <button
@@ -472,7 +461,7 @@ export default function EditorPage() {
                                             <Trash2 size={14} />
                                         </button>
                                     </div>
-                                    <div className="form-group" style={{ marginBottom: 'var(--space-3)' }}>
+                                    <div className="form-group form-group--tight">
                                         <label className="form-label">Input</label>
                                         <textarea
                                             value={ex.input}
@@ -481,7 +470,7 @@ export default function EditorPage() {
                                             rows={2}
                                         />
                                     </div>
-                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <div className="form-group form-group--none">
                                         <label className="form-label">Output</label>
                                         <textarea
                                             value={ex.output}
@@ -499,16 +488,7 @@ export default function EditorPage() {
                     </div>
 
                     {/* --- Ações do footer --- */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            gap: 'var(--space-3)',
-                            justifyContent: 'flex-end',
-                            paddingTop: 'var(--space-6)',
-                            borderTop: '1px solid var(--color-border)',
-                            marginTop: 'var(--space-8)',
-                        }}
-                    >
+                    <div className="editor-footer">
                         <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
                             Cancelar
                         </button>

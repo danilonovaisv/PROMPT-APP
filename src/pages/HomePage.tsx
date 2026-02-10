@@ -5,7 +5,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, FolderPlus } from 'lucide-react';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -30,60 +30,33 @@ export default function HomePage() {
 
             <div className="app-content">
                 {/* Hero */}
-                <div style={{ marginBottom: 'var(--space-10)', textAlign: 'center' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-4)' }}>
+                <div className="hero">
+                    <div className="hero__icon-wrapper">
                         <Sparkles size={48} color="#0048ff" />
                     </div>
-                    <h1
-                        style={{
-                            fontSize: 'var(--font-size-3xl)',
-                            fontWeight: 'var(--font-weight-extrabold)',
-                            background: 'linear-gradient(135deg, #0048ff, #7b2ff7)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            marginBottom: 'var(--space-3)',
-                        }}
-                    >
+                    <h1 className="hero__title">
                         Engenharia de Prompts
                     </h1>
-                    <p style={{ color: 'var(--color-text-secondary)', maxWidth: '500px', margin: '0 auto' }}>
+                    <p className="hero__subtitle">
                         Crie, organize e exporte prompts estruturados para LLMs com contexto cognitivo profissional.
                     </p>
                 </div>
 
                 {/* Estatísticas rápidas */}
-                <div
-                    style={{
-                        display: 'flex',
-                        gap: 'var(--space-4)',
-                        marginBottom: 'var(--space-8)',
-                        justifyContent: 'center',
-                        flexWrap: 'wrap',
-                    }}
-                >
+                <div className="stats-row">
                     {[
                         { label: 'Categorias', value: categories.length, color: '#0048ff' },
                         { label: 'Prompts', value: prompts.length, color: '#7b2ff7' },
                     ].map((stat) => (
                         <div
                             key={stat.label}
-                            className="card"
-                            style={{
-                                textAlign: 'center',
-                                minWidth: '140px',
-                                borderTop: `3px solid ${stat.color}`,
-                            }}
+                            className="card stat-card"
+                            style={{ borderTop: `3px solid ${stat.color}` } as React.CSSProperties}
                         >
-                            <div
-                                style={{
-                                    fontSize: 'var(--font-size-2xl)',
-                                    fontWeight: 'var(--font-weight-bold)',
-                                    color: stat.color,
-                                }}
-                            >
+                            <div className="stat-card__value" style={{ color: stat.color } as React.CSSProperties}>
                                 {stat.value}
                             </div>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
+                            <div className="stat-card__label">
                                 {stat.label}
                             </div>
                         </div>
@@ -135,19 +108,12 @@ export default function HomePage() {
 
                         {/* Card de adicionar */}
                         <div
-                            className="card card--clickable category-card"
+                            className="card card--clickable category-card category-card--add"
                             onClick={() => navigate('/categorias')}
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                minHeight: '160px',
-                                borderStyle: 'dashed',
-                            }}
                         >
-                            <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                                <Plus size={32} style={{ marginBottom: 'var(--space-2)' }} />
-                                <div style={{ fontSize: 'var(--font-size-sm)' }}>Nova Categoria</div>
+                            <div className="category-card--add__content">
+                                <Plus size={32} className="category-card--add__icon" />
+                                <div className="category-card--add__label">Nova Categoria</div>
                             </div>
                         </div>
                     </div>
@@ -156,6 +122,3 @@ export default function HomePage() {
         </>
     );
 }
-
-/* Importação para uso no JSX acima */
-import { FolderPlus } from 'lucide-react';

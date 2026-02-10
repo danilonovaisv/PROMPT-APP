@@ -79,38 +79,13 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                         <h3 className="form-section__title">
                             <Upload size={18} /> Importar Prompts
                         </h3>
-                        <p
-                            style={{
-                                fontSize: 'var(--font-size-sm)',
-                                color: 'var(--color-text-secondary)',
-                                marginBottom: 'var(--space-4)',
-                            }}
-                        >
+                        <p className="import-description">
                             Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
                         </p>
 
-                        <label
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: 'var(--space-3)',
-                                padding: 'var(--space-8)',
-                                border: '2px dashed var(--color-border)',
-                                borderRadius: 'var(--radius-md)',
-                                cursor: 'pointer',
-                                transition: 'border-color var(--transition-fast)',
-                                textAlign: 'center',
-                            }}
-                            onMouseOver={(e) =>
-                                ((e.currentTarget as HTMLLabelElement).style.borderColor = 'var(--color-border-active)')
-                            }
-                            onMouseOut={(e) =>
-                                ((e.currentTarget as HTMLLabelElement).style.borderColor = 'var(--color-border)')
-                            }
-                        >
+                        <label className="dropzone">
                             <FileUp size={32} color="var(--color-text-muted)" />
-                            <span style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--font-size-sm)' }}>
+                            <span className="dropzone__label">
                                 {importing ? 'Importando...' : 'Clique ou arraste um arquivo .json'}
                             </span>
                             <input
@@ -118,21 +93,12 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                                 type="file"
                                 accept=".json"
                                 onChange={handleImport}
-                                style={{ display: 'none' }}
+                                className="hidden-input"
                             />
                         </label>
 
                         {result && (
-                            <div
-                                style={{
-                                    marginTop: 'var(--space-4)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 'var(--space-2)',
-                                    fontSize: 'var(--font-size-sm)',
-                                    color: result.error ? 'var(--color-error)' : 'var(--color-success)',
-                                }}
-                            >
+                            <div className={`import-result ${result.error ? 'import-result--error' : 'import-result--success'}`}>
                                 {result.error ? (
                                     <>
                                         <AlertCircle size={16} />
@@ -149,17 +115,11 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                     </div>
 
                     {/* Exportar */}
-                    <div className="form-section" style={{ marginBottom: 0 }}>
+                    <div className="form-section form-section--flush">
                         <h3 className="form-section__title">
                             <Download size={18} /> Exportar Todos os Prompts
                         </h3>
-                        <p
-                            style={{
-                                fontSize: 'var(--font-size-sm)',
-                                color: 'var(--color-text-secondary)',
-                                marginBottom: 'var(--space-4)',
-                            }}
-                        >
+                        <p className="import-description">
                             Baixe todos os seus prompts organizados por categoria em um único arquivo <strong>.json</strong>.
                         </p>
                         <button className="btn btn--primary btn--lg" onClick={handleExport}>

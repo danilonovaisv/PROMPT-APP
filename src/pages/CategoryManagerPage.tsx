@@ -94,8 +94,13 @@ export default function CategoryManagerPage() {
     return (
         <>
             <header className="app-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                    <button className="btn btn--ghost btn--icon" onClick={() => navigate('/')}>
+                <div className="flex-row-center">
+                    <button
+                        className="btn btn--ghost btn--icon"
+                        onClick={() => navigate('/')}
+                        aria-label="Voltar ao início"
+                        title="Voltar"
+                    >
                         <ArrowLeft size={18} />
                     </button>
                     <h2 className="app-header__title">Gerenciar Categorias</h2>
@@ -111,20 +116,8 @@ export default function CategoryManagerPage() {
             <div className="app-content">
                 {/* Formulário de criação/edição */}
                 {(isCreating || isEditing !== null) && (
-                    <div
-                        className="card"
-                        style={{
-                            marginBottom: 'var(--space-6)',
-                            borderColor: 'var(--color-border-active)',
-                        }}
-                    >
-                        <h3
-                            style={{
-                                fontSize: 'var(--font-size-md)',
-                                fontWeight: 'var(--font-weight-semibold)',
-                                marginBottom: 'var(--space-5)',
-                            }}
-                        >
+                    <div className="card card--active">
+                        <h3 className="card__title">
                             {isEditing ? 'Editar Categoria' : 'Nova Categoria'}
                         </h3>
 
@@ -162,7 +155,7 @@ export default function CategoryManagerPage() {
                                         key={color}
                                         type="button"
                                         className={`color-picker-grid__swatch ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
-                                        style={{ backgroundColor: color }}
+                                        style={{ backgroundColor: color } as React.CSSProperties}
                                         onClick={() => setForm({ ...form, color })}
                                         aria-label={`Cor ${color}`}
                                     />
@@ -172,24 +165,16 @@ export default function CategoryManagerPage() {
 
                         {/* Preview */}
                         <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 'var(--space-3)',
-                                padding: 'var(--space-4)',
-                                background: 'var(--color-surface-2)',
-                                borderRadius: 'var(--radius-sm)',
-                                marginBottom: 'var(--space-4)',
-                                borderTop: `3px solid ${form.color}`,
-                            }}
+                            className="cat-preview"
+                            style={{ borderTop: `3px solid ${form.color}` } as React.CSSProperties}
                         >
-                            <span style={{ fontSize: '1.5rem' }}>{form.icon}</span>
-                            <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>
+                            <span className="cat-preview__icon">{form.icon}</span>
+                            <span className="cat-preview__name">
                                 {form.name || 'Nome da categoria'}
                             </span>
                         </div>
 
-                        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+                        <div className="flex-row-end">
                             <button className="btn btn--secondary" onClick={cancel}>
                                 <X size={16} /> Cancelar
                             </button>
@@ -214,36 +199,22 @@ export default function CategoryManagerPage() {
                         {categories.map((cat) => (
                             <div key={cat.id} className="prompt-item">
                                 <div
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 'var(--space-3)',
-                                        flex: 1,
-                                        cursor: 'pointer',
-                                    }}
+                                    className="cat-list-item"
                                     onClick={() => navigate(`/categoria/${cat.id}`)}
                                 >
                                     <span
-                                        style={{
-                                            fontSize: '1.5rem',
-                                            width: '40px',
-                                            height: '40px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            borderRadius: 'var(--radius-sm)',
-                                            background: `${cat.color}20`,
-                                        }}
+                                        className="cat-list-item__icon"
+                                        style={{ background: `${cat.color}20` } as React.CSSProperties}
                                     >
                                         {cat.icon}
                                     </span>
                                     <div>
-                                        <div className="prompt-item__title" style={{ color: cat.color }}>
+                                        <div className="prompt-item__title" style={{ color: cat.color } as React.CSSProperties}>
                                             {cat.name}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="prompt-item__actions" style={{ opacity: 1 }}>
+                                <div className="prompt-item__actions prompt-item__actions--visible">
                                     <button
                                         className="btn btn--ghost btn--icon"
                                         onClick={() => startEdit(cat)}
@@ -258,7 +229,7 @@ export default function CategoryManagerPage() {
                                         aria-label="Excluir categoria"
                                         title="Excluir"
                                     >
-                                        <Trash2 size={16} color="var(--color-error)" />
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
                             </div>

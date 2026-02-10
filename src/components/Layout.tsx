@@ -103,7 +103,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                 </nav>
 
                 <div className="app-sidebar__footer">
-                    <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
+                    <div className="sidebar-version">
                         Prompt App v1.0
                     </div>
                 </div>
@@ -117,12 +117,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             {/* Overlay para mobile */}
             {sidebarOpen && (
                 <div
-                    style={{
-                        position: 'fixed',
-                        inset: 0,
-                        background: 'rgba(0,0,0,0.5)',
-                        zIndex: 99,
-                    }}
+                    className="mobile-overlay"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}

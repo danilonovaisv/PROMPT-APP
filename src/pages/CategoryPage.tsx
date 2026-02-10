@@ -84,12 +84,17 @@ export default function CategoryPage() {
     return (
         <>
             <header className="app-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-                    <button className="btn btn--ghost btn--icon" onClick={() => navigate('/')}>
+                <div className="flex-row-center">
+                    <button
+                        className="btn btn--ghost btn--icon"
+                        onClick={() => navigate('/')}
+                        aria-label="Voltar ao início"
+                        title="Voltar"
+                    >
                         <ArrowLeft size={18} />
                     </button>
-                    <span style={{ fontSize: '1.4rem' }}>{category.icon}</span>
-                    <h2 className="app-header__title" style={{ color: category.color }}>
+                    <span className="cat-header-icon">{category.icon}</span>
+                    <h2 className="app-header__title" style={{ color: category.color } as React.CSSProperties}>
                         {category.name}
                     </h2>
                 </div>
@@ -125,15 +130,15 @@ export default function CategoryPage() {
                         {prompts.map((prompt) => (
                             <div key={prompt.id} className="prompt-item">
                                 <div
-                                    style={{ flex: 1, cursor: 'pointer' }}
+                                    className="prompt-item__clickable"
                                     onClick={() => navigate(`/editor/${prompt.id}`)}
                                 >
                                     <div className="prompt-item__title">{prompt.title}</div>
                                     <div className="prompt-item__meta">
-                                        <Clock size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />
-                                        {formatDate(prompt.updatedAt)}
+                                        <Clock size={12} />
+                                        {' '}{formatDate(prompt.updatedAt)}
                                         {prompt.systemRole && (
-                                            <span style={{ marginLeft: 'var(--space-3)', opacity: 0.6 }}>
+                                            <span className="prompt-meta__suffix">
                                                 • {prompt.systemRole.substring(0, 50)}
                                                 {prompt.systemRole.length > 50 ? '...' : ''}
                                             </span>
@@ -171,7 +176,7 @@ export default function CategoryPage() {
                                         aria-label="Excluir prompt"
                                         title="Excluir"
                                     >
-                                        <Trash2 size={16} color="var(--color-error)" />
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
                             </div>

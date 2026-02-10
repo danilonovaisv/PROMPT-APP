@@ -51,10 +51,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                         {iconMap[toast.type]}
                         <span>{toast.message}</span>
                         <button
-                            className="btn btn--ghost btn--icon"
+                            className="btn btn--ghost btn--icon toast__close-btn"
                             onClick={() => removeToast(toast.id)}
                             aria-label="Fechar notificação"
-                            style={{ marginLeft: '8px', width: '24px', height: '24px' }}
                         >
                             <X size={14} />
                         </button>
