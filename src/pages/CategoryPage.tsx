@@ -94,7 +94,10 @@ export default function CategoryPage() {
                         <ArrowLeft size={18} />
                     </button>
                     <span className="cat-header-icon">{category.icon}</span>
-                    <h2 className="app-header__title" style={{ color: category.color } as React.CSSProperties}>
+                    <h2
+                        className="app-header__title cat-header__title"
+                        style={{ '--cat-color': category.color } as React.CSSProperties}
+                    >
                         {category.name}
                     </h2>
                 </div>

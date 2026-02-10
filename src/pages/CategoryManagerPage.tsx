@@ -155,7 +155,7 @@ export default function CategoryManagerPage() {
                                         key={color}
                                         type="button"
                                         className={`color-picker-grid__swatch ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
-                                        style={{ backgroundColor: color } as React.CSSProperties}
+                                        style={{ '--swatch-color': color } as React.CSSProperties}
                                         onClick={() => setForm({ ...form, color })}
                                         aria-label={`Cor ${color}`}
                                     />
@@ -166,7 +166,7 @@ export default function CategoryManagerPage() {
                         {/* Preview */}
                         <div
                             className="cat-preview"
-                            style={{ borderTop: `3px solid ${form.color}` } as React.CSSProperties}
+                            style={{ '--cat-color': form.color } as React.CSSProperties}
                         >
                             <span className="cat-preview__icon">{form.icon}</span>
                             <span className="cat-preview__name">
@@ -204,12 +204,12 @@ export default function CategoryManagerPage() {
                                 >
                                     <span
                                         className="cat-list-item__icon"
-                                        style={{ background: `${cat.color}20` } as React.CSSProperties}
+                                        style={{ '--cat-color-glow': `${cat.color}20` } as React.CSSProperties}
                                     >
                                         {cat.icon}
                                     </span>
                                     <div>
-                                        <div className="prompt-item__title" style={{ color: cat.color } as React.CSSProperties}>
+                                        <div className="prompt-item__title cat-list-item__title" style={{ '--cat-color': cat.color } as React.CSSProperties}>
                                             {cat.name}
                                         </div>
                                     </div>

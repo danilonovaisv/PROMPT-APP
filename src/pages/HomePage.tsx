@@ -51,9 +51,9 @@ export default function HomePage() {
                         <div
                             key={stat.label}
                             className="card stat-card"
-                            style={{ borderTop: `3px solid ${stat.color}` } as React.CSSProperties}
+                            style={{ '--stat-color': stat.color } as React.CSSProperties}
                         >
-                            <div className="stat-card__value" style={{ color: stat.color } as React.CSSProperties}>
+                            <div className="stat-card__value">
                                 {stat.value}
                             </div>
                             <div className="stat-card__label">
@@ -96,6 +96,7 @@ export default function HomePage() {
                                 className="card card--clickable category-card"
                                 onClick={() => navigate(`/categoria/${cat.id}`)}
                                 style={{ '--category-color': cat.color, '--category-color-glow': `${cat.color}20` } as React.CSSProperties}
+                            /* eslint-disable-line -- dynamic CSS custom properties required for user-defined colors */
                             >
                                 <div className="category-card__stripe" />
                                 <div className="category-card__icon">{cat.icon}</div>

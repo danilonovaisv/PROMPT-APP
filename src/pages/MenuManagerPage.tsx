@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
+import { downloadJson } from '@/utils/exportJson';
+import { exportMenusToJson } from '@/utils/importMenusJson';
+import ImportMenusModal from '@/components/ImportMenusModal';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import {
     ArrowLeft,
@@ -19,6 +22,8 @@ import {
     ChevronRight,
     Layers,
     Settings,
+    Upload,
+    Download,
 } from 'lucide-react';
 
 /* ---- Form state ---- */
@@ -45,6 +50,7 @@ export default function MenuManagerPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [form, setForm] = useState<MenuFormData>(EMPTY_FORM);
     const [expandedOption, setExpandedOption] = useState<number | null>(null);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     /* ---- Slug generation ---- */
     const toSlug = (text: string) =>
@@ -200,6 +206,26 @@ export default function MenuManagerPage() {
                     <h2 className="app-header__title">Menus de Contexto</h2>
                 </div>
                 <div className="app-header__actions">
+                    <button
+                        className="btn btn--secondary"
+                        onClick={() => setShowImportModal(true)}
+                        title="Importar menus de um arquivo .json"
+                    >
+                        <Upload size={16} />
+                        Importar
+                    </button>
+                    <button
+                        className="btn btn--secondary"
+                        onClick={async () => {
+                            const data = await exportMenusToJson();
+                            downloadJson(data, `menus_export_${Date.now()}`);
+                            showToast('Menus exportados!');
+                        }}
+                        title="Exportar todos os menus em formato .json"
+                    >
+                        <Download size={16} />
+                        Exportar
+                    </button>
                     <button className="btn btn--primary" onClick={startCreate}>
                         <Plus size={16} />
                         Novo Menu
@@ -447,6 +473,12 @@ export default function MenuManagerPage() {
                     </div>
                 )}
             </div>
+
+            {/* Modal de importação de menus */}
+            <ImportMenusModal
+                isOpen={showImportModal}
+                onClose={() => setShowImportModal(false)}
+            />
         </>
     );
 }
