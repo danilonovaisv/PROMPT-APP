@@ -11,6 +11,7 @@ import HomePage from '@/pages/HomePage';
 import CategoryPage from '@/pages/CategoryPage';
 import CategoryManagerPage from '@/pages/CategoryManagerPage';
 import EditorPage from '@/pages/EditorPage';
+import MenuManagerPage from '@/pages/MenuManagerPage';
 
 export default function App() {
     const [showImportExport, setShowImportExport] = useState(false);
@@ -24,6 +25,7 @@ export default function App() {
                         <Route path="/categoria/:id" element={<CategoryPage />} />
                         <Route path="/categorias" element={<CategoryManagerPage />} />
                         <Route path="/editor/:id" element={<EditorPage />} />
+                        <Route path="/menus" element={<MenuManagerPage />} />
                     </Routes>
                 </Layout>
                 <ImportExportModal

@@ -9,6 +9,7 @@ import { db } from '@/db/database';
 import {
     Home,
     FolderPlus,
+    Layers,
     Download,
     Upload,
     Menu,
@@ -71,6 +72,14 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         Gerenciar Categorias
                     </button>
 
+                    <button
+                        className={`app-sidebar__nav-item ${isActive('/menus') ? 'app-sidebar__nav-item--active' : ''}`}
+                        onClick={() => navTo('/menus')}
+                    >
+                        <Layers size={18} />
+                        Menus de Contexto
+                    </button>
+
                     {/* Categorias */}
                     <div className="app-sidebar__section-title">Categorias</div>
                     {categories.map((cat) => (
@@ -104,7 +113,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                 <div className="app-sidebar__footer">
                     <div className="sidebar-version">
-                        Prompt App v1.0
+                        Prompt App v2.0
                     </div>
                 </div>
             </aside>

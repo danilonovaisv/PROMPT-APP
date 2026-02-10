@@ -1,5 +1,5 @@
 /* ======================================================
-   Editor de Prompt — formulário completo
+   Editor de Prompt — formulário completo (v2 com menus hierárquicos)
    ====================================================== */
 
 import { useState, useEffect } from 'react';
@@ -8,8 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
-import type { Prompt, MenuSelections, FewShotExample, OutputSchema, MenuKey } from '@/models/types';
-import { MENU_LABELS } from '@/models/types';
+import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection } from '@/models/types';
 import {
     ArrowLeft,
     Save,
@@ -26,7 +25,8 @@ import {
     ShieldOff,
     ListChecks,
     BookOpen,
-    Settings,
+    Layers,
+    ChevronDown,
 } from 'lucide-react';
 
 const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
@@ -36,6 +36,7 @@ const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
     task: '',
     context: '',
     menus: { tom: '', publico: '', idioma: '', estilo: '' },
+    contextMenus: {},
     constraints: [''],
     negativePrompt: [''],
     outputSchema: { formato: 'texto', estrutura: '' },
@@ -52,11 +53,12 @@ export default function EditorPage() {
     const isNew = id === 'novo';
 
     const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
-    const menuOptions = useLiveQuery(() => db.menuOptions.toArray()) ?? [];
+    const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
 
     const [form, setForm] = useState<Omit<Prompt, 'id'>>(EMPTY_PROMPT);
     const [showPreview, setShowPreview] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
     /* Carregar prompt existente */
     useEffect(() => {
@@ -74,6 +76,7 @@ export default function EditorPage() {
                 if (p) {
                     setForm({
                         ...p,
+                        contextMenus: p.contextMenus || {},
                         constraints: p.constraints.length > 0 ? p.constraints : [''],
                         negativePrompt: p.negativePrompt.length > 0 ? p.negativePrompt : [''],
                         fewShotExamples: p.fewShotExamples.length > 0 ? p.fewShotExamples : [{ input: '', output: '' }],
@@ -100,13 +103,50 @@ export default function EditorPage() {
         setForm((prev) => ({ ...prev, [key]: value }));
     };
 
-    const updateMenu = (key: MenuKey, value: string) => {
-        setForm((prev) => ({
-            ...prev,
-            menus: { ...prev.menus, [key]: value } as MenuSelections,
-        }));
+    /* --- Menus hierárquicos (v2) --- */
+    const getMenuSelection = (menuId: string): ContextMenuSelection => {
+        return form.contextMenus[menuId] || { option: '', subOptions: [] };
     };
 
+    const selectMenuOption = (menuId: string, optionValue: string) => {
+        setForm((prev) => {
+            const current = prev.contextMenus[menuId];
+            const isDeselect = current?.option === optionValue;
+
+            const newMenus: MenuSelectionsMap = { ...prev.contextMenus };
+            if (isDeselect) {
+                delete newMenus[menuId];
+            } else {
+                newMenus[menuId] = { option: optionValue, subOptions: [] };
+            }
+            return { ...prev, contextMenus: newMenus };
+        });
+    };
+
+    const toggleSubOption = (menuId: string, subValue: string) => {
+        setForm((prev) => {
+            const current = prev.contextMenus[menuId];
+            if (!current) return prev;
+
+            const subs = current.subOptions.includes(subValue)
+                ? current.subOptions.filter((s) => s !== subValue)
+                : [...current.subOptions, subValue];
+
+            return {
+                ...prev,
+                contextMenus: {
+                    ...prev.contextMenus,
+                    [menuId]: { ...current, subOptions: subs },
+                },
+            };
+        });
+    };
+
+    const toggleMenuExpanded = (menuId: string) => {
+        setExpandedMenus((prev) => ({ ...prev, [menuId]: !prev[menuId] }));
+    };
+
+    /* --- Outros handlers --- */
     const updateConstraint = (index: number, value: string) => {
         const newList = [...form.constraints];
         newList[index] = value;
@@ -195,9 +235,6 @@ export default function EditorPage() {
         downloadPrompt(form as Prompt);
         showToast('Download iniciado!');
     };
-
-    /* Agrupar menu options por chave */
-    const optionsByKey = (key: MenuKey) => menuOptions.filter((o) => o.menuKey === key);
 
     if (!loaded) return null;
 
@@ -319,33 +356,95 @@ export default function EditorPage() {
                         </div>
                     </div>
 
-                    {/* --- Menus Pré-configurados --- */}
+                    {/* --- Menus de Contexto Hierárquicos (v2) --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <Settings size={18} /> Contextos Pré-configurados
+                            <Layers size={18} /> Menus de Contexto
+                            <span className="form-label__hint">(Clique para selecionar, expanda para sub-opções)</span>
                         </h3>
 
-                        <div className="editor-menus-grid">
-                            {(['tom', 'publico', 'idioma', 'estilo'] as MenuKey[]).map((key) => (
-                                <div key={key} className="form-group">
-                                    <label className="form-label">{MENU_LABELS[key]}</label>
-                                    <div className="menu-selector">
-                                        {optionsByKey(key).map((opt) => (
-                                            <button
-                                                key={opt.id}
-                                                type="button"
-                                                className={`menu-tag ${form.menus[key] === opt.value ? 'menu-tag--selected' : ''}`}
-                                                onClick={() =>
-                                                    updateMenu(key, form.menus[key] === opt.value ? '' : opt.value)
-                                                }
-                                            >
-                                                {opt.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        {contextMenus.length === 0 ? (
+                            <p className="ctx-empty-hint">
+                                Nenhum menu de contexto configurado.
+                                <button className="btn btn--ghost btn--sm" onClick={() => navigate('/menus')}>
+                                    Criar menus
+                                </button>
+                            </p>
+                        ) : (
+                            <div className="ctx-editor-grid">
+                                {contextMenus.map((menu) => {
+                                    const sel = getMenuSelection(menu.menuId);
+                                    const selectedOpt = menu.options.find((o) => o.value === sel.option);
+                                    const hasSubOptions = selectedOpt && selectedOpt.subOptions.length > 0;
+                                    const isExpanded = expandedMenus[menu.menuId];
+
+                                    return (
+                                        <div key={menu.id} className="ctx-editor-menu">
+                                            <div className="ctx-editor-menu__header">
+                                                <span className="ctx-editor-menu__name">{menu.menuName}</span>
+                                                {sel.option && (
+                                                    <span className="ctx-editor-menu__selection">
+                                                        {selectedOpt?.label}
+                                                        {sel.subOptions.length > 0 && (
+                                                            <span className="ctx-editor-menu__sub-count">
+                                                                +{sel.subOptions.length}
+                                                            </span>
+                                                        )}
+                                                    </span>
+                                                )}
+                                                {hasSubOptions && (
+                                                    <button
+                                                        className="btn btn--ghost btn--icon btn--sm"
+                                                        onClick={() => toggleMenuExpanded(menu.menuId)}
+                                                        aria-label={isExpanded ? 'Recolher sub-opções' : 'Expandir sub-opções'}
+                                                        title={isExpanded ? 'Recolher' : 'Expandir sub-opções'}
+                                                    >
+                                                        <ChevronDown
+                                                            size={14}
+                                                            className={isExpanded ? 'ctx-chevron--open' : 'ctx-chevron'}
+                                                        />
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            <div className="menu-selector">
+                                                {menu.options.map((opt) => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        className={`menu-tag ${sel.option === opt.value ? 'menu-tag--selected' : ''}`}
+                                                        onClick={() => selectMenuOption(menu.menuId, opt.value)}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            {/* Sub-opções — expandível */}
+                                            {hasSubOptions && isExpanded && (
+                                                <div className="ctx-editor-suboptions">
+                                                    <span className="ctx-editor-suboptions__label">
+                                                        Sub-opções de "{selectedOpt.label}":
+                                                    </span>
+                                                    <div className="menu-selector menu-selector--sub">
+                                                        {selectedOpt.subOptions.map((sub) => (
+                                                            <button
+                                                                key={sub.value}
+                                                                type="button"
+                                                                className={`menu-tag menu-tag--sub ${sel.subOptions.includes(sub.value) ? 'menu-tag--selected' : ''}`}
+                                                                onClick={() => toggleSubOption(menu.menuId, sub.value)}
+                                                            >
+                                                                {sub.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     {/* --- Constraints --- */}

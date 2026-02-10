@@ -3,7 +3,7 @@
    ====================================================== */
 
 import { db } from '@/db/database';
-import type { Prompt, BulkExport, PromptExportFormat } from '@/models/types';
+import type { Prompt, BulkExport, PromptExportFormat, ContextMenu, MenuSelectionsMap } from '@/models/types';
 
 /** Valida se o objeto é um PromptExportFormat válido */
 function isValidPromptExport(obj: unknown): obj is PromptExportFormat {
@@ -24,24 +24,56 @@ function isBulkExport(obj: unknown): obj is BulkExport {
     return b.app === 'Prompt App' && Array.isArray(b.prompts);
 }
 
+/** Converte menus_selecionados do JSON para MenuSelectionsMap */
+function parseMenuSelections(
+    menus: Record<string, unknown> | undefined
+): MenuSelectionsMap {
+    if (!menus || typeof menus !== 'object') return {};
+
+    const result: MenuSelectionsMap = {};
+
+    for (const [key, value] of Object.entries(menus)) {
+        if (typeof value === 'string') {
+            /* Formato v1: { tom: "formal" } */
+            if (value) {
+                result[key] = { option: value, subOptions: [] };
+            }
+        } else if (value && typeof value === 'object') {
+            /* Formato v2: { tom: { opcao: "formal", sub_opcoes: [...] } } */
+            const v = value as Record<string, unknown>;
+            result[key] = {
+                option: (v.opcao as string) || '',
+                subOptions: Array.isArray(v.sub_opcoes) ? v.sub_opcoes : [],
+            };
+        }
+    }
+
+    return result;
+}
+
 /** Converte PromptExportFormat para Prompt interno */
 function fromExportFormat(
     exported: PromptExportFormat,
     categoryId: number,
     title: string
 ): Omit<Prompt, 'id'> {
+    const inputData = exported.input_data as Record<string, unknown> | undefined;
+    const menusRaw = inputData?.menus_selecionados as Record<string, unknown> | undefined;
+    const contextMenus = parseMenuSelections(menusRaw);
+
     return {
         categoryId,
         title,
         systemRole: exported.system_role || '',
         task: exported.task || '',
-        context: exported.input_data?.context || '',
+        context: (inputData?.context as string) || '',
         menus: {
-            tom: exported.input_data?.menus_selecionados?.tom || '',
-            publico: exported.input_data?.menus_selecionados?.publico || '',
-            idioma: exported.input_data?.menus_selecionados?.idioma || '',
-            estilo: exported.input_data?.menus_selecionados?.estilo || '',
+            tom: '',
+            publico: '',
+            idioma: '',
+            estilo: '',
         },
+        contextMenus,
         constraints: exported.constraints || [],
         negativePrompt: exported.negative_prompt || [],
         outputSchema: {
@@ -52,6 +84,27 @@ function fromExportFormat(
         createdAt: new Date(),
         updatedAt: new Date(),
     };
+}
+
+/** Importa menus de contexto de um export em lote */
+async function importContextMenus(menus: ContextMenu[]): Promise<number> {
+    let count = 0;
+    for (const menu of menus) {
+        const existing = await db.contextMenus
+            .where('menuId')
+            .equals(menu.menuId)
+            .first();
+        if (!existing) {
+            await db.contextMenus.add({
+                ...menu,
+                id: undefined,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            count++;
+        }
+    }
+    return count;
 }
 
 /** Lê e importa um arquivo JSON de prompts */
@@ -79,6 +132,11 @@ export async function importFromFile(file: File): Promise<number> {
     let count = 0;
 
     if (isBulkExport(parsed)) {
+        /* Importar menus de contexto se existirem */
+        if (Array.isArray(parsed.contextMenus)) {
+            await importContextMenus(parsed.contextMenus);
+        }
+
         /* Importação em lote */
         for (const item of parsed.prompts) {
             if (isValidPromptExport(item.prompt)) {

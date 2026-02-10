@@ -3,18 +3,35 @@
    ====================================================== */
 
 import Dexie, { type EntityTable } from 'dexie';
-import type { Category, Prompt, MenuOption } from '@/models/types';
+import type { Category, Prompt, MenuOption, ContextMenu } from '@/models/types';
 
 const db = new Dexie('PromptAppDB') as Dexie & {
     categories: EntityTable<Category, 'id'>;
     prompts: EntityTable<Prompt, 'id'>;
     menuOptions: EntityTable<MenuOption, 'id'>;
+    contextMenus: EntityTable<ContextMenu, 'id'>;
 };
 
+/* --- Schema v1 → v2 migration --- */
 db.version(1).stores({
     categories: '++id, name, createdAt',
     prompts: '++id, categoryId, title, createdAt, updatedAt',
     menuOptions: '++id, menuKey, value',
+});
+
+db.version(2).stores({
+    categories: '++id, name, createdAt',
+    prompts: '++id, categoryId, title, createdAt, updatedAt',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, createdAt',
+}).upgrade(async (tx) => {
+    /* Migrar prompts existentes: adicionar contextMenus vazio */
+    const prompts = tx.table('prompts');
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.contextMenus) {
+            prompt.contextMenus = {};
+        }
+    });
 });
 
 /* ----- Seed de dados iniciais ----- */
@@ -61,6 +78,117 @@ async function seedDatabase() {
             { menuKey: 'estilo', label: 'Lista', value: 'lista' },
             { menuKey: 'estilo', label: 'Narrativo', value: 'narrativo' },
             { menuKey: 'estilo', label: 'Comparativo', value: 'comparativo' },
+        ]);
+    }
+
+    /* Seed de menus hierárquicos v2 */
+    const contextMenuCount = await db.contextMenus.count();
+    if (contextMenuCount === 0) {
+        const now = new Date();
+        await db.contextMenus.bulkAdd([
+            {
+                menuId: 'tom',
+                menuName: 'Tom',
+                description: 'Define o tom de comunicação do prompt',
+                options: [
+                    {
+                        label: 'Formal', value: 'formal', subOptions: [
+                            { label: 'Corporativo', value: 'corporativo' },
+                            { label: 'Acadêmico', value: 'academico' },
+                            { label: 'Jurídico', value: 'juridico' },
+                        ]
+                    },
+                    {
+                        label: 'Informal', value: 'informal', subOptions: [
+                            { label: 'Conversacional', value: 'conversacional' },
+                            { label: 'Humorístico', value: 'humoristico' },
+                        ]
+                    },
+                    {
+                        label: 'Técnico', value: 'tecnico', subOptions: [
+                            { label: 'Conciso', value: 'conciso' },
+                            { label: 'Detalhado', value: 'detalhado' },
+                            { label: 'Acadêmico', value: 'academico' },
+                        ]
+                    },
+                    { label: 'Didático', value: 'didatico', subOptions: [] },
+                    { label: 'Persuasivo', value: 'persuasivo', subOptions: [] },
+                    { label: 'Neutro', value: 'neutro', subOptions: [] },
+                ],
+                createdAt: now,
+                updatedAt: now,
+            },
+            {
+                menuId: 'publico',
+                menuName: 'Público',
+                description: 'Define o público-alvo do prompt',
+                options: [
+                    {
+                        label: 'Desenvolvedores', value: 'desenvolvedores', subOptions: [
+                            { label: 'Júnior', value: 'junior' },
+                            { label: 'Sênior', value: 'senior' },
+                            { label: 'Full Stack', value: 'fullstack' },
+                        ]
+                    },
+                    { label: 'Executivos', value: 'executivos', subOptions: [] },
+                    {
+                        label: 'Estudantes', value: 'estudantes', subOptions: [
+                            { label: 'Ensino Médio', value: 'ensino_medio' },
+                            { label: 'Graduação', value: 'graduacao' },
+                            { label: 'Pós-Graduação', value: 'pos_graduacao' },
+                        ]
+                    },
+                    { label: 'Público Geral', value: 'publico_geral', subOptions: [] },
+                    { label: 'Especialistas', value: 'especialistas', subOptions: [] },
+                    { label: 'Crianças', value: 'criancas', subOptions: [] },
+                ],
+                createdAt: now,
+                updatedAt: now,
+            },
+            {
+                menuId: 'idioma',
+                menuName: 'Idioma',
+                description: 'Define o idioma de resposta do prompt',
+                options: [
+                    { label: 'Português (BR)', value: 'pt-br', subOptions: [] },
+                    {
+                        label: 'Inglês', value: 'en', subOptions: [
+                            { label: 'Americano', value: 'en-us' },
+                            { label: 'Britânico', value: 'en-gb' },
+                        ]
+                    },
+                    { label: 'Espanhol', value: 'es', subOptions: [] },
+                    { label: 'Francês', value: 'fr', subOptions: [] },
+                    { label: 'Alemão', value: 'de', subOptions: [] },
+                ],
+                createdAt: now,
+                updatedAt: now,
+            },
+            {
+                menuId: 'estilo',
+                menuName: 'Estilo',
+                description: 'Define o estilo de formatação da saída',
+                options: [
+                    { label: 'Conciso', value: 'conciso', subOptions: [] },
+                    {
+                        label: 'Detalhado', value: 'detalhado', subOptions: [
+                            { label: 'Com exemplos', value: 'com_exemplos' },
+                            { label: 'Com referências', value: 'com_referencias' },
+                        ]
+                    },
+                    { label: 'Passo a passo', value: 'passo_a_passo', subOptions: [] },
+                    { label: 'Lista', value: 'lista', subOptions: [] },
+                    {
+                        label: 'Narrativo', value: 'narrativo', subOptions: [
+                            { label: 'Storytelling', value: 'storytelling' },
+                            { label: 'Metáforas', value: 'metaforas' },
+                        ]
+                    },
+                    { label: 'Comparativo', value: 'comparativo', subOptions: [] },
+                ],
+                createdAt: now,
+                updatedAt: now,
+            },
         ]);
     }
 }

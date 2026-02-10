@@ -11,7 +11,48 @@ export interface Category {
     createdAt: Date;
 }
 
-/** Menu pré-configurado (tom, público, idioma, estilo) */
+/* -------------------------------------------------------
+   Menu de Contexto Hierárquico (v2)
+   ------------------------------------------------------- */
+
+/** Sub-opção de um menu de contexto */
+export interface ContextMenuSubOption {
+    label: string;
+    value: string;
+}
+
+/** Opção principal de um menu de contexto (com sub-opções opcionais) */
+export interface ContextMenuOption {
+    label: string;
+    value: string;
+    subOptions: ContextMenuSubOption[];
+}
+
+/** Menu de contexto completo — criado e gerenciado pelo usuário */
+export interface ContextMenu {
+    id?: number;
+    menuId: string;         // slug único, ex: "estilo", "tom", "frameworks"
+    menuName: string;       // nome legível, ex: "Estilo de Escrita"
+    description: string;    // descrição do propósito do menu
+    options: ContextMenuOption[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+/** Seleção de um menu hierárquico em um prompt */
+export interface ContextMenuSelection {
+    option: string;         // value da opção principal
+    subOptions: string[];   // values das sub-opções selecionadas
+}
+
+/** Todas as seleções de menus de um prompt */
+export type MenuSelectionsMap = Record<string, ContextMenuSelection>;
+
+/* -------------------------------------------------------
+   Compatibilidade com v1 (menus fixos)
+   ------------------------------------------------------- */
+
+/** @deprecated Usar MenuSelectionsMap para novos prompts */
 export interface MenuOption {
     id?: number;
     menuKey: 'tom' | 'publico' | 'idioma' | 'estilo';
@@ -19,13 +60,28 @@ export interface MenuOption {
     value: string;
 }
 
-/** Seleção de menus no prompt */
+/** @deprecated Mantido para compatibilidade */
 export interface MenuSelections {
     tom: string;
     publico: string;
     idioma: string;
     estilo: string;
 }
+
+/** Menu keys tipados (v1) */
+export type MenuKey = 'tom' | 'publico' | 'idioma' | 'estilo';
+
+/** Menu labels em português (v1) */
+export const MENU_LABELS: Record<MenuKey, string> = {
+    tom: 'Tom',
+    publico: 'Público',
+    idioma: 'Idioma',
+    estilo: 'Estilo',
+};
+
+/* -------------------------------------------------------
+   Modelo de Prompt
+   ------------------------------------------------------- */
 
 /** Exemplo few-shot */
 export interface FewShotExample {
@@ -47,7 +103,10 @@ export interface Prompt {
     systemRole: string;
     task: string;
     context: string;
+    /** @deprecated v1 menus fixos — mantido para retrocompatibilidade */
     menus: MenuSelections;
+    /** v2 menus hierárquicos */
+    contextMenus: MenuSelectionsMap;
     constraints: string[];
     negativePrompt: string[];
     outputSchema: OutputSchema;
@@ -56,18 +115,20 @@ export interface Prompt {
     updatedAt: Date;
 }
 
-/** Formato de exportação JSON padrão (obrigatório) */
+/* -------------------------------------------------------
+   Formatos de Exportação
+   ------------------------------------------------------- */
+
+/** Formato de exportação JSON cognitivo */
 export interface PromptExportFormat {
     system_role: string;
     task: string;
     input_data: {
         context: string;
-        menus_selecionados: {
-            tom: string;
-            publico: string;
-            idioma: string;
-            estilo: string;
-        };
+        menus_selecionados: Record<string, {
+            opcao: string;
+            sub_opcoes: string[];
+        }>;
     };
     constraints: string[];
     negative_prompt: string[];
@@ -83,20 +144,10 @@ export interface BulkExport {
     app: string;
     version: string;
     exportedAt: string;
+    contextMenus?: ContextMenu[];
     prompts: Array<{
         title: string;
         category: string;
         prompt: PromptExportFormat;
     }>;
 }
-
-/** Menu keys tipados */
-export type MenuKey = 'tom' | 'publico' | 'idioma' | 'estilo';
-
-/** Menu labels em português */
-export const MENU_LABELS: Record<MenuKey, string> = {
-    tom: 'Tom',
-    publico: 'Público',
-    idioma: 'Idioma',
-    estilo: 'Estilo',
-};
