@@ -107,6 +107,8 @@ export interface Prompt {
     menus: MenuSelections;
     /** v2 menus hierárquicos */
     contextMenus: MenuSelectionsMap;
+    /** IDs dos menus de contexto habilitados neste prompt */
+    enabledMenuIds: string[];
     constraints: string[];
     negativePrompt: string[];
     outputSchema: OutputSchema;

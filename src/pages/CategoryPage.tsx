@@ -16,6 +16,7 @@ import {
     Edit3,
     Clock,
 } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function CategoryPage() {
     const { id } = useParams<{ id: string }>();
@@ -66,6 +67,7 @@ export default function CategoryPage() {
     if (!category) {
         return (
             <>
+                <SEO title="Categoria não encontrada" />
                 <header className="app-header">
                     <button className="btn btn--ghost" onClick={() => navigate('/')}>
                         <ArrowLeft size={16} /> Voltar
@@ -83,6 +85,10 @@ export default function CategoryPage() {
 
     return (
         <>
+            <SEO
+                title={category.name}
+                description={`Explore ${prompts.length} prompts na categoria ${category.name}.`}
+            />
             <header className="app-header">
                 <div className="flex-row-center">
                     <button
@@ -94,6 +100,7 @@ export default function CategoryPage() {
                         <ArrowLeft size={18} />
                     </button>
                     <span className="cat-header-icon">{category.icon}</span>
+                    {/* eslint-disable-next-line */}
                     <h2
                         className="app-header__title cat-header__title"
                         style={{ '--cat-color': category.color } as React.CSSProperties}

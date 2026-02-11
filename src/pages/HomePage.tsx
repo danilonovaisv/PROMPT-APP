@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { Plus, Sparkles, FolderPlus } from 'lucide-react';
+import SEO from '@/components/SEO';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -18,6 +19,10 @@ export default function HomePage() {
 
     return (
         <>
+            <SEO
+                title="Início"
+                description="Organize seus prompts de IA com categorias e exportação profissional."
+            />
             <header className="app-header">
                 <h2 className="app-header__title">Início</h2>
                 <div className="app-header__actions">
@@ -48,6 +53,7 @@ export default function HomePage() {
                         { label: 'Categorias', value: categories.length, color: '#0048ff' },
                         { label: 'Prompts', value: prompts.length, color: '#7b2ff7' },
                     ].map((stat) => (
+                        // eslint-disable-next-line
                         <div
                             key={stat.label}
                             className="card stat-card"
@@ -91,6 +97,7 @@ export default function HomePage() {
                 ) : (
                     <div className="category-grid">
                         {categories.map((cat) => (
+                            // eslint-disable-next-line
                             <div
                                 key={cat.id}
                                 className="card card--clickable category-card"

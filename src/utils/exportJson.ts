@@ -7,12 +7,18 @@ import { db } from '@/db/database';
 
 /** Converte MenuSelectionsMap para o formato de exportação */
 function exportMenuSelections(
-    contextMenus: MenuSelectionsMap
+    contextMenus: MenuSelectionsMap,
+    enabledMenuIds?: string[]
 ): Record<string, { opcao: string; sub_opcoes: string[] }> {
     const result: Record<string, { opcao: string; sub_opcoes: string[] }> = {};
 
-    for (const [menuId, selection] of Object.entries(contextMenus)) {
-        if (selection.option) {
+    /* Se enabledMenuIds existir, usamos ele como filtro. 
+       Caso contrário (compatibilidade), usamos todas as chaves de contextMenus. */
+    const keysToExport = enabledMenuIds || Object.keys(contextMenus);
+
+    for (const menuId of keysToExport) {
+        const selection = contextMenus[menuId];
+        if (selection && selection.option) {
             result[menuId] = {
                 opcao: selection.option,
                 sub_opcoes: selection.subOptions || [],
@@ -20,14 +26,16 @@ function exportMenuSelections(
         }
     }
 
-    /* Fallback: incluir menus v1 se contextMenus estiver vazio */
     return result;
 }
 
 /** Converte prompt interno para o formato JSON cognitivo */
 export function toExportFormat(prompt: Prompt): PromptExportFormat {
-    /* Monta menus_selecionados a partir de contextMenus (v2) e/ou menus (v1) */
-    let menusSelecionados = exportMenuSelections(prompt.contextMenus || {});
+    /* Monta menus_selecionados a partir de contextMenus (v2) */
+    let menusSelecionados = exportMenuSelections(
+        prompt.contextMenus || {},
+        prompt.enabledMenuIds
+    );
 
     /* Fallback v1: se não há contextMenus, usar seleções v1 */
     if (Object.keys(menusSelecionados).length === 0 && prompt.menus) {

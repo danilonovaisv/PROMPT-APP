@@ -27,6 +27,7 @@ import {
     BookOpen,
     Layers,
     ChevronDown,
+    PlusCircle,
 } from 'lucide-react';
 
 const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
@@ -37,6 +38,7 @@ const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
     context: '',
     menus: { tom: '', publico: '', idioma: '', estilo: '' },
     contextMenus: {},
+    enabledMenuIds: [],
     constraints: [''],
     negativePrompt: [''],
     outputSchema: { formato: 'texto', estrutura: '' },
@@ -58,6 +60,7 @@ export default function EditorPage() {
     const [form, setForm] = useState<Omit<Prompt, 'id'>>(EMPTY_PROMPT);
     const [showPreview, setShowPreview] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const [showMenuPicker, setShowMenuPicker] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
     /* Carregar prompt existente */
@@ -77,6 +80,7 @@ export default function EditorPage() {
                     setForm({
                         ...p,
                         contextMenus: p.contextMenus || {},
+                        enabledMenuIds: p.enabledMenuIds || [],
                         constraints: p.constraints.length > 0 ? p.constraints : [''],
                         negativePrompt: p.negativePrompt.length > 0 ? p.negativePrompt : [''],
                         fewShotExamples: p.fewShotExamples.length > 0 ? p.fewShotExamples : [{ input: '', output: '' }],
@@ -144,6 +148,30 @@ export default function EditorPage() {
 
     const toggleMenuExpanded = (menuId: string) => {
         setExpandedMenus((prev) => ({ ...prev, [menuId]: !prev[menuId] }));
+    };
+
+    /* --- Menu picker: add/remove menus per prompt --- */
+    const enabledMenus = contextMenus.filter((m) => form.enabledMenuIds.includes(m.menuId));
+    const availableMenus = contextMenus.filter((m) => !form.enabledMenuIds.includes(m.menuId));
+
+    const addMenuToPrompt = (menuId: string) => {
+        setForm((prev) => ({
+            ...prev,
+            enabledMenuIds: [...prev.enabledMenuIds, menuId],
+        }));
+        setShowMenuPicker(false);
+    };
+
+    const removeMenuFromPrompt = (menuId: string) => {
+        setForm((prev) => {
+            const newContextMenus = { ...prev.contextMenus };
+            delete newContextMenus[menuId];
+            return {
+                ...prev,
+                enabledMenuIds: prev.enabledMenuIds.filter((id) => id !== menuId),
+                contextMenus: newContextMenus,
+            };
+        });
     };
 
     /* --- Outros handlers --- */
@@ -360,7 +388,7 @@ export default function EditorPage() {
                     <div className="form-section">
                         <h3 className="form-section__title">
                             <Layers size={18} /> Menus de Contexto
-                            <span className="form-label__hint">(Clique para selecionar, expanda para sub-opções)</span>
+                            <span className="form-label__hint">(Adicione os menus que deseja usar neste prompt)</span>
                         </h3>
 
                         {contextMenus.length === 0 ? (
@@ -371,79 +399,140 @@ export default function EditorPage() {
                                 </button>
                             </p>
                         ) : (
-                            <div className="ctx-editor-grid">
-                                {contextMenus.map((menu) => {
-                                    const sel = getMenuSelection(menu.menuId);
-                                    const selectedOpt = menu.options.find((o) => o.value === sel.option);
-                                    const hasSubOptions = selectedOpt && selectedOpt.subOptions.length > 0;
-                                    const isExpanded = expandedMenus[menu.menuId];
-
-                                    return (
-                                        <div key={menu.id} className="ctx-editor-menu">
-                                            <div className="ctx-editor-menu__header">
-                                                <span className="ctx-editor-menu__name">{menu.menuName}</span>
-                                                {sel.option && (
-                                                    <span className="ctx-editor-menu__selection">
-                                                        {selectedOpt?.label}
-                                                        {sel.subOptions.length > 0 && (
-                                                            <span className="ctx-editor-menu__sub-count">
-                                                                +{sel.subOptions.length}
-                                                            </span>
-                                                        )}
-                                                    </span>
+                            <>
+                                {/* Menu Picker — adicionar menus ao prompt */}
+                                <div className="ctx-picker">
+                                    <div className="ctx-picker__row">
+                                        <div className="ctx-picker__wrapper">
+                                            <button
+                                                className="btn btn--secondary btn--sm ctx-picker__trigger"
+                                                onClick={() => setShowMenuPicker(!showMenuPicker)}
+                                                disabled={availableMenus.length === 0}
+                                                type="button"
+                                            >
+                                                <PlusCircle size={14} />
+                                                Adicionar Menu
+                                                {availableMenus.length > 0 && (
+                                                    <span className="ctx-picker__count">{availableMenus.length}</span>
                                                 )}
-                                                {hasSubOptions && (
-                                                    <button
-                                                        className="btn btn--ghost btn--icon btn--sm"
-                                                        onClick={() => toggleMenuExpanded(menu.menuId)}
-                                                        aria-label={isExpanded ? 'Recolher sub-opções' : 'Expandir sub-opções'}
-                                                        title={isExpanded ? 'Recolher' : 'Expandir sub-opções'}
-                                                    >
-                                                        <ChevronDown
-                                                            size={14}
-                                                            className={isExpanded ? 'ctx-chevron--open' : 'ctx-chevron'}
-                                                        />
-                                                    </button>
-                                                )}
-                                            </div>
+                                            </button>
 
-                                            <div className="menu-selector">
-                                                {menu.options.map((opt) => (
-                                                    <button
-                                                        key={opt.value}
-                                                        type="button"
-                                                        className={`menu-tag ${sel.option === opt.value ? 'menu-tag--selected' : ''}`}
-                                                        onClick={() => selectMenuOption(menu.menuId, opt.value)}
-                                                    >
-                                                        {opt.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-
-                                            {/* Sub-opções — expandível */}
-                                            {hasSubOptions && isExpanded && (
-                                                <div className="ctx-editor-suboptions">
-                                                    <span className="ctx-editor-suboptions__label">
-                                                        Sub-opções de "{selectedOpt.label}":
-                                                    </span>
-                                                    <div className="menu-selector menu-selector--sub">
-                                                        {selectedOpt.subOptions.map((sub) => (
-                                                            <button
-                                                                key={sub.value}
-                                                                type="button"
-                                                                className={`menu-tag menu-tag--sub ${sel.subOptions.includes(sub.value) ? 'menu-tag--selected' : ''}`}
-                                                                onClick={() => toggleSubOption(menu.menuId, sub.value)}
-                                                            >
-                                                                {sub.label}
-                                                            </button>
-                                                        ))}
-                                                    </div>
+                                            {showMenuPicker && availableMenus.length > 0 && (
+                                                <div className="ctx-picker__dropdown">
+                                                    {availableMenus.map((menu) => (
+                                                        <button
+                                                            key={menu.id}
+                                                            className="ctx-picker__option"
+                                                            onClick={() => addMenuToPrompt(menu.menuId)}
+                                                            type="button"
+                                                        >
+                                                            <span className="ctx-picker__option-name">{menu.menuName}</span>
+                                                            <span className="ctx-picker__option-desc">{menu.description}</span>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             )}
                                         </div>
-                                    );
-                                })}
-                            </div>
+
+                                        {enabledMenus.length > 0 && (
+                                            <span className="ctx-picker__summary">
+                                                {enabledMenus.length} menu{enabledMenus.length !== 1 ? 's' : ''} ativo{enabledMenus.length !== 1 ? 's' : ''}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Menus habilitados — seleção de opções */}
+                                {enabledMenus.length === 0 ? (
+                                    <p className="ctx-empty-hint">
+                                        Nenhum menu adicionado a este prompt. Use o botão acima para adicionar.
+                                    </p>
+                                ) : (
+                                    <div className="ctx-editor-grid">
+                                        {enabledMenus.map((menu) => {
+                                            const sel = getMenuSelection(menu.menuId);
+                                            const selectedOpt = menu.options.find((o) => o.value === sel.option);
+                                            const hasSubOptions = selectedOpt && selectedOpt.subOptions.length > 0;
+                                            const isExpanded = expandedMenus[menu.menuId];
+
+                                            return (
+                                                <div key={menu.id} className="ctx-editor-menu">
+                                                    <div className="ctx-editor-menu__header">
+                                                        <span className="ctx-editor-menu__name">{menu.menuName}</span>
+                                                        {sel.option && (
+                                                            <span className="ctx-editor-menu__selection">
+                                                                {selectedOpt?.label}
+                                                                {sel.subOptions.length > 0 && (
+                                                                    <span className="ctx-editor-menu__sub-count">
+                                                                        +{sel.subOptions.length}
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        )}
+                                                        {hasSubOptions && (
+                                                            <button
+                                                                className="btn btn--ghost btn--icon btn--sm"
+                                                                onClick={() => toggleMenuExpanded(menu.menuId)}
+                                                                aria-label={isExpanded ? 'Recolher sub-opções' : 'Expandir sub-opções'}
+                                                                title={isExpanded ? 'Recolher' : 'Expandir sub-opções'}
+                                                                type="button"
+                                                            >
+                                                                <ChevronDown
+                                                                    size={14}
+                                                                    className={isExpanded ? 'ctx-chevron--open' : 'ctx-chevron'}
+                                                                />
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            className="btn btn--ghost btn--icon btn--sm ctx-editor-menu__remove"
+                                                            onClick={() => removeMenuFromPrompt(menu.menuId)}
+                                                            aria-label={`Remover menu ${menu.menuName}`}
+                                                            title="Remover deste prompt"
+                                                            type="button"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="menu-selector">
+                                                        {menu.options.map((opt) => (
+                                                            <button
+                                                                key={opt.value}
+                                                                type="button"
+                                                                className={`menu-tag ${sel.option === opt.value ? 'menu-tag--selected' : ''}`}
+                                                                onClick={() => selectMenuOption(menu.menuId, opt.value)}
+                                                            >
+                                                                {opt.label}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Sub-opções — expandível */}
+                                                    {hasSubOptions && isExpanded && (
+                                                        <div className="ctx-editor-suboptions">
+                                                            <span className="ctx-editor-suboptions__label">
+                                                                Sub-opções de "{selectedOpt.label}":
+                                                            </span>
+                                                            <div className="menu-selector menu-selector--sub">
+                                                                {selectedOpt.subOptions.map((sub) => (
+                                                                    <button
+                                                                        key={sub.value}
+                                                                        type="button"
+                                                                        className={`menu-tag menu-tag--sub ${sel.subOptions.includes(sub.value) ? 'menu-tag--selected' : ''}`}
+                                                                        onClick={() => toggleSubOption(menu.menuId, sub.value)}
+                                                                    >
+                                                                        {sub.label}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
 

@@ -74,6 +74,7 @@ function fromExportFormat(
             estilo: '',
         },
         contextMenus,
+        enabledMenuIds: Object.keys(contextMenus),
         constraints: exported.constraints || [],
         negativePrompt: exported.negative_prompt || [],
         outputSchema: {

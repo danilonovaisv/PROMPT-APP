@@ -8,7 +8,7 @@ import App from './App';
 import './index.css';
 
 /* Inicializar DB (imported side-effect) */
-import './db/database';
+import '@/db/database';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

@@ -1345,6 +1345,109 @@ select option {
   padding: var(--space-2) var(--space-3) !important;
 }
 
+/* --- Editor: Context Menu Picker --- */
+.ctx-picker {
+  margin-bottom: var(--space-4);
+}
+
+.ctx-picker__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ctx-picker__wrapper {
+  position: relative;
+}
+
+.ctx-picker__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ctx-picker__count {
+  background: var(--color-primary);
+  color: white;
+  font-size: 10px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.6;
+  min-width: 18px;
+  text-align: center;
+}
+
+.ctx-picker__dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 50;
+  min-width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border-active);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.15s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.ctx-picker__option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-fast);
+}
+
+.ctx-picker__option:last-child {
+  border-bottom: none;
+}
+
+.ctx-picker__option:hover {
+  background: var(--color-surface-2);
+}
+
+.ctx-picker__option-name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.ctx-picker__option-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.ctx-picker__summary {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Remove button on each enabled menu in editor */
+.ctx-editor-menu__remove {
+  margin-left: var(--space-1);
+  opacity: 0.5;
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.ctx-editor-menu__remove:hover {
+  opacity: 1;
+  color: var(--color-error) !important;
+}
+
 /* --- Editor: Context Menu Selection --- */
 .ctx-editor-grid {
   display: grid;

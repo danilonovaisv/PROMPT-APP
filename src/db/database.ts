@@ -34,6 +34,22 @@ db.version(2).stores({
     });
 });
 
+db.version(3).stores({
+    categories: '++id, name, createdAt',
+    prompts: '++id, categoryId, title, createdAt, updatedAt',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, createdAt',
+}).upgrade(async (tx) => {
+    /* Migrar prompts existentes: adicionar enabledMenuIds com todos os menus em uso */
+    const prompts = tx.table('prompts');
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.enabledMenuIds) {
+            const contextMenus = (prompt.contextMenus || {}) as Record<string, unknown>;
+            prompt.enabledMenuIds = Object.keys(contextMenus);
+        }
+    });
+});
+
 /* ----- Seed de dados iniciais ----- */
 async function seedDatabase() {
     const categoryCount = await db.categories.count();
