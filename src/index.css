@@ -1883,3 +1883,81 @@ select option {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Backup Status --- */
+.backup-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-4);
+}
+
+.backup-status__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.backup-status__date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.backup-status__details {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* --- Cloud Sync Box --- */
+.cloud-sync-box {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin: var(--space-4) var(--space-1);
+}
+
+.cloud-sync-box__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cloud-sync-box__user .truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.btn-logout {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.btn-logout:hover {
+  color: var(--color-error);
+}
+
+.cloud-sync-box__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

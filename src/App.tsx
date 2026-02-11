@@ -12,9 +12,16 @@ import CategoryPage from '@/pages/CategoryPage';
 import CategoryManagerPage from '@/pages/CategoryManagerPage';
 import EditorPage from '@/pages/EditorPage';
 import MenuManagerPage from '@/pages/MenuManagerPage';
+import { useEffect } from 'react';
+import { saveLocalBackup } from '@/utils/backupManager';
 
 export default function App() {
     const [showImportExport, setShowImportExport] = useState(false);
+
+    useEffect(() => {
+        // Realizar backup inicial silencioso após o mount
+        saveLocalBackup();
+    }, []);
 
     return (
         <BrowserRouter>

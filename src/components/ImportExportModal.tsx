@@ -13,7 +13,10 @@ import {
     FileUp,
     CheckCircle,
     AlertCircle,
+    History,
+    RefreshCw,
 } from 'lucide-react';
+import { getLocalBackupInfo, restoreFromSnapshot } from '@/utils/backupManager';
 
 interface ImportExportModalProps {
     isOpen: boolean;
@@ -58,6 +61,28 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
         await downloadAllPrompts();
         showToast('Exportação concluída!');
     };
+
+    const handleRestoreLocal = async () => {
+        const raw = localStorage.getItem('prompt_app_global_backup');
+        if (!raw) return;
+
+        if (!confirm('ATENÇÃO: Restaurar o backup local irá substituir todos os dados atuais. Deseja continuar?')) {
+            return;
+        }
+
+        try {
+            const snapshot = JSON.parse(raw);
+            const ok = await restoreFromSnapshot(snapshot);
+            if (ok) {
+                showToast('Banco de dados restaurado com sucesso!');
+                window.location.reload(); // Recarregar para atualizar todos os hooks
+            }
+        } catch (e) {
+            showToast('Erro ao restaurar backup', 'error');
+        }
+    };
+
+    const backupInfo = getLocalBackupInfo();
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -125,6 +150,34 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                         <button className="btn btn--primary btn--lg" onClick={handleExport}>
                             <Download size={18} /> Exportar Tudo (.json)
                         </button>
+                    </div>
+
+                    {/* Backup Local */}
+                    <div className="form-section form-section--flush">
+                        <h3 className="form-section__title">
+                            <History size={18} /> Backup de Segurança
+                        </h3>
+                        <p className="import-description">
+                            O sistema mantém uma cópia automática das suas informações para casos de emergência.
+                        </p>
+
+                        {backupInfo ? (
+                            <div className="backup-status">
+                                <div className="backup-status__info">
+                                    <div className="backup-status__date">
+                                        Último backup: <strong>{new Date(backupInfo.timestamp).toLocaleString('pt-BR')}</strong>
+                                    </div>
+                                    <div className="backup-status__details">
+                                        {backupInfo.count.prompts} prompts • {backupInfo.count.categories} categorias
+                                    </div>
+                                </div>
+                                <button className="btn btn--secondary btn--sm" onClick={handleRestoreLocal}>
+                                    <RefreshCw size={14} /> Restaurar Cópia
+                                </button>
+                            </div>
+                        ) : (
+                            <p className="ctx-empty-hint">Nenhum backup automático disponível ainda.</p>
+                        )}
                     </div>
                 </div>
             </div>

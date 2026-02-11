@@ -8,6 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
+import { saveLocalBackup } from '@/utils/backupManager';
 import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection } from '@/models/types';
 import {
     ArrowLeft,
@@ -90,6 +91,37 @@ export default function EditorPage() {
             });
         }
     }, [id, isNew, searchParams, categories]);
+
+    /* --- Sistema de Rascunho (Draft) --- */
+    // Carregar rascunho se existir
+    useEffect(() => {
+        if (loaded) {
+            const draftKey = `prompt_draft_${id}`;
+            const savedDraft = localStorage.getItem(draftKey);
+            if (savedDraft) {
+                try {
+                    const draftData = JSON.parse(savedDraft);
+                    setForm(prev => ({ ...prev, ...draftData }));
+                    showToast('Rascunho recuperado automaticamente!', 'info');
+                } catch (e) {
+                    console.error('Erro ao recuperar rascunho:', e);
+                }
+            }
+        }
+    }, [loaded, id]);
+
+    // Salvar rascunho automaticamente
+    useEffect(() => {
+        if (loaded && form !== EMPTY_PROMPT) {
+            const draftKey = `prompt_draft_${id}`;
+            localStorage.setItem(draftKey, JSON.stringify(form));
+        }
+    }, [form, id, loaded]);
+
+    // Limpar rascunho ao salvar com sucesso
+    const clearDraft = () => {
+        localStorage.removeItem(`prompt_draft_${id}`);
+    };
 
     /* Atualizar categoryId quando categorias carregarem */
     useEffect(() => {
@@ -244,10 +276,14 @@ export default function EditorPage() {
         if (isNew) {
             data.createdAt = new Date();
             const newId = await db.prompts.add(data as Prompt);
+            clearDraft();
+            await saveLocalBackup();
             showToast('Prompt criado com sucesso!');
             navigate(`/editor/${newId}`, { replace: true });
         } else {
             await db.prompts.update(Number(id), data);
+            clearDraft();
+            await saveLocalBackup();
             showToast('Prompt salvo!');
         }
     };

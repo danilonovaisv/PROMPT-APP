@@ -9,6 +9,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { downloadJson } from '@/utils/exportJson';
 import { exportMenusToJson } from '@/utils/importMenusJson';
+import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import {
@@ -117,12 +118,14 @@ export default function MenuManagerPage() {
             await db.contextMenus.add(data as ContextMenu);
             showToast('Menu criado!');
         }
+        await saveLocalBackup();
         cancel();
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm('Deseja realmente excluir este menu?')) return;
         await db.contextMenus.delete(id);
+        await saveLocalBackup();
         showToast('Menu excluído!');
     };
 

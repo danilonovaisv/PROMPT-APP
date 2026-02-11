@@ -44,7 +44,7 @@ O **Prompt App** é uma ferramenta local-first para engenharia de prompts profis
 ## ⚡ Tech Stack
 
 | Camada | Tecnologia | Versão |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Framework** | React | 19.x |
 | **Linguagem** | TypeScript | 5.9 |
 | **Build Tool** | Vite | 7.3 |
@@ -78,7 +78,7 @@ O **Prompt App** é uma ferramenta local-first para engenharia de prompts profis
 O coração da aplicação. Campos disponíveis:
 
 | Campo | Descrição |
-|:---|:---|
+| :--- | :--- |
 | **Título** | Nome identificador do prompt |
 | **System Role** | Instrução de personalidade para o LLM |
 | **Tarefa** | O que o modelo deve fazer |
@@ -146,7 +146,7 @@ O output é gerado na pasta `dist/`.
 
 ## 🏗️ Arquitetura
 
-```
+```text
 ┌──────────────────────────────────────────────────┐
 │                    Browser                        │
 │  ┌────────────────────────────────────────────┐  │
@@ -185,7 +185,7 @@ O output é gerado na pasta `dist/`.
 
 ## 📂 Estrutura de Pastas
 
-```
+```text
 prompt-app/
 ├── index.html                   # Entry point HTML
 ├── vite.config.ts               # Configuração do Vite (plugins, aliases)
@@ -214,6 +214,7 @@ prompt-app/
     │
     ├── components/
     │   ├── Layout.tsx            # Shell da app (sidebar + conteúdo)
+    │   ├── SEO.tsx               # Componente de Meta Tags e SEO
     │   └── ImportExportModal.tsx # Modal de importar/exportar prompts
     │
     ├── pages/
@@ -225,8 +226,14 @@ prompt-app/
     │
     └── utils/
         ├── constants.ts         # Ícones e paleta de cores
+        ├── backupManager.ts     # Sistema de backup automático e manual
         ├── exportJson.ts        # Exportação JSON (individual e bulk)
         └── importJson.ts        # Importação JSON (individual e bulk)
+
+├── .context/                    # Memória do Agente (Ghost System Memory)
+│   ├── knowledge-graph.md       # Mapa de arquitetura e dependências
+│   ├── design-tokens.md         # Definições visuais extraídas
+│   └── logs/                    # Histórico de ajustes do sistema
 ```
 
 ---
@@ -370,7 +377,7 @@ A v2.0 introduziu um sistema de menus totalmente customizáveis:
 ### Menus Pré-configurados
 
 | Menu | Opções | Sub-opções (exemplos) |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Tom** | Formal, Informal, Técnico, Didático, Persuasivo, Neutro | Formal → Corporativo, Acadêmico, Jurídico |
 | **Público** | Desenvolvedores, Executivos, Estudantes, Público Geral, Especialistas, Crianças | Desenvolvedores → Júnior, Sênior, Full Stack |
 | **Idioma** | Português (BR), Inglês, Espanhol, Francês, Alemão | Inglês → Americano, Britânico |
@@ -526,7 +533,7 @@ docker run -p 3000:80 prompt-app
 ## 📜 Scripts Disponíveis
 
 | Script | Comando | Descrição |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | **Dev** | `npm run dev` | Servidor de desenvolvimento com HMR (Vite) |
 | **Build** | `npm run build` | Type-check + bundle de produção |
 | **Preview** | `npm run preview` | Serve o build de produção localmente |
@@ -541,7 +548,7 @@ docker run -p 3000:80 prompt-app
 As variáveis CSS estão definidas em `src/index.css` sob `:root`:
 
 | Token | Descrição | Default |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `--color-primary` | Cor primária de ação | `#0048ff` |
 | `--color-bg-void` | Fundo principal (void) | `#040013` |
 | `--color-bg-card` | Fundo de cards | `rgba(255, 255, 255, 0.03)` |
@@ -610,7 +617,7 @@ resolve: {
 O IndexedDB é gerenciado pelo [Dexie.js](https://dexie.org/). As tabelas são:
 
 | Tabela | Campos Indexados | Descrição |
-|:---|:---|:---|
+| :--- | :--- | :--- |
 | `categories` | `++id, name, createdAt` | Categorias de prompts |
 | `prompts` | `++id, categoryId, title, createdAt, updatedAt` | Prompts completos |
 | `menuOptions` | `++id, menuKey, value` | Opções de menu (v1, legado) |

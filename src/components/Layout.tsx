@@ -16,6 +16,7 @@ import {
     X,
     Sparkles,
 } from 'lucide-react';
+import CloudSyncItem from './CloudSyncItem';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -95,6 +96,9 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                     {/* Ações */}
                     <div className="app-sidebar__section-title">Ações</div>
+
+                    <CloudSyncItem />
+
                     <button className="app-sidebar__nav-item" onClick={onOpenImportExport}>
                         <Upload size={18} />
                         Importar Prompts

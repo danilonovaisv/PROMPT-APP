@@ -8,6 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
+import { saveLocalBackup } from '@/utils/backupManager';
 import {
     ArrowLeft,
     Plus,
@@ -78,6 +79,7 @@ export default function CategoryManagerPage() {
             });
             showToast('Categoria criada!');
         }
+        await saveLocalBackup();
         cancel();
     };
 
@@ -88,6 +90,7 @@ export default function CategoryManagerPage() {
             await db.prompts.where('categoryId').equals(id).delete();
         }
         await db.categories.delete(id);
+        await saveLocalBackup();
         showToast('Categoria excluída!');
     };
 
