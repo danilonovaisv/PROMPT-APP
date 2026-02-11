@@ -154,12 +154,10 @@ export default function CategoryManagerPage() {
                             <label className="form-label">Cor</label>
                             <div className="color-picker-grid">
                                 {CATEGORY_COLORS.map((color) => (
-                                    // eslint-disable-next-line
                                     <button
                                         key={color}
                                         type="button"
-                                        className={`color-picker-grid__swatch ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
-                                        style={{ '--swatch-color': color } as React.CSSProperties}
+                                        className={`color-picker-grid__swatch util-cat-color-${color.replace('#', '')} ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
                                         onClick={() => setForm({ ...form, color })}
                                         aria-label={`Cor ${color}`}
                                     />
@@ -168,10 +166,8 @@ export default function CategoryManagerPage() {
                         </div>
 
                         {/* Preview */}
-                        {/* eslint-disable-next-line */}
                         <div
-                            className="cat-preview"
-                            style={{ '--cat-color': form.color } as React.CSSProperties}
+                            className={`cat-preview util-cat-color-${form.color.replace('#', '')}`}
                         >
                             <span className="cat-preview__icon">{form.icon}</span>
                             <span className="cat-preview__name">
@@ -207,16 +203,13 @@ export default function CategoryManagerPage() {
                                     className="cat-list-item"
                                     onClick={() => navigate(`/categoria/${cat.id}`)}
                                 >
-                                    {/* eslint-disable-next-line */}
                                     <span
-                                        className="cat-list-item__icon"
-                                        style={{ '--cat-color-glow': `${cat.color}20` } as React.CSSProperties}
+                                        className={`cat-list-item__icon util-cat-color-${cat.color.replace('#', '')}`}
                                     >
                                         {cat.icon}
                                     </span>
                                     <div>
-                                        {/* eslint-disable-next-line */}
-                                        <div className="prompt-item__title cat-list-item__title" style={{ '--cat-color': cat.color } as React.CSSProperties}>
+                                        <div className={`prompt-item__title cat-list-item__title util-cat-color-${cat.color.replace('#', '')}`}>
                                             {cat.name}
                                         </div>
                                     </div>

@@ -9,6 +9,7 @@
 - Initialized `design-tokens.md` based on `src/index.css`.
 - Scanned codebase for new components/utils (SEO, BackupManager, Import/Export).
 - Refined Documentation: Corrected linting in `README.md` and added Draft System details to `knowledge-graph.md`.
+- **CSS Refactoring**: Removed all inline styles from React components, replacing them with systematic utility classes in `index.css` to comply with strict linting rules.
 
 ### Observations
 

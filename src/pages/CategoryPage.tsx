@@ -100,10 +100,8 @@ export default function CategoryPage() {
                         <ArrowLeft size={18} />
                     </button>
                     <span className="cat-header-icon">{category.icon}</span>
-                    {/* eslint-disable-next-line */}
                     <h2
-                        className="app-header__title cat-header__title"
-                        style={{ '--cat-color': category.color } as React.CSSProperties}
+                        className={`app-header__title cat-header__title util-cat-color-${category.color.replace('#', '')}`}
                     >
                         {category.name}
                     </h2>

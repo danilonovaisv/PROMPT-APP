@@ -79,7 +79,7 @@ export default function CloudSyncItem() {
             <button className="app-sidebar__nav-item" onClick={handleLogin}>
                 <CloudOff size={18} />
                 <span>Nuvem Desconectada</span>
-                <LogIn size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+                <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
             </button>
         );
     }

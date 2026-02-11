@@ -32,6 +32,12 @@
 - **backupManager** (`src/utils/backupManager.ts`): Logic for automated and manual data backups.
 - **importJson/exportJson**: JSON file handling logic.
 
+### Design Patterns
+
+- **Local-First Architecture**: Use of Dexie.js for heavy local data management.
+- **Atomic Components**: Reusable UI elements for buttons, cards, and forms.
+- **CSS Refactor**: No inline styles. Dynamic colors are handled via CSS Variables mapped to utility classes (e.g., `.util-cat-color-*`).
+
 ## Relationships
 
 - **Pages** depend on **Database** for data fetching.

@@ -53,11 +53,9 @@ export default function HomePage() {
                         { label: 'Categorias', value: categories.length, color: '#0048ff' },
                         { label: 'Prompts', value: prompts.length, color: '#7b2ff7' },
                     ].map((stat) => (
-                        // eslint-disable-next-line
                         <div
                             key={stat.label}
-                            className="card stat-card"
-                            style={{ '--stat-color': stat.color } as React.CSSProperties}
+                            className={`card stat-card util-cat-color-${stat.color.replace('#', '')}`}
                         >
                             <div className="stat-card__value">
                                 {stat.value}
@@ -97,13 +95,10 @@ export default function HomePage() {
                 ) : (
                     <div className="category-grid">
                         {categories.map((cat) => (
-                            // eslint-disable-next-line
                             <div
                                 key={cat.id}
-                                className="card card--clickable category-card"
+                                className={`card card--clickable category-card util-cat-color-${cat.color.replace('#', '')}`}
                                 onClick={() => navigate(`/categoria/${cat.id}`)}
-                                style={{ '--category-color': cat.color, '--category-color-glow': `${cat.color}20` } as React.CSSProperties}
-                            /* eslint-disable-line -- dynamic CSS custom properties required for user-defined colors */
                             >
                                 <div className="category-card__stripe" />
                                 <div className="category-card__icon">{cat.icon}</div>
