@@ -38,6 +38,21 @@ export async function createSnapshot(): Promise<AppSnapshot> {
 export async function saveLocalBackup() {
     try {
         const snapshot = await createSnapshot();
+
+        // Verificação de segurança: Não sobrescrever um backup que tem dados com um vazio 
+        // a menos que o usuário explicitamente delete tudo ou seja o primeiro backup.
+        const existingRaw = localStorage.getItem(BACKUP_KEY);
+        if (existingRaw) {
+            const existing = JSON.parse(existingRaw) as AppSnapshot;
+            const hasExistingData = existing.data.prompts.length > 0 || existing.data.categories.length > 6; // 6 é o seed padrão
+            const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
+
+            if (hasExistingData && isNewEmpty) {
+                console.warn('⚠️ Tentativa de backup vazio detectada. Preservando backup anterior com dados.');
+                return;
+            }
+        }
+
         localStorage.setItem(BACKUP_KEY, JSON.stringify(snapshot));
         console.log('✅ Backup local atualizado em:', snapshot.timestamp);
     } catch (error) {

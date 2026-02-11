@@ -37,6 +37,7 @@
 - **Local-First Architecture**: Use of Dexie.js for heavy local data management.
 - **Atomic Components**: Reusable UI elements for buttons, cards, and forms.
 - **CSS Refactor**: No inline styles. Dynamic colors are handled via CSS Variables mapped to utility classes (e.g., `.util-cat-color-*`).
+- **Chunking Strategy**: Systematic splitting of vendor dependencies (React, DB, Supabase, Icons) for optimized loading and caching.
 
 ## Relationships
 

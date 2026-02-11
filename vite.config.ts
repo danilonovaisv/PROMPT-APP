@@ -8,4 +8,17 @@ export default defineConfig({
             '@': '/src',
         },
     },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+                    'vendor-db': ['dexie', 'dexie-react-hooks'],
+                    'vendor-supabase': ['@supabase/supabase-js'],
+                    'vendor-icons': ['lucide-react'],
+                }
+            }
+        },
+        chunkSizeWarningLimit: 1000,
+    }
 })

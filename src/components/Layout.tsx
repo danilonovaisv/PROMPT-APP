@@ -16,6 +16,7 @@ import {
     X,
     Sparkles,
 } from 'lucide-react';
+import { downloadAllPrompts } from '@/utils/exportJson';
 import CloudSyncItem from './CloudSyncItem';
 
 interface LayoutProps {
@@ -105,10 +106,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                     </button>
                     <button
                         className="app-sidebar__nav-item"
-                        onClick={async () => {
-                            const { downloadAllPrompts } = await import('@/utils/exportJson');
-                            downloadAllPrompts();
-                        }}
+                        onClick={() => downloadAllPrompts()}
                     >
                         <Download size={18} />
                         Exportar Todos

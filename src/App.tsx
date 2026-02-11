@@ -14,13 +14,24 @@ import EditorPage from '@/pages/EditorPage';
 import MenuManagerPage from '@/pages/MenuManagerPage';
 import { useEffect } from 'react';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { seedDatabase } from '@/db/database';
 
 export default function App() {
     const [showImportExport, setShowImportExport] = useState(false);
 
     useEffect(() => {
-        // Realizar backup inicial silencioso após o mount
-        saveLocalBackup();
+        const init = async () => {
+            // 1. Garantir que o banco está seedado
+            await seedDatabase();
+
+            // 2. Realizar backup inicial apenas se houver algo para salvar
+            // Isso evita que um erro de carregamento sobrescreva o backup do localStorage com vazio
+            setTimeout(() => {
+                saveLocalBackup();
+            }, 2000); // Delay para garantir hidratação completa
+        };
+
+        init();
     }, []);
 
     return (
