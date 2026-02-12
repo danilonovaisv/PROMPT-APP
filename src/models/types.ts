@@ -5,6 +5,7 @@
 /** Categoria para organizar prompts */
 export interface Category {
     id?: number;
+    remoteId?: number; // ID do Supabase
     name: string;
     icon: string;
     color: string;
@@ -31,6 +32,7 @@ export interface ContextMenuOption {
 /** Menu de contexto completo — criado e gerenciado pelo usuário */
 export interface ContextMenu {
     id?: number;
+    remoteId?: number; // ID do Supabase
     menuId: string;         // slug único, ex: "estilo", "tom", "frameworks"
     menuName: string;       // nome legível, ex: "Estilo de Escrita"
     description: string;    // descrição do propósito do menu
@@ -98,6 +100,7 @@ export interface OutputSchema {
 /** Prompt completo (modelo interno) */
 export interface Prompt {
     id?: number;
+    remoteId?: number; // ID do Supabase
     categoryId: number;
     title: string;
     systemRole: string;

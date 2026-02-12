@@ -50,6 +50,13 @@ db.version(3).stores({
     });
 });
 
+db.version(4).stores({
+    categories: '++id, input, name, createdAt, remoteId',
+    prompts: '++id, categoryId, title, createdAt, updatedAt, remoteId',
+    menuOptions: '++id, menuKey, value', // Mantido sem remoteId pois é depreciado
+    contextMenus: '++id, menuId, menuName, createdAt, remoteId',
+});
+
 /* ----- Seed de dados iniciais ----- */
 /* ----- Seed de dados iniciais ----- */
 export async function seedDatabase() {
