@@ -189,7 +189,7 @@ export const downloadFromCloud = async () => {
 
             for (const cat of categories) {
                 const localId = await db.categories.add(cat);
-                if (typeof cat.remoteId === 'number') remoteToLocalCatMap.set(cat.remoteId as number, localId);
+                if (typeof cat.remoteId === 'number') remoteToLocalCatMap.set(cat.remoteId as number, localId as number);
             }
 
             if (menuRes.data) {
