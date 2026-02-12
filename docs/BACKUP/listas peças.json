@@ -1,0 +1,155 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "pecas",
+      "menu_name": "TIPOS DE PEÇAS",
+      "description": "Quais formatos de peças para criação da cena?",
+      "options": [
+        {
+          "label": "Impresso",
+          "value": "impresso",
+          "sub_options": [
+            {"label": "Cartaz",              "value": "cartaz"             },
+            {"label": "Pôster",              "value": "poster"             },
+            {"label": "Flyer",               "value": "flyer"              },
+            {"label": "Panfleto",            "value": "panfleto"           },
+            {"label": "Folder",              "value": "folder"             },
+            {"label": "Catálogo",            "value": "catalogo"           },
+            {"label": "Revista",             "value": "revista"            },
+            {"label": "Jornal (Anúncio)",    "value": "jornal_anuncio"     },
+            {"label": "Outdoor",             "value": "outdoor"            },
+            {"label": "Painel Publicitário", "value": "painel_publicitario"},
+            {"label": "Banner Impresso",     "value": "banner_impresso"    },
+            {"label": "Faixa",               "value": "faixa"              },
+            {"label": "Backdrop",            "value": "backdrop"           },
+            {"label": "Adesivo",             "value": "adesivo"            },
+            {"label": "Etiqueta",            "value": "etiqueta"           },
+            {"label": "Embalagem",           "value": "embalagem"          },
+            {"label": "Rótulo",              "value": "rotulo"             },
+            {"label": "Display de PDV",      "value": "display_pdv"        },
+            {"label": "Totem",               "value": "totem"              },
+            {"label": "Wobbler",             "value": "wobbler"            },
+            {"label": "Stopper",             "value": "stopper"            }
+          ]
+        },
+        {
+          "label": "Papelaria",
+          "value": "papelaria",
+          "sub_options": [
+            {"label": "Cartão de Visita", "value": "cartao_visita"},
+            {"label": "Papel Timbrado", "value": "papel_timbrado"},
+            {"label": "Envelope", "value": "envelope"},
+            {"label": "Pasta Institucional", "value": "pasta_institucional"},
+            {"label": "Bloco de Notas", "value": "bloco_notas"},
+            {"label": "Crachá", "value": "cracha"},
+            {"label": "Assinatura de E-mail", "value": "assinatura_email"},
+            {
+              "label": "Cartão de Agradecimento",
+              "value": "cartao_agradecimento"
+            },
+            {"label": "Ficha Técnica", "value": "ficha_tecnica"},
+            {"label": "Ficha de Produto", "value": "ficha_produto"},
+            {"label": "Manual de Marca", "value": "manual_marca"},
+            {"label": "Guia Rápido", "value": "guia_rapido"},
+            {"label": "Certificado", "value": "certificado"}
+          ]
+        },
+        {
+          "label": "Web / Digital",
+          "value": "web",
+          "sub_options": [
+            {"label": "Banner para Site", "value": "banner_site"},
+            {"label": "Banner Animado", "value": "banner_animado"},
+            {"label": "Pop-up", "value": "popup"},
+            {"label": "Landing Page", "value": "landing_page"},
+            {"label": "Página Institucional", "value": "pagina_institucional"},
+            {"label": "Hotsite", "value": "hotsite"},
+            {"label": "Email Marketing", "value": "email_marketing"},
+            {"label": "Newsletter", "value": "newsletter"},
+            {
+              "label": "Assinatura de E-mail Digital",
+              "value": "assinatura_email_digital"
+            },
+            {"label": "Apresentação Digital", "value": "apresentacao_digital"},
+            {"label": "PDF Institucional", "value": "pdf_institucional"},
+            {"label": "E-book", "value": "ebook"},
+            {"label": "Whitepaper", "value": "whitepaper"},
+            {"label": "Infográfico", "value": "infografico"},
+            {"label": "Case Digital", "value": "case_digital"},
+            {"label": "Media Kit Digital", "value": "media_kit_digital"}
+          ]
+        },
+        {
+          "label": "Social Media",
+          "value": "social_media",
+          "sub_options": [
+            {"label": "Post Estático",       "value": "post_estatico"      },
+            {"label": "Post Carrossel",      "value": "post_carrossel"     },
+            {"label": "Post Motion",         "value": "post_motion"        },
+            {"label": "Story",               "value": "story"              },
+            {"label": "Story Animado",       "value": "story_animado"      },
+            {"label": "Reels",               "value": "reels"              },
+            {"label": "Vídeo Curto",         "value": "video_curto"        },
+            {"label": "Capa de Perfil",      "value": "capa_perfil"        },
+            {"label": "Capa de Destaque",    "value": "capa_destaque"      },
+            {"label": "Anúncio Patrocinado", "value": "anuncio_patrocinado"},
+            {"label": "Criativo para Ads",   "value": "criativo_ads"       },
+            {"label": "Thumbnail",           "value": "thumbnail"          },
+            {"label": "GIF",                 "value": "gif"                },
+            {"label": "Sticker",             "value": "sticker"            }
+          ]
+        },
+        {
+          "label": "Vídeo / Audiovisual",
+          "value": "video",
+          "sub_options": [
+            {"label": "Vídeo Institucional",  "value": "video_institucional"},
+            {"label": "Vídeo Manifesto",      "value": "video_manifesto"    },
+            {"label": "Vídeo Publicitário",   "value": "video_publicitario" },
+            {"label": "Comercial para TV",    "value": "comercial_tv"       },
+            {"label": "Vídeo para Internet",  "value": "video_internet"     },
+            {"label": "Vídeo Vertical",       "value": "video_vertical"     },
+            {"label": "Vídeo Horizontal",     "value": "video_horizontal"   },
+            {"label": "Vídeo Quadrado",       "value": "video_quadrado"     },
+            {"label": "Vídeo de Produto",     "value": "video_produto"      },
+            {"label": "Vídeo Demonstrativo",  "value": "video_demonstrativo"},
+            {"label": "Vídeo Explicativo",    "value": "video_explicativo"  },
+            {"label": "Vídeo Educativo",      "value": "video_educativo"    },
+            {"label": "Vídeo de Treinamento", "value": "video_treinamento"  },
+            {"label": "Vídeo para Evento",    "value": "video_evento"       },
+            {"label": "Vídeo de Bastidores",  "value": "video_bastidores"   },
+            {"label": "Motion Graphics",      "value": "motion_graphics"    },
+            {"label": "Animação 2D",          "value": "animacao_2d"        },
+            {"label": "Animação 3D",          "value": "animacao_3d"        }
+          ]
+        },
+        {
+          "label": "Criação / Conteúdo",
+          "value": "criacao",
+          "sub_options": [
+            {"label": "Roteiro", "value": "roteiro"},
+            {"label": "Roteiro de Vídeo", "value": "roteiro_video"},
+            {"label": "Roteiro para Reels", "value": "roteiro_reels"},
+            {"label": "Roteiro para Stories", "value": "roteiro_stories"},
+            {"label": "Argumento Criativo", "value": "argumento_criativo"},
+            {"label": "Conceito Criativo", "value": "conceito_criativo"},
+            {"label": "Ideia de Campanha", "value": "ideia_campanha"},
+            {"label": "Linha Criativa", "value": "linha_criativa"},
+            {"label": "Naming", "value": "naming"},
+            {"label": "Slogan", "value": "slogan"},
+            {"label": "Tagline", "value": "tagline"},
+            {"label": "Texto Publicitário", "value": "texto_publicitario"},
+            {"label": "Copy para Anúncios", "value": "copy_anuncios"},
+            {
+              "label": "Copy para Redes Sociais",
+              "value": "copy_redes_sociais"
+            },
+            {"label": "Storyboard", "value": "storyboard"},
+            {"label": "Moodboard", "value": "moodboard"}
+          ]
+        }
+      ]
+    }
+  ]
+}
