@@ -1,3 +1,27 @@
 # Local Netlify folder
 .netlify
 node_modules
+
+# Environment Variables
+.env
+.env.local
+.env.*
+
+# OS Artifacts
+.DS_Store
+
+# Build Artifacts
+dis/
+dist/
+build/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor Config
+.vscode/
+.idea/
