@@ -5,6 +5,7 @@
 ### Core
 
 - **Database** (`src/db/database.ts`): IndexedDB abstraction using Dexie. Handles persistence for Prompts, Categories, and Menus.
+- **Sync Service** (`src/services/syncService.ts`): Handles data synchronization logic.
 - **Models** (`src/models/types.ts`): TypeScript interfaces for the entire application (Category, Prompt, Menu, ContextMenu).
 - **Draft System**: Persistent rascunho (draft) mechanism in `EditorPage.tsx` using `localStorage` to prevent data loss during editing.
 
@@ -26,6 +27,7 @@
 - **SEO** (`src/components/SEO.tsx`): Meta tag management for search engine optimization.
 - **ImportExportModal** (`src/components/ImportExportModal.tsx`): Global data management.
 - **ImportMenusModal** (`src/components/ImportMenusModal.tsx`): Specific JSON import for context menus.
+- **CloudSyncItem** (`src/components/CloudSyncItem.tsx`): Component handling cloud synchronization UI items.
 
 ### Utils
 

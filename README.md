@@ -119,7 +119,7 @@ O coração da aplicação. Campos disponíveis:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/prompt-app.git
+git clone https://github.com/danilonovaisv/PROMPT-APP.git
 cd prompt-app
 
 # 2. Instale as dependências
