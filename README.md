@@ -44,16 +44,16 @@ O **Prompt App** é uma ferramenta local-first para engenharia de prompts profis
 
 ## ⚡ Tech Stack
 
-| Camada | Tecnologia | Versão |
-| :--- | :--- | :--- |
-| **Framework** | React | 19.x |
-| **Linguagem** | TypeScript | 5.9 |
-| **Build Tool** | Vite | 7.3 |
-| **Banco de Dados** | IndexedDB (via Dexie.js) | 4.x |
-| **Roteamento** | React Router DOM | 7.x |
-| **Ícones** | Lucide React | 0.563+ |
-| **Tipografia** | Inter (Google Fonts) | — |
-| **Estilização** | Vanilla CSS (sem Tailwind) | — |
+| Camada             | Tecnologia                 | Versão |
+| :----------------- | :------------------------- | :----- |
+| **Framework**      | React                      | 19.x   |
+| **Linguagem**      | TypeScript                 | 5.9    |
+| **Build Tool**     | Vite                       | 7.3    |
+| **Banco de Dados** | IndexedDB (via Dexie.js)   | 4.x    |
+| **Roteamento**     | React Router DOM           | 7.x    |
+| **Ícones**         | Lucide React               | 0.563+ |
+| **Tipografia**     | Inter (Google Fonts)       | —      |
+| **Estilização**    | Vanilla CSS (sem Tailwind) | —      |
 
 > **Nota:** Nenhum backend é necessário. Todos os dados são persistidos localmente no navegador via IndexedDB.
 
@@ -78,17 +78,17 @@ O **Prompt App** é uma ferramenta local-first para engenharia de prompts profis
 
 O coração da aplicação. Campos disponíveis:
 
-| Campo | Descrição |
-| :--- | :--- |
-| **Título** | Nome identificador do prompt |
-| **System Role** | Instrução de personalidade para o LLM |
-| **Tarefa** | O que o modelo deve fazer |
-| **Contexto** | Informações de background relevantes |
+| Campo                 | Descrição                                           |
+| :-------------------- | :-------------------------------------------------- |
+| **Título**            | Nome identificador do prompt                        |
+| **System Role**       | Instrução de personalidade para o LLM               |
+| **Tarefa**            | O que o modelo deve fazer                           |
+| **Contexto**          | Informações de background relevantes                |
 | **Menus de Contexto** | Seleção hierárquica de Tom, Público, Idioma, Estilo |
-| **Restrições** | Lista de regras que o modelo DEVE seguir |
-| **Negative Prompt** | O que o modelo NÃO deve fazer |
-| **Schema de Saída** | Formato (texto/json/markdown) e estrutura esperada |
-| **Exemplos Few-Shot** | Pares de entrada/saída para guiar o modelo |
+| **Restrições**        | Lista de regras que o modelo DEVE seguir            |
+| **Negative Prompt**   | O que o modelo NÃO deve fazer                       |
+| **Schema de Saída**   | Formato (texto/json/markdown) e estrutura esperada  |
+| **Exemplos Few-Shot** | Pares de entrada/saída para guiar o modelo          |
 
 ### 🧩 Menus de Contexto Hierárquicos (v2)
 
@@ -113,7 +113,7 @@ O coração da aplicação. Campos disponíveis:
 ### Pré-requisitos
 
 - **Node.js** ≥ 18.x
-- **npm** ≥ 9.x (ou equivalente: pnpm, yarn, bun)
+- **pnpm** ≥ 9.x (ou equivalente: npm, yarn, bun)
 
 ### Instalação
 
@@ -123,10 +123,10 @@ git clone https://github.com/danilonovaisv/PROMPT-APP.git
 cd prompt-app
 
 # 2. Instale as dependências
-npm install
+pnpm install
 
 # 3. Inicie o servidor de desenvolvimento
-npm run dev
+pnpm run dev
 ```
 
 A aplicação estará disponível em **<http://localhost:5173/>**
@@ -135,10 +135,10 @@ A aplicação estará disponível em **<http://localhost:5173/>**
 
 ```bash
 # Compila TypeScript + gera bundle otimizado
-npm run build
+pnpm run build
 
 # Preview local do build de produção
-npm run preview
+pnpm run preview
 ```
 
 O output é gerado na pasta `dist/`.
@@ -314,14 +314,8 @@ prompt-app/
       }
     }
   },
-  "constraints": [
-    "Máximo de 500 palavras",
-    "Incluir CTA no final"
-  ],
-  "negative_prompt": [
-    "Não usar jargões técnicos",
-    "Evitar tom agressivo"
-  ],
+  "constraints": ["Máximo de 500 palavras", "Incluir CTA no final"],
+  "negative_prompt": ["Não usar jargões técnicos", "Evitar tom agressivo"],
   "output_schema": {
     "formato": "texto",
     "estrutura": "Assunto, Saudação, Corpo (3 parágrafos), CTA, Assinatura"
@@ -377,35 +371,35 @@ A v2.0 introduziu um sistema de menus totalmente customizáveis:
 
 ### Menus Pré-configurados
 
-| Menu | Opções | Sub-opções (exemplos) |
-| :--- | :--- | :--- |
-| **Tom** | Formal, Informal, Técnico, Didático, Persuasivo, Neutro | Formal → Corporativo, Acadêmico, Jurídico |
+| Menu        | Opções                                                                          | Sub-opções (exemplos)                        |
+| :---------- | :------------------------------------------------------------------------------ | :------------------------------------------- |
+| **Tom**     | Formal, Informal, Técnico, Didático, Persuasivo, Neutro                         | Formal → Corporativo, Acadêmico, Jurídico    |
 | **Público** | Desenvolvedores, Executivos, Estudantes, Público Geral, Especialistas, Crianças | Desenvolvedores → Júnior, Sênior, Full Stack |
-| **Idioma** | Português (BR), Inglês, Espanhol, Francês, Alemão | Inglês → Americano, Britânico |
-| **Estilo** | Conciso, Detalhado, Passo a passo, Lista, Narrativo, Comparativo | Narrativo → Storytelling, Metáforas |
+| **Idioma**  | Português (BR), Inglês, Espanhol, Francês, Alemão                               | Inglês → Americano, Britânico                |
+| **Estilo**  | Conciso, Detalhado, Passo a passo, Lista, Narrativo, Comparativo                | Narrativo → Storytelling, Metáforas          |
 
 ### Modelo de Dados
 
 ```typescript
 interface ContextMenu {
-    id?: number;
-    menuId: string;         // slug único ("tom", "frameworks", etc.)
-    menuName: string;       // nome legível ("Tom", "Frameworks")
-    description: string;    // propósito do menu
-    options: ContextMenuOption[];
-    createdAt: Date;
-    updatedAt: Date;
+  id?: number;
+  menuId: string; // slug único ("tom", "frameworks", etc.)
+  menuName: string; // nome legível ("Tom", "Frameworks")
+  description: string; // propósito do menu
+  options: ContextMenuOption[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface ContextMenuOption {
-    label: string;          // rótulo visível
-    value: string;          // valor interno
-    subOptions: ContextMenuSubOption[];
+  label: string; // rótulo visível
+  value: string; // valor interno
+  subOptions: ContextMenuSubOption[];
 }
 
 interface ContextMenuSubOption {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 ```
 
@@ -428,7 +422,7 @@ O projeto já inclui `netlify.toml` pré-configurado:
 
 ```toml
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist"
 
 [[redirects]]
@@ -447,7 +441,7 @@ O projeto já inclui `netlify.toml` pré-configurado:
 
 ```bash
 # Instalar CLI do Netlify
-npm install -g netlify-cli
+pnpm install -g netlify-cli
 
 # Login
 netlify login
@@ -460,7 +454,7 @@ netlify deploy --prod --dir=dist
 
 ```bash
 # Instalar CLI do Vercel
-npm install -g vercel
+pnpm install -g vercel
 
 # Deploy
 vercel --prod
@@ -478,7 +472,7 @@ vercel --prod
 
 ```bash
 # Build
-npm run build
+pnpm run build
 
 # Deploy manual (ou usar github-pages action)
 npx gh-pages -d dist
@@ -488,10 +482,10 @@ npx gh-pages -d dist
 
 ```ts
 export default defineConfig({
-    base: '/prompt-app/',
-    plugins: [react()],
-    // ...
-})
+  base: "/prompt-app/",
+  plugins: [react()],
+  // ...
+});
 ```
 
 ### Docker
@@ -500,10 +494,10 @@ export default defineConfig({
 # Dockerfile
 FROM node:20-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
@@ -533,12 +527,12 @@ docker run -p 3000:80 prompt-app
 
 ## 📜 Scripts Disponíveis
 
-| Script | Comando | Descrição |
-| :--- | :--- | :--- |
-| **Dev** | `npm run dev` | Servidor de desenvolvimento com HMR (Vite) |
-| **Build** | `npm run build` | Type-check + bundle de produção |
-| **Preview** | `npm run preview` | Serve o build de produção localmente |
-| **Type Check** | `npx tsc --noEmit` | Verifica tipos sem emitir arquivos |
+| Script         | Comando            | Descrição                                  |
+| :------------- | :----------------- | :----------------------------------------- |
+| **Dev**        | `pnpm run dev`     | Servidor de desenvolvimento com HMR (Vite) |
+| **Build**      | `pnpm run build`   | Type-check + bundle de produção            |
+| **Preview**    | `pnpm run preview` | Serve o build de produção localmente       |
+| **Type Check** | `npx tsc --noEmit` | Verifica tipos sem emitir arquivos         |
 
 ---
 
@@ -548,18 +542,18 @@ docker run -p 3000:80 prompt-app
 
 As variáveis CSS estão definidas em `src/index.css` sob `:root`:
 
-| Token | Descrição | Default |
-| :--- | :--- | :--- |
-| `--color-primary` | Cor primária de ação | `#0048ff` |
-| `--color-bg-void` | Fundo principal (void) | `#040013` |
-| `--color-bg-card` | Fundo de cards | `rgba(255, 255, 255, 0.03)` |
-| `--color-border` | Bordas | `rgba(255, 255, 255, 0.08)` |
-| `--color-text-primary` | Texto principal | `#f0f0f0` |
-| `--color-text-secondary` | Texto secundário | `#8b8b9e` |
-| `--color-success` | Feedback positivo | `#00d68f` |
-| `--color-danger` | Feedback negativo | `#ff4466` |
-| `--radius-md` | Border radius padrão | `12px` |
-| `--transition-fast` | Transição rápida | `0.15s ease` |
+| Token                    | Descrição              | Default                     |
+| :----------------------- | :--------------------- | :-------------------------- |
+| `--color-primary`        | Cor primária de ação   | `#0048ff`                   |
+| `--color-bg-void`        | Fundo principal (void) | `#040013`                   |
+| `--color-bg-card`        | Fundo de cards         | `rgba(255, 255, 255, 0.03)` |
+| `--color-border`         | Bordas                 | `rgba(255, 255, 255, 0.08)` |
+| `--color-text-primary`   | Texto principal        | `#f0f0f0`                   |
+| `--color-text-secondary` | Texto secundário       | `#8b8b9e`                   |
+| `--color-success`        | Feedback positivo      | `#00d68f`                   |
+| `--color-danger`         | Feedback negativo      | `#ff4466`                   |
+| `--radius-md`            | Border radius padrão   | `12px`                      |
+| `--transition-fast`      | Transição rápida       | `0.15s ease`                |
 
 ### Categorias Iniciais
 
@@ -577,7 +571,7 @@ Os menus seed (Tom, Público, Idioma, Estilo) também estão em `src/db/database
 
 ```bash
 node --version   # ≥ 18.x
-npm --version    # ≥ 9.x
+pnpm --version    # ≥ 9.x
 ```
 
 ### Configuração do Editor
@@ -587,9 +581,9 @@ npm --version    # ≥ 9.x
 ```json
 // .vscode/settings.json
 {
-    "editor.formatOnSave": true,
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.formatOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
 ```
 
@@ -617,21 +611,23 @@ resolve: {
 
 O IndexedDB é gerenciado pelo [Dexie.js](https://dexie.org/). As tabelas são:
 
-| Tabela | Campos Indexados | Descrição |
-| :--- | :--- | :--- |
-| `categories` | `++id, name, createdAt` | Categorias de prompts |
-| `prompts` | `++id, categoryId, title, createdAt, updatedAt` | Prompts completos |
-| `menuOptions` | `++id, menuKey, value` | Opções de menu (v1, legado) |
-| `contextMenus` | `++id, menuId, menuName, createdAt` | Menus hierárquicos (v2) |
+| Tabela         | Campos Indexados                                | Descrição                   |
+| :------------- | :---------------------------------------------- | :-------------------------- |
+| `categories`   | `++id, name, createdAt`                         | Categorias de prompts       |
+| `prompts`      | `++id, categoryId, title, createdAt, updatedAt` | Prompts completos           |
+| `menuOptions`  | `++id, menuKey, value`                          | Opções de menu (v1, legado) |
+| `contextMenus` | `++id, menuId, menuName, createdAt`             | Menus hierárquicos (v2)     |
 
 **Migrações:** Ao alterar o schema, crie uma nova versão em `database.ts`:
 
 ```ts
-db.version(3).stores({
+db.version(3)
+  .stores({
     // ... schema atualizado
-}).upgrade(async (tx) => {
+  })
+  .upgrade(async (tx) => {
     // ... lógica de migração
-});
+  });
 ```
 
 ---

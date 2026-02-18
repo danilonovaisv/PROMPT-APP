@@ -7,11 +7,11 @@
 
 ## 📋 Pré-requisitos
 
-| Item | Versão Mínima |
-|------|:---:|
-| Node.js | 18+ |
-| npm | 9+ |
-| Git | 2.20+ |
+| Item    | Versão Mínima |
+| ------- | :-----------: |
+| Node.js |      18+      |
+| pnpm    |      9+       |
+| Git     |     2.20+     |
 
 ---
 
@@ -21,10 +21,10 @@ Antes de qualquer deploy, garanta que o build está limpo:
 
 ```bash
 # Instalar dependências
-npm install
+pnpm install
 
 # Type-check + build de produção
-npm run build
+pnpm run build
 ```
 
 Se finalizar com `✓ built in Xs`, está tudo certo.
@@ -33,7 +33,7 @@ A pasta `dist/` conterá os arquivos estáticos prontos para deploy.
 Para testar localmente o build de produção:
 
 ```bash
-npm run preview
+pnpm run preview
 # Abre em http://localhost:4173
 ```
 
@@ -85,7 +85,7 @@ O projeto **já possui** `netlify.toml` configurado. É a opção mais simples.
 2. Clique em **"Add new site" → "Import an existing project"**
 3. Conecte seu repositório GitHub
 4. As configurações são auto-detectadas do `netlify.toml`:
-   - **Build command:** `npm run build`
+   - **Build command:** `pnpm run build`
    - **Publish directory:** `dist`
 5. Clique em **"Deploy site"**
 
@@ -93,7 +93,7 @@ O projeto **já possui** `netlify.toml` configurado. É a opção mais simples.
 
 ```bash
 # Instalar Netlify CLI
-npm install -g netlify-cli
+pnpm install -g netlify-cli
 
 # Login
 netlify login
@@ -112,7 +112,7 @@ netlify deploy --prod
 
 ```toml
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist"
 
 [[redirects]]
@@ -130,7 +130,7 @@ netlify deploy --prod
 1. Acesse [vercel.com](https://vercel.com) e importe o repositório
 2. Configure:
    - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
+   - **Build Command:** `pnpm run build`
    - **Output Directory:** `dist`
 3. Clique em **Deploy**
 
@@ -138,16 +138,14 @@ Para suporte ao React Router, crie o arquivo `vercel.json`:
 
 ```json
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
 ```
 
 #### Via CLI
 
 ```bash
-npm install -g vercel
+pnpm install -g vercel
 vercel login
 vercel          # preview
 vercel --prod   # produção
@@ -163,14 +161,14 @@ Edite `vite.config.ts` com o `base` correto:
 
 ```ts
 export default defineConfig({
-    plugins: [react()],
-    base: '/prompt-app/',  // ← nome do repositório
-    resolve: {
-        alias: {
-            '@': '/src',
-        },
+  plugins: [react()],
+  base: "/prompt-app/", // ← nome do repositório
+  resolve: {
+    alias: {
+      "@": "/src",
     },
-})
+  },
+});
 ```
 
 #### Deploy Manual
@@ -205,10 +203,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "pnpm"
 
-      - run: npm ci
-      - run: npm run build
+      - run: pnpm install
+      - run: pnpm run build
 
       - uses: actions/configure-pages@v4
       - uses: actions/upload-pages-artifact@v3
@@ -228,7 +226,7 @@ jobs:
 
 ```bash
 # Instalar Firebase CLI
-npm install -g firebase-tools
+pnpm install -g firebase-tools
 
 # Login e inicializar
 firebase login
@@ -240,7 +238,7 @@ firebase init hosting
 # - Overwrite index.html: No
 
 # Build + deploy
-npm run build
+pnpm run build
 firebase deploy --only hosting
 ```
 
@@ -252,7 +250,7 @@ firebase deploy --only hosting
 2. Clique em **"Create application" → "Pages" → "Connect to Git"**
 3. Selecione o repositório
 4. Configure:
-   - **Build command:** `npm run build`
+   - **Build command:** `pnpm run build`
    - **Build output directory:** `dist`
 5. Deploy
 
@@ -277,8 +275,8 @@ Todas as plataformas acima suportam domínio custom. O fluxo geral é:
 
 ## 5️⃣ Checklist Pré-Deploy
 
-- [ ] `npm run build` compila sem erros
-- [ ] `npm run preview` funciona localmente
+- [ ] `pnpm run build` compila sem erros
+- [ ] `pnpm run preview` funciona localmente
 - [ ] Todas as rotas funcionam (Home, Categorias, Editor, Menus)
 - [ ] Import/Export de JSON funciona corretamente
 - [ ] `.gitignore` exclui `node_modules/`, `dist/`, `.agent/`

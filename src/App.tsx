@@ -15,6 +15,7 @@ import MenuManagerPage from '@/pages/MenuManagerPage';
 import { useEffect } from 'react';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
+import { setupAutoSync } from '@/services/autoSync';
 
 export default function App() {
     const [showImportExport, setShowImportExport] = useState(false);
@@ -29,6 +30,9 @@ export default function App() {
             setTimeout(() => {
                 saveLocalBackup();
             }, 2000); // Delay para garantir hidratação completa
+
+            // 3. Inicializar Auto-Sync (Push)
+            setupAutoSync();
         };
 
         init();

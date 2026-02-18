@@ -165,52 +165,88 @@ export const downloadFromCloud = async () => {
     // O pedido original era "diagnose and fix persistence". Sync é bidirecional idealmente.
     // Mas a função existente fazia clear(). Vou manter a lógica mas mapear os campos corretamente.
 
-    await db.transaction('rw', [db.categories, db.prompts, db.contextMenus], async () => {
-        await db.categories.clear();
-        await db.prompts.clear();
-        await db.contextMenus.clear();
+    // 4. Estratégia "Smart Merge": Atualizar Localmente sem destruir dados não sincronizados
+    console.log('☁️ Iniciando Smart Merge (Nuvem -> Local)...');
 
-        // Mapear snake_case -> camelCase e salvar remoteId
+    await db.transaction('rw', [db.categories, db.prompts, db.contextMenus], async () => {
+        // --- A. Sincronizar Categorias ---
+        const remoteToLocalCatMap = new Map<number, number>();
 
         if (catRes.data) {
-            const categories = catRes.data.map((c: any) => ({
-                remoteId: c.id,
-                name: c.name,
-                icon: c.icon,
-                color: c.color,
-                createdAt: new Date(c.created_at) // Supabase retorna string ISO
-            }));
-            // Insert e manter mapping para prompts
-            // Como insert() gera novo id local, precisamos pegar esses IDs para os prompts usarem
-            // Mas prompts vem com category_id remoto.
-            // Map remoteId -> localId
+            for (const c of catRes.data) {
+                // Tenta encontrar categoria local pelo remoteId
+                const existing = await db.categories.where('remoteId').equals(c.id).first();
 
-            const remoteToLocalCatMap = new Map<number, number>();
+                const catData = {
+                    remoteId: c.id,
+                    name: c.name,
+                    icon: c.icon,
+                    color: c.color,
+                    createdAt: new Date(c.created_at) // Supabase retorna string ISO
+                };
 
-            for (const cat of categories) {
-                const localId = await db.categories.add(cat);
-                if (typeof cat.remoteId === 'number') remoteToLocalCatMap.set(cat.remoteId as number, localId as number);
+                let localId: number;
+
+                if (existing && existing.id) {
+                    // Atualiza existente
+                    await db.categories.update(existing.id, catData);
+                    localId = existing.id;
+                } else {
+                    // Cria nova
+                    localId = await db.categories.add(catData) as number;
+                }
+
+                remoteToLocalCatMap.set(c.id, localId);
             }
+        }
 
-            if (menuRes.data) {
-                const menus = menuRes.data.map((m: any) => ({
+        // --- B. Sincronizar Menus ---
+        if (menuRes.data) {
+            for (const m of menuRes.data) {
+                const existing = await db.contextMenus.where('remoteId').equals(m.id).first();
+                // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
+                // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
+                const existingBySlug = !existing
+                    ? await db.contextMenus.where('menuId').equals(m.menu_id).first()
+                    : null;
+
+                const targetId = existing?.id || existingBySlug?.id;
+
+                const menuData = {
                     remoteId: m.id,
                     menuId: m.menu_id,
                     menuName: m.menu_name,
                     description: m.description,
-                    options: m.options,
+                    options: m.options, // JSONB vem direto
                     createdAt: new Date(m.created_at),
                     updatedAt: new Date(m.updated_at)
-                }));
-                await db.contextMenus.bulkAdd(menus);
-            }
+                };
 
-            if (promptRes.data) {
-                const prompts = promptRes.data.map((p: any) => ({
+                if (targetId) {
+                    await db.contextMenus.update(targetId, menuData);
+                } else {
+                    await db.contextMenus.add(menuData);
+                }
+            }
+        }
+
+        // --- C. Sincronizar Prompts ---
+        if (promptRes.data) {
+            for (const p of promptRes.data) {
+                const existing = await db.prompts.where('remoteId').equals(p.id).first();
+
+                // Resolver Categoria Local
+                // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente
+                // Se não acharmos (ex: categoria deletada localmente mas existe na nuvem), 
+                // o mapa remoteToLocalCatMap deve resolver se acabamos de sincronizar as categorias.
+                let localCategoryId = 0;
+                if (p.category_id && remoteToLocalCatMap.has(p.category_id)) {
+                    localCategoryId = remoteToLocalCatMap.get(p.category_id)!;
+                }
+
+                const promptData = {
                     remoteId: p.id,
-                    categoryId: (p.category_id && remoteToLocalCatMap.has(p.category_id))
-                        ? remoteToLocalCatMap.get(p.category_id)!
-                        : 0, // Fallback to 0 if category not found or null
+                    categoryId: localCategoryId,
                     title: p.title,
                     systemRole: p.system_role,
                     task: p.task,
@@ -224,11 +260,17 @@ export const downloadFromCloud = async () => {
                     fewShotExamples: p.few_shot_examples,
                     createdAt: new Date(p.created_at),
                     updatedAt: new Date(p.updated_at)
-                }));
-                await db.prompts.bulkAdd(prompts);
+                };
+
+                if (existing && existing.id) {
+                    await db.prompts.update(existing.id, promptData);
+                } else {
+                    await db.prompts.add(promptData);
+                }
             }
         }
     });
 
+    console.log('✅ Smart Merge concluído!');
     return true;
 };

@@ -95,8 +95,9 @@ create policy "Usuários gerenciam seus próprios prompts"
 ## 3. Próximos Passos
 
 - **Autenticação**: Habilite os provedores de login (Email, Google, GitHub) no menu **Authentication > Providers**.
-- **Instalação**: Execute `npm install @supabase/supabase-js`.
+- **Instalação**: Execute `pnpm add @supabase/supabase-js`.
 - **Sincronização**: O sistema já está preparado para usar as funções em `src/services/syncService.ts`.
 
 ---
-*Configurado por Antigravity usando Supabase Best Practices.*
+
+_Configurado por Antigravity usando Supabase Best Practices._

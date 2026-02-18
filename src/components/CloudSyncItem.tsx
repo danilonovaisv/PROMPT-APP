@@ -15,16 +15,43 @@ export default function CloudSyncItem() {
     const { showToast } = useToast();
 
     useEffect(() => {
+        // 1. Check session on mount
         supabase.auth.getSession().then(({ data: { session: currentSession } }: any) => {
             setSession(currentSession);
+            if (currentSession) {
+                triggerAutoSync();
+            }
         });
 
+        // 2. Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, newSession: Session | null) => {
             setSession(newSession);
+            // Se acabou de logar (newSession exists), trigger sync
+            if (newSession && !session) {
+                triggerAutoSync();
+            }
         });
 
         return () => subscription.unsubscribe();
     }, []);
+
+    // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
+    const triggerAutoSync = async () => {
+        console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
+        setLoading(true);
+        try {
+            // Primeiro puxamos da nuvem (Smart Merge) para garantir que temos tudo
+            await downloadFromCloud();
+            // Opcional: Poderíamos fazer upload logo sem seguida para garantir consistência total
+            // await syncToCloud(); 
+            showToast('Sincronizado com a nuvem', 'success');
+        } catch (err) {
+            console.error("Auto-sync failed:", err);
+            // Não mostramos toast de erro no auto-sync para não atrapalhar a UX inicial, apenas log
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleLogin = async () => {
         // Para simplificar, usamos o login via Email (o usuário precisará configurar no Supabase)
