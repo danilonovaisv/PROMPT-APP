@@ -12,6 +12,9 @@ import CategoryPage from '@/pages/CategoryPage';
 import CategoryManagerPage from '@/pages/CategoryManagerPage';
 import EditorPage from '@/pages/EditorPage';
 import MenuManagerPage from '@/pages/MenuManagerPage';
+import AboutPage from '@/pages/AboutPage';
+import ContactPage from '@/pages/ContactPage';
+import PrivacyPage from '@/pages/PrivacyPage';
 import { useEffect } from 'react';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
@@ -44,6 +47,9 @@ export default function App() {
                 <Layout onOpenImportExport={() => setShowImportExport(true)}>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
+                        <Route path="/sobre" element={<AboutPage />} />
+                        <Route path="/contato" element={<ContactPage />} />
+                        <Route path="/privacidade" element={<PrivacyPage />} />
                         <Route path="/categoria/:id" element={<CategoryPage />} />
                         <Route path="/categorias" element={<CategoryManagerPage />} />
                         <Route path="/editor/:id" element={<EditorPage />} />

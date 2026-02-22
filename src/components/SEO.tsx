@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 interface SEOProps {
     title?: string;
     description?: string;
@@ -5,11 +7,14 @@ interface SEOProps {
     type?: string;
     image?: string;
     url?: string;
+    twitterCard?: string;
 }
 
 const DEFAULT_TITLE = 'Prompt App — Engenharia de Prompts';
-const DEFAULT_DESC = 'Crie, organize e exporte prompts estruturados para LLMs com engenharia de contexto profissional.';
-const DEFAULT_IMAGE = '/og-image.png';
+const DEFAULT_DESC =
+    'Prompt App permite criar, organizar e exportar prompts estruturados para LLMs com menus de contexto, categorias inteligentes e backup local-first.';
+const DEFAULT_IMAGE = '/PROMPT-APP-LOGO.png';
+const DEFAULT_TWITTER_CARD = 'summary_large_image';
 
 export default function SEO({
     title,
@@ -18,31 +23,56 @@ export default function SEO({
     type = 'website',
     image = DEFAULT_IMAGE,
     url,
+    twitterCard = DEFAULT_TWITTER_CARD,
 }: SEOProps) {
     const siteTitle = title ? `${title} | ${name}` : DEFAULT_TITLE;
 
-    return (
-        <>
-            {/* Standard metadata tags */}
-            <title>{siteTitle}</title>
-            <meta name='description' content={description} />
+    const ensureMeta = (selector: string, attrs: Record<string, string>) => {
+        let element = document.head.querySelector(selector);
+        if (!element) {
+            element = document.createElement('meta');
+            document.head.appendChild(element);
+        }
+        Object.entries(attrs).forEach(([key, value]) => {
+            element!.setAttribute(key, value);
+        });
+    };
 
-            {/* End standard metadata tags */}
+    const ensureLink = (selector: string, attrs: Record<string, string>) => {
+        let element = document.head.querySelector(selector);
+        if (!element) {
+            element = document.createElement('link');
+            document.head.appendChild(element);
+        }
+        Object.entries(attrs).forEach(([key, value]) => {
+            element!.setAttribute(key, value);
+        });
+    };
 
-            {/* Facebook tags */}
-            <meta property="og:type" content={type} />
-            <meta property="og:title" content={siteTitle} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={image} />
-            {url && <meta property="og:url" content={url} />}
-            {/* End Facebook tags */}
+    useEffect(() => {
+        const resolvedUrl = url || `${window.location.origin}${window.location.pathname}`;
+        document.title = siteTitle;
+        ensureMeta('meta[name="description"]', { name: 'description', content: description });
+        ensureMeta('meta[property="og:type"]', { property: 'og:type', content: type });
+        ensureMeta('meta[property="og:title"]', { property: 'og:title', content: siteTitle });
+        ensureMeta('meta[property="og:description"]', {
+            property: 'og:description',
+            content: description,
+        });
+        ensureMeta('meta[property="og:image"]', { property: 'og:image', content: image });
+        ensureMeta('meta[property="og:url"]', { property: 'og:url', content: resolvedUrl });
+        ensureLink('link[rel="canonical"]', { rel: 'canonical', href: resolvedUrl });
+        ensureMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: twitterCard });
+        ensureMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: siteTitle });
+        ensureMeta('meta[name="twitter:description"]', {
+            name: 'twitter:description',
+            content: description,
+        });
+        ensureMeta('meta[name="twitter:image"]', {
+            name: 'twitter:image',
+            content: image,
+        });
+    }, [description, image, siteTitle, twitterCard, type, url]);
 
-            {/* Twitter tags */}
-            <meta name="twitter:creator" content={name} />
-            <meta name="twitter:card" content={type} />
-            <meta name="twitter:title" content={siteTitle} />
-            <meta name="twitter:description" content={description} />
-            {/* End Twitter tags */}
-        </>
-    );
+    return null;
 }

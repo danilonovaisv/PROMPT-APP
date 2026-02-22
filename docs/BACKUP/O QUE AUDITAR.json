@@ -1,0 +1,242 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_de_auditoria",
+      "menu_name": "TIPO DE AUDITORIA (O QUE AUDITAR)",
+      "description": "Selecione os eixos/itens de auditoria a aplicar em cada rota (ordem recomendada: A11y → Performance → Editorial → Motion sutil).",
+      "options": [
+        {
+          "label": "Estrutura (Semântica e Arquitetura)",
+          "value": "estrutura",
+          "sub_options": [
+            {
+              "label": "Semântica: header/nav/main/section/footer",
+              "value": "estrutura_semantica_layout"
+            },
+            {
+              "label": "1x H1 por página + hierarquia H2/H3",
+              "value": "estrutura_headings"
+            },
+            {
+              "label": "Server/Client Components coerentes (App Router)",
+              "value": "estrutura_server_client_boundaries"
+            },
+            {
+              "label": "Separação de concerns (app/components/lib/hooks/config)",
+              "value": "estrutura_concerns"
+            },
+            {
+              "label": "Roteamento e layouts consistentes (public/admin)",
+              "value": "estrutura_layouts_public_admin"
+            }
+          ]
+        },
+        {
+          "label": "UI/UX (Legibilidade e Consistência Visual)",
+          "value": "ui_ux",
+          "sub_options": [
+            {
+              "label": "Grid Ghost: colunas/gutters/largura útil",
+              "value": "uiux_grid_ghost"
+            },
+            {
+              "label": "Margens laterais edge-to-edge sem saltos",
+              "value": "uiux_margens_laterais"
+            },
+            {
+              "label": "Escala tipográfica (hierarquia/contraste)",
+              "value": "uiux_tipografia"
+            },
+            {
+              "label": "Consistência de componentes (botões/inputs/cards)",
+              "value": "uiux_componentes"
+            },
+            {
+              "label": "Estados de UI (loading/empty/error/success)",
+              "value": "uiux_estados"
+            },
+            {
+              "label": "Portfolio Grid: cards mesma altura por linha + preencher 100% horizontal",
+              "value": "uiux_portfolio_cards"
+            }
+          ]
+        },
+        {
+          "label": "Mobile-first (Responsividade Real)",
+          "value": "mobile_first",
+          "sub_options": [
+            {
+              "label": "320px+ sem overflow horizontal",
+              "value": "mobile_overflow_320"
+            },
+            {
+              "label": "Touch targets >= 48x48",
+              "value": "mobile_touch_targets"
+            },
+            {
+              "label": "Layout e tipografia legíveis no mobile",
+              "value": "mobile_legibilidade"
+            },
+            {
+              "label": "Interações por toque (scroll, carrosséis, modais)",
+              "value": "mobile_interacoes_toque"
+            }
+          ]
+        },
+        {
+          "label": "Acessibilidade (WCAG AA)",
+          "value": "acessibilidade",
+          "sub_options": [
+            {
+              "label": "Contraste (AA) em textos e botões",
+              "value": "a11y_contraste"
+            },
+            {
+              "label": "Foco visível + ordem de tabulação",
+              "value": "a11y_focus_tab"
+            },
+            {
+              "label": "Navegação por teclado completa",
+              "value": "a11y_teclado"
+            },
+            {
+              "label": "ARIA apenas quando necessário (correto)",
+              "value": "a11y_aria"
+            },
+            {
+              "label": "Modal: trap de foco + Esc + retorno de foco",
+              "value": "a11y_modal_focus_trap"
+            }
+          ]
+        },
+        {
+          "label": "Motion (Sutil + Reduced Motion)",
+          "value": "motion",
+          "sub_options": [
+            {
+              "label": "Proibir: scale/bounce/rotate em conteúdo",
+              "value": "motion_proibir_transformacoes"
+            },
+            {
+              "label": "Permitir: opacity/blur/translateY (<= 18px)",
+              "value": "motion_permitidos"
+            },
+            {
+              "label": "prefers-reduced-motion respeitado (desligar parallax/3D)",
+              "value": "motion_reduced_motion"
+            },
+            {
+              "label": "Lenis/scroll suave sem prejudicar acessibilidade",
+              "value": "motion_lenis_safe"
+            }
+          ]
+        },
+        {
+          "label": "Performance (Core Web Vitals + peso)",
+          "value": "performance",
+          "sub_options": [
+            {"label": "Peso inicial < 2MB", "value": "perf_peso_inicial"},
+            {"label": "FCP < 2s", "value": "perf_fcp"},
+            {"label": "LCP < 2.5s", "value": "perf_lcp"},
+            {"label": "TTI < 5s (3G)", "value": "perf_tti_3g"},
+            {"label": "CLS < 0.1", "value": "perf_cls"},
+            {
+              "label": "Lighthouse > 90 (páginas principais)",
+              "value": "perf_lighthouse"
+            },
+            {
+              "label": "Imagens (next/image, sizing, lazy, formatos)",
+              "value": "perf_imagens"
+            },
+            {
+              "label": "JS/CSS: code-splitting e evitar hidratação desnecessária",
+              "value": "perf_bundle_hydration"
+            },
+            {
+              "label": "R3F/Three: não bloquear conteúdo; carregar sob demanda",
+              "value": "perf_three_guardrails"
+            }
+          ]
+        },
+        {
+          "label": "Funcionalidade (Navegação e Comportamentos Críticos)",
+          "value": "funcionalidade",
+          "sub_options": [
+            {
+              "label": "Navegação entre rotas (header/links)",
+              "value": "func_nav_links"
+            },
+            {
+              "label": "Abertura de páginas e rotas protegidas (/admin)",
+              "value": "func_admin_protected_routes"
+            },
+            {
+              "label": "Portfolio: card abre modal (sem landing)",
+              "value": "func_portfolio_modal_sem_landing"
+            },
+            {
+              "label": "Portfolio: card abre /projects/[slug] (com landing)",
+              "value": "func_portfolio_link_com_landing"
+            },
+            {
+              "label": "Fechamento de modal (Esc/click fora/botão)",
+              "value": "func_modal_close"
+            },
+            {
+              "label": "CRUD Admin: criar/editar/publish e refletir no público",
+              "value": "func_admin_crud_publish"
+            }
+          ]
+        },
+        {
+          "label": "SEO Técnico (quando aplicável)",
+          "value": "seo",
+          "sub_options": [
+            {
+              "label": "Metadata (title/description) por rota",
+              "value": "seo_metadata"
+            },
+            {"label": "Canonical", "value": "seo_canonical"},
+            {"label": "Open Graph/Twitter Cards", "value": "seo_og"},
+            {"label": "JSON-LD (quando fizer sentido)", "value": "seo_jsonld"},
+            {
+              "label": "Robots/sitemap (se existir no projeto)",
+              "value": "seo_robots_sitemap"
+            }
+          ]
+        },
+        {
+          "label": "Fluxos E2E (Prioridade Máxima)",
+          "value": "e2e_fluxos",
+          "sub_options": [
+            {
+              "label": "Header: / → /sobre → /portfolio → #contact",
+              "value": "e2e_header_nav"
+            },
+            {
+              "label": "/portfolio: modal quando não há landing vinculada",
+              "value": "e2e_portfolio_modal"
+            },
+            {
+              "label": "/portfolio: abre /projects/[slug] quando há landing vinculada",
+              "value": "e2e_portfolio_project_link"
+            },
+            {
+              "label": "Modal: Esc + trap de foco + retorno de foco",
+              "value": "e2e_modal_a11y"
+            },
+            {
+              "label": "Admin: criar/editar landing page e visualizar pública",
+              "value": "e2e_admin_landing_publish"
+            },
+            {
+              "label": "Admin: publicar trabalho e validar visibilidade em Home/Portfólio",
+              "value": "e2e_admin_trabalho_publish"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

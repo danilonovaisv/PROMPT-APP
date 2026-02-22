@@ -3,7 +3,7 @@
    ====================================================== */
 
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import {
@@ -26,20 +26,17 @@ interface LayoutProps {
 
 export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
 
-    const isActive = (path: string) => location.pathname === path;
-
-    const navTo = (path: string) => {
-        navigate(path);
-        setSidebarOpen(false);
-    };
+    const navItemClass = ({ isActive }: { isActive: boolean }) =>
+        `app-sidebar__nav-item ${isActive ? 'app-sidebar__nav-item--active' : ''}`;
 
     return (
         <div className="app-layout">
+            <a className="skip-link" href="#main-content">
+                Pular para o conteúdo
+            </a>
             {/* Mobile toggle */}
             <button
                 className="mobile-toggle"
@@ -58,41 +55,45 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                 <nav className="app-sidebar__nav">
                     {/* Navegação principal */}
-                    <button
-                        className={`app-sidebar__nav-item ${isActive('/') ? 'app-sidebar__nav-item--active' : ''}`}
-                        onClick={() => navTo('/')}
+                    <NavLink
+                        to="/"
+                        className={navItemClass}
+                        onClick={() => setSidebarOpen(false)}
                     >
                         <Home size={18} />
                         Início
-                    </button>
+                    </NavLink>
 
-                    <button
-                        className={`app-sidebar__nav-item ${isActive('/categorias') ? 'app-sidebar__nav-item--active' : ''}`}
-                        onClick={() => navTo('/categorias')}
+                    <NavLink
+                        to="/categorias"
+                        className={navItemClass}
+                        onClick={() => setSidebarOpen(false)}
                     >
                         <FolderPlus size={18} />
                         Gerenciar Categorias
-                    </button>
+                    </NavLink>
 
-                    <button
-                        className={`app-sidebar__nav-item ${isActive('/menus') ? 'app-sidebar__nav-item--active' : ''}`}
-                        onClick={() => navTo('/menus')}
+                    <NavLink
+                        to="/menus"
+                        className={navItemClass}
+                        onClick={() => setSidebarOpen(false)}
                     >
                         <Layers size={18} />
                         Menus de Contexto
-                    </button>
+                    </NavLink>
 
                     {/* Categorias */}
                     <div className="app-sidebar__section-title">Categorias</div>
                     {categories.map((cat) => (
-                        <button
+                        <NavLink
                             key={cat.id}
-                            className={`app-sidebar__nav-item ${isActive(`/categoria/${cat.id}`) ? 'app-sidebar__nav-item--active' : ''}`}
-                            onClick={() => navTo(`/categoria/${cat.id}`)}
+                            to={`/categoria/${cat.id}`}
+                            className={navItemClass}
+                            onClick={() => setSidebarOpen(false)}
                         >
                             <span>{cat.icon}</span>
                             {cat.name}
-                        </button>
+                        </NavLink>
                     ))}
 
                     {/* Ações */}
@@ -121,8 +122,17 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             </aside>
 
             {/* Main */}
-            <main className="app-main">
+            <main className="app-main" id="main-content" tabIndex={-1}>
                 {children}
+                <footer className="app-footer">
+                    <span>Prompt App • Engenharia de Prompts</span>
+                    <nav className="app-footer__links" aria-label="Links informativos">
+                        <a href="/sobre">Sobre</a>
+                        <a href="/contato">Contato</a>
+                        <a href="/privacidade">Privacidade</a>
+                        <a href="https://github.com/danilonovaisv/PROMPT-APP">GitHub</a>
+                    </nav>
+                </footer>
             </main>
 
             {/* Overlay para mobile */}
