@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { syncToCloud, downloadFromCloud } from '@/services/syncService';
+import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
 import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
@@ -12,6 +13,8 @@ import type { Session } from '@supabase/supabase-js';
 export default function CloudSyncItem() {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(false);
+    const [hasUpdates, setHasUpdates] = useState(false);
+    const [realtimeActive, setRealtimeActive] = useState(false);
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -20,6 +23,7 @@ export default function CloudSyncItem() {
             setSession(currentSession);
             if (currentSession) {
                 triggerAutoSync();
+                checkForUpdatesStatus();
             }
         });
 
@@ -29,11 +33,24 @@ export default function CloudSyncItem() {
             // Se acabou de logar (newSession exists), trigger sync
             if (newSession && !session) {
                 triggerAutoSync();
+                checkForUpdatesStatus();
             }
+            setRealtimeActive(!!newSession);
         });
 
         return () => subscription.unsubscribe();
     }, []);
+
+    // Verificar periodicamente se há atualizações
+    useEffect(() => {
+        if (!session) return;
+        
+        const interval = setInterval(() => {
+            checkForUpdatesStatus();
+        }, 30000); // Checar a cada 30 segundos
+        
+        return () => clearInterval(interval);
+    }, [session]);
 
     // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
     const triggerAutoSync = async () => {
@@ -50,6 +67,16 @@ export default function CloudSyncItem() {
             // Não mostramos toast de erro no auto-sync para não atrapalhar a UX inicial, apenas log
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Verifica se há atualizações disponíveis
+    const checkForUpdatesStatus = async () => {
+        try {
+            const updatesAvailable = await checkForUpdates();
+            setHasUpdates(updatesAvailable);
+        } catch (error) {
+            console.error('Erro ao verificar atualizações:', error);
         }
     };
 
@@ -72,14 +99,16 @@ export default function CloudSyncItem() {
         showToast('Logout realizado');
     };
 
-    const handleSync = async () => {
+    const handleSmartSync = async () => {
         if (!session) return;
         setLoading(true);
         try {
-            await syncToCloud();
-            showToast('Backup na nuvem realizado com sucesso!', 'success');
+            const result = await smartSync();
+            const message = `Sync inteligente concluído! Recebidos: ${result.pulled}, Enviados: ${result.pushed}, Conflitos: ${result.conflicts}`;
+            showToast(message, 'success');
+            setHasUpdates(false);
         } catch (err: any) {
-            showToast('Erro ao sincronizar: ' + err.message, 'error');
+            showToast('Erro no sync inteligente: ' + err.message, 'error');
         } finally {
             setLoading(false);
         }
@@ -121,19 +150,35 @@ export default function CloudSyncItem() {
                 </button>
             </div>
 
+            <div className="cloud-sync-box__status">
+                <div className="cloud-sync-box__status-indicator">
+                    <div className={`status-dot ${realtimeActive ? 'status-dot--active' : 'status-dot--inactive'}`}></div>
+                    <span className="status-text">
+                        {realtimeActive ? 'Realtime Ativo' : 'Realtime Inativo'}
+                    </span>
+                </div>
+                {hasUpdates && (
+                    <div className="updates-badge">
+                        Atualizações disponíveis
+                    </div>
+                )}
+            </div>
+
             <div className="cloud-sync-box__actions">
                 <button
                     className="btn btn--secondary btn--sm flex-1"
-                    onClick={handleSync}
+                    onClick={handleSmartSync}
                     disabled={loading}
+                    title="Sincronização inteligente bidirecional"
                 >
                     {loading ? <RefreshCw size={12} className="animate-spin" /> : <Cloud size={12} />}
-                    Backup
+                    {hasUpdates ? 'Atualizar' : 'Sync'}
                 </button>
                 <button
                     className="btn btn--ghost btn--sm flex-1"
                     onClick={handleRestore}
                     disabled={loading}
+                    title="Baixar todos os dados da nuvem"
                 >
                     Baixar
                 </button>

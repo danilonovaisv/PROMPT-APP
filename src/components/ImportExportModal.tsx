@@ -5,7 +5,7 @@
 import { useState, useRef } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { downloadAllPrompts } from '@/utils/exportJson';
-import { importFromFile } from '@/utils/importJson';
+import { importFromFile, getImportStats, type ImportResult } from '@/services/importService';
 import {
     X,
     Upload,
@@ -27,7 +27,7 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
     const { showToast } = useToast();
     const fileRef = useRef<HTMLInputElement>(null);
     const [importing, setImporting] = useState(false);
-    const [result, setResult] = useState<{ count: number; error?: string } | null>(null);
+    const [result, setResult] = useState<ImportResult | null>(null);
 
     if (!isOpen) return null;
 
@@ -44,12 +44,25 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
         setResult(null);
 
         try {
-            const count = await importFromFile(file);
-            setResult({ count });
-            showToast(`${count} prompt(s) importado(s) com sucesso!`);
+            const importResult = await importFromFile(file);
+            setResult(importResult);
+            
+            if (importResult.success) {
+                const stats = getImportStats(importResult);
+                showToast(stats, 'success');
+            } else {
+                const errorSummary = importResult.errors.map(e => e.message).join('\n');
+                showToast(`Importação concluída com erros:\n${errorSummary}`, 'error');
+            }
         } catch (err) {
             const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-            setResult({ count: 0, error: msg });
+            setResult({
+                success: false,
+                count: 0,
+                errors: [{ type: 'processing', field: 'general', message: msg }],
+                warnings: [],
+                processingTime: 0
+            });
             showToast('Erro na importação: ' + msg, 'error');
         } finally {
             setImporting(false);
@@ -123,17 +136,46 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                         </label>
 
                         {result && (
-                            <div className={`import-result ${result.error ? 'import-result--error' : 'import-result--success'}`}>
-                                {result.error ? (
-                                    <>
-                                        <AlertCircle size={16} />
-                                        Erro: {result.error}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CheckCircle size={16} />
-                                        {result.count} prompt(s) importado(s) com sucesso!
-                                    </>
+                            <div className={`import-result ${result.success ? 'import-result--success' : 'import-result--warning'}`}>
+                                <div className="import-result__header">
+                                    {result.success ? (
+                                        <>
+                                            <CheckCircle size={16} />
+                                            Importação concluída com sucesso!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <AlertCircle size={16} />
+                                            Importação concluída com {result.errors.length} erro(s)
+                                        </>
+                                    )}
+                                </div>
+                                
+                                <div className="import-result__stats">
+                                    <div>✓ {result.count} prompts importados</div>
+                                    <div>⏱ Tempo: {(result.processingTime / 1000).toFixed(2)}s</div>
+                                    {result.warnings.length > 0 && (
+                                        <div>⚠ {result.warnings.length} aviso(s)</div>
+                                    )}
+                                    {result.errors.length > 0 && (
+                                        <div>✗ {result.errors.length} erro(s)</div>
+                                    )}
+                                </div>
+                                
+                                {result.errors.length > 0 && (
+                                    <div className="import-result__errors">
+                                        <strong>Erros encontrados:</strong>
+                                        <ul>
+                                            {result.errors.slice(0, 3).map((error: any, idx: number) => (
+                                                <li key={idx}>
+                                                    <strong>{error.field}:</strong> {error.message}
+                                                </li>
+                                            ))}
+                                            {result.errors.length > 3 && (
+                                                <li>+ {result.errors.length - 3} outros erros...</li>
+                                            )}
+                                        </ul>
+                                    </div>
                                 )}
                             </div>
                         )}

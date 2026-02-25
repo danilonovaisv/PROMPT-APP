@@ -2188,6 +2188,96 @@ select option {
   gap: var(--space-2);
 }
 
+.cloud-sync-box__status {
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cloud-sync-box__status-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-text-muted);
+}
+
+.status-dot--active {
+  background-color: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success);
+}
+
+.status-dot--inactive {
+  background-color: var(--color-text-muted);
+}
+
+.updates-badge {
+  display: inline-block;
+  background-color: var(--color-warning);
+  color: white;
+  font-size: var(--font-size-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  margin-top: var(--space-2);
+}
+
+/* --- Import Result --- */
+.import-result {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.import-result--success {
+  background-color: rgba(0, 214, 143, 0.1);
+  border-color: rgba(0, 214, 143, 0.3);
+  color: var(--color-success);
+}
+
+.import-result--warning {
+  background-color: rgba(255, 170, 0, 0.1);
+  border-color: rgba(255, 170, 0, 0.3);
+  color: var(--color-warning);
+}
+
+.import-result__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-3);
+}
+
+.import-result__stats {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+}
+
+.import-result__errors {
+  font-size: var(--font-size-sm);
+}
+
+.import-result__errors ul {
+  margin-top: var(--space-2);
+  padding-left: var(--space-4);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.import-result__errors li {
+  color: var(--color-error);
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }

@@ -19,6 +19,8 @@ import { useEffect } from 'react';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
 import { setupAutoSync } from '@/services/autoSync';
+import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
+import { supabase } from '@/lib/supabase';
 
 export default function App() {
     const [showImportExport, setShowImportExport] = useState(false);
@@ -36,9 +38,42 @@ export default function App() {
 
             // 3. Inicializar Auto-Sync (Push)
             setupAutoSync();
+
+            // 4. Inicializar Realtime Listeners
+            try {
+                await setupRealtimeListeners();
+            } catch (error) {
+                console.error('❌ Erro ao iniciar realtime:', error);
+            }
         };
 
         init();
+
+        // Cleanup ao desmontar
+        return () => {
+            cleanupRealtimeListeners();
+        };
+    }, []);
+
+    // Listener para mudanças de autenticação
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('🔐 Auth state changed:', event);
+            
+            if (session) {
+                // Usuário logado - ativar realtime
+                try {
+                    await setupRealtimeListeners();
+                } catch (error) {
+                    console.error('❌ Erro ao reiniciar realtime após login:', error);
+                }
+            } else {
+                // Usuário deslogado - limpar listeners
+                cleanupRealtimeListeners();
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     return (
