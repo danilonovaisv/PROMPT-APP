@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { syncToCloud, downloadFromCloud } from '@/services/syncService';
+import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
 import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User } from 'lucide-react';
