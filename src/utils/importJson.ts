@@ -10,8 +10,8 @@ function isValidPromptExport(obj: unknown): obj is PromptExportFormat {
     if (!obj || typeof obj !== 'object') return false;
     const p = obj as Record<string, unknown>;
     return (
-        typeof p.system_role === 'string' &&
-        typeof p.task === 'string' &&
+        p.system_role !== undefined &&
+        p.task !== undefined &&
         p.input_data !== undefined &&
         typeof p.input_data === 'object'
     );
@@ -75,13 +75,13 @@ function fromExportFormat(
         },
         contextMenus,
         enabledMenuIds: Object.keys(contextMenus),
-        constraints: exported.constraints || [],
-        negativePrompt: exported.negative_prompt || [],
+        constraints: Array.isArray(exported.constraints) ? exported.constraints.filter(Boolean) : [],
+        negativePrompt: Array.isArray(exported.negative_prompt) ? exported.negative_prompt.filter(Boolean) : [],
         outputSchema: {
             formato: (exported.output_schema?.formato as 'json' | 'texto' | 'markdown') || 'texto',
             estrutura: exported.output_schema?.estrutura || '',
         },
-        fewShotExamples: exported.few_shot_examples || [],
+        fewShotExamples: Array.isArray(exported.few_shot_examples) ? exported.few_shot_examples : [],
         createdAt: new Date(),
         updatedAt: new Date(),
     };

@@ -54,14 +54,14 @@ export function toExportFormat(prompt: Prompt): PromptExportFormat {
             context: prompt.context,
             menus_selecionados: menusSelecionados,
         },
-        constraints: prompt.constraints.filter(Boolean),
-        negative_prompt: prompt.negativePrompt.filter(Boolean),
+        constraints: (prompt.constraints || []).filter(Boolean),
+        negative_prompt: (prompt.negativePrompt || []).filter(Boolean),
         output_schema: {
-            formato: prompt.outputSchema.formato,
-            estrutura: prompt.outputSchema.estrutura,
+            formato: prompt.outputSchema?.formato || 'texto',
+            estrutura: prompt.outputSchema?.estrutura || '',
         },
-        few_shot_examples: prompt.fewShotExamples.filter(
-            (ex) => ex.input.trim() || ex.output.trim()
+        few_shot_examples: (prompt.fewShotExamples || []).filter(
+            (ex) => ex.input?.trim() || ex.output?.trim()
         ),
     };
 }
