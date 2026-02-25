@@ -11,6 +11,7 @@ import { downloadJson } from '@/utils/exportJson';
 import { exportMenusToJson } from '@/utils/importMenusJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
+import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import {
     ArrowLeft,
@@ -33,6 +34,7 @@ interface MenuFormData {
     menuName: string;
     description: string;
     options: ContextMenuOption[];
+    remoteId?: number;
 }
 
 const EMPTY_FORM: MenuFormData = {
@@ -73,6 +75,7 @@ export default function MenuManagerPage() {
             menuName: menu.menuName,
             description: menu.description,
             options: JSON.parse(JSON.stringify(menu.options)),
+            remoteId: menu.remoteId,
         });
         setExpandedOption(null);
     };
@@ -101,32 +104,55 @@ export default function MenuManagerPage() {
             }
         }
 
-        const now = new Date();
-        const data: Omit<ContextMenu, 'id'> = {
-            menuId,
-            menuName: form.menuName.trim(),
-            description: form.description.trim(),
-            options: form.options,
-            createdAt: isEditing ? (menus.find((m) => m.id === isEditing)?.createdAt ?? now) : now,
-            updatedAt: now,
-        };
+        const now = new Date(); // Fix for 'now' is not defined
 
-        if (isEditing) {
-            await db.contextMenus.update(isEditing, data);
-            showToast('Menu atualizado!');
-        } else {
-            await db.contextMenus.add(data as ContextMenu);
-            showToast('Menu criado!');
+        try {
+            const savedRemote = await saveMenuToSupabase({
+                menuId,
+                menuName: form.menuName.trim(),
+                description: form.description.trim(),
+                options: form.options,
+                remoteId: form.remoteId,
+            });
+
+            const data: Partial<ContextMenu> = {
+                menuId,
+                menuName: form.menuName.trim(),
+                description: form.description.trim(),
+                options: form.options,
+                remoteId: savedRemote.id,
+                updatedAt: now,
+            };
+
+            if (isEditing) {
+                await db.contextMenus.update(isEditing, data);
+                showToast('Menu atualizado no servidor!');
+            } else {
+                data.createdAt = now;
+                await db.contextMenus.add(data as ContextMenu);
+                showToast('Menu criado no servidor!');
+            }
+            await saveLocalBackup();
+            cancel();
+        } catch (error: any) {
+            console.error('Erro ao salvar no Supabase:', error);
+            showToast(error.message || 'Erro ao salvar o menu no servidor.', 'error');
         }
-        await saveLocalBackup();
-        cancel();
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number, remoteId?: number) => {
         if (!confirm('Deseja realmente excluir este menu?')) return;
-        await db.contextMenus.delete(id);
-        await saveLocalBackup();
-        showToast('Menu excluído!');
+        try {
+            if (remoteId) {
+                await deleteMenuFromSupabase(remoteId);
+            }
+            await db.contextMenus.delete(id);
+            await saveLocalBackup();
+            showToast('Menu excluído do servidor!');
+        } catch (error: any) {
+            console.error('Erro ao excluir do Supabase:', error);
+            showToast(error.message || 'Erro ao deletar menu no servidor.', 'error');
+        }
     };
 
     /* ---- Option management ---- */
@@ -438,7 +464,7 @@ export default function MenuManagerPage() {
                                         </button>
                                         <button
                                             className="btn btn--ghost btn--icon"
-                                            onClick={() => handleDelete(menu.id!)}
+                                            onClick={() => handleDelete(menu.id!, menu.remoteId)}
                                             aria-label="Excluir menu"
                                             title="Excluir"
                                         >

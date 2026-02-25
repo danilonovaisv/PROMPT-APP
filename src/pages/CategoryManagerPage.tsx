@@ -9,6 +9,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
 import {
     ArrowLeft,
     Plus,
@@ -22,6 +23,7 @@ interface CategoryFormData {
     name: string;
     icon: string;
     color: string;
+    remoteId?: number;
 }
 
 const DEFAULT_FORM: CategoryFormData = {
@@ -45,10 +47,10 @@ export default function CategoryManagerPage() {
         setIsCreating(true);
     };
 
-    const startEdit = (cat: { id?: number; name: string; icon: string; color: string }) => {
+    const startEdit = (cat: { id?: number; remoteId?: number; name: string; icon: string; color: string }) => {
         setIsCreating(false);
         setIsEditing(cat.id!);
-        setForm({ name: cat.name, icon: cat.icon, color: cat.color });
+        setForm({ name: cat.name, icon: cat.icon, color: cat.color, remoteId: cat.remoteId });
     };
 
     const cancel = () => {
@@ -63,35 +65,58 @@ export default function CategoryManagerPage() {
             return;
         }
 
-        if (isEditing) {
-            await db.categories.update(isEditing, {
+        try {
+            const savedRemote = await saveCategoryToSupabase({
                 name: form.name.trim(),
                 icon: form.icon,
                 color: form.color,
+                remoteId: form.remoteId,
             });
-            showToast('Categoria atualizada!');
-        } else {
-            await db.categories.add({
-                name: form.name.trim(),
-                icon: form.icon,
-                color: form.color,
-                createdAt: new Date(),
-            });
-            showToast('Categoria criada!');
+
+            if (isEditing) {
+                await db.categories.update(isEditing, {
+                    name: form.name.trim(),
+                    icon: form.icon,
+                    color: form.color,
+                    remoteId: savedRemote.id,
+                });
+                showToast('Categoria atualizada no servidor!');
+            } else {
+                await db.categories.add({
+                    name: form.name.trim(),
+                    icon: form.icon,
+                    color: form.color,
+                    remoteId: savedRemote.id,
+                    createdAt: new Date(),
+                });
+                showToast('Categoria criada no servidor!');
+            }
+            await saveLocalBackup();
+            cancel();
+        } catch (error: any) {
+            console.error('Erro ao salvar categoria no Supabase:', error);
+            showToast(error.message || 'Erro ao salvar a categoria no servidor.', 'error');
         }
-        await saveLocalBackup();
-        cancel();
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number, remoteId?: number) => {
         const promptCount = await db.prompts.where('categoryId').equals(id).count();
         if (promptCount > 0) {
             if (!confirm(`Esta categoria tem ${promptCount} prompt(s). Excluir tudo?`)) return;
             await db.prompts.where('categoryId').equals(id).delete();
         }
-        await db.categories.delete(id);
-        await saveLocalBackup();
-        showToast('Categoria excluída!');
+
+        try {
+            if (remoteId) {
+                await deleteCategoryFromSupabase(remoteId);
+            }
+            await db.categories.delete(id);
+            await saveLocalBackup();
+            showToast('Categoria excluída do servidor!');
+        } catch (error: any) {
+            console.error('Erro ao excluir no Supabase:', error);
+            showToast(error.message || 'Erro ao deletar categoria no servidor.', 'error');
+        }
     };
 
     return (
@@ -225,7 +250,7 @@ export default function CategoryManagerPage() {
                                     </button>
                                     <button
                                         className="btn btn--ghost btn--icon"
-                                        onClick={() => handleDelete(cat.id!)}
+                                        onClick={() => handleDelete(cat.id!, cat.remoteId)}
                                         aria-label="Excluir categoria"
                                         title="Excluir"
                                     >

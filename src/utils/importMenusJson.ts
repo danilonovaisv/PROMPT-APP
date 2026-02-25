@@ -4,6 +4,7 @@
    ====================================================== */
 
 import { db } from '@/db/database';
+import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import type { ContextMenu } from '@/models/types';
 
 /* -------------------------------------------------------
@@ -304,9 +305,21 @@ export async function importMenusFromFile(
     }
 
     try {
+        const enrichedMenus: Partial<ContextMenu>[] = [];
+        for (const menu of menusToImport) {
+            const contextMenu = toContextMenu(menu) as Partial<ContextMenu>;
+            try {
+                const savedRemote = await saveMenuToSupabase(contextMenu);
+                contextMenu.remoteId = savedRemote.id;
+            } catch (err) {
+                console.error("Erro importando menu no Supabase", err);
+            }
+            enrichedMenus.push(contextMenu);
+        }
+
         await db.transaction('rw', db.contextMenus, async () => {
-            for (const menu of menusToImport) {
-                await db.contextMenus.add(toContextMenu(menu) as ContextMenu);
+            for (const menu of enrichedMenus) {
+                await db.contextMenus.add(menu as ContextMenu);
             }
         });
 

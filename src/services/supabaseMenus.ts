@@ -1,13 +1,13 @@
 import { supabase } from '@/lib/supabase';
-import type { Prompt } from '@/models/types';
+import type { ContextMenu } from '@/models/types';
 
-// Helper if your columns are text instead of jsonb
+// Helper for possible text/json columns
 function toDbJsonMaybe(value: any) {
     if (value === null || value === undefined) return null;
     return typeof value === 'string' ? value : JSON.stringify(value);
 }
 
-export async function savePromptToSupabase(input: Partial<Prompt>) {
+export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;
 
@@ -16,27 +16,19 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
 
     const payload: any = {
         user_id: user.id,
-        category_id: input.categoryId,
-        title: input.title,
-        system_role: input.systemRole,
-        task: input.task,
-        context: input.context,
-        menus: toDbJsonMaybe(input.menus),
-        context_menus: toDbJsonMaybe(input.contextMenus),
-        enabled_menu_ids: toDbJsonMaybe(input.enabledMenuIds),
-        constraints: toDbJsonMaybe(input.constraints),
-        negative_prompt: toDbJsonMaybe(input.negativePrompt),
-        output_schema: toDbJsonMaybe(input.outputSchema),
-        few_shot_examples: toDbJsonMaybe(input.fewShotExamples),
+        menu_id: input.menuId,
+        menu_name: input.menuName,
+        description: input.description,
+        options: toDbJsonMaybe(input.options),
         updated_at: new Date().toISOString(),
     };
 
-    if (input.id) {
+    if (input.remoteId) {
         const { data, error } = await supabase
-            .from("prompts")
+            .from('context_menus')
             .update(payload)
-            .eq("id", input.id)
-            .eq("user_id", user.id)
+            .eq('id', input.remoteId)
+            .eq('user_id', user.id)
             .select()
             .single();
 
@@ -45,7 +37,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     } else {
         payload.created_at = new Date().toISOString();
         const { data, error } = await supabase
-            .from("prompts")
+            .from('context_menus')
             .insert(payload)
             .select()
             .single();
@@ -55,7 +47,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     }
 }
 
-export async function deletePromptFromSupabase(remoteId: number) {
+export async function deleteMenuFromSupabase(remoteId: number) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;
 
@@ -63,7 +55,7 @@ export async function deletePromptFromSupabase(remoteId: number) {
     if (!user) throw new Error("Usuário não autenticado");
 
     const { error } = await supabase
-        .from('prompts')
+        .from('context_menus')
         .delete()
         .eq('id', remoteId)
         .eq('user_id', user.id);

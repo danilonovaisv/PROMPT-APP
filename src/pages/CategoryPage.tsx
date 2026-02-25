@@ -7,6 +7,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { downloadPrompt, toExportFormat, copyToClipboard } from '@/utils/exportJson';
+import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     Plus,
     ArrowLeft,
@@ -52,6 +53,16 @@ export default function CategoryPage() {
 
     const handleDelete = async (promptId: number) => {
         if (!confirm('Deseja realmente excluir este prompt?')) return;
+        const prompt = await db.prompts.get(promptId);
+        if (prompt?.remoteId) {
+            try {
+                await deletePromptFromSupabase(prompt.remoteId);
+            } catch (error: any) {
+                console.error("Erro ao deletar no Supabase:", error);
+                showToast(error.message || 'Erro ao deletar o prompt no servidor.', 'error');
+                return; // Optionally halt deletion if remote fails, or proceed. Let's proceed or halt? Let's halt to be safe.
+            }
+        }
         await db.prompts.delete(promptId);
         showToast('Prompt excluído!');
     };

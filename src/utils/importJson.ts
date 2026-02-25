@@ -3,6 +3,9 @@
    ====================================================== */
 
 import { db } from '@/db/database';
+import { saveCategoryToSupabase } from '@/services/supabaseCategories';
+import { saveMenuToSupabase } from '@/services/supabaseMenus';
+import { savePromptToSupabase } from '@/services/supabasePrompts';
 import type { Prompt, BulkExport, PromptExportFormat, ContextMenu, MenuSelectionsMap } from '@/models/types';
 
 /** Valida se o objeto é um PromptExportFormat válido */
@@ -96,13 +99,22 @@ async function importContextMenus(menus: ContextMenu[]): Promise<number> {
             .equals(menu.menuId)
             .first();
         if (!existing) {
-            await db.contextMenus.add({
-                ...menu,
-                id: undefined,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
-            count++;
+            try {
+                const savedRemote = await saveMenuToSupabase({
+                    ...menu,
+                    id: undefined,
+                });
+                await db.contextMenus.add({
+                    ...menu,
+                    id: undefined,
+                    remoteId: savedRemote.id,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                });
+                count++;
+            } catch (err) {
+                console.error("Erro importando menu para supabase:", err);
+            }
         }
     }
     return count;
@@ -122,12 +134,28 @@ export async function importFromFile(file: File): Promise<number> {
     if (existingCategory?.id) {
         importCategoryId = existingCategory.id;
     } else {
-        importCategoryId = (await db.categories.add({
-            name: 'Importados',
-            icon: '📥',
-            color: '#6366f1',
-            createdAt: new Date(),
-        })) as number;
+        try {
+            const savedRemote = await saveCategoryToSupabase({
+                name: 'Importados',
+                icon: '📥',
+                color: '#6366f1',
+            });
+            importCategoryId = (await db.categories.add({
+                name: 'Importados',
+                icon: '📥',
+                color: '#6366f1',
+                remoteId: savedRemote.id,
+                createdAt: new Date(),
+            })) as number;
+        } catch (err) {
+            console.error("Erro ao criar categoria importada no supabase", err);
+            importCategoryId = (await db.categories.add({
+                name: 'Importados',
+                icon: '📥',
+                color: '#6366f1',
+                createdAt: new Date(),
+            })) as number;
+        }
     }
 
     let count = 0;
@@ -152,25 +180,38 @@ export async function importFromFile(file: File): Promise<number> {
                         catId = cat.id;
                     }
                 }
-                await db.prompts.add(
-                    fromExportFormat(item.prompt, catId, item.title || `Prompt importado ${count + 1}`)
-                );
+                const internalPrompt = fromExportFormat(item.prompt, catId, item.title || `Prompt importado ${count + 1}`);
+                try {
+                    const savedRemote = await savePromptToSupabase(internalPrompt);
+                    await db.prompts.add({ ...internalPrompt, remoteId: savedRemote.id });
+                } catch (err) {
+                    console.error("Falha ao salvar no supabase", err);
+                    await db.prompts.add(internalPrompt);
+                }
                 count++;
             }
         }
     } else if (isValidPromptExport(parsed)) {
         /* Prompt único */
-        await db.prompts.add(
-            fromExportFormat(parsed, importCategoryId, file.name.replace('.json', '') || 'Prompt importado')
-        );
+        const internalPrompt = fromExportFormat(parsed, importCategoryId, file.name.replace('.json', '') || 'Prompt importado');
+        try {
+            const savedRemote = await savePromptToSupabase(internalPrompt);
+            await db.prompts.add({ ...internalPrompt, remoteId: savedRemote.id });
+        } catch (err) {
+            await db.prompts.add(internalPrompt);
+        }
         count = 1;
     } else if (Array.isArray(parsed)) {
         /* Array de prompts */
         for (const item of parsed) {
             if (isValidPromptExport(item)) {
-                await db.prompts.add(
-                    fromExportFormat(item, importCategoryId, `Prompt importado ${count + 1}`)
-                );
+                const internalPrompt = fromExportFormat(item, importCategoryId, `Prompt importado ${count + 1}`);
+                try {
+                    const savedRemote = await savePromptToSupabase(internalPrompt);
+                    await db.prompts.add({ ...internalPrompt, remoteId: savedRemote.id });
+                } catch (err) {
+                    await db.prompts.add(internalPrompt);
+                }
                 count++;
             }
         }
