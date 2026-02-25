@@ -10,6 +10,8 @@ import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection } from '@/models/types';
+import { supabase } from '@/lib/supabase';
+import { savePromptToSupabase } from '@/services/supabasePrompts';
 import {
     ArrowLeft,
     Save,
@@ -55,7 +57,7 @@ export default function EditorPage() {
     const { showToast } = useToast();
     const isNew = id === 'novo';
 
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
+    const [categories, setCategories] = useState<Array<{ id: number; name: string; icon?: string }>>([]);
     const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
 
     const [form, setForm] = useState<Omit<Prompt, 'id'>>(EMPTY_PROMPT);
@@ -63,6 +65,19 @@ export default function EditorPage() {
     const [loaded, setLoaded] = useState(false);
     const [showMenuPicker, setShowMenuPicker] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+
+    /* Buscar categorias do Supabase */
+    useEffect(() => {
+        (async () => {
+            const { data, error } = await supabase
+                .from('categories')
+                .select('id, name, icon')
+                .order('name');
+            if (!error && data) {
+                setCategories(data);
+            }
+        })();
+    }, []);
 
     /* Carregar prompt existente */
     useEffect(() => {
@@ -254,7 +269,6 @@ export default function EditorPage() {
         }));
     };
 
-    /* --- Ações --- */
     const handleSave = async () => {
         if (!form.title.trim()) {
             showToast('Título é obrigatório', 'error');
@@ -273,18 +287,29 @@ export default function EditorPage() {
             updatedAt: new Date(),
         };
 
-        if (isNew) {
-            data.createdAt = new Date();
-            const newId = await db.prompts.add(data as Prompt);
-            clearDraft();
-            await saveLocalBackup();
-            showToast('Prompt criado com sucesso!');
-            navigate(`/editor/${newId}`, { replace: true });
-        } else {
-            await db.prompts.update(Number(id), data);
-            clearDraft();
-            await saveLocalBackup();
-            showToast('Prompt salvo!');
+        try {
+            // Salvar no Supabase
+            // Se for atualizar, usamos o remoteId (se existir). Se for um prompt local que nunca foi para o Supabase, envia sem id.
+            const promptPayload = { ...data, id: isNew ? undefined : (data as Prompt).remoteId };
+            const savedPrompt = await savePromptToSupabase(promptPayload);
+
+            // Sincronizar localmente no Dexie
+            if (isNew) {
+                data.createdAt = new Date();
+                const newId = await db.prompts.add({ ...data, remoteId: savedPrompt.id } as Prompt);
+                clearDraft();
+                await saveLocalBackup();
+                showToast('Prompt criado com sucesso no banco!');
+                navigate(`/editor/${newId}`, { replace: true });
+            } else {
+                await db.prompts.update(Number(id), { ...data, remoteId: savedPrompt.id });
+                clearDraft();
+                await saveLocalBackup();
+                showToast('Prompt atualizado com sucesso no banco!');
+            }
+        } catch (error: any) {
+            console.error('Erro ao salvar no Supabase:', error);
+            showToast(error.message || 'Erro ao salvar o prompt no servidor.', 'error');
         }
     };
 
