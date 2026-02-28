@@ -78,13 +78,14 @@ export default function CategoryManagerPage() {
                     syncStatus: 'pending',
                 });
             } else {
-                localId = await db.categories.add({
+                const newId = await db.categories.add({
                     name: form.name.trim(),
                     icon: form.icon,
                     color: form.color,
                     createdAt: now,
                     syncStatus: 'pending',
                 });
+                localId = newId ?? null;
             }
             await saveLocalBackup();
         } catch (error: any) {

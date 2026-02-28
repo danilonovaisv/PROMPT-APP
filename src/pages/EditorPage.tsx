@@ -293,8 +293,11 @@ export default function EditorPage() {
         try {
             // Salvar localmente primeiro (offline-first)
             if (isNew) {
-                localId = await db.prompts.add(localPayload as Prompt);
-                navigate(`/editor/${localId}`, { replace: true });
+                const newId = await db.prompts.add(localPayload as Prompt);
+                localId = newId ?? null;
+                if (localId !== null) {
+                    navigate(`/editor/${localId}`, { replace: true });
+                }
             } else {
                 localId = Number(id);
                 await db.prompts.update(localId, localPayload);

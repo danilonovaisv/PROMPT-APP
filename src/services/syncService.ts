@@ -210,7 +210,7 @@ export const downloadFromCloud = async () => {
                     icon: c.icon,
                     color: c.color,
                     createdAt: new Date(c.created_at), // Supabase retorna string ISO
-                    syncStatus: 'synced',
+                    syncStatus: 'synced' as const,
                 };
 
                 let localId: number;
@@ -248,7 +248,7 @@ export const downloadFromCloud = async () => {
                     options: m.options, // JSONB vem direto
                     createdAt: new Date(m.created_at),
                     updatedAt: new Date(m.updated_at),
-                    syncStatus: 'synced',
+                    syncStatus: 'synced' as const,
                 };
 
                 if (targetId) {
@@ -289,7 +289,7 @@ export const downloadFromCloud = async () => {
                     fewShotExamples: p.few_shot_examples,
                     createdAt: new Date(p.created_at),
                     updatedAt: new Date(p.updated_at),
-                    syncStatus: 'synced',
+                    syncStatus: 'synced' as const,
                 };
 
                 if (existing && existing.id) {

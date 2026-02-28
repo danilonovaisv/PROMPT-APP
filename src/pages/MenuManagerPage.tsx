@@ -123,7 +123,8 @@ export default function MenuManagerPage() {
                 await db.contextMenus.update(isEditing, data);
             } else {
                 data.createdAt = now;
-                localId = await db.contextMenus.add(data as ContextMenu);
+                const newId = await db.contextMenus.add(data as ContextMenu);
+                localId = newId ?? null;
             }
             await saveLocalBackup();
         } catch (error: any) {
