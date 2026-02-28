@@ -106,6 +106,32 @@ export default function MenuManagerPage() {
 
         const now = new Date(); // Fix for 'now' is not defined
 
+        let localId: number | null = null;
+
+        try {
+            const data: Partial<ContextMenu> = {
+                menuId,
+                menuName: form.menuName.trim(),
+                description: form.description.trim(),
+                options: form.options,
+                updatedAt: now,
+                syncStatus: 'pending',
+            };
+
+            if (isEditing) {
+                localId = isEditing;
+                await db.contextMenus.update(isEditing, data);
+            } else {
+                data.createdAt = now;
+                localId = await db.contextMenus.add(data as ContextMenu);
+            }
+            await saveLocalBackup();
+        } catch (error: any) {
+            console.error('Erro ao salvar localmente:', error);
+            showToast(error.message || 'Erro ao salvar o menu localmente.', 'error');
+            return;
+        }
+
         try {
             const savedRemote = await saveMenuToSupabase({
                 menuId,
@@ -115,28 +141,18 @@ export default function MenuManagerPage() {
                 remoteId: form.remoteId,
             });
 
-            const data: Partial<ContextMenu> = {
-                menuId,
-                menuName: form.menuName.trim(),
-                description: form.description.trim(),
-                options: form.options,
-                remoteId: savedRemote.id,
-                updatedAt: now,
-            };
-
-            if (isEditing) {
-                await db.contextMenus.update(isEditing, data);
-                showToast('Menu atualizado no servidor!');
-            } else {
-                data.createdAt = now;
-                await db.contextMenus.add(data as ContextMenu);
-                showToast('Menu criado no servidor!');
+            if (localId !== null) {
+                await db.contextMenus.update(localId, {
+                    remoteId: savedRemote.id,
+                    syncStatus: 'synced',
+                });
             }
-            await saveLocalBackup();
+            showToast(isEditing ? 'Menu sincronizado!' : 'Menu criado e sincronizado!');
             cancel();
         } catch (error: any) {
             console.error('Erro ao salvar no Supabase:', error);
-            showToast(error.message || 'Erro ao salvar o menu no servidor.', 'error');
+            showToast('Menu salvo localmente. Sincronize ao fazer login.', 'info');
+            cancel();
         }
     };
 

@@ -20,6 +20,7 @@ import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
 import { setupAutoSync } from '@/services/autoSync';
 import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
+import { syncToCloud } from '@/services/syncService';
 import { supabase } from '@/lib/supabase';
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
                 // Usuário logado - ativar realtime
                 try {
                     await setupRealtimeListeners();
+                    await syncToCloud();
                 } catch (error) {
                     console.error('❌ Erro ao reiniciar realtime após login:', error);
                 }

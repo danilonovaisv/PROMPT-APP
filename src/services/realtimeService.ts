@@ -108,7 +108,8 @@ async function handleCategoryChange(payload: any) {
           name: remoteData.name,
           icon: remoteData.icon,
           color: remoteData.color,
-          createdAt: new Date(remoteData.created_at)
+          createdAt: new Date(remoteData.created_at),
+          syncStatus: 'synced',
         };
 
         if (existingLocal) {
@@ -185,7 +186,8 @@ async function handlePromptChange(payload: any) {
           outputSchema: remoteData.output_schema || { formato: 'texto', estrutura: '' },
           fewShotExamples: remoteData.few_shot_examples || [],
           createdAt: new Date(remoteData.created_at),
-          updatedAt: new Date(remoteData.updated_at)
+          updatedAt: new Date(remoteData.updated_at),
+          syncStatus: 'synced',
         };
 
         if (existingLocal) {
@@ -237,7 +239,8 @@ async function handleMenuChange(payload: any) {
           description: remoteData.description,
           options: remoteData.options || [],
           createdAt: new Date(remoteData.created_at),
-          updatedAt: new Date(remoteData.updated_at)
+          updatedAt: new Date(remoteData.updated_at),
+          syncStatus: 'synced',
         };
 
         if (existingLocal) {

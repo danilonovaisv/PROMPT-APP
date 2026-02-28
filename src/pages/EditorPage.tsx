@@ -281,32 +281,59 @@ export default function EditorPage() {
             updatedAt: new Date(),
         };
 
+        let localId: number | null = null;
+        const now = new Date();
+        const localPayload: Partial<Prompt> = {
+            ...data,
+            syncStatus: 'pending',
+            createdAt: isNew ? now : (data as Prompt).createdAt,
+            updatedAt: now,
+        };
+
         try {
-            // Salvar no Supabase
-            // Se for atualizar, usamos o remoteId (se existir).
+            // Salvar localmente primeiro (offline-first)
+            if (isNew) {
+                localId = await db.prompts.add(localPayload as Prompt);
+                navigate(`/editor/${localId}`, { replace: true });
+            } else {
+                localId = Number(id);
+                await db.prompts.update(localId, localPayload);
+            }
+            clearDraft();
+            await saveLocalBackup();
+        } catch (error: any) {
+            console.error('Erro ao salvar localmente:', error);
+            showToast(error.message || 'Erro ao salvar localmente.', 'error');
+            return;
+        }
+
+        try {
+            // Tentar salvar no Supabase
             const promptPayload = {
                 ...data,
                 remoteId: (data as Prompt).remoteId
             };
             const savedPrompt = await savePromptToSupabase(promptPayload);
 
-            // Sincronizar localmente no Dexie
-            if (isNew) {
-                data.createdAt = new Date();
-                const newId = await db.prompts.add({ ...data, remoteId: savedPrompt.id } as Prompt);
-                clearDraft();
-                await saveLocalBackup();
-                showToast('Prompt criado com sucesso no banco!');
-                navigate(`/editor/${newId}`, { replace: true });
-            } else {
-                await db.prompts.update(Number(id), { ...data, remoteId: savedPrompt.id });
-                clearDraft();
-                await saveLocalBackup();
-                showToast('Prompt atualizado com sucesso no banco!');
+            if (localId !== null) {
+                await db.prompts.update(localId, {
+                    remoteId: savedPrompt.id,
+                    syncStatus: 'synced',
+                });
             }
+
+            showToast(
+                isNew ? 'Prompt criado e sincronizado!' : 'Prompt atualizado e sincronizado!',
+                'success'
+            );
         } catch (error: any) {
             console.error('Erro ao salvar no Supabase:', error);
-            showToast(error.message || 'Erro ao salvar o prompt no servidor.', 'error');
+            showToast(
+                isNew
+                    ? 'Prompt salvo localmente. Sincronize ao fazer login.'
+                    : 'Alterações salvas localmente. Sincronize ao fazer login.',
+                'info'
+            );
         }
     };
 

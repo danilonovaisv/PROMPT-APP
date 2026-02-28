@@ -15,7 +15,14 @@ export const syncToCloud = async () => {
 
     // 1. Sincronizar Categorias
     console.log('☁️ Sincronizando Categorias...');
-    for (const cat of snapshot.data.categories) {
+    const allCategories = snapshot.data.categories;
+    for (const cat of allCategories) {
+        if (cat.id && cat.remoteId) {
+            localToRemoteCategoryMap.set(cat.id, cat.remoteId);
+        }
+    }
+    const categoriesToSync = allCategories.filter((c) => c.syncStatus !== 'synced');
+    for (const cat of categoriesToSync) {
         const { id, remoteId, ...data } = cat as Category;
 
         const payload = {
@@ -42,11 +49,17 @@ export const syncToCloud = async () => {
 
         if (result.error) {
             console.error(`❌ Erro ao sincronizar categoria "${data.name}":`, result.error);
+            if (id) {
+                await db.categories.update(id, { syncStatus: 'error' });
+            }
             // Continua para tentar outras, mas loga erro
         } else if (result.data) {
             // Atualiza remoteId localmente
             if (id && result.data.id !== remoteId) {
-                await db.categories.update(id, { remoteId: result.data.id });
+                await db.categories.update(id, { remoteId: result.data.id, syncStatus: 'synced' });
+            }
+            if (id && result.data.id === remoteId) {
+                await db.categories.update(id, { syncStatus: 'synced' });
             }
             if (id) localToRemoteCategoryMap.set(id, result.data.id);
         }
@@ -54,7 +67,8 @@ export const syncToCloud = async () => {
 
     // 2. Sincronizar Menus de Contexto
     console.log('☁️ Sincronizando Menus...');
-    for (const menu of snapshot.data.contextMenus) {
+    const menusToSync = snapshot.data.contextMenus.filter((m) => m.syncStatus !== 'synced');
+    for (const menu of menusToSync) {
         const { id, remoteId, ...data } = menu as ContextMenu;
 
         const payload = {
@@ -85,16 +99,23 @@ export const syncToCloud = async () => {
 
         if (result.error) {
             console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, result.error);
+            if (id) {
+                await db.contextMenus.update(id, { syncStatus: 'error' });
+            }
         } else if (result.data) {
             if (id && result.data.id !== remoteId) {
-                await db.contextMenus.update(id, { remoteId: result.data.id });
+                await db.contextMenus.update(id, { remoteId: result.data.id, syncStatus: 'synced' });
+            }
+            if (id && result.data.id === remoteId) {
+                await db.contextMenus.update(id, { syncStatus: 'synced' });
             }
         }
     }
 
     // 3. Sincronizar Prompts
     console.log('☁️ Sincronizando Prompts...');
-    for (const prompt of snapshot.data.prompts) {
+    const promptsToSync = snapshot.data.prompts.filter((p) => p.syncStatus !== 'synced');
+    for (const prompt of promptsToSync) {
         const { id, remoteId, ...data } = prompt as Prompt;
 
         // Resolver categoryId
@@ -135,9 +156,15 @@ export const syncToCloud = async () => {
 
         if (result.error) {
             console.error(`❌ Erro ao sincronizar prompt "${data.title}":`, result.error);
+            if (id) {
+                await db.prompts.update(id, { syncStatus: 'error' });
+            }
         } else if (result.data) {
             if (id && result.data.id !== remoteId) {
-                await db.prompts.update(id, { remoteId: result.data.id });
+                await db.prompts.update(id, { remoteId: result.data.id, syncStatus: 'synced' });
+            }
+            if (id && result.data.id === remoteId) {
+                await db.prompts.update(id, { syncStatus: 'synced' });
             }
         }
     }
@@ -182,7 +209,8 @@ export const downloadFromCloud = async () => {
                     name: c.name,
                     icon: c.icon,
                     color: c.color,
-                    createdAt: new Date(c.created_at) // Supabase retorna string ISO
+                    createdAt: new Date(c.created_at), // Supabase retorna string ISO
+                    syncStatus: 'synced',
                 };
 
                 let localId: number;
@@ -219,7 +247,8 @@ export const downloadFromCloud = async () => {
                     description: m.description,
                     options: m.options, // JSONB vem direto
                     createdAt: new Date(m.created_at),
-                    updatedAt: new Date(m.updated_at)
+                    updatedAt: new Date(m.updated_at),
+                    syncStatus: 'synced',
                 };
 
                 if (targetId) {
@@ -259,7 +288,8 @@ export const downloadFromCloud = async () => {
                     outputSchema: p.output_schema,
                     fewShotExamples: p.few_shot_examples,
                     createdAt: new Date(p.created_at),
-                    updatedAt: new Date(p.updated_at)
+                    updatedAt: new Date(p.updated_at),
+                    syncStatus: 'synced',
                 };
 
                 if (existing && existing.id) {

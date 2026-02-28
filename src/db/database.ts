@@ -57,6 +57,35 @@ db.version(4).stores({
     contextMenus: '++id, menuId, menuName, createdAt, remoteId',
 });
 
+db.version(5).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, createdAt, remoteId, syncStatus',
+}).upgrade(async (tx) => {
+    const categories = tx.table('categories');
+    const prompts = tx.table('prompts');
+    const contextMenus = tx.table('contextMenus');
+
+    await categories.toCollection().modify((cat: Record<string, unknown>) => {
+        if (!cat.syncStatus) {
+            cat.syncStatus = cat.remoteId ? 'synced' : 'pending';
+        }
+    });
+
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.syncStatus) {
+            prompt.syncStatus = prompt.remoteId ? 'synced' : 'pending';
+        }
+    });
+
+    await contextMenus.toCollection().modify((menu: Record<string, unknown>) => {
+        if (!menu.syncStatus) {
+            menu.syncStatus = menu.remoteId ? 'synced' : 'pending';
+        }
+    });
+});
+
 /* ----- Seed de dados iniciais ----- */
 /* ----- Seed de dados iniciais ----- */
 export async function seedDatabase() {
@@ -68,12 +97,12 @@ export async function seedDatabase() {
         if (categoryCount === 0) {
             console.log('🌱 Seed: Criando categorias padrão...');
             await db.categories.bulkAdd([
-                { name: 'Copywriting', icon: '✍️', color: '#ff6b35', createdAt: new Date() },
-                { name: 'Código', icon: '💻', color: '#0048ff', createdAt: new Date() },
-                { name: 'Análise de Dados', icon: '📊', color: '#00d68f', createdAt: new Date() },
-                { name: 'Educação', icon: '🎓', color: '#7b2ff7', createdAt: new Date() },
-                { name: 'Criativo', icon: '🎨', color: '#ff4466', createdAt: new Date() },
-                { name: 'Negócios', icon: '💼', color: '#ffaa00', createdAt: new Date() },
+                { name: 'Copywriting', icon: '✍️', color: '#ff6b35', createdAt: new Date(), syncStatus: 'pending' },
+                { name: 'Código', icon: '💻', color: '#0048ff', createdAt: new Date(), syncStatus: 'pending' },
+                { name: 'Análise de Dados', icon: '📊', color: '#00d68f', createdAt: new Date(), syncStatus: 'pending' },
+                { name: 'Educação', icon: '🎓', color: '#7b2ff7', createdAt: new Date(), syncStatus: 'pending' },
+                { name: 'Criativo', icon: '🎨', color: '#ff4466', createdAt: new Date(), syncStatus: 'pending' },
+                { name: 'Negócios', icon: '💼', color: '#ffaa00', createdAt: new Date(), syncStatus: 'pending' },
             ]);
         }
 
@@ -121,6 +150,7 @@ export async function seedDatabase() {
                     menuId: 'tom',
                     menuName: 'Tom',
                     description: 'Define o tom de comunicação do prompt',
+                    syncStatus: 'pending',
                     options: [
                         {
                             label: 'Formal', value: 'formal', subOptions: [
@@ -153,6 +183,7 @@ export async function seedDatabase() {
                     menuId: 'publico',
                     menuName: 'Público',
                     description: 'Define o público-alvo do prompt',
+                    syncStatus: 'pending',
                     options: [
                         {
                             label: 'Desenvolvedores', value: 'desenvolvedores', subOptions: [
@@ -180,6 +211,7 @@ export async function seedDatabase() {
                     menuId: 'idioma',
                     menuName: 'Idioma',
                     description: 'Define o idioma de resposta do prompt',
+                    syncStatus: 'pending',
                     options: [
                         { label: 'Português (BR)', value: 'pt-br', subOptions: [] },
                         {
@@ -199,6 +231,7 @@ export async function seedDatabase() {
                     menuId: 'estilo',
                     menuName: 'Estilo',
                     description: 'Define o estilo de formatação da saída',
+                    syncStatus: 'pending',
                     options: [
                         { label: 'Conciso', value: 'conciso', subOptions: [] },
                         {

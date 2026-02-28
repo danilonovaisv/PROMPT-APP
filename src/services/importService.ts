@@ -117,7 +117,11 @@ function fromExportFormat(
 /**
  * Importa menus de contexto de um export em lote
  */
-async function importContextMenus(menus: ContextMenu[], errors: ImportError[]): Promise<number> {
+async function importContextMenus(
+  menus: ContextMenu[],
+  errors: ImportError[],
+  warnings: string[]
+): Promise<number> {
   let count = 0;
   for (const menu of menus) {
     try {
@@ -127,17 +131,28 @@ async function importContextMenus(menus: ContextMenu[], errors: ImportError[]): 
         .first();
       
       if (!existing) {
-        const savedRemote = await saveMenuToSupabase({
-          ...menu,
-          id: undefined,
-        });
         await db.contextMenus.add({
           ...menu,
           id: undefined,
-          remoteId: savedRemote.id,
+          syncStatus: 'pending',
           createdAt: new Date(),
           updatedAt: new Date(),
         });
+        try {
+          const savedRemote = await saveMenuToSupabase({
+            ...menu,
+            id: undefined,
+          });
+          const local = await db.contextMenus.where('menuId').equals(menu.menuId).first();
+          if (local?.id) {
+            await db.contextMenus.update(local.id, {
+              remoteId: savedRemote.id,
+              syncStatus: 'synced',
+            });
+          }
+        } catch (error: any) {
+          warnings.push(`Menu "${menu.menuName}" salvo localmente. Sincronize ao fazer login.`);
+        }
         count++;
       }
     } catch (error: any) {
@@ -159,7 +174,8 @@ async function processPromptImport(
   promptData: any,
   categoryId: number,
   title: string,
-  errors: ImportError[]
+  errors: ImportError[],
+  warnings: string[]
 ): Promise<boolean> {
   try {
     if (!isValidPromptExport(promptData)) {
@@ -185,8 +201,14 @@ async function processPromptImport(
       return false;
     }
 
-    const savedRemote = await savePromptToSupabase(internalPrompt);
-    await db.prompts.add({ ...internalPrompt, remoteId: savedRemote.id });
+    const localId = await db.prompts.add({ ...internalPrompt, syncStatus: 'pending' });
+
+    try {
+      const savedRemote = await savePromptToSupabase(internalPrompt);
+      await db.prompts.update(localId, { remoteId: savedRemote.id, syncStatus: 'synced' });
+    } catch (error: any) {
+      warnings.push(`Prompt "${title}" salvo localmente. Sincronize ao fazer login.`);
+    }
     return true;
   } catch (error: any) {
     errors.push({
@@ -250,6 +272,7 @@ export async function importFromFile(file: File): Promise<ImportResult> {
           color: '#6366f1',
           remoteId: savedRemote.id,
           createdAt: new Date(),
+          syncStatus: 'synced',
         })) as number;
       } catch (err) {
         console.error("Erro ao criar categoria importada no supabase", err);
@@ -258,7 +281,9 @@ export async function importFromFile(file: File): Promise<ImportResult> {
           icon: '📥',
           color: '#6366f1',
           createdAt: new Date(),
+          syncStatus: 'pending',
         })) as number;
+        warnings.push('Categoria "Importados" salva localmente. Sincronize ao fazer login.');
       }
     }
 
@@ -266,7 +291,7 @@ export async function importFromFile(file: File): Promise<ImportResult> {
     if (isBulkExport(parsed)) {
       // Importar menus de contexto se existirem
       if (Array.isArray(parsed.contextMenus)) {
-        const menuCount = await importContextMenus(parsed.contextMenus, errors);
+        const menuCount = await importContextMenus(parsed.contextMenus, errors, warnings);
         if (menuCount > 0) {
           console.log(`✅ ${menuCount} menus de contexto importados`);
         }
@@ -298,7 +323,7 @@ export async function importFromFile(file: File): Promise<ImportResult> {
           }
 
           const title = item.title || `Prompt importado ${index + 1}`;
-          const success = await processPromptImport(item.prompt, catId, title, errors);
+          const success = await processPromptImport(item.prompt, catId, title, errors, warnings);
           if (success) count++;
         } catch (itemError: any) {
           errors.push({
@@ -312,13 +337,13 @@ export async function importFromFile(file: File): Promise<ImportResult> {
     } else if (isValidPromptExport(parsed)) {
       // Prompt único
       const title = file.name.replace('.json', '') || 'Prompt importado';
-      const success = await processPromptImport(parsed, importCategoryId, title, errors);
+      const success = await processPromptImport(parsed, importCategoryId, title, errors, warnings);
       if (success) count = 1;
     } else if (Array.isArray(parsed)) {
       // Array de prompts
       for (const [index, item] of parsed.entries()) {
         const title = `Prompt importado ${index + 1}`;
-        const success = await processPromptImport(item, importCategoryId, title, errors);
+        const success = await processPromptImport(item, importCategoryId, title, errors, warnings);
         if (success) count++;
       }
     } else {

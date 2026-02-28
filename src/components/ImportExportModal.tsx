@@ -4,7 +4,7 @@
 
 import { useState, useRef } from 'react';
 import { useToast } from '@/context/ToastContext';
-import { downloadAllPrompts } from '@/utils/exportJson';
+import { downloadAllPrompts, downloadJson } from '@/utils/exportJson';
 import { importFromFile, getImportStats, type ImportResult } from '@/services/importService';
 import {
     X,
@@ -73,6 +73,20 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
     const handleExport = async () => {
         await downloadAllPrompts();
         showToast('Exportação concluída!');
+    };
+
+    const handleDownloadTemplate = async (path: string, filename: string) => {
+        try {
+            const res = await fetch(path);
+            if (!res.ok) {
+                throw new Error(`Falha ao baixar template: ${res.status}`);
+            }
+            const data = await res.json();
+            downloadJson(data, filename);
+            showToast('Template baixado!');
+        } catch (err: any) {
+            showToast(err.message || 'Erro ao baixar template', 'error');
+        }
     };
 
     const handleRestoreLocal = async () => {
@@ -192,6 +206,36 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                         <button className="btn btn--primary btn--lg" onClick={handleExport}>
                             <Download size={18} /> Exportar Tudo (.json)
                         </button>
+                    </div>
+
+                    {/* Templates */}
+                    <div className="form-section form-section--flush">
+                        <h3 className="form-section__title">
+                            <Download size={18} /> Templates JSON
+                        </h3>
+                        <p className="import-description">
+                            Baixe templates prontos para estruturar seus prompts e menus.
+                        </p>
+                        <div className="flex-row-wrap">
+                            <button
+                                className="btn btn--secondary"
+                                onClick={() => handleDownloadTemplate('/templates/prompt_template_full.json', 'prompt_template_full.json')}
+                            >
+                                <Download size={16} /> Template Prompt (com menus)
+                            </button>
+                            <button
+                                className="btn btn--secondary"
+                                onClick={() => handleDownloadTemplate('/templates/prompt_template_min.json', 'prompt_template_min.json')}
+                            >
+                                <Download size={16} /> Template Prompt (mínimo)
+                            </button>
+                            <button
+                                className="btn btn--secondary"
+                                onClick={() => handleDownloadTemplate('/templates/menu_template.json', 'menu_template.json')}
+                            >
+                                <Download size={16} /> Template Menus
+                            </button>
+                        </div>
                     </div>
 
                     {/* Backup Local */}

@@ -65,6 +65,34 @@ export default function CategoryManagerPage() {
             return;
         }
 
+        const now = new Date();
+        let localId: number | null = null;
+
+        try {
+            if (isEditing) {
+                localId = isEditing;
+                await db.categories.update(isEditing, {
+                    name: form.name.trim(),
+                    icon: form.icon,
+                    color: form.color,
+                    syncStatus: 'pending',
+                });
+            } else {
+                localId = await db.categories.add({
+                    name: form.name.trim(),
+                    icon: form.icon,
+                    color: form.color,
+                    createdAt: now,
+                    syncStatus: 'pending',
+                });
+            }
+            await saveLocalBackup();
+        } catch (error: any) {
+            console.error('Erro ao salvar localmente:', error);
+            showToast(error.message || 'Erro ao salvar a categoria localmente.', 'error');
+            return;
+        }
+
         try {
             const savedRemote = await saveCategoryToSupabase({
                 name: form.name.trim(),
@@ -73,29 +101,19 @@ export default function CategoryManagerPage() {
                 remoteId: form.remoteId,
             });
 
-            if (isEditing) {
-                await db.categories.update(isEditing, {
-                    name: form.name.trim(),
-                    icon: form.icon,
-                    color: form.color,
+            if (localId !== null) {
+                await db.categories.update(localId, {
                     remoteId: savedRemote.id,
+                    syncStatus: 'synced',
                 });
-                showToast('Categoria atualizada no servidor!');
-            } else {
-                await db.categories.add({
-                    name: form.name.trim(),
-                    icon: form.icon,
-                    color: form.color,
-                    remoteId: savedRemote.id,
-                    createdAt: new Date(),
-                });
-                showToast('Categoria criada no servidor!');
             }
-            await saveLocalBackup();
+
+            showToast(isEditing ? 'Categoria sincronizada!' : 'Categoria criada e sincronizada!');
             cancel();
         } catch (error: any) {
             console.error('Erro ao salvar categoria no Supabase:', error);
-            showToast(error.message || 'Erro ao salvar a categoria no servidor.', 'error');
+            showToast('Categoria salva localmente. Sincronize ao fazer login.', 'info');
+            cancel();
         }
     };
 

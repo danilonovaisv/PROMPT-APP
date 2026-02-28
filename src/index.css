@@ -1020,6 +1020,12 @@ select option {
   gap: var(--space-3);
 }
 
+.flex-row-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .flex-row-end {
   display: flex;
   gap: var(--space-3);
