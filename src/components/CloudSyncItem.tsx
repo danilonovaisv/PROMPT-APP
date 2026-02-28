@@ -7,14 +7,16 @@ import { supabase } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
-import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User } from 'lucide-react';
+import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User, KeyRound } from 'lucide-react';
 import type { Session } from '@supabase/supabase-js';
+import AuthModal from './AuthModal';
 
 export default function CloudSyncItem() {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(false);
     const [hasUpdates, setHasUpdates] = useState(false);
     const [realtimeActive, setRealtimeActive] = useState(false);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { showToast } = useToast();
 
     useEffect(() => {
@@ -44,11 +46,11 @@ export default function CloudSyncItem() {
     // Verificar periodicamente se há atualizações
     useEffect(() => {
         if (!session) return;
-        
+
         const interval = setInterval(() => {
             checkForUpdatesStatus();
         }, 30000); // Checar a cada 30 segundos
-        
+
         return () => clearInterval(interval);
     }, [session]);
 
@@ -80,23 +82,28 @@ export default function CloudSyncItem() {
         }
     };
 
-    const handleLogin = async () => {
-        // Para simplificar, usamos o login via Email (o usuário precisará configurar no Supabase)
-        // Se quiser Google/Github, adicione o parâmetro provider
-        const email = window.prompt('Digite seu email para login:');
-        if (!email) return;
-
-        const { error } = await supabase.auth.signInWithOtp({ email });
-        if (error) {
-            showToast('Erro ao enviar link de login: ' + error.message, 'error');
-        } else {
-            showToast('Link de login enviado para o seu email!');
-        }
+    const handleLogin = () => {
+        setIsAuthModalOpen(true);
     };
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
         showToast('Logout realizado');
+    };
+
+    const handleChangePassword = async () => {
+        const newPassword = window.prompt('Digite a nova senha (mínimo 6 caracteres):');
+        if (!newPassword || newPassword.length < 6) {
+            if (newPassword !== null) showToast('A senha deve ter pelo menos 6 caracteres', 'error');
+            return;
+        }
+
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) {
+            showToast('Erro ao atualizar senha: ' + error.message, 'error');
+        } else {
+            showToast('Senha atualizada com sucesso!', 'success');
+        }
     };
 
     const handleSmartSync = async () => {
@@ -132,11 +139,17 @@ export default function CloudSyncItem() {
 
     if (!session) {
         return (
-            <button className="app-sidebar__nav-item" onClick={handleLogin}>
-                <CloudOff size={18} />
-                <span>Nuvem Desconectada</span>
-                <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
-            </button>
+            <>
+                <button className="app-sidebar__nav-item" onClick={handleLogin}>
+                    <CloudOff size={18} />
+                    <span>Nuvem Desconectada</span>
+                    <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
+                </button>
+                <AuthModal
+                    isOpen={isAuthModalOpen}
+                    onClose={() => setIsAuthModalOpen(false)}
+                />
+            </>
         );
     }
 
@@ -145,6 +158,9 @@ export default function CloudSyncItem() {
             <div className="cloud-sync-box__user">
                 <User size={14} />
                 <span className="truncate">{session.user.email}</span>
+                <button onClick={handleChangePassword} title="Mudar Senha" className="btn-logout ml-auto" style={{ marginRight: '4px' }}>
+                    <KeyRound size={12} />
+                </button>
                 <button onClick={handleLogout} title="Sair" className="btn-logout">
                     <LogOut size={12} />
                 </button>
