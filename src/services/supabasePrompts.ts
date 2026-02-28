@@ -1,11 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import { db } from '@/db/database';
 import type { Prompt } from '@/models/types';
 
-// Helper if your columns are text instead of jsonb
-function toDbJsonMaybe(value: any) {
-    if (value === null || value === undefined) return null;
-    return typeof value === 'string' ? value : JSON.stringify(value);
-}
 
 export async function savePromptToSupabase(input: Partial<Prompt>) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
@@ -14,28 +10,45 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
+    // Resolver ID remoto da categoria
+    let remoteCategoryId = null;
+    if (input.categoryId) {
+        // Tenta achar categoria localmente para pegar o remoteId
+        const localCat = await db.categories.get(input.categoryId);
+        if (localCat?.remoteId) {
+            remoteCategoryId = localCat.remoteId;
+        } else {
+            // Se não achou localmente, talvez o categoryId já seja o remoto (ex: vindo de import direto)
+            // ou talvez a categoria ainda não foi sincronizada.
+            // Para segurança, vamos verificar se é um número grande (provável remoteId do Supabase identity)
+            if (input.categoryId > 0) {
+                remoteCategoryId = input.categoryId;
+            }
+        }
+    }
+
     const payload: any = {
         user_id: user.id,
-        category_id: input.categoryId,
+        category_id: remoteCategoryId,
         title: input.title,
         system_role: input.systemRole,
         task: input.task,
         context: input.context,
-        menus: toDbJsonMaybe(input.menus),
-        context_menus: toDbJsonMaybe(input.contextMenus),
-        enabled_menu_ids: toDbJsonMaybe(input.enabledMenuIds),
-        constraints: toDbJsonMaybe(input.constraints),
-        negative_prompt: toDbJsonMaybe(input.negativePrompt),
-        output_schema: toDbJsonMaybe(input.outputSchema),
-        few_shot_examples: toDbJsonMaybe(input.fewShotExamples),
+        menus: input.menus || {},
+        context_menus: input.contextMenus || {},
+        enabled_menu_ids: input.enabledMenuIds || [],
+        constraints: input.constraints || [],
+        negative_prompt: input.negativePrompt || [],
+        output_schema: input.outputSchema || { formato: 'texto', estrutura: '' },
+        few_shot_examples: input.fewShotExamples || [],
         updated_at: new Date().toISOString(),
     };
 
-    if (input.id) {
+    if (input.remoteId) {
         const { data, error } = await supabase
             .from("prompts")
             .update(payload)
-            .eq("id", input.id)
+            .eq("id", input.remoteId)
             .eq("user_id", user.id)
             .select()
             .single();

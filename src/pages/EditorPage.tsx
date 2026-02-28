@@ -9,8 +9,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
 import { saveLocalBackup } from '@/utils/backupManager';
-import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection } from '@/models/types';
-import { supabase } from '@/lib/supabase';
+import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import {
     ArrowLeft,
@@ -57,7 +56,7 @@ export default function EditorPage() {
     const { showToast } = useToast();
     const isNew = id === 'novo';
 
-    const [categories, setCategories] = useState<Array<{ id: number; name: string; icon?: string }>>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
 
     const [form, setForm] = useState<Omit<Prompt, 'id'>>(EMPTY_PROMPT);
@@ -66,16 +65,11 @@ export default function EditorPage() {
     const [showMenuPicker, setShowMenuPicker] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
-    /* Buscar categorias do Supabase */
+    /* Buscar categorias do banco local (Dexie) */
     useEffect(() => {
         (async () => {
-            const { data, error } = await supabase
-                .from('categories')
-                .select('id, name, icon')
-                .order('name');
-            if (!error && data) {
-                setCategories(data);
-            }
+            const data = await db.categories.toArray();
+            setCategories(data.sort((a, b) => a.name.localeCompare(b.name)));
         })();
     }, []);
 
@@ -85,7 +79,7 @@ export default function EditorPage() {
             const catId = searchParams.get('categoria');
             setForm({
                 ...EMPTY_PROMPT,
-                categoryId: catId ? Number(catId) : categories[0]?.id ?? 0,
+                categoryId: catId ? Number(catId) : (categories[0]?.id || 0),
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
@@ -289,8 +283,11 @@ export default function EditorPage() {
 
         try {
             // Salvar no Supabase
-            // Se for atualizar, usamos o remoteId (se existir). Se for um prompt local que nunca foi para o Supabase, envia sem id.
-            const promptPayload = { ...data, id: isNew ? undefined : (data as Prompt).remoteId };
+            // Se for atualizar, usamos o remoteId (se existir).
+            const promptPayload = {
+                ...data,
+                remoteId: (data as Prompt).remoteId
+            };
             const savedPrompt = await savePromptToSupabase(promptPayload);
 
             // Sincronizar localmente no Dexie

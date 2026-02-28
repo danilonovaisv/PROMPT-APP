@@ -23,9 +23,9 @@ export async function setupRealtimeListeners() {
   }
 
   const userId = session.user.id;
-  
+
   console.log('📡 Iniciando listeners de realtime...');
-  
+
   // Canal para Categorias
   categoriesChannel = supabase
     .channel('categories_changes')
@@ -92,7 +92,7 @@ export async function setupRealtimeListeners() {
 async function handleCategoryChange(payload: any) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
-  
+
   try {
     switch (eventType) {
       case 'INSERT':
@@ -102,7 +102,7 @@ async function handleCategoryChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
         const categoryData: Partial<Category> = {
           remoteId: remoteData.id,
           name: remoteData.name,
@@ -127,7 +127,7 @@ async function handleCategoryChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
         if (toDelete) {
           await db.categories.delete(toDelete.id!);
           console.log(`🗑️ Categoria removida localmente: ${toDelete.name}`);
@@ -145,7 +145,7 @@ async function handleCategoryChange(payload: any) {
 async function handlePromptChange(payload: any) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
-  
+
   try {
     switch (eventType) {
       case 'INSERT':
@@ -154,11 +154,25 @@ async function handlePromptChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
+        // Resolver ID local da categoria a partir do remoteId do Supabase
+        let localCategoryId = 0;
+        if (remoteData.category_id) {
+          const cat = await db.categories.where('remoteId').equals(remoteData.category_id).first();
+          if (cat) {
+            localCategoryId = cat.id!;
+          } else {
+            // Se não achamos a categoria local, talvez ela ainda não tenha sido sincronizada
+            // ou foi deletada. Mantemos o remoteId como fallback se o schema permitir, 
+            // mas o ideal é 0 ou null se não achou local.
+            localCategoryId = 0;
+          }
+        }
+
         // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
           remoteId: remoteData.id,
-          categoryId: remoteData.category_id || 0,
+          categoryId: localCategoryId,
           title: remoteData.title,
           systemRole: remoteData.system_role,
           task: remoteData.task,
@@ -188,7 +202,7 @@ async function handlePromptChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
         if (toDelete) {
           await db.prompts.delete(toDelete.id!);
           console.log(`🗑️ Prompt removido localmente: ${toDelete.title}`);
@@ -206,7 +220,7 @@ async function handlePromptChange(payload: any) {
 async function handleMenuChange(payload: any) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
-  
+
   try {
     switch (eventType) {
       case 'INSERT':
@@ -215,7 +229,7 @@ async function handleMenuChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
         const menuData: Partial<ContextMenu> = {
           remoteId: remoteData.id,
           menuId: remoteData.menu_id,
@@ -240,7 +254,7 @@ async function handleMenuChange(payload: any) {
           .where('remoteId')
           .equals(remoteData.id)
           .first();
-        
+
         if (toDelete) {
           await db.contextMenus.delete(toDelete.id!);
           console.log(`🗑️ Menu removido localmente: ${toDelete.menuName}`);
@@ -260,17 +274,17 @@ export function cleanupRealtimeListeners() {
     categoriesChannel.unsubscribe();
     categoriesChannel = null;
   }
-  
+
   if (promptsChannel) {
     promptsChannel.unsubscribe();
     promptsChannel = null;
   }
-  
+
   if (menusChannel) {
     menusChannel.unsubscribe();
     menusChannel = null;
   }
-  
+
   console.log('🧹 Listeners de realtime removidos');
 }
 

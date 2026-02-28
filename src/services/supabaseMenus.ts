@@ -1,12 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import type { ContextMenu } from '@/models/types';
 
-// Helper for possible text/json columns
-function toDbJsonMaybe(value: any) {
-    if (value === null || value === undefined) return null;
-    return typeof value === 'string' ? value : JSON.stringify(value);
-}
-
 export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;
@@ -19,7 +13,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         menu_id: input.menuId,
         menu_name: input.menuName,
         description: input.description,
-        options: toDbJsonMaybe(input.options),
+        options: input.options || [],
         updated_at: new Date().toISOString(),
     };
 
