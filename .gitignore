@@ -25,3 +25,6 @@ pnpm-debug.log*
 # Editor Config
 .vscode/
 .idea/
+node_modules
+node_modules
+node_modules

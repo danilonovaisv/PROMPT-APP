@@ -1,2 +1,13 @@
 ignoredBuiltDependencies:
+  - agentdb
+  - agentic-flow
+  - argon2
+  - bcrypt
+  - better-sqlite3
   - esbuild
+  - hnswlib-node
+  - onnxruntime-node
+  - protobufjs
+  - sharp
+  - sqlite3
+  - tldjs
