@@ -1,0 +1,308 @@
+{
+  "menu_id": "o_que_auditar",
+  "menu_name": "O QUE AUDITAR (ROTAS → SESSÕES)",
+  "description": "Escolha a rota e, em seguida, a sessão específica. Baseado no AUDIT_PROMPT.md (ordem/escopo).",
+  "options": [
+    {
+      "label": "Home — /",
+      "value": "rota_home",
+      "sub_options": [
+        {
+          "label": "Global (tokens, tipografia, grid, tema)",
+          "value": "home_global"
+        },
+        {"label": "Header / Nav", "value": "home_header_nav"},
+        {"label": "Home Hero", "value": "home_hero"},
+        {"label": "Manifesto", "value": "home_manifesto"},
+        {"label": "Featured Projects", "value": "home_featured_projects"},
+        {
+          "label": "About (Origin / Method / What I Do)",
+          "value": "home_about_blocks"
+        },
+        {"label": "Portfolio Grid (na Home)", "value": "home_portfolio_grid"},
+        {"label": "Footer", "value": "home_footer"}
+      ]
+    },
+    {
+      "label": "Sobre — /sobre",
+      "value": "rota_sobre",
+      "sub_options": [
+        {"label": "Global (grid/tipografia)", "value": "sobre_global"},
+        {"label": "Header / Nav", "value": "sobre_header_nav"},
+        {"label": "Intro / Hero", "value": "sobre_intro_hero"},
+        {
+          "label": "Story / Timeline / História",
+          "value": "sobre_story_timeline"
+        },
+        {
+          "label": "Skills / Stack / Ferramentas",
+          "value": "sobre_skills_stack"
+        },
+        {"label": "Método / Processo", "value": "sobre_metodo_processo"},
+        {"label": "CTA / Contato (bloco final)", "value": "sobre_cta_contato"},
+        {"label": "Footer", "value": "sobre_footer"}
+      ]
+    },
+    {
+      "label": "Portfólio — /portfolio",
+      "value": "rota_portfolio",
+      "sub_options": [
+        {"label": "Header / Nav", "value": "portfolio_header_nav"},
+        {"label": "Título / Introdução da página", "value": "portfolio_intro"},
+        {
+          "label": "Filtros (tags/categorias/search)",
+          "value": "portfolio_filtros"
+        },
+        {
+          "label": "Portfolio Grid (cards/listagem)",
+          "value": "portfolio_grid"
+        },
+        {
+          "label": "Card → Modal (quando não há landing)",
+          "value": "portfolio_modal_flow"
+        },
+        {
+          "label": "Card → /projects/[slug] (quando há landing)",
+          "value": "portfolio_project_link_flow"
+        },
+        {"label": "Empty/Loading/Error states", "value": "portfolio_states"},
+        {"label": "Footer", "value": "portfolio_footer"}
+      ]
+    },
+    {
+      "label": "Portfólio Item — /portfolio/[slug]",
+      "value": "rota_portfolio_slug",
+      "sub_options": [
+        {
+          "label": "Sessão principal (conteúdo do item)",
+          "value": "portfolio_slug_main"
+        },
+        {"label": "Mídia / Galeria", "value": "portfolio_slug_media"},
+        {
+          "label": "Ações (fechar/voltar/CTA)",
+          "value": "portfolio_slug_actions"
+        },
+        {"label": "SEO/Metadata", "value": "portfolio_slug_seo"}
+      ]
+    },
+    {
+      "label": "Projeto Landing — /projects/[slug]",
+      "value": "rota_projects_slug",
+      "sub_options": [
+        {"label": "Header / Nav", "value": "projects_slug_header_nav"},
+        {"label": "Hero do Projeto", "value": "projects_slug_hero"},
+        {"label": "Resumo / Contexto", "value": "projects_slug_context"},
+        {
+          "label": "Galeria / Mídia (imagens/vídeos)",
+          "value": "projects_slug_gallery"
+        },
+        {
+          "label": "Seções do Case (desafio/solução/resultado)",
+          "value": "projects_slug_case_sections"
+        },
+        {"label": "Tech Stack / Badges", "value": "projects_slug_stack"},
+        {
+          "label": "Próximo/Anterior / Recomendações",
+          "value": "projects_slug_next_prev"
+        },
+        {"label": "Footer", "value": "projects_slug_footer"},
+        {"label": "SEO/Metadata/OG", "value": "projects_slug_seo"}
+      ]
+    },
+    {
+      "label": "Contato — /contato",
+      "value": "rota_contato",
+      "sub_options": [
+        {"label": "Header / Nav", "value": "contato_header_nav"},
+        {"label": "Form (campos/validação)", "value": "contato_form"},
+        {
+          "label": "Envio (loading/success/error)",
+          "value": "contato_submit_states"
+        },
+        {"label": "Alternativas de contato (links)", "value": "contato_links"},
+        {"label": "Footer", "value": "contato_footer"}
+      ]
+    },
+    {
+      "label": "Privacidade — /privacidade",
+      "value": "rota_privacidade",
+      "sub_options": [
+        {"label": "Header / Nav", "value": "privacidade_header_nav"},
+        {"label": "Conteúdo / Leitura / A11y", "value": "privacidade_content"},
+        {"label": "Footer", "value": "privacidade_footer"},
+        {"label": "SEO/Metadata", "value": "privacidade_seo"}
+      ]
+    },
+    {
+      "label": "Admin — /admin/login",
+      "value": "rota_admin_login",
+      "sub_options": [
+        {"label": "Form Login", "value": "admin_login_form"},
+        {"label": "Estados (erro/loading)", "value": "admin_login_states"},
+        {"label": "A11y (labels/focus/teclado)", "value": "admin_login_a11y"}
+      ]
+    },
+    {
+      "label": "Admin — /admin (Dashboard)",
+      "value": "rota_admin_dashboard",
+      "sub_options": [
+        {"label": "Shell (sidebar/topbar)",      "value": "admin_shell"     },
+        {"label": "Navegação interna",           "value": "admin_nav"       },
+        {"label": "Permissões/rotas protegidas", "value": "admin_protection"}
+      ]
+    },
+    {
+      "label": "Admin Trabalhos — /admin/trabalhos (Listagem)",
+      "value": "rota_admin_trabalhos",
+      "sub_options": [
+        {"label": "Listagem / Tabela", "value": "admin_trabalhos_list"},
+        {"label": "Filtros / Busca", "value": "admin_trabalhos_filters"},
+        {
+          "label": "Ações (edit/publish/delete)",
+          "value": "admin_trabalhos_actions"
+        }
+      ]
+    },
+    {
+      "label": "Admin Trabalhos — /admin/trabalhos/new (Criar)",
+      "value": "rota_admin_trabalhos_new",
+      "sub_options": [
+        {
+          "label": "Form / Campos / Validação",
+          "value": "admin_trabalhos_new_form"
+        },
+        {
+          "label": "Upload/Seleção de mídia",
+          "value": "admin_trabalhos_new_media"
+        },
+        {
+          "label": "Publish e reflexo no público",
+          "value": "admin_trabalhos_new_publish"
+        }
+      ]
+    },
+    {
+      "label": "Admin Trabalhos — /admin/trabalhos/[id] (Editar)",
+      "value": "rota_admin_trabalhos_id",
+      "sub_options": [
+        {
+          "label": "Form / Campos / Validação",
+          "value": "admin_trabalhos_edit_form"
+        },
+        {
+          "label": "Estado inicial (carregamento) + persistência",
+          "value": "admin_trabalhos_edit_state"
+        },
+        {
+          "label": "Publish/Unpublish e reflexo no público",
+          "value": "admin_trabalhos_edit_publish"
+        }
+      ]
+    },
+    {
+      "label": "Admin Tags — /admin/tags",
+      "value": "rota_admin_tags",
+      "sub_options": [
+        {"label": "CRUD Tags",            "value": "admin_tags_crud"    },
+        {"label": "Validação + feedback", "value": "admin_tags_feedback"}
+      ]
+    },
+    {
+      "label": "Admin Mídia — /admin/midia",
+      "value": "rota_admin_midia",
+      "sub_options": [
+        {"label": "Biblioteca / Grid", "value": "admin_media_library"},
+        {
+          "label": "Upload / Otimização / Preview",
+          "value": "admin_media_upload"
+        }
+      ]
+    },
+    {
+      "label": "Admin Landing Pages — /admin/landing-pages",
+      "value": "rota_admin_landing_pages",
+      "sub_options": [
+        {"label": "Listagem", "value": "admin_landing_list"},
+        {"label": "Criar/Editar", "value": "admin_landing_editor"},
+        {
+          "label": "Publicação e visualização pública",
+          "value": "admin_landing_publish_view"
+        }
+      ]
+    },
+    {
+      "label": "Admin Settings — /admin/settings",
+      "value": "rota_admin_settings",
+      "sub_options": [
+        {"label": "Preferências / Configs", "value": "admin_settings_configs"},
+        {
+          "label": "Validação + persistência",
+          "value": "admin_settings_persistence"
+        }
+      ]
+    },
+    {
+      "label": "Admin Scene Generator — /admin/scene-generator",
+      "value": "rota_admin_scene_generator",
+      "sub_options": [
+        {"label": "Form / Inputs", "value": "admin_scene_form"},
+        {"label": "Geração / Resultado / Copiar", "value": "admin_scene_output"}
+      ]
+    },
+    {
+      "label": "Admin Copy Agent — /admin/copy-agent",
+      "value": "rota_admin_copy_agent",
+      "sub_options": [
+        {"label": "Form / Inputs", "value": "admin_copy_form"},
+        {"label": "Geração / Resultado / Copiar", "value": "admin_copy_output"}
+      ]
+    },
+    {
+      "label": "Admin Config (redirect) — /admin/config",
+      "value": "rota_admin_config_redirect",
+      "sub_options": [
+        {
+          "label": "Redirect correto + rota final",
+          "value": "admin_config_redirect_behavior"
+        }
+      ]
+    },
+    {
+      "label": "Rotas de laboratório — /portfolio-showcase, /floating-cards, /playground",
+      "value": "rota_labs",
+      "sub_options": [
+        {"label": "UI/UX e Motion (guardrails)", "value": "labs_ui_motion"},
+        {
+          "label": "Performance (não degradar o resto)",
+          "value": "labs_performance"
+        },
+        {"label": "A11y (teclado/reduced motion)", "value": "labs_a11y"}
+      ]
+    },
+    {
+      "label": "Exemplos/Instrumentos — /examples/supabase, /instruments",
+      "value": "rota_examples_instruments",
+      "sub_options": [
+        {
+          "label": "Integridade (não quebrar build)",
+          "value": "examples_integrity"
+        },
+        {"label": "Separação public/admin", "value": "examples_separation"}
+      ]
+    },
+    {
+      "label": "Páginas especiais — not-found, global-error",
+      "value": "rota_special_pages",
+      "sub_options": [
+        {
+          "label": "Not Found (layout, links, a11y)",
+          "value": "special_not_found"
+        },
+        {
+          "label": "Global Error (fallback, recover)",
+          "value": "special_global_error"
+        }
+      ]
+    }
+  ]
+}
