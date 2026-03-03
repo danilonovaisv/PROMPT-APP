@@ -9,6 +9,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { normalizeFewShotExamples } from '@/utils/normalizeFewShot';
 import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import {
@@ -277,7 +278,7 @@ export default function EditorPage() {
             ...form,
             constraints: form.constraints.filter(Boolean),
             negativePrompt: form.negativePrompt.filter(Boolean),
-            fewShotExamples: form.fewShotExamples.filter((e) => e.input || e.output),
+            fewShotExamples: normalizeFewShotExamples(form.fewShotExamples),
             updatedAt: new Date(),
         };
 

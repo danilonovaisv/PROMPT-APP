@@ -4,6 +4,7 @@
 
 import type { Prompt, PromptExportFormat, BulkExport, MenuSelectionsMap } from '@/models/types';
 import { db } from '@/db/database';
+import { normalizeFewShotExamples } from './normalizeFewShot';
 
 /** Converte MenuSelectionsMap para o formato de exportação */
 function exportMenuSelections(
@@ -60,9 +61,7 @@ export function toExportFormat(prompt: Prompt): PromptExportFormat {
             formato: prompt.outputSchema?.formato || 'texto',
             estrutura: prompt.outputSchema?.estrutura || '',
         },
-        few_shot_examples: (prompt.fewShotExamples || []).filter(
-            (ex) => ex.input?.trim() || ex.output?.trim()
-        ),
+        few_shot_examples: normalizeFewShotExamples(prompt.fewShotExamples),
     };
 }
 
