@@ -249,7 +249,7 @@ export default function MenuManagerPage() {
                     >
                         <ArrowLeft size={18} />
                     </button>
-                    <h2 className="app-header__title">Menus de Contexto</h2>
+                    <h1 className="app-header__title">Menus de Contexto</h1>
                 </div>
                 <div className="app-header__actions">
                     <button

@@ -377,9 +377,9 @@ export default function EditorPage() {
                     >
                         <ArrowLeft size={18} />
                     </button>
-                    <h2 className="app-header__title">
+                    <h1 className="app-header__title">
                         {isNew ? 'Novo Prompt' : 'Editar Prompt'}
-                    </h2>
+                    </h1>
                 </div>
                 <div className="app-header__actions">
                     <button className="btn btn--ghost" onClick={() => setShowPreview(true)}>

@@ -84,7 +84,7 @@ export default function CategoryPage() {
                 <div className="app-content">
                     <div className="empty-state">
                         <div className="empty-state__icon">🔍</div>
-                        <h3 className="empty-state__title">Categoria não encontrada</h3>
+                        <h1 className="empty-state__title">Categoria não encontrada</h1>
                     </div>
                 </div>
             </>
@@ -108,11 +108,11 @@ export default function CategoryPage() {
                         <ArrowLeft size={18} />
                     </button>
                     <span className="cat-header-icon">{category.icon}</span>
-                    <h2
+                    <h1
                         className={`app-header__title cat-header__title util-cat-color-${category.color.replace('#', '')}`}
                     >
                         {category.name}
-                    </h2>
+                    </h1>
                 </div>
                 <div className="app-header__actions">
                     <button

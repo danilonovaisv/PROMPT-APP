@@ -13,11 +13,11 @@ export default function ContactPage() {
                 url="https://prompt-app-dan.netlify.app/contato"
             />
             <header className="app-header">
-                <h2 className="app-header__title">Contato</h2>
+                <h1 className="app-header__title">Contato</h1>
             </header>
 
             <div className="app-content info-page">
-                <h1 className="info-page__title">Fale com o time do Prompt App</h1>
+                <h2 className="info-page__title">Fale com o time do Prompt App</h2>
                 <p className="info-page__meta">
                     Atendimento via canais oficiais do projeto.
                 </p>

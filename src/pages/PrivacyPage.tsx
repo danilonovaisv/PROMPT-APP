@@ -13,11 +13,11 @@ export default function PrivacyPage() {
                 url="https://prompt-app-dan.netlify.app/privacidade"
             />
             <header className="app-header">
-                <h2 className="app-header__title">Privacidade</h2>
+                <h1 className="app-header__title">Privacidade</h1>
             </header>
 
             <div className="app-content info-page">
-                <h1 className="info-page__title">Política de Privacidade</h1>
+                <h2 className="info-page__title">Política de Privacidade</h2>
                 <p className="info-page__meta">
                     Vigente a partir de 22 de fevereiro de 2026.
                 </p>

@@ -13,11 +13,11 @@ export default function AboutPage() {
                 url="https://prompt-app-dan.netlify.app/sobre"
             />
             <header className="app-header">
-                <h2 className="app-header__title">Sobre</h2>
+                <h1 className="app-header__title">Sobre</h1>
             </header>
 
             <div className="app-content info-page">
-                <h1 className="info-page__title">Sobre o Prompt App</h1>
+                <h2 className="info-page__title">Sobre o Prompt App</h2>
                 <p className="info-page__meta">
                     Por Danilo Novais • Publicado em 22 de fevereiro de 2026 • Atualizado em 22 de fevereiro de 2026
                 </p>

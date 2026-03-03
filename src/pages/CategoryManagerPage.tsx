@@ -150,7 +150,7 @@ export default function CategoryManagerPage() {
                     >
                         <ArrowLeft size={18} />
                     </button>
-                    <h2 className="app-header__title">Gerenciar Categorias</h2>
+                    <h1 className="app-header__title">Gerenciar Categorias</h1>
                 </div>
                 <div className="app-header__actions">
                     <button className="btn btn--primary" onClick={startCreate}>
