@@ -108,6 +108,37 @@ export async function downloadAllPrompts() {
     downloadJson(bulk, `prompt_app_export_${Date.now()}`);
 }
 
+/** Retorna um Blob com o template JSON para novos prompts */
+export function getTemplateFile(): Blob {
+    const template = {
+        app: 'Prompt App',
+        prompts: [
+            {
+                title: 'Exemplo de Prompt',
+                category: 'Geral',
+                prompt: {
+                    system_role: 'Você é um assistente útil.',
+                    task: 'Explique o que é engenharia de prompts.',
+                    input_data: {
+                        context: '',
+                        menus_selecionados: {},
+                    },
+                    constraints: [],
+                    negative_prompt: [],
+                    output_schema: {
+                        formato: 'texto',
+                        estrutura: '',
+                    },
+                    few_shot_examples: [],
+                },
+            },
+        ],
+    };
+    return new Blob([JSON.stringify(template, null, 2)], {
+        type: 'application/json',
+    });
+}
+
 /** Copia texto para a área de transferência */
 export async function copyToClipboard(text: string): Promise<boolean> {
     try {

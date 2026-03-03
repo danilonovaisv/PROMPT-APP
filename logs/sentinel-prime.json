@@ -1,0 +1,7 @@
+{
+  "origem": "Ghost System Portfolio",
+  "erro_detectado": "Build fatal (287 erros) por misconfig de TS, falta de dependência (react-hot-toast) e corrupção de .gitignore.",
+  "componente_afetado": "package.json, index.css, .gitignore, src/utils/*",
+  "solucao_aplicada": "Correção de scripts de build, instalação de dependências via pnpm, saneamento de assets redundantes e ajuste de tokens de cores Ghost Era.",
+  "status": "RESOLVIDO"
+}

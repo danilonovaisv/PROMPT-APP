@@ -12,6 +12,7 @@ import { saveLocalBackup } from '@/utils/backupManager';
 import { normalizeFewShotExamples } from '@/utils/normalizeFewShot';
 import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
     ArrowLeft,
     Save,
@@ -102,8 +103,10 @@ export default function EditorPage() {
         }
     }, [id, isNew, searchParams, categories]);
 
-    /* --- Sistema de Rascunho (Draft) --- */
-    // Carregar rascunho se existir
+    /* --- Sistema de Rascunho (Draft) com Debounce --- */
+    const debouncedForm = useDebounce(form, 1500); // 1.5s de atraso para não pesar a UI
+
+    // Carregar rascunho se existir ao iniciar
     useEffect(() => {
         if (loaded) {
             const draftKey = `prompt_draft_${id}`;
@@ -111,8 +114,12 @@ export default function EditorPage() {
             if (savedDraft) {
                 try {
                     const draftData = JSON.parse(savedDraft);
-                    setForm(prev => ({ ...prev, ...draftData }));
-                    showToast('Rascunho recuperado automaticamente!', 'info');
+                    // Só aplicamos o rascunho se ele for diferente do estado inicial "limpo"
+                    // ou se encontrarmos propriedades relevantes populadas
+                    if (draftData.title || draftData.task || draftData.systemRole) {
+                        setForm(prev => ({ ...prev, ...draftData }));
+                        showToast('Rascunho recuperado automaticamente!', 'info');
+                    }
                 } catch (e) {
                     console.error('Erro ao recuperar rascunho:', e);
                 }
@@ -120,13 +127,14 @@ export default function EditorPage() {
         }
     }, [loaded, id]);
 
-    // Salvar rascunho automaticamente
+    // Salvar rascunho apenas quando o valor debounced mudar
     useEffect(() => {
-        if (loaded && form !== EMPTY_PROMPT) {
+        if (loaded && debouncedForm !== EMPTY_PROMPT) {
             const draftKey = `prompt_draft_${id}`;
-            localStorage.setItem(draftKey, JSON.stringify(form));
+            localStorage.setItem(draftKey, JSON.stringify(debouncedForm));
+            console.log('💾 Rascunho salvo (debounced)');
         }
-    }, [form, id, loaded]);
+    }, [debouncedForm, id, loaded]);
 
     // Limpar rascunho ao salvar com sucesso
     const clearDraft = () => {

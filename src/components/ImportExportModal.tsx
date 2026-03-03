@@ -1,123 +1,82 @@
 /* ======================================================
-   Modal de Importação / Exportação
+   Modal de Importação e Exportação
    ====================================================== */
 
-import { useState, useRef } from 'react';
-import { useToast } from '@/context/ToastContext';
-import { downloadAllPrompts, downloadJson } from '@/utils/exportJson';
-import { importFromFile, getImportStats, type ImportResult } from '@/services/importService';
+import React, { useRef, useState } from 'react';
 import {
-    X,
-    Upload,
-    Download,
     FileUp,
+    Download,
+    X,
     CheckCircle,
     AlertCircle,
-    History,
-    RefreshCw,
+    Copy,
+    Save,
 } from 'lucide-react';
-import { getLocalBackupInfo, restoreFromSnapshot } from '@/utils/backupManager';
+import { importFromFile, type ImportResult } from '@/services/importService';
+import { downloadAllPrompts, getTemplateFile } from '@/utils/exportJson';
+import { toast } from 'react-hot-toast';
 
 interface ImportExportModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function ImportExportModal({ isOpen, onClose }: ImportExportModalProps) {
-    const { showToast } = useToast();
+export default function ImportExportModal({
+    isOpen,
+    onClose,
+}: ImportExportModalProps) {
     const fileRef = useRef<HTMLInputElement>(null);
     const [importing, setImporting] = useState(false);
     const [result, setResult] = useState<ImportResult | null>(null);
-
-    if (!isOpen) return null;
 
     const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (!file.name.endsWith('.json')) {
-            showToast('Apenas arquivos .json são aceitos', 'error');
-            return;
-        }
-
         setImporting(true);
         setResult(null);
 
         try {
-            const importResult = await importFromFile(file);
-            setResult(importResult);
-            
-            if (importResult.success) {
-                const stats = getImportStats(importResult);
-                showToast(stats, 'success');
+            const res = await importFromFile(file);
+            setResult(res);
+            if (res.success) {
+                toast.success(`${res.count} prompts importados!`);
             } else {
-                const errorSummary = importResult.errors.map(e => e.message).join('\n');
-                showToast(`Importação concluída com erros:\n${errorSummary}`, 'error');
+                toast.error('Importação concluída com erros.');
             }
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-            setResult({
-                success: false,
-                count: 0,
-                errors: [{ type: 'processing', field: 'general', message: msg }],
-                warnings: [],
-                processingTime: 0
-            });
-            showToast('Erro na importação: ' + msg, 'error');
+        } catch (error: any) {
+            toast.error(error.message || 'Erro ao importar');
         } finally {
             setImporting(false);
             if (fileRef.current) fileRef.current.value = '';
         }
     };
 
-    const handleExport = async () => {
-        await downloadAllPrompts();
-        showToast('Exportação concluída!');
+    const handleDownloadTemplate = () => {
+        const blob = getTemplateFile();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'prompt-template.json';
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
-    const handleDownloadTemplate = async (path: string, filename: string) => {
-        try {
-            const res = await fetch(path);
-            if (!res.ok) {
-                throw new Error(`Falha ao baixar template: ${res.status}`);
-            }
-            const data = await res.json();
-            downloadJson(data, filename);
-            showToast('Template baixado!');
-        } catch (err: any) {
-            showToast(err.message || 'Erro ao baixar template', 'error');
-        }
-    };
-
-    const handleRestoreLocal = async () => {
-        const raw = localStorage.getItem('prompt_app_global_backup');
-        if (!raw) return;
-
-        if (!confirm('ATENÇÃO: Restaurar o backup local irá substituir todos os dados atuais. Deseja continuar?')) {
-            return;
-        }
-
-        try {
-            const snapshot = JSON.parse(raw);
-            const ok = await restoreFromSnapshot(snapshot);
-            if (ok) {
-                showToast('Banco de dados restaurado com sucesso!');
-                window.location.reload(); // Recarregar para atualizar todos os hooks
-            }
-        } catch (e) {
-            showToast('Erro ao restaurar backup', 'error');
-        }
-    };
-
-    const backupInfo = getLocalBackupInfo();
+    if (!isOpen) return null;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal__header">
-                    <h2>Importar / Exportar</h2>
+            <div
+                className="modal-content modal-content--large"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-labelledby="modal-title"
+                aria-modal="true"
+            >
+                <div className="modal-header">
+                    <h2 id="modal-title">Dados e Backup</h2>
                     <button
-                        className="btn btn--ghost btn--icon"
+                        className="btn-icon"
                         onClick={onClose}
                         aria-label="Fechar modal"
                     >
@@ -125,18 +84,16 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                     </button>
                 </div>
 
-                <div className="modal__body">
+                <div className="modal-body">
                     {/* Importar */}
                     <div className="form-section">
-                        <h3 className="form-section__title">
-                            <Upload size={18} /> Importar Prompts
-                        </h3>
-                        <p className="import-description">
+                        <h3 className="section-title">Importar</h3>
+                        <p className="section-desc">
                             Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
                         </p>
 
-                        <label className="dropzone">
-                            <FileUp size={32} color="var(--color-text-muted)" />
+                        <label className="dropzone" id="import-dropzone">
+                            <FileUp size={32} color="var(--color-text-muted)" aria-hidden="true" />
                             <span className="dropzone__label">
                                 {importing ? 'Importando...' : 'Clique ou arraste um arquivo .json'}
                             </span>
@@ -146,25 +103,27 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                                 accept=".json"
                                 onChange={handleImport}
                                 className="hidden-input"
+                                aria-labelledby="import-dropzone"
                             />
                         </label>
 
                         {result && (
-                            <div className={`import-result ${result.success ? 'import-result--success' : 'import-result--warning'}`}>
-                                <div className="import-result__header">
-                                    {result.success ? (
-                                        <>
-                                            <CheckCircle size={16} />
-                                            Importação concluída com sucesso!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <AlertCircle size={16} />
-                                            Importação concluída com {result.errors.length} erro(s)
-                                        </>
-                                    )}
-                                </div>
-                                
+                            <div
+                                className={`import-result ${result.success ? 'import-result--success' : 'import-result--warning'}`}
+                                aria-live="polite"
+                            >
+                                {result.success ? (
+                                    <div className="import-result__header" role="status">
+                                        <CheckCircle size={16} aria-hidden="true" />
+                                        Importação concluída com sucesso!
+                                    </div>
+                                ) : (
+                                    <div className="import-result__header" role="alert">
+                                        <AlertCircle size={16} aria-hidden="true" />
+                                        Importação concluída com {result.errors.length} erro(s)
+                                    </div>
+                                )}
+
                                 <div className="import-result__stats">
                                     <div>✓ {result.count} prompts importados</div>
                                     <div>⏱ Tempo: {(result.processingTime / 1000).toFixed(2)}s</div>
@@ -175,12 +134,12 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
                                         <div>✗ {result.errors.length} erro(s)</div>
                                     )}
                                 </div>
-                                
+
                                 {result.errors.length > 0 && (
                                     <div className="import-result__errors">
                                         <strong>Erros encontrados:</strong>
                                         <ul>
-                                            {result.errors.slice(0, 3).map((error: any, idx: number) => (
+                                            {result.errors.slice(0, 3).map((error, idx) => (
                                                 <li key={idx}>
                                                     <strong>{error.field}:</strong> {error.message}
                                                 </li>
@@ -197,74 +156,46 @@ export default function ImportExportModal({ isOpen, onClose }: ImportExportModal
 
                     {/* Exportar */}
                     <div className="form-section form-section--flush">
-                        <h3 className="form-section__title">
-                            <Download size={18} /> Exportar Todos os Prompts
-                        </h3>
-                        <p className="import-description">
-                            Baixe todos os seus prompts organizados por categoria em um único arquivo <strong>.json</strong>.
-                        </p>
-                        <button className="btn btn--primary btn--lg" onClick={handleExport}>
-                            <Download size={18} /> Exportar Tudo (.json)
-                        </button>
-                    </div>
+                        <h3 className="section-title">Exportar</h3>
+                        <div className="action-grid">
+                            <button
+                                className="action-card"
+                                onClick={() => downloadAllPrompts()}
+                            >
+                                <Download size={24} color="var(--blue-primary)" />
+                                <div className="action-card__info">
+                                    <strong>Exportar Tudo</strong>
+                                    <span>Backup completo de todos os prompts</span>
+                                </div>
+                            </button>
 
-                    {/* Templates */}
-                    <div className="form-section form-section--flush">
-                        <h3 className="form-section__title">
-                            <Download size={18} /> Templates JSON
-                        </h3>
-                        <p className="import-description">
-                            Baixe templates prontos para estruturar seus prompts e menus.
-                        </p>
-                        <div className="flex-row-wrap">
                             <button
-                                className="btn btn--secondary"
-                                onClick={() => handleDownloadTemplate('/templates/prompt_template_full.json', 'prompt_template_full.json')}
+                                className="action-card"
+                                onClick={handleDownloadTemplate}
                             >
-                                <Download size={16} /> Template Prompt (com menus)
-                            </button>
-                            <button
-                                className="btn btn--secondary"
-                                onClick={() => handleDownloadTemplate('/templates/prompt_template_min.json', 'prompt_template_min.json')}
-                            >
-                                <Download size={16} /> Template Prompt (mínimo)
-                            </button>
-                            <button
-                                className="btn btn--secondary"
-                                onClick={() => handleDownloadTemplate('/templates/menu_template.json', 'menu_template.json')}
-                            >
-                                <Download size={16} /> Template Menus
+                                <Save size={24} color="var(--blue-accent)" />
+                                <div className="action-card__info">
+                                    <strong>Baixar Template</strong>
+                                    <span>Modelo para criar novos prompts</span>
+                                </div>
                             </button>
                         </div>
                     </div>
 
-                    {/* Backup Local */}
-                    <div className="form-section form-section--flush">
-                        <h3 className="form-section__title">
-                            <History size={18} /> Backup de Segurança
-                        </h3>
-                        <p className="import-description">
-                            O sistema mantém uma cópia automática das suas informações para casos de emergência.
-                        </p>
-
-                        {backupInfo ? (
-                            <div className="backup-status">
-                                <div className="backup-status__info">
-                                    <div className="backup-status__date">
-                                        Último backup: <strong>{new Date(backupInfo.timestamp).toLocaleString('pt-BR')}</strong>
-                                    </div>
-                                    <div className="backup-status__details">
-                                        {backupInfo.count.prompts} prompts • {backupInfo.count.categories} categorias
-                                    </div>
-                                </div>
-                                <button className="btn btn--secondary btn--sm" onClick={handleRestoreLocal}>
-                                    <RefreshCw size={14} /> Restaurar Cópia
-                                </button>
-                            </div>
-                        ) : (
-                            <p className="ctx-empty-hint">Nenhum backup automático disponível ainda.</p>
-                        )}
+                    {/* Dicas */}
+                    <div className="info-box">
+                        <Copy size={18} />
+                        <div>
+                            <strong>Dica:</strong> Você também pode importar prompts copiando o JSON
+                            e colando diretamente no editor.
+                        </div>
                     </div>
+                </div>
+
+                <div className="modal-footer">
+                    <button className="btn btn--secondary" onClick={onClose}>
+                        Fechar
+                    </button>
                 </div>
             </div>
         </div>

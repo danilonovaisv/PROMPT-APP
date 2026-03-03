@@ -1,7 +1,3 @@
-/* ======================================================
-   Página de Categoria — lista de prompts
-   ====================================================== */
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
@@ -11,13 +7,10 @@ import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     Plus,
     ArrowLeft,
-    Copy,
-    Download,
-    Trash2,
-    Edit3,
-    Clock,
 } from 'lucide-react';
 import SEO from '@/components/SEO';
+import PromptCard from '@/components/PromptCard';
+import { useCallback } from 'react';
 
 export default function CategoryPage() {
     const { id } = useParams<{ id: string }>();
@@ -35,23 +28,23 @@ export default function CategoryPage() {
         [categoryId]
     ) ?? [];
 
-    const handleCopy = async (promptId: number) => {
+    const handleCopy = useCallback(async (promptId: number) => {
         const prompt = await db.prompts.get(promptId);
         if (!prompt) return;
         const exported = toExportFormat(prompt);
         const json = JSON.stringify(exported, null, 2);
         const ok = await copyToClipboard(json);
         showToast(ok ? 'Prompt copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
-    };
+    }, [showToast]);
 
-    const handleDownload = async (promptId: number) => {
+    const handleDownload = useCallback(async (promptId: number) => {
         const prompt = await db.prompts.get(promptId);
         if (!prompt) return;
         downloadPrompt(prompt);
         showToast('Download iniciado!');
-    };
+    }, [showToast]);
 
-    const handleDelete = async (promptId: number) => {
+    const handleDelete = useCallback(async (promptId: number) => {
         if (!confirm('Deseja realmente excluir este prompt?')) return;
         const prompt = await db.prompts.get(promptId);
         if (prompt?.remoteId) {
@@ -60,20 +53,24 @@ export default function CategoryPage() {
             } catch (error: any) {
                 console.error("Erro ao deletar no Supabase:", error);
                 showToast(error.message || 'Erro ao deletar o prompt no servidor.', 'error');
-                return; // Optionally halt deletion if remote fails, or proceed. Let's proceed or halt? Let's halt to be safe.
+                return;
             }
         }
         await db.prompts.delete(promptId);
         showToast('Prompt excluído!');
-    };
+    }, [showToast]);
 
-    const formatDate = (date: Date) => {
+    const handleEdit = useCallback((id: number) => {
+        navigate(`/editor/${id}`);
+    }, [navigate]);
+
+    const formatDate = useCallback((date: Date) => {
         return new Date(date).toLocaleDateString('pt-BR', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
         });
-    };
+    }, []);
 
     if (!category) {
         return (
@@ -147,58 +144,15 @@ export default function CategoryPage() {
                 ) : (
                     <div className="prompt-list">
                         {prompts.map((prompt) => (
-                            <div key={prompt.id} className="prompt-item">
-                                <div
-                                    className="prompt-item__clickable"
-                                    onClick={() => navigate(`/editor/${prompt.id}`)}
-                                >
-                                    <div className="prompt-item__title">{prompt.title}</div>
-                                    <div className="prompt-item__meta">
-                                        <Clock size={12} />
-                                        {' '}{formatDate(prompt.updatedAt)}
-                                        {prompt.systemRole && (
-                                            <span className="prompt-meta__suffix">
-                                                • {prompt.systemRole.substring(0, 50)}
-                                                {prompt.systemRole.length > 50 ? '...' : ''}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="prompt-item__actions">
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => navigate(`/editor/${prompt.id}`)}
-                                        aria-label="Editar prompt"
-                                        title="Editar"
-                                    >
-                                        <Edit3 size={16} />
-                                    </button>
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => handleCopy(prompt.id!)}
-                                        aria-label="Copiar prompt"
-                                        title="Copiar JSON"
-                                    >
-                                        <Copy size={16} />
-                                    </button>
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => handleDownload(prompt.id!)}
-                                        aria-label="Baixar prompt"
-                                        title="Baixar .json"
-                                    >
-                                        <Download size={16} />
-                                    </button>
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => handleDelete(prompt.id!)}
-                                        aria-label="Excluir prompt"
-                                        title="Excluir"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
+                            <PromptCard
+                                key={prompt.id}
+                                prompt={prompt}
+                                onEdit={handleEdit}
+                                onCopy={handleCopy}
+                                onDownload={handleDownload}
+                                onDelete={handleDelete}
+                                formatDate={formatDate}
+                            />
                         ))}
                     </div>
                 )}

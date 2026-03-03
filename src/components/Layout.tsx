@@ -49,8 +49,8 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             {/* Sidebar */}
             <aside className={`app-sidebar ${sidebarOpen ? 'app-sidebar--open' : ''}`}>
                 <div className="app-sidebar__logo">
-                    <Sparkles size={24} color="#0048ff" />
-                    <h1>Prompt App</h1>
+                    <Sparkles size={24} color="#0048ff" aria-hidden="true" />
+                    <div className="app-sidebar__logo-text">Prompt App</div>
                 </div>
 
                 <nav className="app-sidebar__nav">

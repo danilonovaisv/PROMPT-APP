@@ -62,7 +62,7 @@ export function normalizeFewShotExamples(
   return (examples as FewShotExample[])
     .map((d) => {
       // Log de warning em dev para tipos inválidos (rate-limited via console)
-      if (process.env.NODE_ENV !== "production") {
+      if (import.meta.env.DEV) {
         if (d?.input != null && typeof d.input !== "string" && !coerce) {
           console.warn("[normalizeFewShot] input non-string detected:", d.input);
         }
