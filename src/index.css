@@ -316,11 +316,9 @@ select option {
 .app-sidebar__logo h1 {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-accent)
-  );
+  background: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -469,11 +467,9 @@ select option {
 }
 
 .btn--primary {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-accent)
-  );
+  background: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-accent));
   color: white;
   box-shadow: var(--shadow-sm);
 }
@@ -1036,6 +1032,18 @@ select option {
   display: none;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-1 {
+  margin-right: var(--space-1);
+}
+
+.mr-2 {
+  margin-right: var(--space-2);
+}
+
 /* --- Hero Section --- */
 .hero {
   margin-bottom: var(--space-10);
@@ -1229,90 +1237,105 @@ select option {
   --swatch-color: #0048ff;
   --stat-color: #0048ff;
 }
+
 .util-cat-color-7b2ff7 {
   --cat-color: #7b2ff7;
   --cat-color-glow: #7b2ff720;
   --swatch-color: #7b2ff7;
   --stat-color: #7b2ff7;
 }
+
 .util-cat-color-ff4466 {
   --cat-color: #ff4466;
   --cat-color-glow: #ff446620;
   --swatch-color: #ff4466;
   --stat-color: #ff4466;
 }
+
 .util-cat-color-00d68f {
   --cat-color: #00d68f;
   --cat-color-glow: #00d68f20;
   --swatch-color: #00d68f;
   --stat-color: #00d68f;
 }
+
 .util-cat-color-ff6b35 {
   --cat-color: #ff6b35;
   --cat-color-glow: #ff6b3520;
   --swatch-color: #ff6b35;
   --stat-color: #ff6b35;
 }
+
 .util-cat-color-ffaa00 {
   --cat-color: #ffaa00;
   --cat-color-glow: #ffaa0020;
   --swatch-color: #ffaa00;
   --stat-color: #ffaa00;
 }
+
 .util-cat-color-6366f1 {
   --cat-color: #6366f1;
   --cat-color-glow: #6366f120;
   --swatch-color: #6366f1;
   --stat-color: #6366f1;
 }
+
 .util-cat-color-ec4899 {
   --cat-color: #ec4899;
   --cat-color-glow: #ec489920;
   --swatch-color: #ec4899;
   --stat-color: #ec4899;
 }
+
 .util-cat-color-14b8a6 {
   --cat-color: #14b8a6;
   --cat-color-glow: #14b8a620;
   --swatch-color: #14b8a6;
   --stat-color: #14b8a6;
 }
+
 .util-cat-color-f97316 {
   --cat-color: #f97316;
   --cat-color-glow: #f9731620;
   --swatch-color: #f97316;
   --stat-color: #f97316;
 }
+
 .util-cat-color-8b5cf6 {
   --cat-color: #8b5cf6;
   --cat-color-glow: #8b5cf620;
   --swatch-color: #8b5cf6;
   --stat-color: #8b5cf6;
 }
+
 .util-cat-color-06b6d4 {
   --cat-color: #06b6d4;
   --cat-color-glow: #06b6d420;
   --swatch-color: #06b6d4;
   --stat-color: #06b6d4;
 }
+
 .util-cat-color-84cc16 {
   --cat-color: #84cc16;
   --cat-color-glow: #84cc1620;
   --swatch-color: #84cc16;
   --stat-color: #84cc16;
 }
+
 .util-cat-color-e11d48 {
   --cat-color: #e11d48;
   --cat-color-glow: #e11d4820;
   --swatch-color: #e11d48;
   --stat-color: #e11d48;
 }
+
 .util-cat-color-0ea5e9 {
   --cat-color: #0ea5e9;
   --cat-color-glow: #0ea5e920;
   --swatch-color: #0ea5e9;
   --stat-color: #0ea5e9;
 }
+
 .util-cat-color-a855f7 {
   --cat-color: #a855f7;
   --cat-color-glow: #a855f720;
@@ -2042,6 +2065,7 @@ select option {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -2052,6 +2076,7 @@ select option {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2059,10 +2084,12 @@ select option {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -2292,6 +2319,7 @@ select option {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

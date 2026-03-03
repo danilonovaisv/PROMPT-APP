@@ -158,7 +158,7 @@ export default function CloudSyncItem() {
             <div className="cloud-sync-box__user">
                 <User size={14} />
                 <span className="truncate">{session.user.email}</span>
-                <button onClick={handleChangePassword} title="Mudar Senha" className="btn-logout ml-auto" style={{ marginRight: '4px' }}>
+                <button onClick={handleChangePassword} title="Mudar Senha" className="btn-logout ml-auto mr-1">
                     <KeyRound size={12} />
                 </button>
                 <button onClick={handleLogout} title="Sair" className="btn-logout">
