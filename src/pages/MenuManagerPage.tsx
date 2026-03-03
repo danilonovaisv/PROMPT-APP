@@ -74,7 +74,7 @@ export default function MenuManagerPage() {
             menuId: menu.menuId,
             menuName: menu.menuName,
             description: menu.description,
-            options: JSON.parse(JSON.stringify(menu.options)),
+            options: JSON.parse(JSON.stringify(menu.options || [])),
             remoteId: menu.remoteId,
         });
         setExpandedOption(null);
@@ -207,7 +207,7 @@ export default function MenuManagerPage() {
             const options = [...prev.options];
             options[optIdx] = {
                 ...options[optIdx],
-                subOptions: [...options[optIdx].subOptions, { label: '', value: '' }],
+                subOptions: [...(options[optIdx].subOptions || []), { label: '', value: '' }],
             };
             return { ...prev, options };
         });
@@ -216,7 +216,7 @@ export default function MenuManagerPage() {
     const updateSubOption = (optIdx: number, subIdx: number, field: keyof ContextMenuSubOption, value: string) => {
         setForm((prev) => {
             const options = [...prev.options];
-            const subs = [...options[optIdx].subOptions];
+            const subs = [...(options[optIdx].subOptions || [])];
             subs[subIdx] = { ...subs[subIdx], [field]: value };
             if (field === 'label' && !subs[subIdx].value) {
                 subs[subIdx].value = toSlug(value);
@@ -231,7 +231,7 @@ export default function MenuManagerPage() {
             const options = [...prev.options];
             options[optIdx] = {
                 ...options[optIdx],
-                subOptions: options[optIdx].subOptions.filter((_, i) => i !== subIdx),
+                subOptions: (options[optIdx].subOptions || []).filter((_, i) => i !== subIdx),
             };
             return { ...prev, options };
         });
@@ -347,9 +347,9 @@ export default function MenuManagerPage() {
                                             <span className="ctx-option-card__title">
                                                 {opt.label || `Opção ${optIdx + 1}`}
                                             </span>
-                                            {opt.subOptions.length > 0 && (
+                                            {(opt.subOptions || []).length > 0 && (
                                                 <span className="ctx-option-card__badge">
-                                                    {opt.subOptions.length} sub
+                                                    {(opt.subOptions || []).length} sub
                                                 </span>
                                             )}
                                             <button
@@ -398,13 +398,13 @@ export default function MenuManagerPage() {
                                                         </button>
                                                     </div>
 
-                                                    {opt.subOptions.length === 0 && (
+                                                    {(opt.subOptions || []).length === 0 && (
                                                         <p className="ctx-suboptions__empty">
                                                             Nenhuma sub-opção. Opcional.
                                                         </p>
                                                     )}
 
-                                                    {opt.subOptions.map((sub, subIdx) => (
+                                                    {(opt.subOptions || []).map((sub, subIdx) => (
                                                         <div key={subIdx} className="ctx-suboption-row">
                                                             <input
                                                                 value={sub.label}
@@ -495,15 +495,15 @@ export default function MenuManagerPage() {
                                 )}
 
                                 <div className="ctx-menu-card__tree">
-                                    {menu.options.map((opt, i) => (
+                                    {(menu.options || []).map((opt, i) => (
                                         <div key={i} className="ctx-tree-node">
                                             <div className="ctx-tree-node__option">
                                                 <span className="ctx-tree-node__dot" />
                                                 {opt.label}
                                             </div>
-                                            {opt.subOptions.length > 0 && (
+                                            {(opt.subOptions || []).length > 0 && (
                                                 <div className="ctx-tree-node__children">
-                                                    {opt.subOptions.map((sub, j) => (
+                                                    {(opt.subOptions || []).map((sub, j) => (
                                                         <div key={j} className="ctx-tree-node__sub">
                                                             <span className="ctx-tree-node__line" />
                                                             {sub.label}

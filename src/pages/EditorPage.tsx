@@ -182,9 +182,9 @@ export default function EditorPage() {
             const current = prev.contextMenus[menuId];
             if (!current) return prev;
 
-            const subs = current.subOptions.includes(subValue)
-                ? current.subOptions.filter((s) => s !== subValue)
-                : [...current.subOptions, subValue];
+            const subs = (current.subOptions || []).includes(subValue)
+                ? (current.subOptions || []).filter((s) => s !== subValue)
+                : [...(current.subOptions || []), subValue];
 
             return {
                 ...prev,
@@ -548,8 +548,8 @@ export default function EditorPage() {
                                     <div className="ctx-editor-grid">
                                         {enabledMenus.map((menu) => {
                                             const sel = getMenuSelection(menu.menuId);
-                                            const selectedOpt = menu.options.find((o) => o.value === sel.option);
-                                            const hasSubOptions = selectedOpt && selectedOpt.subOptions.length > 0;
+                                            const selectedOpt = (menu.options || []).find((o) => o.value === sel.option);
+                                            const hasSubOptions = selectedOpt && (selectedOpt.subOptions || []).length > 0;
                                             const isExpanded = expandedMenus[menu.menuId];
 
                                             return (
@@ -559,9 +559,9 @@ export default function EditorPage() {
                                                         {sel.option && (
                                                             <span className="ctx-editor-menu__selection">
                                                                 {selectedOpt?.label}
-                                                                {sel.subOptions.length > 0 && (
+                                                                {(sel.subOptions || []).length > 0 && (
                                                                     <span className="ctx-editor-menu__sub-count">
-                                                                        +{sel.subOptions.length}
+                                                                        +{(sel.subOptions || []).length}
                                                                     </span>
                                                                 )}
                                                             </span>
@@ -592,7 +592,7 @@ export default function EditorPage() {
                                                     </div>
 
                                                     <div className="menu-selector">
-                                                        {menu.options.map((opt) => (
+                                                        {(menu.options || []).map((opt) => (
                                                             <button
                                                                 key={opt.value}
                                                                 type="button"
@@ -611,11 +611,11 @@ export default function EditorPage() {
                                                                 Sub-opções de "{selectedOpt.label}":
                                                             </span>
                                                             <div className="menu-selector menu-selector--sub">
-                                                                {selectedOpt.subOptions.map((sub) => (
+                                                                {(selectedOpt.subOptions || []).map((sub) => (
                                                                     <button
                                                                         key={sub.value}
                                                                         type="button"
-                                                                        className={`menu-tag menu-tag--sub ${sel.subOptions.includes(sub.value) ? 'menu-tag--selected' : ''}`}
+                                                                        className={`menu-tag menu-tag--sub ${(sel.subOptions || []).includes(sub.value) ? 'menu-tag--selected' : ''}`}
                                                                         onClick={() => toggleSubOption(menu.menuId, sub.value)}
                                                                     >
                                                                         {sub.label}

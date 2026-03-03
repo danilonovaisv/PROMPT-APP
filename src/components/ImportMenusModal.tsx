@@ -305,7 +305,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                                         </p>
                                                     )}
                                                     <div className="ctx-menu-card__tree">
-                                                        {menu.options.map((opt, i) => (
+                                                        {(menu.options || []).map((opt, i) => (
                                                             <div key={i} className="ctx-tree-node">
                                                                 <div className="ctx-tree-node__option">
                                                                     <span className="ctx-tree-node__dot" />

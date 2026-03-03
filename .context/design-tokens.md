@@ -6,7 +6,7 @@
 | :--- | :--- | :--- |
 | `--color-primary` | `#0048ff` | Primary brand color (Blue) |
 | `--color-void` | `#040013` | Main background/Void color |
-| `--color-accent` | `#7b2ff7` | Accent purple |
+| `--color-accent` | `#4fe6ff` | Accent cyan/blue |
 | `--color-bg` | `#06001a` | Deep blue background |
 | `--color-surface-1` | `#0a0a1a` | Layer 1 background |
 | `--color-success` | `#00d68f` | Emerald success color |

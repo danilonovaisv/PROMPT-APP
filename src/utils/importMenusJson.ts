@@ -203,9 +203,9 @@ function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
     return {
         menuId: imported.menu_id,
         menuName: imported.menu_name,
-        description: imported.description,
-        options: imported.options.map((opt) => ({
-            label: opt.label,
+        description: imported.description || '',
+        options: (imported.options || []).map((opt) => ({
+            label: opt.label || '',
             value: opt.value,
             subOptions: (opt.sub_options ?? []).map((sub) => ({
                 label: sub.label,
@@ -366,8 +366,8 @@ export async function exportMenusToJson(): Promise<MenuImportSchema> {
             options: m.options.map((opt) => ({
                 label: opt.label,
                 value: opt.value,
-                sub_options: opt.subOptions.length > 0
-                    ? opt.subOptions.map((sub) => ({ label: sub.label, value: sub.value }))
+                sub_options: (opt.subOptions || []).length > 0
+                    ? (opt.subOptions || []).map((sub) => ({ label: sub.label, value: sub.value }))
                     : undefined,
             })),
         })),

@@ -20,6 +20,8 @@
 - **EditorPage** (`src/pages/EditorPage.tsx`): Advanced prompt editor with syntax highlighting, metadata support, and automatic draft saving.
 - **MenuManagerPage** (`src/pages/MenuManagerPage.tsx`): Management of context menus and snippets.
 - **CategoryManagerPage** (`src/pages/CategoryManagerPage.tsx`): CRUD for prompt categories.
+- **PrivacyPage** (`src/pages/PrivacyPage.tsx`): Privacy policy and data handling info.
+- **ContactPage** (`src/pages/ContactPage.tsx`): Author contact and support information.
 
 ### Components
 
@@ -27,6 +29,8 @@
 - **SEO** (`src/components/SEO.tsx`): Meta tag management for search engine optimization.
 - **ImportExportModal** (`src/components/ImportExportModal.tsx`): Global data management.
 - **ImportMenusModal** (`src/components/ImportMenusModal.tsx`): Specific JSON import for context menus.
+- **AuthModal** (`src/components/AuthModal.tsx`): Supabase authentication UI.
+- **CategoryCard / PromptCard**: Recursive UI elements for grid and list views.
 - **CloudSyncItem** (`src/components/CloudSyncItem.tsx`): Component handling cloud synchronization UI items.
 
 ### Utils
