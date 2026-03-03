@@ -61,8 +61,27 @@ export function normalizeFewShotExamples(
 
   return (examples as FewShotExample[])
     .map((d) => {
+      const inputType = typeof d?.input;
+      const outputType = typeof d?.output;
+
+      // Rejeita tipos inválidos quando não houver coerção
+      if (!coerce) {
+        if ((d?.input != null && inputType !== "string") || (d?.output != null && outputType !== "string")) {
+          return null;
+        }
+      } else {
+        // Em modo coerção, ainda rejeitamos entradas não coerentes (objetos/funções) no input
+        if (d?.input != null && (inputType === "object" || inputType === "function")) {
+          return null;
+        }
+        // Saída como objeto/array é permitida (será tratada como string vazia)
+        if (d?.output != null && outputType === "function") {
+          return null;
+        }
+      }
+
       // Log de warning em dev para tipos inválidos (rate-limited via console)
-      if (import.meta.env.DEV) {
+      if (process.env.NODE_ENV === "development") {
         if (d?.input != null && typeof d.input !== "string" && !coerce) {
           console.warn("[normalizeFewShot] input non-string detected:", d.input);
         }

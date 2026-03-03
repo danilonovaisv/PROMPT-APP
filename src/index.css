@@ -1140,36 +1140,12 @@ select option {
   margin-top: var(--space-8);
 }
 
-/* --- Few-Shot Example Card --- */
-.fewshot-card {
-  background: var(--color-surface-2);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-}
-
-.fewshot-card__header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--space-3);
-}
-
-.fewshot-card__label {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-muted);
-}
-
 .form-group--tight {
   margin-bottom: var(--space-3);
 }
 
 .form-group--none {
   margin-bottom: 0;
-}
-
-.dynamic-list--spaced {
-  gap: var(--space-4);
 }
 
 /* --- Category Manager Utilities --- */

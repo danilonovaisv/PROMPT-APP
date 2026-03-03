@@ -63,7 +63,7 @@ export interface FewShotExample {
 }
 /** Schema de saída do prompt */
 export interface OutputSchema {
-    formato: 'json' | 'texto' | 'markdown';
+    formato: 'json' | 'texto' | 'markdown' | 'imagem' | 'code';
     estrutura: string;
 }
 /** Prompt completo (modelo interno) */
@@ -86,6 +86,7 @@ export interface Prompt {
     negativePrompt: string[];
     outputSchema: OutputSchema;
     fewShotExamples: FewShotExample[];
+    referenceUrl?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -95,6 +96,7 @@ export interface PromptExportFormat {
     task: string;
     input_data: {
         context: string;
+        reference_url?: string;
         menus_selecionados: Record<string, {
             opcao: string;
             sub_opcoes: string[];

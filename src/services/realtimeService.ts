@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import type { Category, Prompt, ContextMenu } from '@/models/types';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
 
 // Canais de realtime para cada tabela
 let categoriesChannel: any = null;
@@ -170,6 +171,9 @@ async function handlePromptChange(payload: any) {
           }
         }
 
+        const outputSchema = normalizeOutputSchema(remoteData.output_schema as any);
+        const urlResult = sanitizeUrlField(remoteData.reference_url);
+
         // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
           remoteId: remoteData.id,
@@ -183,7 +187,8 @@ async function handlePromptChange(payload: any) {
           enabledMenuIds: remoteData.enabled_menu_ids || [],
           constraints: remoteData.constraints || [],
           negativePrompt: remoteData.negative_prompt || [],
-          outputSchema: remoteData.output_schema || { formato: 'texto', estrutura: '' },
+          outputSchema,
+          referenceUrl: urlResult.value,
           fewShotExamples: remoteData.few_shot_examples || [],
           createdAt: new Date(remoteData.created_at),
           updatedAt: new Date(remoteData.updated_at),

@@ -7,6 +7,7 @@ import { saveCategoryToSupabase } from '@/services/supabaseCategories';
 import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
 import type { Prompt, BulkExport, PromptExportFormat, ContextMenu, MenuSelectionsMap } from '@/models/types';
 
 export interface ImportError {
@@ -82,11 +83,17 @@ function parseMenuSelections(
 function fromExportFormat(
   exported: PromptExportFormat,
   categoryId: number,
-  title: string
+  title: string,
+  warnings: string[]
 ): Omit<Prompt, 'id'> {
   const inputData = exported.input_data as Record<string, unknown> | undefined;
   const menusRaw = inputData?.menus_selecionados as Record<string, unknown> | undefined;
   const contextMenus = parseMenuSelections(menusRaw);
+  const urlResult = sanitizeUrlField((inputData as any)?.reference_url);
+
+  if (urlResult.error) {
+    warnings.push(`URL ignorada em "${title}": ${urlResult.error}`);
+  }
 
   return {
     categoryId,
@@ -104,10 +111,8 @@ function fromExportFormat(
     enabledMenuIds: Object.keys(contextMenus),
     constraints: Array.isArray(exported.constraints) ? exported.constraints.filter(Boolean) : [],
     negativePrompt: Array.isArray(exported.negative_prompt) ? exported.negative_prompt.filter(Boolean) : [],
-    outputSchema: {
-      formato: (exported.output_schema?.formato as 'json' | 'texto' | 'markdown') || 'texto',
-      estrutura: exported.output_schema?.estrutura || '',
-    },
+    outputSchema: normalizeOutputSchema(exported.output_schema as any),
+    referenceUrl: urlResult.value,
     fewShotExamples: Array.isArray(exported.few_shot_examples) ? exported.few_shot_examples : [],
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -188,7 +193,7 @@ async function processPromptImport(
       return false;
     }
 
-    const internalPrompt = fromExportFormat(promptData, categoryId, title);
+    const internalPrompt = fromExportFormat(promptData, categoryId, title, warnings);
     
     // Validar campos obrigatórios
     if (!internalPrompt.title?.trim()) {

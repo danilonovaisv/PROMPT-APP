@@ -10,7 +10,8 @@ import { useToast } from '@/context/ToastContext';
 import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { normalizeFewShotExamples } from '@/utils/normalizeFewShot';
-import type { Prompt, FewShotExample, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
+import type { Prompt, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
+import { normalizeOutputSchema, sanitizeUrlField, getFormatHint, OUTPUT_FORMATS } from '@/models/outputSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
@@ -28,7 +29,6 @@ import {
     FileText,
     ShieldOff,
     ListChecks,
-    BookOpen,
     Layers,
     ChevronDown,
     PlusCircle,
@@ -45,8 +45,9 @@ const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
     enabledMenuIds: [],
     constraints: [''],
     negativePrompt: [''],
-    outputSchema: { formato: 'texto', estrutura: '' },
-    fewShotExamples: [{ input: '', output: '' }],
+    outputSchema: { formato: 'markdown', estrutura: '' },
+    fewShotExamples: [],
+    referenceUrl: '',
     createdAt: new Date(),
     updatedAt: new Date(),
 };
@@ -66,6 +67,7 @@ export default function EditorPage() {
     const [loaded, setLoaded] = useState(false);
     const [showMenuPicker, setShowMenuPicker] = useState(false);
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+    const [urlError, setUrlError] = useState<string | null>(null);
 
     /* Buscar categorias do banco local (Dexie) */
     useEffect(() => {
@@ -95,7 +97,9 @@ export default function EditorPage() {
                         enabledMenuIds: p.enabledMenuIds || [],
                         constraints: p.constraints.length > 0 ? p.constraints : [''],
                         negativePrompt: p.negativePrompt.length > 0 ? p.negativePrompt : [''],
-                        fewShotExamples: p.fewShotExamples.length > 0 ? p.fewShotExamples : [{ input: '', output: '' }],
+                        fewShotExamples: p.fewShotExamples?.length ? p.fewShotExamples : [],
+                        outputSchema: normalizeOutputSchema(p.outputSchema),
+                        referenceUrl: p.referenceUrl || '',
                     });
                 }
                 setLoaded(true);
@@ -251,24 +255,26 @@ export default function EditorPage() {
         updateField('negativePrompt', newList.length > 0 ? newList : ['']);
     };
 
-    const updateExample = (index: number, field: keyof FewShotExample, value: string) => {
-        const newList = [...form.fewShotExamples];
-        newList[index] = { ...newList[index], [field]: value };
-        updateField('fewShotExamples', newList);
+    const handleUrlChange = (value: string) => {
+        setUrlError(null);
+        updateField('referenceUrl', value);
     };
 
-    const addExample = () =>
-        updateField('fewShotExamples', [...form.fewShotExamples, { input: '', output: '' }]);
-
-    const removeExample = (index: number) => {
-        const newList = form.fewShotExamples.filter((_, i) => i !== index);
-        updateField('fewShotExamples', newList.length > 0 ? newList : [{ input: '', output: '' }]);
+    const validateUrl = () => {
+        const result = sanitizeUrlField(form.referenceUrl);
+        if (result.error) {
+            setUrlError(result.error);
+            return { valid: false, value: undefined, error: result.error };
+        }
+        setUrlError(null);
+        return { valid: true, value: result.value };
     };
 
     const updateOutputSchema = (field: keyof OutputSchema, value: string) => {
+        const normalized = normalizeOutputSchema({ ...form.outputSchema, [field]: value });
         setForm((prev) => ({
             ...prev,
-            outputSchema: { ...prev.outputSchema, [field]: value } as OutputSchema,
+            outputSchema: normalized,
         }));
     };
 
@@ -282,11 +288,21 @@ export default function EditorPage() {
             return;
         }
 
+        const normalizedOutput = normalizeOutputSchema(form.outputSchema);
+        const urlResult = validateUrl();
+
+        if (!urlResult.valid) {
+            showToast(urlResult.error || 'URL inválida', 'error');
+            return;
+        }
+
         const data = {
             ...form,
             constraints: form.constraints.filter(Boolean),
             negativePrompt: form.negativePrompt.filter(Boolean),
             fewShotExamples: normalizeFewShotExamples(form.fewShotExamples),
+            outputSchema: normalizedOutput,
+            referenceUrl: urlResult.value,
             updatedAt: new Date(),
         };
 
@@ -707,10 +723,32 @@ export default function EditorPage() {
                                 value={form.outputSchema.formato}
                                 onChange={(e) => updateOutputSchema('formato', e.target.value)}
                             >
-                                <option value="texto">Texto</option>
-                                <option value="json">JSON</option>
-                                <option value="markdown">Markdown</option>
+                                {OUTPUT_FORMATS.map((fmt) => (
+                                    <option key={fmt} value={fmt}>
+                                        {fmt === 'json' ? 'JSON' : fmt === 'code' ? 'Code' : fmt.charAt(0).toUpperCase() + fmt.slice(1)}
+                                    </option>
+                                ))}
                             </select>
+                            <p className="form-label__hint">{getFormatHint(form.outputSchema.formato)}</p>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="reference-url">URL de referência (opcional)</label>
+                            <input
+                                id="reference-url"
+                                value={form.referenceUrl || ''}
+                                onChange={(e) => handleUrlChange(e.target.value)}
+                                onBlur={() => validateUrl()}
+                                placeholder="https://exemplo.com/referencia"
+                                aria-invalid={!!urlError}
+                                aria-describedby="reference-url-hint"
+                            />
+                            <p id="reference-url-hint" className="form-label__hint">
+                                Não faremos fetch automático; a URL é repassada apenas como metadado/contexto.
+                            </p>
+                            {urlError && (
+                                <span className="form-error" role="alert">{urlError}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -721,54 +759,6 @@ export default function EditorPage() {
                                 placeholder="Descreva a estrutura esperada da saída. Ex: Título, Introdução (2 parágrafos), 3 seções com subtítulos, Conclusão, CTA."
                                 rows={3}
                             />
-                        </div>
-                    </div>
-
-                    {/* --- Few-Shot Examples --- */}
-                    <div className="form-section">
-                        <h3 className="form-section__title">
-                            <BookOpen size={18} /> Exemplos (Few-Shot)
-                            <span className="form-label__hint">(Pares de entrada/saída para guiar o modelo)</span>
-                        </h3>
-
-                        <div className="dynamic-list dynamic-list--spaced">
-                            {form.fewShotExamples.map((ex, i) => (
-                                <div key={i} className="fewshot-card">
-                                    <div className="fewshot-card__header">
-                                        <span className="fewshot-card__label">
-                                            Exemplo {i + 1}
-                                        </span>
-                                        <button
-                                            className="btn btn--ghost btn--icon btn--sm"
-                                            onClick={() => removeExample(i)}
-                                            aria-label="Remover exemplo"
-                                        >
-                                            <Trash2 size={14} />
-                                        </button>
-                                    </div>
-                                    <div className="form-group form-group--tight">
-                                        <label className="form-label">Input</label>
-                                        <textarea
-                                            value={ex.input}
-                                            onChange={(e) => updateExample(i, 'input', e.target.value)}
-                                            placeholder="Entrada de exemplo..."
-                                            rows={2}
-                                        />
-                                    </div>
-                                    <div className="form-group form-group--none">
-                                        <label className="form-label">Output</label>
-                                        <textarea
-                                            value={ex.output}
-                                            onChange={(e) => updateExample(i, 'output', e.target.value)}
-                                            placeholder="Saída esperada..."
-                                            rows={2}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                            <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={addExample}>
-                                <Plus size={14} /> Adicionar exemplo
-                            </button>
                         </div>
                     </div>
 

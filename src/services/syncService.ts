@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
+import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
 
 export const syncToCloud = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -125,6 +126,17 @@ export const syncToCloud = async () => {
         // (A menos que category_id seja nullable, mas é bom manter integridade)
         // No schema: category_id bigint references categories...
 
+        const normalizedSchema = normalizeOutputSchema(data.outputSchema);
+        const urlResult = sanitizeUrlField(data.referenceUrl);
+
+        if (urlResult.error) {
+            console.error(`❌ URL inválida no prompt "${data.title}": ${urlResult.error}`);
+            if (id) {
+                await db.prompts.update(id, { syncStatus: 'error' });
+            }
+            continue;
+        }
+
         const payload = {
             user_id: userId,
             category_id: remoteCategoryId || null, // Se null, perde a categoria mas salva o prompt
@@ -137,7 +149,8 @@ export const syncToCloud = async () => {
             enabled_menu_ids: data.enabledMenuIds,
             constraints: data.constraints,
             negative_prompt: data.negativePrompt,
-            output_schema: data.outputSchema,
+            output_schema: normalizedSchema,
+            reference_url: urlResult.value,
             few_shot_examples: data.fewShotExamples
         };
 
@@ -285,7 +298,8 @@ export const downloadFromCloud = async () => {
                     enabledMenuIds: p.enabled_menu_ids,
                     constraints: p.constraints,
                     negativePrompt: p.negative_prompt,
-                    outputSchema: p.output_schema,
+                    outputSchema: normalizeOutputSchema(p.output_schema as any),
+                    referenceUrl: sanitizeUrlField(p.reference_url).value,
                     fewShotExamples: p.few_shot_examples,
                     createdAt: new Date(p.created_at),
                     updatedAt: new Date(p.updated_at),

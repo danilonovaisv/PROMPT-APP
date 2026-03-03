@@ -87,8 +87,8 @@ O coração da aplicação. Campos disponíveis:
 | **Menus de Contexto** | Seleção hierárquica de Tom, Público, Idioma, Estilo |
 | **Restrições**        | Lista de regras que o modelo DEVE seguir            |
 | **Negative Prompt**   | O que o modelo NÃO deve fazer                       |
-| **Schema de Saída**   | Formato (texto/json/markdown) e estrutura esperada  |
-| **Exemplos Few-Shot** | Pares de entrada/saída para guiar o modelo          |
+| **Schema de Saída**   | Formato (texto/json/markdown/imagem/code) e estrutura esperada  |
+| **URL de Referência** | String opcional, não buscada automaticamente; apenas repassada como contexto |
 
 ### 🧩 Menus de Contexto Hierárquicos (v2)
 
@@ -259,8 +259,8 @@ prompt-app/
    - **Menus de Contexto:** Selecione opções de Tom, Público, Idioma e Estilo
    - **Restrições:** Regras obrigatórias
    - **Negative Prompt:** O que evitar
-   - **Schema de Saída:** Formato e estrutura esperados
-   - **Exemplos Few-Shot:** Pares de entrada/saída
+   - **Schema de Saída:** Formato (texto/json/markdown/imagem/code) e estrutura esperados
+   - **URL de Referência (opcional):** Apenas string; não fazemos fetch automático
 4. Clique em **Salvar Prompt**
 
 ### 3. Exportar Prompts

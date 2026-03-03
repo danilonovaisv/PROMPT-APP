@@ -5,6 +5,7 @@
 import type { Prompt, PromptExportFormat, BulkExport, MenuSelectionsMap } from '@/models/types';
 import { db } from '@/db/database';
 import { normalizeFewShotExamples } from './normalizeFewShot';
+import { normalizeOutputSchema, sanitizeUrlField, getFormatHint } from '@/models/outputSchema';
 
 /** Converte MenuSelectionsMap para o formato de exportação */
 function exportMenuSelections(
@@ -48,18 +49,28 @@ export function toExportFormat(prompt: Prompt): PromptExportFormat {
         }
     }
 
+    const outputSchema = normalizeOutputSchema(prompt.outputSchema);
+    const estrutura = outputSchema.estrutura || getFormatHint(outputSchema.formato);
+    const urlResult = sanitizeUrlField(prompt.referenceUrl);
+
+    const inputData: PromptExportFormat['input_data'] = {
+        context: prompt.context,
+        menus_selecionados: menusSelecionados,
+    };
+
+    if (urlResult.value) {
+        inputData.reference_url = urlResult.value;
+    }
+
     return {
         system_role: prompt.systemRole,
         task: prompt.task,
-        input_data: {
-            context: prompt.context,
-            menus_selecionados: menusSelecionados,
-        },
+        input_data: inputData,
         constraints: (prompt.constraints || []).filter(Boolean),
         negative_prompt: (prompt.negativePrompt || []).filter(Boolean),
         output_schema: {
-            formato: prompt.outputSchema?.formato || 'texto',
-            estrutura: prompt.outputSchema?.estrutura || '',
+            formato: outputSchema.formato,
+            estrutura,
         },
         few_shot_examples: normalizeFewShotExamples(prompt.fewShotExamples),
     };
@@ -122,12 +133,13 @@ export function getTemplateFile(): Blob {
                     input_data: {
                         context: '',
                         menus_selecionados: {},
+                        reference_url: '',
                     },
                     constraints: [],
                     negative_prompt: [],
                     output_schema: {
-                        formato: 'texto',
-                        estrutura: '',
+                        formato: 'markdown',
+                        estrutura: getFormatHint('markdown'),
                     },
                     few_shot_examples: [],
                 },

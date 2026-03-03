@@ -5,6 +5,7 @@
 import { db } from '@/db/database';
 import { supabase } from '@/lib/supabase';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -162,7 +163,8 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
           enabledMenuIds: remoteData.enabled_menu_ids || [],
           constraints: remoteData.constraints || [],
           negativePrompt: remoteData.negative_prompt || [],
-          outputSchema: remoteData.output_schema || { formato: 'texto', estrutura: '' },
+          outputSchema: normalizeOutputSchema(remoteData.output_schema as any),
+          referenceUrl: sanitizeUrlField(remoteData.reference_url).value,
           fewShotExamples: remoteData.few_shot_examples || [],
           updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
         });
@@ -223,7 +225,8 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         enabled_menu_ids: localItem.enabledMenuIds || [],
         constraints: localItem.constraints || [],
         negative_prompt: localItem.negativePrompt || [],
-        output_schema: localItem.outputSchema || { formato: 'texto', estrutura: '' },
+        output_schema: normalizeOutputSchema(localItem.outputSchema as any),
+        reference_url: sanitizeUrlField(localItem.referenceUrl).value,
         few_shot_examples: localItem.fewShotExamples || [],
         user_id: session.user.id,
       };

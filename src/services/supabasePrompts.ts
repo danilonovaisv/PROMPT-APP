@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import type { Prompt } from '@/models/types';
+import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
 
 
 export async function savePromptToSupabase(input: Partial<Prompt>) {
@@ -27,6 +28,12 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         }
     }
 
+    const schema = normalizeOutputSchema(input.outputSchema);
+    const urlResult = sanitizeUrlField(input.referenceUrl);
+    if (urlResult.error) {
+        throw new Error(urlResult.error);
+    }
+
     const payload: any = {
         user_id: user.id,
         category_id: remoteCategoryId,
@@ -39,7 +46,8 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         enabled_menu_ids: input.enabledMenuIds || [],
         constraints: input.constraints || [],
         negative_prompt: input.negativePrompt || [],
-        output_schema: input.outputSchema || { formato: 'texto', estrutura: '' },
+        output_schema: schema,
+        reference_url: urlResult.value,
         few_shot_examples: input.fewShotExamples || [],
         updated_at: new Date().toISOString(),
     };
