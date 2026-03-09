@@ -19,6 +19,8 @@ const PromptCard: React.FC<PromptCardProps> = ({
     onDelete,
     formatDate,
 }) => {
+    const roleDescription = prompt.promptPayload.role.description;
+
     return (
         <div className="prompt-item">
             <div
@@ -38,10 +40,10 @@ const PromptCard: React.FC<PromptCardProps> = ({
                 <div className="prompt-item__meta">
                     <Clock size={12} aria-hidden="true" />
                     {' '}<span>{formatDate(prompt.updatedAt)}</span>
-                    {prompt.systemRole && (
+                    {roleDescription && (
                         <span className="prompt-meta__suffix">
-                            • {prompt.systemRole.substring(0, 50)}
-                            {prompt.systemRole.length > 50 ? '...' : ''}
+                            • {roleDescription.substring(0, 50)}
+                            {roleDescription.length > 50 ? '...' : ''}
                         </span>
                     )}
                 </div>

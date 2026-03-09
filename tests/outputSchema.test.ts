@@ -2,6 +2,7 @@ import { describe, it, expect } from '@jest/globals';
 // Implementations will live in src/models/outputSchema
 import { normalizeOutputSchema, sanitizeUrlField, DEFAULT_OUTPUT_FORMAT } from '../src/models/outputSchema';
 import { toExportFormat } from '../src/utils/exportJson';
+import { createPromptPayloadFromLegacyRecord } from '../src/models/promptSchema';
 
 describe('normalizeOutputSchema', () => {
   it('fallbacks to markdown when formato is missing or unknown', () => {
@@ -39,28 +40,32 @@ describe('sanitizeUrlField', () => {
 });
 
 describe('toExportFormat with new schema', () => {
-  const basePrompt = {
-    id: 1,
-    categoryId: 1,
+  const promptPayload = createPromptPayloadFromLegacyRecord({
     title: 'Teste',
     systemRole: 'role',
     task: 'task',
     context: 'ctx',
-    menus: { tom: '', publico: '', idioma: '', estilo: '' },
-    contextMenus: {},
-    enabledMenuIds: [],
-    constraints: [],
-    negativePrompt: [],
-    outputSchema: { formato: 'imagem', estrutura: 'scene' },
+    outputSchema: { formato: 'image', estrutura: 'scene' },
+    referenceUrl: 'https://ref.com',
+  });
+
+  const basePrompt = {
+    id: 1,
+    categoryId: 1,
+    title: 'Teste',
+    promptPayload,
+    schemaVersion: promptPayload.meta.schema_version,
+    language: promptPayload.meta.language,
+    outputFormat: promptPayload.output_contract.format,
     fewShotExamples: [],
     createdAt: new Date(),
     updatedAt: new Date(),
     referenceUrl: 'https://ref.com',
   };
 
-  it('exports reference_url and normalized format', () => {
+  it('exports canonical payload with reference_urls and normalized format', () => {
     const exported = toExportFormat(basePrompt);
-    expect(exported.input_data.reference_url).toBe('https://ref.com');
-    expect(exported.output_schema.formato).toBe('imagem');
+    expect(exported.project.reference_urls).toEqual(['https://ref.com']);
+    expect(exported.output_contract.format).toBe('image');
   });
 });

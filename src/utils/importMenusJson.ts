@@ -29,6 +29,7 @@ export interface ImportMenu {
     menu_id: string;
     menu_name: string;
     description: string;
+    selection_mode?: 'single' | 'multiple';
     options: ImportOption[];
 }
 
@@ -123,6 +124,13 @@ function validateMenu(menu: unknown, path: string, seenIds: Set<string>): Valida
         errors.push({ field: `${path}.description`, message: 'description é obrigatório e deve ser string' });
     }
 
+    if (menu.selection_mode !== undefined && menu.selection_mode !== 'single' && menu.selection_mode !== 'multiple') {
+        errors.push({
+            field: `${path}.selection_mode`,
+            message: 'selection_mode deve ser "single" ou "multiple"',
+        });
+    }
+
     if (!Array.isArray(menu.options)) {
         errors.push({ field: `${path}.options`, message: 'options é obrigatório e deve ser um array' });
     } else {
@@ -204,6 +212,7 @@ function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
         menuId: imported.menu_id,
         menuName: imported.menu_name,
         description: imported.description || '',
+        selectionMode: imported.selection_mode || 'single',
         options: (imported.options || []).map((opt) => ({
             label: opt.label || '',
             value: opt.value,
@@ -363,6 +372,7 @@ export async function exportMenusToJson(): Promise<MenuImportSchema> {
             menu_id: m.menuId,
             menu_name: m.menuName,
             description: m.description,
+            selection_mode: m.selectionMode,
             options: m.options.map((opt) => ({
                 label: opt.label,
                 value: opt.value,

@@ -4,6 +4,10 @@
 
 import Dexie, { type EntityTable } from 'dexie';
 import type { Category, Prompt, MenuOption, ContextMenu } from '@/models/types';
+import {
+    createPromptPayloadFromLegacyRecord,
+    getPromptSummaryFields,
+} from '@/models/promptSchema';
 
 const db = new Dexie('PromptAppDB') as Dexie & {
     categories: EntityTable<Category, 'id'>;
@@ -86,6 +90,72 @@ db.version(5).stores({
     });
 });
 
+db.version(6).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+}).upgrade(async (tx) => {
+    const prompts = tx.table('prompts');
+    const contextMenus = tx.table('contextMenus');
+
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        const promptPayload = createPromptPayloadFromLegacyRecord({
+            title: typeof prompt.title === 'string' ? prompt.title : '',
+            systemRole: typeof prompt.systemRole === 'string' ? prompt.systemRole : '',
+            task: typeof prompt.task === 'string' ? prompt.task : '',
+            context: typeof prompt.context === 'string' ? prompt.context : '',
+            contextMenus:
+                prompt.contextMenus && typeof prompt.contextMenus === 'object'
+                    ? (prompt.contextMenus as Record<string, { option?: string; subOptions?: string[] }>)
+                    : {},
+            enabledMenuIds: Array.isArray(prompt.enabledMenuIds)
+                ? (prompt.enabledMenuIds as string[])
+                : undefined,
+            constraints: Array.isArray(prompt.constraints) ? (prompt.constraints as string[]) : [],
+            negativePrompt: Array.isArray(prompt.negativePrompt)
+                ? (prompt.negativePrompt as string[])
+                : [],
+            outputSchema:
+                prompt.outputSchema && typeof prompt.outputSchema === 'object'
+                    ? (prompt.outputSchema as { formato?: string; estrutura?: string })
+                    : undefined,
+            referenceUrl: typeof prompt.referenceUrl === 'string' ? prompt.referenceUrl : undefined,
+            language: typeof prompt.language === 'string' ? prompt.language : undefined,
+            schemaVersion:
+                typeof prompt.schemaVersion === 'string' ? prompt.schemaVersion : undefined,
+        });
+
+        const summary = getPromptSummaryFields(promptPayload);
+
+        prompt.promptPayload = promptPayload;
+        prompt.title = summary.title;
+        prompt.schemaVersion = summary.schemaVersion;
+        prompt.language = summary.language;
+        prompt.outputFormat = summary.outputFormat;
+        prompt.referenceUrl = promptPayload.project.reference_urls[0];
+        prompt.fewShotExamples = Array.isArray(prompt.fewShotExamples)
+            ? prompt.fewShotExamples
+            : [];
+
+        delete prompt.systemRole;
+        delete prompt.task;
+        delete prompt.context;
+        delete prompt.menus;
+        delete prompt.contextMenus;
+        delete prompt.enabledMenuIds;
+        delete prompt.constraints;
+        delete prompt.negativePrompt;
+        delete prompt.outputSchema;
+    });
+
+    await contextMenus.toCollection().modify((menu: Record<string, unknown>) => {
+        if (!menu.selectionMode) {
+            menu.selectionMode = 'single';
+        }
+    });
+});
+
 /* ----- Seed de dados iniciais ----- */
 /* ----- Seed de dados iniciais ----- */
 export async function seedDatabase() {
@@ -150,6 +220,7 @@ export async function seedDatabase() {
                     menuId: 'tom',
                     menuName: 'Tom',
                     description: 'Define o tom de comunicação do prompt',
+                    selectionMode: 'single',
                     syncStatus: 'pending',
                     options: [
                         {
@@ -183,6 +254,7 @@ export async function seedDatabase() {
                     menuId: 'publico',
                     menuName: 'Público',
                     description: 'Define o público-alvo do prompt',
+                    selectionMode: 'single',
                     syncStatus: 'pending',
                     options: [
                         {
@@ -211,6 +283,7 @@ export async function seedDatabase() {
                     menuId: 'idioma',
                     menuName: 'Idioma',
                     description: 'Define o idioma de resposta do prompt',
+                    selectionMode: 'single',
                     syncStatus: 'pending',
                     options: [
                         { label: 'Português (BR)', value: 'pt-br', subOptions: [] },
@@ -231,6 +304,7 @@ export async function seedDatabase() {
                     menuId: 'estilo',
                     menuName: 'Estilo',
                     description: 'Define o estilo de formatação da saída',
+                    selectionMode: 'single',
                     syncStatus: 'pending',
                     options: [
                         { label: 'Conciso', value: 'conciso', subOptions: [] },

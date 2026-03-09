@@ -1,56 +1,181 @@
-/* ======================================================
-   Editor de Prompt — formulário completo (v2 com menus hierárquicos)
-   ====================================================== */
-
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/db/database';
-import { useToast } from '@/context/ToastContext';
-import { toExportFormat, copyToClipboard, downloadPrompt } from '@/utils/exportJson';
-import { saveLocalBackup } from '@/utils/backupManager';
-import { normalizeFewShotExamples } from '@/utils/normalizeFewShot';
-import type { Prompt, OutputSchema, MenuSelectionsMap, ContextMenuSelection, Category } from '@/models/types';
-import { normalizeOutputSchema, sanitizeUrlField, getFormatHint, OUTPUT_FORMATS } from '@/models/outputSchema';
-import { savePromptToSupabase } from '@/services/supabasePrompts';
-import { useDebounce } from '@/hooks/useDebounce';
 import {
     ArrowLeft,
-    Save,
+    CheckSquare,
     Copy,
     Download,
     Eye,
+    FileText,
+    Layers,
+    ListChecks,
     Plus,
+    Save,
+    ShieldOff,
+    Target,
     Trash2,
     X,
     Zap,
-    MessageSquare,
-    Target,
-    FileText,
-    ShieldOff,
-    ListChecks,
-    Layers,
-    ChevronDown,
-    PlusCircle,
 } from 'lucide-react';
 
-const EMPTY_PROMPT: Omit<Prompt, 'id'> = {
-    categoryId: 0,
-    title: '',
-    systemRole: '',
-    task: '',
-    context: '',
-    menus: { tom: '', publico: '', idioma: '', estilo: '' },
-    contextMenus: {},
-    enabledMenuIds: [],
-    constraints: [''],
-    negativePrompt: [''],
-    outputSchema: { formato: 'markdown', estrutura: '' },
-    fewShotExamples: [],
-    referenceUrl: '',
-    createdAt: new Date(),
-    updatedAt: new Date(),
+import { db } from '@/db/database';
+import { useToast } from '@/context/ToastContext';
+import { useDebounce } from '@/hooks/useDebounce';
+import {
+    MenuDefinitionSchema,
+    PROMPT_OUTPUT_FORMATS,
+    PromptContractSchema,
+    createEmptyPromptPayload,
+    getPrimaryReferenceUrl,
+    getPromptSummaryFields,
+    sanitizeSelectedOptions,
+    type MenuDefinition,
+    type PromptOutputContract,
+    type SelectedOption,
+} from '@/models/promptSchema';
+import type { Category, ContextMenu, FewShotExample, Prompt } from '@/models/types';
+import { savePromptToSupabase } from '@/services/supabasePrompts';
+import { saveLocalBackup } from '@/utils/backupManager';
+import { copyToClipboard, downloadPrompt } from '@/utils/exportJson';
+import { normalizeFewShotExamples } from '@/utils/normalizeFewShot';
+
+type PromptFormState = {
+    categoryId: number;
+    title: string;
+    roleDescription: string;
+    objectiveTask: string;
+    projectContext: string;
+    selectedOptions: SelectedOption[];
+    policiesMust: string[];
+    policiesMustNot: string[];
+    outputContract: PromptOutputContract;
+    referenceUrl: string;
+    fewShotExamples: FewShotExample[];
 };
+
+function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
+    return MenuDefinitionSchema.parse({
+        id: menu.menuId,
+        label: menu.menuName,
+        description: menu.description,
+        selection_mode: menu.selectionMode,
+        options: (menu.options || []).map((option) => ({
+            value: option.value,
+            label: option.label,
+            sub_options: (option.subOptions || []).map((subOption) => ({
+                value: subOption.value,
+                label: subOption.label,
+            })),
+        })),
+    });
+}
+
+function createEmptyFormState(categoryId = 0): PromptFormState {
+    const payload = createEmptyPromptPayload();
+    return {
+        categoryId,
+        title: payload.meta.name,
+        roleDescription: payload.role.description,
+        objectiveTask: payload.objective.task,
+        projectContext: payload.project.context,
+        selectedOptions: payload.selected_options,
+        policiesMust: [''],
+        policiesMustNot: [''],
+        outputContract: payload.output_contract,
+        referenceUrl: '',
+        fewShotExamples: [],
+    };
+}
+
+function buildFormStateFromPrompt(prompt: Prompt): PromptFormState {
+    const payload = prompt.promptPayload;
+    return {
+        categoryId: prompt.categoryId,
+        title: payload.meta.name,
+        roleDescription: payload.role.description,
+        objectiveTask: payload.objective.task,
+        projectContext: payload.project.context,
+        selectedOptions: payload.selected_options,
+        policiesMust: payload.policies.must.length > 0 ? payload.policies.must : [''],
+        policiesMustNot: payload.policies.must_not.length > 0 ? payload.policies.must_not : [''],
+        outputContract: payload.output_contract,
+        referenceUrl: getPrimaryReferenceUrl(payload) || '',
+        fewShotExamples: prompt.fewShotExamples || [],
+    };
+}
+
+function buildPromptPayload(form: PromptFormState, menuDefinitions: MenuDefinition[]) {
+    const basePayload = createEmptyPromptPayload(form.title);
+    const selectedOptions = sanitizeSelectedOptions(form.selectedOptions, menuDefinitions);
+    const safeTitle = form.title.trim() || basePayload.meta.name;
+    const referenceUrls = (() => {
+        const rawValue = form.referenceUrl.trim();
+        if (!rawValue) {
+            return [];
+        }
+
+        const parsed = new URL(rawValue);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            throw new Error('Use apenas URLs http ou https');
+        }
+
+        return [rawValue];
+    })();
+
+    return PromptContractSchema.parse({
+        ...basePayload,
+        meta: {
+            ...basePayload.meta,
+            name: safeTitle,
+            prompt_id: basePayload.meta.prompt_id,
+        },
+        role: {
+            id: form.roleDescription.trim()
+                ? form.roleDescription
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, '_')
+                      .replace(/^_+|_+$/g, '')
+                : 'custom_role',
+            description: form.roleDescription.trim(),
+        },
+        objective: {
+            ...basePayload.objective,
+            task: form.objectiveTask.trim(),
+        },
+        project: {
+            ...basePayload.project,
+            context: form.projectContext.trim(),
+            reference_urls: referenceUrls,
+        },
+        selected_options: selectedOptions,
+        policies: {
+            must: form.policiesMust.map((item) => item.trim()).filter(Boolean),
+            must_not: form.policiesMustNot.map((item) => item.trim()).filter(Boolean),
+        },
+        output_contract: {
+            ...form.outputContract,
+            required_sections: form.outputContract.required_sections.map((item) => item.trim()).filter(Boolean),
+            route_audit_order: form.outputContract.route_audit_order.map((item) => item.trim()).filter(Boolean),
+            ordered_evaluation_blocks: form.outputContract.ordered_evaluation_blocks.map((item) => item.trim()).filter(Boolean),
+            acceptance_criteria: form.outputContract.acceptance_criteria.map((item) => item.trim()).filter(Boolean),
+            status_enum: form.outputContract.status_enum.map((item) => item.trim()).filter(Boolean),
+            severity_enum: form.outputContract.severity_enum.map((item) => item.trim()).filter(Boolean),
+            structure_notes: form.outputContract.structure_notes.trim(),
+        },
+    });
+}
+
+function updateListItem(list: string[], index: number, value: string) {
+    const next = [...list];
+    next[index] = value;
+    return next;
+}
+
+function removeListItem(list: string[], index: number) {
+    const next = list.filter((_, currentIndex) => currentIndex !== index);
+    return next.length > 0 ? next : [''];
+}
 
 export default function EditorPage() {
     const { id } = useParams<{ id: string }>();
@@ -60,222 +185,170 @@ export default function EditorPage() {
     const isNew = id === 'novo';
 
     const [categories, setCategories] = useState<Category[]>([]);
-    const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
-
-    const [form, setForm] = useState<Omit<Prompt, 'id'>>(EMPTY_PROMPT);
-    const [showPreview, setShowPreview] = useState(false);
     const [loaded, setLoaded] = useState(false);
-    const [showMenuPicker, setShowMenuPicker] = useState(false);
-    const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
-    const [urlError, setUrlError] = useState<string | null>(null);
+    const [showPreview, setShowPreview] = useState(false);
+    const [form, setForm] = useState<PromptFormState>(createEmptyFormState());
 
-    /* Buscar categorias do banco local (Dexie) */
+    const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
+    const debouncedForm = useDebounce(form, 1200);
+
     useEffect(() => {
         (async () => {
-            const data = await db.categories.toArray();
-            setCategories(data.sort((a, b) => a.name.localeCompare(b.name)));
+            const categoryList = await db.categories.toArray();
+            setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
         })();
     }, []);
 
-    /* Carregar prompt existente */
+    useEffect(() => {
+        if (!loaded && isNew && categories.length > 0) {
+            const categoryFromQuery = Number(searchParams.get('categoria') || categories[0]?.id || 0);
+            setForm(createEmptyFormState(categoryFromQuery));
+            setLoaded(true);
+        }
+    }, [categories, isNew, loaded, searchParams]);
+
     useEffect(() => {
         if (isNew) {
-            const catId = searchParams.get('categoria');
-            setForm({
-                ...EMPTY_PROMPT,
-                categoryId: catId ? Number(catId) : (categories[0]?.id || 0),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
-            setLoaded(true);
-        } else {
-            db.prompts.get(Number(id)).then((p) => {
-                if (p) {
-                    setForm({
-                        ...p,
-                        contextMenus: p.contextMenus || {},
-                        enabledMenuIds: p.enabledMenuIds || [],
-                        constraints: p.constraints.length > 0 ? p.constraints : [''],
-                        negativePrompt: p.negativePrompt.length > 0 ? p.negativePrompt : [''],
-                        fewShotExamples: p.fewShotExamples?.length ? p.fewShotExamples : [],
-                        outputSchema: normalizeOutputSchema(p.outputSchema),
-                        referenceUrl: p.referenceUrl || '',
-                    });
-                }
-                setLoaded(true);
-            });
+            return;
         }
-    }, [id, isNew, searchParams, categories]);
 
-    /* --- Sistema de Rascunho (Draft) com Debounce --- */
-    const debouncedForm = useDebounce(form, 1500); // 1.5s de atraso para não pesar a UI
-
-    // Carregar rascunho se existir ao iniciar
-    useEffect(() => {
-        if (loaded) {
-            const draftKey = `prompt_draft_${id}`;
-            const savedDraft = localStorage.getItem(draftKey);
-            if (savedDraft) {
-                try {
-                    const draftData = JSON.parse(savedDraft);
-                    // Só aplicamos o rascunho se ele for diferente do estado inicial "limpo"
-                    // ou se encontrarmos propriedades relevantes populadas
-                    if (draftData.title || draftData.task || draftData.systemRole) {
-                        setForm(prev => ({ ...prev, ...draftData }));
-                        showToast('Rascunho recuperado automaticamente!', 'info');
-                    }
-                } catch (e) {
-                    console.error('Erro ao recuperar rascunho:', e);
-                }
+        db.prompts.get(Number(id)).then((prompt) => {
+            if (prompt) {
+                setForm(buildFormStateFromPrompt(prompt));
             }
-        }
-    }, [loaded, id]);
+            setLoaded(true);
+        });
+    }, [id, isNew]);
 
-    // Salvar rascunho apenas quando o valor debounced mudar
     useEffect(() => {
-        if (loaded && debouncedForm !== EMPTY_PROMPT) {
-            const draftKey = `prompt_draft_${id}`;
-            localStorage.setItem(draftKey, JSON.stringify(debouncedForm));
-            console.log('💾 Rascunho salvo (debounced)');
+        if (!loaded) {
+            return;
         }
+
+        const draftKey = `prompt_draft_${id}`;
+        const savedDraft = localStorage.getItem(draftKey);
+        if (!savedDraft) {
+            return;
+        }
+
+        try {
+            const draftData = JSON.parse(savedDraft) as Partial<PromptFormState>;
+            if (draftData.title || draftData.objectiveTask || draftData.roleDescription) {
+                setForm((current) => ({
+                    ...current,
+                    ...draftData,
+                }));
+                showToast('Rascunho recuperado automaticamente!', 'info');
+            }
+        } catch (error) {
+            console.error('Erro ao recuperar rascunho:', error);
+        }
+    }, [id, loaded, showToast]);
+
+    useEffect(() => {
+        if (!loaded) {
+            return;
+        }
+
+        localStorage.setItem(`prompt_draft_${id}`, JSON.stringify(debouncedForm));
     }, [debouncedForm, id, loaded]);
 
-    // Limpar rascunho ao salvar com sucesso
+    const menuDefinitions = contextMenus.map(contextMenuToDefinition);
+
+    const updateField = <K extends keyof PromptFormState>(field: K, value: PromptFormState[K]) => {
+        setForm((current) => ({
+            ...current,
+            [field]: value,
+        }));
+    };
+
+    const updateOutputContract = <K extends keyof PromptOutputContract>(
+        field: K,
+        value: PromptOutputContract[K]
+    ) => {
+        setForm((current) => ({
+            ...current,
+            outputContract: {
+                ...current.outputContract,
+                [field]: value,
+            },
+        }));
+    };
+
+    const selectionsForGroup = (groupId: string) =>
+        form.selectedOptions.filter((selection) => selection.group === groupId);
+
+    const optionSelection = (groupId: string, optionValue: string) =>
+        form.selectedOptions.find(
+            (selection) => selection.group === groupId && selection.option === optionValue
+        );
+
+    const toggleMenuOption = (menu: ContextMenu, optionValue: string) => {
+        setForm((current) => {
+            const existing = current.selectedOptions.find(
+                (selection) => selection.group === menu.menuId && selection.option === optionValue
+            );
+
+            if (menu.selectionMode === 'single') {
+                if (existing) {
+                    return {
+                        ...current,
+                        selectedOptions: current.selectedOptions.filter(
+                            (selection) => selection.group !== menu.menuId
+                        ),
+                    };
+                }
+
+                return {
+                    ...current,
+                    selectedOptions: [
+                        ...current.selectedOptions.filter((selection) => selection.group !== menu.menuId),
+                        { group: menu.menuId, option: optionValue, sub_options: [] },
+                    ],
+                };
+            }
+
+            if (existing) {
+                return {
+                    ...current,
+                    selectedOptions: current.selectedOptions.filter(
+                        (selection) =>
+                            !(selection.group === menu.menuId && selection.option === optionValue)
+                    ),
+                };
+            }
+
+            return {
+                ...current,
+                selectedOptions: [
+                    ...current.selectedOptions,
+                    { group: menu.menuId, option: optionValue, sub_options: [] },
+                ],
+            };
+        });
+    };
+
+    const toggleSubOption = (groupId: string, optionValue: string, subOptionValue: string) => {
+        setForm((current) => ({
+            ...current,
+            selectedOptions: current.selectedOptions.map((selection) => {
+                if (selection.group !== groupId || selection.option !== optionValue) {
+                    return selection;
+                }
+
+                const hasSubOption = selection.sub_options.includes(subOptionValue);
+                return {
+                    ...selection,
+                    sub_options: hasSubOption
+                        ? selection.sub_options.filter((item) => item !== subOptionValue)
+                        : [...selection.sub_options, subOptionValue],
+                };
+            }),
+        }));
+    };
+
     const clearDraft = () => {
         localStorage.removeItem(`prompt_draft_${id}`);
-    };
-
-    /* Atualizar categoryId quando categorias carregarem */
-    useEffect(() => {
-        if (isNew && form.categoryId === 0 && categories.length > 0) {
-            const catId = searchParams.get('categoria');
-            setForm((prev) => ({
-                ...prev,
-                categoryId: catId ? Number(catId) : categories[0]?.id ?? 0,
-            }));
-        }
-    }, [categories, isNew, form.categoryId, searchParams]);
-
-    /* --- Handlers de campos --- */
-    const updateField = <K extends keyof Omit<Prompt, 'id'>>(key: K, value: Omit<Prompt, 'id'>[K]) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-    };
-
-    /* --- Menus hierárquicos (v2) --- */
-    const getMenuSelection = (menuId: string): ContextMenuSelection => {
-        return form.contextMenus[menuId] || { option: '', subOptions: [] };
-    };
-
-    const selectMenuOption = (menuId: string, optionValue: string) => {
-        setForm((prev) => {
-            const current = prev.contextMenus[menuId];
-            const isDeselect = current?.option === optionValue;
-
-            const newMenus: MenuSelectionsMap = { ...prev.contextMenus };
-            if (isDeselect) {
-                delete newMenus[menuId];
-            } else {
-                newMenus[menuId] = { option: optionValue, subOptions: [] };
-            }
-            return { ...prev, contextMenus: newMenus };
-        });
-    };
-
-    const toggleSubOption = (menuId: string, subValue: string) => {
-        setForm((prev) => {
-            const current = prev.contextMenus[menuId];
-            if (!current) return prev;
-
-            const subs = (current.subOptions || []).includes(subValue)
-                ? (current.subOptions || []).filter((s) => s !== subValue)
-                : [...(current.subOptions || []), subValue];
-
-            return {
-                ...prev,
-                contextMenus: {
-                    ...prev.contextMenus,
-                    [menuId]: { ...current, subOptions: subs },
-                },
-            };
-        });
-    };
-
-    const toggleMenuExpanded = (menuId: string) => {
-        setExpandedMenus((prev) => ({ ...prev, [menuId]: !prev[menuId] }));
-    };
-
-    /* --- Menu picker: add/remove menus per prompt --- */
-    const enabledMenus = contextMenus.filter((m) => form.enabledMenuIds.includes(m.menuId));
-    const availableMenus = contextMenus.filter((m) => !form.enabledMenuIds.includes(m.menuId));
-
-    const addMenuToPrompt = (menuId: string) => {
-        setForm((prev) => ({
-            ...prev,
-            enabledMenuIds: [...prev.enabledMenuIds, menuId],
-        }));
-        setShowMenuPicker(false);
-    };
-
-    const removeMenuFromPrompt = (menuId: string) => {
-        setForm((prev) => {
-            const newContextMenus = { ...prev.contextMenus };
-            delete newContextMenus[menuId];
-            return {
-                ...prev,
-                enabledMenuIds: prev.enabledMenuIds.filter((id) => id !== menuId),
-                contextMenus: newContextMenus,
-            };
-        });
-    };
-
-    /* --- Outros handlers --- */
-    const updateConstraint = (index: number, value: string) => {
-        const newList = [...form.constraints];
-        newList[index] = value;
-        updateField('constraints', newList);
-    };
-
-    const addConstraint = () => updateField('constraints', [...form.constraints, '']);
-
-    const removeConstraint = (index: number) => {
-        const newList = form.constraints.filter((_, i) => i !== index);
-        updateField('constraints', newList.length > 0 ? newList : ['']);
-    };
-
-    const updateNegative = (index: number, value: string) => {
-        const newList = [...form.negativePrompt];
-        newList[index] = value;
-        updateField('negativePrompt', newList);
-    };
-
-    const addNegative = () => updateField('negativePrompt', [...form.negativePrompt, '']);
-
-    const removeNegative = (index: number) => {
-        const newList = form.negativePrompt.filter((_, i) => i !== index);
-        updateField('negativePrompt', newList.length > 0 ? newList : ['']);
-    };
-
-    const handleUrlChange = (value: string) => {
-        setUrlError(null);
-        updateField('referenceUrl', value);
-    };
-
-    const validateUrl = () => {
-        const result = sanitizeUrlField(form.referenceUrl);
-        if (result.error) {
-            setUrlError(result.error);
-            return { valid: false, value: undefined, error: result.error };
-        }
-        setUrlError(null);
-        return { valid: true, value: result.value };
-    };
-
-    const updateOutputSchema = (field: keyof OutputSchema, value: string) => {
-        const normalized = normalizeOutputSchema({ ...form.outputSchema, [field]: value });
-        setForm((prev) => ({
-            ...prev,
-            outputSchema: normalized,
-        }));
     };
 
     const handleSave = async () => {
@@ -283,103 +356,132 @@ export default function EditorPage() {
             showToast('Título é obrigatório', 'error');
             return;
         }
+
         if (!form.categoryId) {
             showToast('Selecione uma categoria', 'error');
             return;
         }
 
-        const normalizedOutput = normalizeOutputSchema(form.outputSchema);
-        const urlResult = validateUrl();
-
-        if (!urlResult.valid) {
-            showToast(urlResult.error || 'URL inválida', 'error');
+        let promptPayload;
+        try {
+            promptPayload = buildPromptPayload(form, menuDefinitions);
+        } catch (error: any) {
+            showToast(error.message || 'Payload inválido', 'error');
             return;
         }
 
-        const data = {
-            ...form,
-            constraints: form.constraints.filter(Boolean),
-            negativePrompt: form.negativePrompt.filter(Boolean),
-            fewShotExamples: normalizeFewShotExamples(form.fewShotExamples),
-            outputSchema: normalizedOutput,
-            referenceUrl: urlResult.value,
-            updatedAt: new Date(),
-        };
-
-        let localId: number | null = null;
+        const summary = getPromptSummaryFields(promptPayload);
         const now = new Date();
-        const localPayload: Partial<Prompt> = {
-            ...data,
-            syncStatus: 'pending',
-            createdAt: isNew ? now : (data as Prompt).createdAt,
+        const promptRecord: Omit<Prompt, 'id'> = {
+            categoryId: form.categoryId,
+            title: summary.title,
+            promptPayload,
+            schemaVersion: summary.schemaVersion,
+            language: summary.language,
+            outputFormat: summary.outputFormat,
+            referenceUrl: getPrimaryReferenceUrl(promptPayload),
+            fewShotExamples: normalizeFewShotExamples(form.fewShotExamples),
+            createdAt: now,
             updatedAt: now,
         };
 
+        let localId: number | null = null;
+
         try {
-            // Salvar localmente primeiro (offline-first)
             if (isNew) {
-                const newId = await db.prompts.add(localPayload as Prompt);
-                localId = newId ?? null;
-                if (localId !== null) {
-                    navigate(`/editor/${localId}`, { replace: true });
-                }
+                localId = (await db.prompts.add({
+                    ...promptRecord,
+                    syncStatus: 'pending',
+                } as Prompt)) ?? null;
+                navigate(`/editor/${localId}`, { replace: true });
             } else {
                 localId = Number(id);
-                await db.prompts.update(localId, localPayload);
+                const existingPrompt = await db.prompts.get(localId);
+                await db.prompts.update(localId, {
+                    ...promptRecord,
+                    createdAt: existingPrompt?.createdAt || now,
+                    syncStatus: 'pending',
+                });
             }
+
             clearDraft();
             await saveLocalBackup();
         } catch (error: any) {
             console.error('Erro ao salvar localmente:', error);
-            showToast(error.message || 'Erro ao salvar localmente.', 'error');
+            showToast(error.message || 'Erro ao salvar localmente', 'error');
             return;
         }
 
         try {
-            // Tentar salvar no Supabase
-            const promptPayload = {
-                ...data,
-                remoteId: (data as Prompt).remoteId
-            };
-            const savedPrompt = await savePromptToSupabase(promptPayload);
+            const existingPrompt = !isNew && localId !== null ? await db.prompts.get(localId) : undefined;
+            const savedRemote = await savePromptToSupabase({
+                ...promptRecord,
+                remoteId: existingPrompt?.remoteId,
+            });
 
             if (localId !== null) {
                 await db.prompts.update(localId, {
-                    remoteId: savedPrompt.id,
+                    remoteId: savedRemote.id,
                     syncStatus: 'synced',
                 });
             }
 
-            showToast(
-                isNew ? 'Prompt criado e sincronizado!' : 'Prompt atualizado e sincronizado!',
-                'success'
-            );
-        } catch (error: any) {
+            showToast(isNew ? 'Prompt criado e sincronizado!' : 'Prompt atualizado e sincronizado!', 'success');
+        } catch (error) {
             console.error('Erro ao salvar no Supabase:', error);
-            showToast(
-                isNew
-                    ? 'Prompt salvo localmente. Sincronize ao fazer login.'
-                    : 'Alterações salvas localmente. Sincronize ao fazer login.',
-                'info'
-            );
+            showToast('Prompt salvo localmente. Sincronize ao fazer login.', 'info');
         }
     };
 
+    const previewState = (() => {
+        try {
+            return {
+                payload: buildPromptPayload(form, menuDefinitions),
+                error: null,
+            };
+        } catch (error: any) {
+            return {
+                payload: null,
+                error: error.message || 'Payload inválido',
+            };
+        }
+    })();
+
     const handleCopy = async () => {
-        const exported = toExportFormat(form as Prompt);
-        const json = JSON.stringify(exported, null, 2);
-        const ok = await copyToClipboard(json);
+        if (!previewState.payload) {
+            showToast(previewState.error || 'Payload inválido', 'error');
+            return;
+        }
+
+        const ok = await copyToClipboard(JSON.stringify(previewState.payload, null, 2));
         showToast(ok ? 'JSON copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
     };
 
     const handleDownload = () => {
-        downloadPrompt(form as Prompt);
+        if (!previewState.payload) {
+            showToast(previewState.error || 'Payload inválido', 'error');
+            return;
+        }
+
+        const summary = getPromptSummaryFields(previewState.payload);
+        downloadPrompt({
+            categoryId: form.categoryId,
+            title: summary.title,
+            promptPayload: previewState.payload,
+            schemaVersion: summary.schemaVersion,
+            language: summary.language,
+            outputFormat: summary.outputFormat,
+            referenceUrl: getPrimaryReferenceUrl(previewState.payload),
+            fewShotExamples: form.fewShotExamples,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
         showToast('Download iniciado!');
     };
 
-    if (!loaded) return null;
-
-    const previewJson = JSON.stringify(toExportFormat(form as Prompt), null, 2);
+    if (!loaded) {
+        return null;
+    }
 
     return (
         <>
@@ -393,9 +495,7 @@ export default function EditorPage() {
                     >
                         <ArrowLeft size={18} />
                     </button>
-                    <h1 className="app-header__title">
-                        {isNew ? 'Novo Prompt' : 'Editar Prompt'}
-                    </h1>
+                    <h1 className="app-header__title">{isNew ? 'Novo Prompt' : 'Editar Prompt'}</h1>
                 </div>
                 <div className="app-header__actions">
                     <button className="btn btn--ghost" onClick={() => setShowPreview(true)}>
@@ -415,18 +515,18 @@ export default function EditorPage() {
 
             <div className="app-content">
                 <div className="editor-form--constrained">
-                    {/* --- Informações Básicas --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
                             <FileText size={18} /> Informações Básicas
                         </h3>
 
                         <div className="form-group">
-                            <label className="form-label">Título do Prompt</label>
+                            <label className="form-label" htmlFor="prompt-title">Título do Prompt</label>
                             <input
+                                id="prompt-title"
                                 value={form.title}
-                                onChange={(e) => updateField('title', e.target.value)}
-                                placeholder="Ex: Gerar artigo de blog otimizado para SEO"
+                                onChange={(event) => updateField('title', event.target.value)}
+                                placeholder="Ex: Auditoria do Prompt App"
                             />
                         </div>
 
@@ -434,74 +534,81 @@ export default function EditorPage() {
                             <label className="form-label" htmlFor="editor-category">Categoria</label>
                             <select
                                 id="editor-category"
-                                aria-label="Selecione a categoria"
                                 value={form.categoryId}
-                                onChange={(e) => updateField('categoryId', Number(e.target.value))}
+                                onChange={(event) => updateField('categoryId', Number(event.target.value))}
                             >
                                 <option value={0}>Selecione uma categoria</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.icon} {cat.name}
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.icon} {category.name}
                                     </option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
-                    {/* --- System Role --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <Zap size={18} /> System Prompt
-                            <span className="form-label__hint">(Persona do modelo)</span>
+                            <Zap size={18} /> Role
                         </h3>
-
                         <div className="form-group">
+                            <label className="form-label" htmlFor="prompt-role">
+                                Descrição do papel do agente
+                            </label>
                             <textarea
-                                value={form.systemRole}
-                                onChange={(e) => updateField('systemRole', e.target.value)}
-                                placeholder="Você é um especialista em copywriting com 15 anos de experiência. Seu papel é criar textos persuasivos e de alta conversão."
+                                id="prompt-role"
+                                value={form.roleDescription}
+                                onChange={(event) => updateField('roleDescription', event.target.value)}
                                 rows={4}
+                                placeholder="Você é um engenheiro sênior focado em..."
                             />
                         </div>
                     </div>
 
-                    {/* --- Task --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <Target size={18} /> Tarefa Principal
+                            <Target size={18} /> Objective
                         </h3>
-
                         <div className="form-group">
+                            <label className="form-label" htmlFor="prompt-task">Tarefa principal</label>
                             <textarea
-                                value={form.task}
-                                onChange={(e) => updateField('task', e.target.value)}
-                                placeholder="Gere um artigo de blog completo com título, introdução, 3 seções principais, conclusão e CTA."
+                                id="prompt-task"
+                                value={form.objectiveTask}
+                                onChange={(event) => updateField('objectiveTask', event.target.value)}
                                 rows={4}
+                                placeholder="Descreva exatamente o que o modelo deve executar."
                             />
                         </div>
                     </div>
 
-                    {/* --- Contexto --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <MessageSquare size={18} /> Contexto
+                            <FileText size={18} /> Project Context
                         </h3>
-
                         <div className="form-group">
+                            <label className="form-label" htmlFor="prompt-context">Contexto do projeto</label>
                             <textarea
-                                value={form.context}
-                                onChange={(e) => updateField('context', e.target.value)}
-                                placeholder="O artigo é para o blog de uma startup de tecnologia educacional. O público são professores e coordenadores pedagógicos."
+                                id="prompt-context"
+                                value={form.projectContext}
+                                onChange={(event) => updateField('projectContext', event.target.value)}
                                 rows={4}
+                                placeholder="Explique o cenário, o produto e o contexto necessário para a execução."
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="reference-url">URL de referência</label>
+                            <input
+                                id="reference-url"
+                                value={form.referenceUrl}
+                                onChange={(event) => updateField('referenceUrl', event.target.value)}
+                                placeholder="https://prompt-app-dan.netlify.app"
                             />
                         </div>
                     </div>
 
-                    {/* --- Menus de Contexto Hierárquicos (v2) --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
                             <Layers size={18} /> Menus de Contexto
-                            <span className="form-label__hint">(Adicione os menus que deseja usar neste prompt)</span>
                         </h3>
 
                         {contextMenus.length === 0 ? (
@@ -512,257 +619,288 @@ export default function EditorPage() {
                                 </button>
                             </p>
                         ) : (
-                            <>
-                                {/* Menu Picker — adicionar menus ao prompt */}
-                                <div className="ctx-picker">
-                                    <div className="ctx-picker__row">
-                                        <div className="ctx-picker__wrapper">
-                                            <button
-                                                className="btn btn--secondary btn--sm ctx-picker__trigger"
-                                                onClick={() => setShowMenuPicker(!showMenuPicker)}
-                                                disabled={availableMenus.length === 0}
-                                                type="button"
-                                            >
-                                                <PlusCircle size={14} />
-                                                Adicionar Menu
-                                                {availableMenus.length > 0 && (
-                                                    <span className="ctx-picker__count">{availableMenus.length}</span>
-                                                )}
-                                            </button>
-
-                                            {showMenuPicker && availableMenus.length > 0 && (
-                                                <div className="ctx-picker__dropdown">
-                                                    {availableMenus.map((menu) => (
-                                                        <button
-                                                            key={menu.id}
-                                                            className="ctx-picker__option"
-                                                            onClick={() => addMenuToPrompt(menu.menuId)}
-                                                            type="button"
-                                                        >
-                                                            <span className="ctx-picker__option-name">{menu.menuName}</span>
-                                                            <span className="ctx-picker__option-desc">{menu.description}</span>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
+                            <div className="ctx-editor-grid">
+                                {contextMenus.map((menu) => (
+                                    <div key={menu.id} className="ctx-editor-menu">
+                                        <div className="ctx-editor-menu__header">
+                                            <span className="ctx-editor-menu__name">{menu.menuName}</span>
+                                            <span className="ctx-editor-menu__selection">
+                                                {menu.selectionMode === 'multiple' ? 'Múltipla' : 'Única'}
+                                            </span>
+                                        </div>
+                                        {menu.description && (
+                                            <p className="form-label__hint">{menu.description}</p>
+                                        )}
+                                        <div className="menu-selector">
+                                            {menu.options.map((option) => {
+                                                const selection = optionSelection(menu.menuId, option.value);
+                                                return (
+                                                    <button
+                                                        key={option.value}
+                                                        type="button"
+                                                        className={`menu-tag ${selection ? 'menu-tag--selected' : ''}`}
+                                                        onClick={() => toggleMenuOption(menu, option.value)}
+                                                    >
+                                                        {option.label}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
 
-                                        {enabledMenus.length > 0 && (
-                                            <span className="ctx-picker__summary">
-                                                {enabledMenus.length} menu{enabledMenus.length !== 1 ? 's' : ''} ativo{enabledMenus.length !== 1 ? 's' : ''}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
+                                        {selectionsForGroup(menu.menuId).map((selection) => {
+                                            const optionDefinition = menu.options.find(
+                                                (option) => option.value === selection.option
+                                            );
 
-                                {/* Menus habilitados — seleção de opções */}
-                                {enabledMenus.length === 0 ? (
-                                    <p className="ctx-empty-hint">
-                                        Nenhum menu adicionado a este prompt. Use o botão acima para adicionar.
-                                    </p>
-                                ) : (
-                                    <div className="ctx-editor-grid">
-                                        {enabledMenus.map((menu) => {
-                                            const sel = getMenuSelection(menu.menuId);
-                                            const selectedOpt = (menu.options || []).find((o) => o.value === sel.option);
-                                            const hasSubOptions = selectedOpt && (selectedOpt.subOptions || []).length > 0;
-                                            const isExpanded = expandedMenus[menu.menuId];
+                                            if (!optionDefinition || optionDefinition.subOptions.length === 0) {
+                                                return null;
+                                            }
 
                                             return (
-                                                <div key={menu.id} className="ctx-editor-menu">
-                                                    <div className="ctx-editor-menu__header">
-                                                        <span className="ctx-editor-menu__name">{menu.menuName}</span>
-                                                        {sel.option && (
-                                                            <span className="ctx-editor-menu__selection">
-                                                                {selectedOpt?.label}
-                                                                {(sel.subOptions || []).length > 0 && (
-                                                                    <span className="ctx-editor-menu__sub-count">
-                                                                        +{(sel.subOptions || []).length}
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        )}
-                                                        {hasSubOptions && (
+                                                <div key={`${selection.group}-${selection.option}`} className="ctx-editor-suboptions">
+                                                    <span className="ctx-editor-suboptions__label">
+                                                        Sub-opções de "{optionDefinition.label}"
+                                                    </span>
+                                                    <div className="menu-selector menu-selector--sub">
+                                                        {optionDefinition.subOptions.map((subOption) => (
                                                             <button
-                                                                className="btn btn--ghost btn--icon btn--sm"
-                                                                onClick={() => toggleMenuExpanded(menu.menuId)}
-                                                                aria-label={isExpanded ? 'Recolher sub-opções' : 'Expandir sub-opções'}
-                                                                title={isExpanded ? 'Recolher' : 'Expandir sub-opções'}
+                                                                key={subOption.value}
                                                                 type="button"
+                                                                className={`menu-tag menu-tag--sub ${
+                                                                    selection.sub_options.includes(subOption.value)
+                                                                        ? 'menu-tag--selected'
+                                                                        : ''
+                                                                }`}
+                                                                onClick={() =>
+                                                                    toggleSubOption(
+                                                                        selection.group,
+                                                                        selection.option,
+                                                                        subOption.value
+                                                                    )
+                                                                }
                                                             >
-                                                                <ChevronDown
-                                                                    size={14}
-                                                                    className={isExpanded ? 'ctx-chevron--open' : 'ctx-chevron'}
-                                                                />
-                                                            </button>
-                                                        )}
-                                                        <button
-                                                            className="btn btn--ghost btn--icon btn--sm ctx-editor-menu__remove"
-                                                            onClick={() => removeMenuFromPrompt(menu.menuId)}
-                                                            aria-label={`Remover menu ${menu.menuName}`}
-                                                            title="Remover deste prompt"
-                                                            type="button"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="menu-selector">
-                                                        {(menu.options || []).map((opt) => (
-                                                            <button
-                                                                key={opt.value}
-                                                                type="button"
-                                                                className={`menu-tag ${sel.option === opt.value ? 'menu-tag--selected' : ''}`}
-                                                                onClick={() => selectMenuOption(menu.menuId, opt.value)}
-                                                            >
-                                                                {opt.label}
+                                                                {subOption.label}
                                                             </button>
                                                         ))}
                                                     </div>
-
-                                                    {/* Sub-opções — expandível */}
-                                                    {hasSubOptions && isExpanded && (
-                                                        <div className="ctx-editor-suboptions">
-                                                            <span className="ctx-editor-suboptions__label">
-                                                                Sub-opções de "{selectedOpt.label}":
-                                                            </span>
-                                                            <div className="menu-selector menu-selector--sub">
-                                                                {(selectedOpt.subOptions || []).map((sub) => (
-                                                                    <button
-                                                                        key={sub.value}
-                                                                        type="button"
-                                                                        className={`menu-tag menu-tag--sub ${(sel.subOptions || []).includes(sub.value) ? 'menu-tag--selected' : ''}`}
-                                                                        onClick={() => toggleSubOption(menu.menuId, sub.value)}
-                                                                    >
-                                                                        {sub.label}
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                )}
-                            </>
+                                ))}
+                            </div>
                         )}
                     </div>
 
-                    {/* --- Constraints --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <ListChecks size={18} /> Restrições
-                            <span className="form-label__hint">(O que o modelo DEVE respeitar)</span>
+                            <ListChecks size={18} /> Policies Must
                         </h3>
-
                         <div className="dynamic-list">
-                            {form.constraints.map((item, i) => (
-                                <div key={i} className="dynamic-list__item">
+                            {form.policiesMust.map((item, index) => (
+                                <div key={`must-${index}`} className="dynamic-list__item">
                                     <input
                                         value={item}
-                                        onChange={(e) => updateConstraint(i, e.target.value)}
-                                        placeholder={`Restrição ${i + 1}...`}
+                                        onChange={(event) =>
+                                            updateField('policiesMust', updateListItem(form.policiesMust, index, event.target.value))
+                                        }
+                                        placeholder={`Obrigação ${index + 1}`}
                                     />
                                     <button
                                         className="btn btn--ghost btn--icon"
-                                        onClick={() => removeConstraint(i)}
-                                        aria-label="Remover restrição"
+                                        onClick={() =>
+                                            updateField('policiesMust', removeListItem(form.policiesMust, index))
+                                        }
+                                        aria-label="Remover regra obrigatória"
                                     >
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
                             ))}
-                            <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={addConstraint}>
-                                <Plus size={14} /> Adicionar restrição
+                            <button
+                                className="btn btn--ghost btn--sm dynamic-list__add"
+                                onClick={() => updateField('policiesMust', [...form.policiesMust, ''])}
+                            >
+                                <Plus size={14} /> Adicionar regra
                             </button>
                         </div>
                     </div>
 
-                    {/* --- Negative Prompt --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <ShieldOff size={18} /> Negative Prompt
-                            <span className="form-label__hint">(O que o modelo NÃO deve fazer)</span>
+                            <ShieldOff size={18} /> Policies Must Not
                         </h3>
-
                         <div className="dynamic-list">
-                            {form.negativePrompt.map((item, i) => (
-                                <div key={i} className="dynamic-list__item">
+                            {form.policiesMustNot.map((item, index) => (
+                                <div key={`must-not-${index}`} className="dynamic-list__item">
                                     <input
                                         value={item}
-                                        onChange={(e) => updateNegative(i, e.target.value)}
-                                        placeholder={`Item negativo ${i + 1}...`}
+                                        onChange={(event) =>
+                                            updateField(
+                                                'policiesMustNot',
+                                                updateListItem(form.policiesMustNot, index, event.target.value)
+                                            )
+                                        }
+                                        placeholder={`Proibição ${index + 1}`}
                                     />
                                     <button
                                         className="btn btn--ghost btn--icon"
-                                        onClick={() => removeNegative(i)}
-                                        aria-label="Remover item negativo"
+                                        onClick={() =>
+                                            updateField(
+                                                'policiesMustNot',
+                                                removeListItem(form.policiesMustNot, index)
+                                            )
+                                        }
+                                        aria-label="Remover regra proibida"
                                     >
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
                             ))}
-                            <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={addNegative}>
-                                <Plus size={14} /> Adicionar item negativo
+                            <button
+                                className="btn btn--ghost btn--sm dynamic-list__add"
+                                onClick={() => updateField('policiesMustNot', [...form.policiesMustNot, ''])}
+                            >
+                                <Plus size={14} /> Adicionar proibição
                             </button>
                         </div>
                     </div>
 
-                    {/* --- Output Schema --- */}
                     <div className="form-section">
                         <h3 className="form-section__title">
-                            <FileText size={18} /> Schema de Saída
+                            <CheckSquare size={18} /> Output Contract
                         </h3>
 
                         <div className="form-group">
-                            <label className="form-label" htmlFor="editor-formato">Formato</label>
+                            <label className="form-label" htmlFor="output-format">Formato</label>
                             <select
-                                id="editor-formato"
-                                aria-label="Selecione o formato de saída"
-                                value={form.outputSchema.formato}
-                                onChange={(e) => updateOutputSchema('formato', e.target.value)}
+                                id="output-format"
+                                value={form.outputContract.format}
+                                onChange={(event) =>
+                                    updateOutputContract(
+                                        'format',
+                                        event.target.value as PromptOutputContract['format']
+                                    )
+                                }
                             >
-                                {OUTPUT_FORMATS.map((fmt) => (
-                                    <option key={fmt} value={fmt}>
-                                        {fmt === 'json' ? 'JSON' : fmt === 'code' ? 'Code' : fmt.charAt(0).toUpperCase() + fmt.slice(1)}
+                                {PROMPT_OUTPUT_FORMATS.map((format) => (
+                                    <option key={format} value={format}>
+                                        {format}
                                     </option>
                                 ))}
                             </select>
-                            <p className="form-label__hint">{getFormatHint(form.outputSchema.formato)}</p>
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label" htmlFor="reference-url">URL de referência (opcional)</label>
+                            <label className="form-label" htmlFor="output-language">Idioma de resposta</label>
                             <input
-                                id="reference-url"
-                                value={form.referenceUrl || ''}
-                                onChange={(e) => handleUrlChange(e.target.value)}
-                                onBlur={() => validateUrl()}
-                                placeholder="https://exemplo.com/referencia"
-                                aria-invalid={!!urlError}
-                                aria-describedby="reference-url-hint"
+                                id="output-language"
+                                value={form.outputContract.language}
+                                onChange={(event) => updateOutputContract('language', event.target.value)}
+                                placeholder="pt-BR"
                             />
-                            <p id="reference-url-hint" className="form-label__hint">
-                                Não faremos fetch automático; a URL é repassada apenas como metadado/contexto.
-                            </p>
-                            {urlError && (
-                                <span className="form-error" role="alert">{urlError}</span>
-                            )}
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Estrutura Esperada</label>
+                            <label className="form-label" htmlFor="output-structure-notes">
+                                Notas de estrutura
+                            </label>
                             <textarea
-                                value={form.outputSchema.estrutura}
-                                onChange={(e) => updateOutputSchema('estrutura', e.target.value)}
-                                placeholder="Descreva a estrutura esperada da saída. Ex: Título, Introdução (2 parágrafos), 3 seções com subtítulos, Conclusão, CTA."
+                                id="output-structure-notes"
+                                value={form.outputContract.structure_notes}
+                                onChange={(event) => updateOutputContract('structure_notes', event.target.value)}
                                 rows={3}
+                                placeholder="Explique a estrutura desejada da resposta."
                             />
                         </div>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                <input
+                                    type="checkbox"
+                                    checked={form.outputContract.strict_mode}
+                                    onChange={(event) => updateOutputContract('strict_mode', event.target.checked)}
+                                />
+                                {' '}Strict mode
+                            </label>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                <input
+                                    type="checkbox"
+                                    checked={form.outputContract.require_evidence_for_claims}
+                                    onChange={(event) =>
+                                        updateOutputContract('require_evidence_for_claims', event.target.checked)
+                                    }
+                                />
+                                {' '}Exigir evidências para claims
+                            </label>
+                        </div>
+
+                        {[
+                            ['required_sections', 'Seções obrigatórias'],
+                            ['route_audit_order', 'Ordem de auditoria'],
+                            ['ordered_evaluation_blocks', 'Blocos de avaliação'],
+                            ['acceptance_criteria', 'Critérios de aceite'],
+                            ['status_enum', 'Status permitidos'],
+                            ['severity_enum', 'Severidades permitidas'],
+                        ].map(([field, label]) => {
+                            const listField = field as keyof Pick<
+                                PromptOutputContract,
+                                | 'required_sections'
+                                | 'route_audit_order'
+                                | 'ordered_evaluation_blocks'
+                                | 'acceptance_criteria'
+                                | 'status_enum'
+                                | 'severity_enum'
+                            >;
+                            const currentList = form.outputContract[listField];
+
+                            return (
+                                <div key={field} className="form-group">
+                                    <label className="form-label">{label}</label>
+                                    <div className="dynamic-list">
+                                        {currentList.map((item, index) => (
+                                            <div key={`${field}-${index}`} className="dynamic-list__item">
+                                                <input
+                                                    value={item}
+                                                    onChange={(event) =>
+                                                        updateOutputContract(
+                                                            listField,
+                                                            updateListItem(currentList, index, event.target.value)
+                                                        )
+                                                    }
+                                                    placeholder={`${label} ${index + 1}`}
+                                                />
+                                                <button
+                                                    className="btn btn--ghost btn--icon"
+                                                    onClick={() =>
+                                                        updateOutputContract(
+                                                            listField,
+                                                            removeListItem(currentList, index)
+                                                        )
+                                                    }
+                                                    aria-label={`Remover ${label}`}
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            className="btn btn--ghost btn--sm dynamic-list__add"
+                                            onClick={() =>
+                                                updateOutputContract(listField, [...currentList, ''])
+                                            }
+                                        >
+                                            <Plus size={14} /> Adicionar item
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
-                    {/* --- Ações do footer --- */}
                     <div className="editor-footer">
                         <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
                             Cancelar
@@ -774,10 +912,9 @@ export default function EditorPage() {
                 </div>
             </div>
 
-            {/* --- Modal de Preview JSON --- */}
             {showPreview && (
                 <div className="modal-overlay" onClick={() => setShowPreview(false)}>
-                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal" onClick={(event) => event.stopPropagation()}>
                         <div className="modal__header">
                             <h2>Preview JSON</h2>
                             <button
@@ -789,7 +926,13 @@ export default function EditorPage() {
                             </button>
                         </div>
                         <div className="modal__body">
-                            <pre className="json-preview">{previewJson}</pre>
+                            {previewState.payload ? (
+                                <pre className="json-preview">{JSON.stringify(previewState.payload, null, 2)}</pre>
+                            ) : (
+                                <div className="form-error" role="alert">
+                                    {previewState.error}
+                                </div>
+                            )}
                         </div>
                         <div className="modal__footer">
                             <button className="btn btn--secondary" onClick={handleCopy}>

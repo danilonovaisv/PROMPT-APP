@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import type { Category, Prompt, ContextMenu } from '@/models/types';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
+import { parsePromptPayload } from '@/models/promptSchema';
 
 // Canais de realtime para cada tabela
 let categoriesChannel: any = null;
@@ -171,24 +171,31 @@ async function handlePromptChange(payload: any) {
           }
         }
 
-        const outputSchema = normalizeOutputSchema(remoteData.output_schema as any);
-        const urlResult = sanitizeUrlField(remoteData.reference_url);
+        const promptPayload = parsePromptPayload(remoteData.prompt_payload_jsonb, {
+          title: remoteData.title,
+          systemRole: remoteData.system_role,
+          task: remoteData.task,
+          context: remoteData.context,
+          contextMenus: remoteData.context_menus,
+          enabledMenuIds: remoteData.enabled_menu_ids,
+          constraints: remoteData.constraints,
+          negativePrompt: remoteData.negative_prompt,
+          outputSchema: remoteData.output_schema,
+          referenceUrl: remoteData.reference_url,
+          language: remoteData.language,
+          schemaVersion: remoteData.schema_version,
+        });
 
         // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
           remoteId: remoteData.id,
           categoryId: localCategoryId,
           title: remoteData.title,
-          systemRole: remoteData.system_role,
-          task: remoteData.task,
-          context: remoteData.context,
-          menus: remoteData.menus || {},
-          contextMenus: remoteData.context_menus || {},
-          enabledMenuIds: remoteData.enabled_menu_ids || [],
-          constraints: remoteData.constraints || [],
-          negativePrompt: remoteData.negative_prompt || [],
-          outputSchema,
-          referenceUrl: urlResult.value,
+          promptPayload,
+          schemaVersion: remoteData.schema_version || '1.0.0',
+          language: remoteData.language || 'pt-BR',
+          outputFormat: remoteData.output_format || 'markdown',
+          referenceUrl: remoteData.reference_url || undefined,
           fewShotExamples: remoteData.few_shot_examples || [],
           createdAt: new Date(remoteData.created_at),
           updatedAt: new Date(remoteData.updated_at),
@@ -242,6 +249,7 @@ async function handleMenuChange(payload: any) {
           menuId: remoteData.menu_id,
           menuName: remoteData.menu_name,
           description: remoteData.description,
+          selectionMode: remoteData.selection_mode || 'single',
           options: remoteData.options || [],
           createdAt: new Date(remoteData.created_at),
           updatedAt: new Date(remoteData.updated_at),

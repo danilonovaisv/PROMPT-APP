@@ -2,7 +2,12 @@ import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
-import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
+import {
+    getLegacyPromptColumns,
+    getPrimaryReferenceUrl,
+    getPromptSummaryFields,
+    parsePromptPayload,
+} from '@/models/promptSchema';
 
 export const syncToCloud = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -77,6 +82,7 @@ export const syncToCloud = async () => {
             menu_id: data.menuId,      // map camelCase -> snake_case
             menu_name: data.menuName,
             description: data.description,
+            selection_mode: data.selectionMode,
             options: data.options
         };
 
@@ -126,32 +132,21 @@ export const syncToCloud = async () => {
         // (A menos que category_id seja nullable, mas é bom manter integridade)
         // No schema: category_id bigint references categories...
 
-        const normalizedSchema = normalizeOutputSchema(data.outputSchema);
-        const urlResult = sanitizeUrlField(data.referenceUrl);
-
-        if (urlResult.error) {
-            console.error(`❌ URL inválida no prompt "${data.title}": ${urlResult.error}`);
-            if (id) {
-                await db.prompts.update(id, { syncStatus: 'error' });
-            }
-            continue;
-        }
+        const summary = getPromptSummaryFields(data.promptPayload);
+        const legacyColumns = getLegacyPromptColumns(data.promptPayload);
 
         const payload = {
             user_id: userId,
             category_id: remoteCategoryId || null, // Se null, perde a categoria mas salva o prompt
-            title: data.title,
-            system_role: data.systemRole, // snake_case
-            task: data.task,
-            context: data.context,
-            menus: data.menus,           // deprecated mas mantido
-            context_menus: data.contextMenus,
-            enabled_menu_ids: data.enabledMenuIds,
-            constraints: data.constraints,
-            negative_prompt: data.negativePrompt,
-            output_schema: normalizedSchema,
-            reference_url: urlResult.value,
+            title: summary.title,
+            prompt_payload_jsonb: data.promptPayload,
+            schema_version: summary.schemaVersion,
+            output_format: summary.outputFormat,
+            language: summary.language,
+            reference_url: getPrimaryReferenceUrl(data.promptPayload),
             few_shot_examples: data.fewShotExamples
+            ,
+            ...legacyColumns,
         };
 
         let result;
@@ -258,6 +253,7 @@ export const downloadFromCloud = async () => {
                     menuId: m.menu_id,
                     menuName: m.menu_name,
                     description: m.description,
+                    selectionMode: m.selection_mode || 'single',
                     options: m.options, // JSONB vem direto
                     createdAt: new Date(m.created_at),
                     updatedAt: new Date(m.updated_at),
@@ -287,19 +283,27 @@ export const downloadFromCloud = async () => {
                 }
 
                 const promptData = {
+                    promptPayload: parsePromptPayload(p.prompt_payload_jsonb, {
+                        title: p.title,
+                        systemRole: p.system_role,
+                        task: p.task,
+                        context: p.context,
+                        contextMenus: p.context_menus,
+                        enabledMenuIds: p.enabled_menu_ids,
+                        constraints: p.constraints,
+                        negativePrompt: p.negative_prompt,
+                        outputSchema: p.output_schema,
+                        referenceUrl: p.reference_url,
+                        language: p.language,
+                        schemaVersion: p.schema_version,
+                    }),
                     remoteId: p.id,
                     categoryId: localCategoryId,
                     title: p.title,
-                    systemRole: p.system_role,
-                    task: p.task,
-                    context: p.context,
-                    menus: p.menus,
-                    contextMenus: p.context_menus,
-                    enabledMenuIds: p.enabled_menu_ids,
-                    constraints: p.constraints,
-                    negativePrompt: p.negative_prompt,
-                    outputSchema: normalizeOutputSchema(p.output_schema as any),
-                    referenceUrl: sanitizeUrlField(p.reference_url).value,
+                    schemaVersion: p.schema_version || '1.0.0',
+                    language: p.language || 'pt-BR',
+                    outputFormat: p.output_format || 'markdown',
+                    referenceUrl: p.reference_url || undefined,
                     fewShotExamples: p.few_shot_examples,
                     createdAt: new Date(p.created_at),
                     updatedAt: new Date(p.updated_at),

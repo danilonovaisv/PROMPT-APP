@@ -33,6 +33,7 @@ interface MenuFormData {
     menuId: string;
     menuName: string;
     description: string;
+    selectionMode: ContextMenu['selectionMode'];
     options: ContextMenuOption[];
     remoteId?: number;
 }
@@ -41,6 +42,7 @@ const EMPTY_FORM: MenuFormData = {
     menuId: '',
     menuName: '',
     description: '',
+    selectionMode: 'single',
     options: [],
 };
 
@@ -74,6 +76,7 @@ export default function MenuManagerPage() {
             menuId: menu.menuId,
             menuName: menu.menuName,
             description: menu.description,
+            selectionMode: menu.selectionMode,
             options: JSON.parse(JSON.stringify(menu.options || [])),
             remoteId: menu.remoteId,
         });
@@ -113,6 +116,7 @@ export default function MenuManagerPage() {
                 menuId,
                 menuName: form.menuName.trim(),
                 description: form.description.trim(),
+                selectionMode: form.selectionMode,
                 options: form.options,
                 updatedAt: now,
                 syncStatus: 'pending',
@@ -138,6 +142,7 @@ export default function MenuManagerPage() {
                 menuId,
                 menuName: form.menuName.trim(),
                 description: form.description.trim(),
+                selectionMode: form.selectionMode,
                 options: form.options,
                 remoteId: form.remoteId,
             });
@@ -326,6 +331,25 @@ export default function MenuManagerPage() {
                             />
                         </div>
 
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="menu-selection-mode">
+                                Modo de seleção
+                            </label>
+                            <select
+                                id="menu-selection-mode"
+                                value={form.selectionMode}
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        selectionMode: e.target.value as ContextMenu['selectionMode'],
+                                    }))
+                                }
+                            >
+                                <option value="single">Seleção única</option>
+                                <option value="multiple">Seleção múltipla</option>
+                            </select>
+                        </div>
+
                         {/* ---- Opções ---- */}
                         <div className="form-group">
                             <label className="form-label">
@@ -468,7 +492,9 @@ export default function MenuManagerPage() {
                                 <div className="ctx-menu-card__header">
                                     <div>
                                         <div className="ctx-menu-card__name">{menu.menuName}</div>
-                                        <div className="ctx-menu-card__slug">{menu.menuId}</div>
+                                        <div className="ctx-menu-card__slug">
+                                            {menu.menuId} • {menu.selectionMode === 'multiple' ? 'múltipla' : 'única'}
+                                        </div>
                                     </div>
                                     <div className="flex-row-center">
                                         <button

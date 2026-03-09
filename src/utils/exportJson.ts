@@ -1,163 +1,142 @@
-/* ======================================================
-   Utilitários de exportação JSON
-   ====================================================== */
-
-import type { Prompt, PromptExportFormat, BulkExport, MenuSelectionsMap } from '@/models/types';
 import { db } from '@/db/database';
-import { normalizeFewShotExamples } from './normalizeFewShot';
-import { normalizeOutputSchema, sanitizeUrlField, getFormatHint } from '@/models/outputSchema';
+import {
+    MenuDefinitionSchema,
+    PromptContractSchema,
+    type MenuDefinition,
+    type PromptContract,
+} from '@/models/promptSchema';
+import type { BulkExport, ContextMenu, Prompt } from '@/models/types';
 
-/** Converte MenuSelectionsMap para o formato de exportação */
-function exportMenuSelections(
-    contextMenus: MenuSelectionsMap,
-    enabledMenuIds?: string[]
-): Record<string, { opcao: string; sub_opcoes: string[] }> {
-    const result: Record<string, { opcao: string; sub_opcoes: string[] }> = {};
-
-    /* Se enabledMenuIds existir, usamos ele como filtro. 
-       Caso contrário (compatibilidade), usamos todas as chaves de contextMenus. */
-    const keysToExport = enabledMenuIds || Object.keys(contextMenus);
-
-    for (const menuId of keysToExport) {
-        const selection = contextMenus[menuId];
-        if (selection && selection.option) {
-            result[menuId] = {
-                opcao: selection.option,
-                sub_opcoes: selection.subOptions || [],
-            };
-        }
-    }
-
-    return result;
+function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
+    return MenuDefinitionSchema.parse({
+        id: menu.menuId,
+        label: menu.menuName,
+        description: menu.description,
+        selection_mode: menu.selectionMode,
+        options: (menu.options || []).map((option) => ({
+            value: option.value,
+            label: option.label,
+            sub_options: (option.subOptions || []).map((subOption) => ({
+                value: subOption.value,
+                label: subOption.label,
+            })),
+        })),
+    });
 }
 
-/** Converte prompt interno para o formato JSON cognitivo */
-export function toExportFormat(prompt: Prompt): PromptExportFormat {
-    /* Monta menus_selecionados a partir de contextMenus (v2) */
-    let menusSelecionados = exportMenuSelections(
-        prompt.contextMenus || {},
-        prompt.enabledMenuIds
-    );
-
-    /* Fallback v1: se não há contextMenus, usar seleções v1 */
-    if (Object.keys(menusSelecionados).length === 0 && prompt.menus) {
-        const v1Menus = prompt.menus;
-        for (const [key, value] of Object.entries(v1Menus)) {
-            if (value) {
-                menusSelecionados[key] = { opcao: value, sub_opcoes: [] };
-            }
-        }
-    }
-
-    const outputSchema = normalizeOutputSchema(prompt.outputSchema);
-    const estrutura = outputSchema.estrutura || getFormatHint(outputSchema.formato);
-    const urlResult = sanitizeUrlField(prompt.referenceUrl);
-
-    const inputData: PromptExportFormat['input_data'] = {
-        context: prompt.context,
-        menus_selecionados: menusSelecionados,
-    };
-
-    if (urlResult.value) {
-        inputData.reference_url = urlResult.value;
-    }
-
-    return {
-        system_role: prompt.systemRole,
-        task: prompt.task,
-        input_data: inputData,
-        constraints: (prompt.constraints || []).filter(Boolean),
-        negative_prompt: (prompt.negativePrompt || []).filter(Boolean),
-        output_schema: {
-            formato: outputSchema.formato,
-            estrutura,
-        },
-        few_shot_examples: normalizeFewShotExamples(prompt.fewShotExamples),
-    };
+export function toExportFormat(prompt: Prompt): PromptContract {
+    return PromptContractSchema.parse(prompt.promptPayload);
 }
 
-/** Faz download de um objeto como arquivo .json */
 export function downloadJson(data: unknown, filename: string) {
     const json = JSON.stringify(data, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename.endsWith('.json') ? filename : `${filename}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename.endsWith('.json') ? filename : `${filename}.json`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
 }
 
-/** Exporta um único prompt para download */
 export function downloadPrompt(prompt: Prompt) {
     const exported = toExportFormat(prompt);
     const safeName = prompt.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     downloadJson(exported, `prompt_${safeName}`);
 }
 
-/** Exporta todos os prompts + menus de contexto em formato bulk */
 export async function downloadAllPrompts() {
     const prompts = await db.prompts.toArray();
     const categories = await db.categories.toArray();
     const contextMenus = await db.contextMenus.toArray();
-    const categoryMap = new Map(categories.map((c) => [c.id!, c.name]));
+    const categoryMap = new Map(categories.map((category) => [category.id!, category.name]));
 
     const bulk: BulkExport = {
         app: 'Prompt App',
-        version: '2.0.0',
+        version: '3.0.0',
         exportedAt: new Date().toISOString(),
-        contextMenus: contextMenus,
-        prompts: prompts.map((p) => ({
-            title: p.title,
-            category: categoryMap.get(p.categoryId) || 'Sem categoria',
-            prompt: toExportFormat(p),
+        menuDefinitions: contextMenus.map(contextMenuToDefinition),
+        prompts: prompts.map((prompt) => ({
+            title: prompt.title,
+            category: categoryMap.get(prompt.categoryId) || 'Sem categoria',
+            schemaVersion: prompt.schemaVersion,
+            prompt: toExportFormat(prompt),
         })),
     };
 
     downloadJson(bulk, `prompt_app_export_${Date.now()}`);
 }
 
-/** Retorna um Blob com o template JSON para novos prompts */
 export function getTemplateFile(): Blob {
-    const template = {
-        app: 'Prompt App',
-        prompts: [
-            {
-                title: 'Exemplo de Prompt',
-                category: 'Geral',
-                prompt: {
-                    system_role: 'Você é um assistente útil.',
-                    task: 'Explique o que é engenharia de prompts.',
-                    input_data: {
-                        context: '',
-                        menus_selecionados: {},
-                        reference_url: '',
-                    },
-                    constraints: [],
-                    negative_prompt: [],
-                    output_schema: {
-                        formato: 'markdown',
-                        estrutura: getFormatHint('markdown'),
-                    },
-                    few_shot_examples: [],
-                },
+    const template = PromptContractSchema.parse({
+        meta: {
+            prompt_id: 'novo_prompt',
+            name: 'Novo Prompt',
+            schema_version: '1.0.0',
+            language: 'pt-BR',
+            owner: 'webapp',
+        },
+        role: {
+            id: 'custom_role',
+            description: '',
+        },
+        objective: {
+            task: '',
+            focus: [],
+            priority_order: [],
+        },
+        project: {
+            name: 'PROMPT-APP',
+            production_url: 'https://prompt-app-dan.netlify.app',
+            repository_url: '',
+            reference_urls: [],
+            target_environment: ['web_desktop', 'web_mobile'],
+            app_type: 'prompt_management_webapp',
+            context: '',
+        },
+        scope: {
+            audit_areas_minimum: [],
+            critical_flows: [],
+            route_discovery: {
+                mode: 'auto',
+                spa_fallback: true,
+                fallback_route: '/',
+                include_internal_states: true,
             },
-        ],
-    };
+        },
+        selected_options: [],
+        rules: {},
+        policies: {
+            must: [],
+            must_not: [],
+        },
+        output_contract: {
+            format: 'markdown',
+            language: 'pt-BR',
+            strict_mode: true,
+            require_evidence_for_claims: true,
+            required_sections: [],
+            route_audit_order: [],
+            ordered_evaluation_blocks: [],
+            acceptance_criteria: [],
+            status_enum: ['approved', 'approved_with_issues', 'failed'],
+            severity_enum: ['critical', 'high', 'medium', 'low'],
+            structure_notes: '',
+        },
+    });
+
     return new Blob([JSON.stringify(template, null, 2)], {
         type: 'application/json',
     });
 }
 
-/** Copia texto para a área de transferência */
 export async function copyToClipboard(text: string): Promise<boolean> {
     try {
         await navigator.clipboard.writeText(text);
         return true;
     } catch {
-        /* Fallback para navegadores antigos */
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.setAttribute('readonly', '');

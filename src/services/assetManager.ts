@@ -5,7 +5,12 @@
 import { db } from '@/db/database';
 import { supabase } from '@/lib/supabase';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
+import {
+  getLegacyPromptColumns,
+  getPrimaryReferenceUrl,
+  getPromptSummaryFields,
+  parsePromptPayload,
+} from '@/models/promptSchema';
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -155,16 +160,24 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
         await db.prompts.update(update.id, {
           categoryId: remoteData.category_id,
           title: remoteData.title,
-          systemRole: remoteData.system_role,
-          task: remoteData.task,
-          context: remoteData.context,
-          menus: remoteData.menus || {},
-          contextMenus: remoteData.context_menus || {},
-          enabledMenuIds: remoteData.enabled_menu_ids || [],
-          constraints: remoteData.constraints || [],
-          negativePrompt: remoteData.negative_prompt || [],
-          outputSchema: normalizeOutputSchema(remoteData.output_schema as any),
-          referenceUrl: sanitizeUrlField(remoteData.reference_url).value,
+          promptPayload: parsePromptPayload(remoteData.prompt_payload_jsonb, {
+            title: remoteData.title,
+            systemRole: remoteData.system_role,
+            task: remoteData.task,
+            context: remoteData.context,
+            contextMenus: remoteData.context_menus,
+            enabledMenuIds: remoteData.enabled_menu_ids,
+            constraints: remoteData.constraints,
+            negativePrompt: remoteData.negative_prompt,
+            outputSchema: remoteData.output_schema,
+            referenceUrl: remoteData.reference_url,
+            language: remoteData.language,
+            schemaVersion: remoteData.schema_version,
+          }),
+          schemaVersion: remoteData.schema_version || '1.0.0',
+          language: remoteData.language || 'pt-BR',
+          outputFormat: remoteData.output_format || 'markdown',
+          referenceUrl: remoteData.reference_url || undefined,
           fewShotExamples: remoteData.few_shot_examples || [],
           updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
         });
@@ -178,6 +191,7 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
           menuId: remoteData.menu_id,
           menuName: remoteData.menu_name,
           description: remoteData.description,
+          selectionMode: remoteData.selection_mode || 'single',
           options: remoteData.options || [],
           updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
         });
@@ -213,22 +227,19 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
       };
       break;
     case 'prompt':
+      const promptSummary = getPromptSummaryFields(localItem.promptPayload);
       table = 'prompts';
       payload = {
         category_id: localItem.categoryId,
-        title: localItem.title,
-        system_role: localItem.systemRole,
-        task: localItem.task,
-        context: localItem.context,
-        menus: localItem.menus || {},
-        context_menus: localItem.contextMenus || {},
-        enabled_menu_ids: localItem.enabledMenuIds || [],
-        constraints: localItem.constraints || [],
-        negative_prompt: localItem.negativePrompt || [],
-        output_schema: normalizeOutputSchema(localItem.outputSchema as any),
-        reference_url: sanitizeUrlField(localItem.referenceUrl).value,
+        title: promptSummary.title,
+        prompt_payload_jsonb: localItem.promptPayload,
+        schema_version: promptSummary.schemaVersion,
+        output_format: promptSummary.outputFormat,
+        language: promptSummary.language,
+        reference_url: getPrimaryReferenceUrl(localItem.promptPayload),
         few_shot_examples: localItem.fewShotExamples || [],
         user_id: session.user.id,
+        ...getLegacyPromptColumns(localItem.promptPayload),
       };
       break;
     case 'menu':
@@ -237,6 +248,7 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         menu_id: localItem.menuId,
         menu_name: localItem.menuName,
         description: localItem.description,
+        selection_mode: localItem.selectionMode || 'single',
         options: localItem.options || [],
         user_id: session.user.id,
       };

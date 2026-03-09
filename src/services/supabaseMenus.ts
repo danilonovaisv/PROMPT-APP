@@ -13,6 +13,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         menu_id: input.menuId,
         menu_name: input.menuName,
         description: input.description,
+        selection_mode: input.selectionMode || 'single',
         options: input.options || [],
         updated_at: new Date().toISOString(),
     };

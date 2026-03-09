@@ -1,167 +1,115 @@
-/* ======================================================
-   Tipos e Interfaces — Prompt App
-   ====================================================== */
+import type {
+  MenuDefinition,
+  MenuSelectionMode,
+  PromptContract,
+  PromptOutputFormat,
+  SelectedOption,
+} from './promptSchema';
 
-/** Categoria para organizar prompts */
 export interface Category {
-    id?: number;
-    remoteId?: number; // ID do Supabase
-    syncStatus?: SyncStatus;
-    name: string;
-    icon: string;
-    color: string;
-    createdAt: Date;
+  id?: number;
+  remoteId?: number;
+  syncStatus?: SyncStatus;
+  name: string;
+  icon: string;
+  color: string;
+  createdAt: Date;
 }
 
-/* -------------------------------------------------------
-   Menu de Contexto Hierárquico (v2)
-   ------------------------------------------------------- */
-
-/** Sub-opção de um menu de contexto */
 export interface ContextMenuSubOption {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
-/** Opção principal de um menu de contexto (com sub-opções opcionais) */
 export interface ContextMenuOption {
-    label: string;
-    value: string;
-    subOptions: ContextMenuSubOption[];
+  label: string;
+  value: string;
+  subOptions: ContextMenuSubOption[];
 }
 
-/** Menu de contexto completo — criado e gerenciado pelo usuário */
 export interface ContextMenu {
-    id?: number;
-    remoteId?: number; // ID do Supabase
-    syncStatus?: SyncStatus;
-    menuId: string;         // slug único, ex: "estilo", "tom", "frameworks"
-    menuName: string;       // nome legível, ex: "Estilo de Escrita"
-    description: string;    // descrição do propósito do menu
-    options: ContextMenuOption[];
-    createdAt: Date;
-    updatedAt: Date;
+  id?: number;
+  remoteId?: number;
+  syncStatus?: SyncStatus;
+  menuId: string;
+  menuName: string;
+  description: string;
+  selectionMode: MenuSelectionMode;
+  options: ContextMenuOption[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-/** Seleção de um menu hierárquico em um prompt */
 export interface ContextMenuSelection {
-    option: string;         // value da opção principal
-    subOptions: string[];   // values das sub-opções selecionadas
+  option: string;
+  subOptions: string[];
 }
 
-/** Todas as seleções de menus de um prompt */
 export type MenuSelectionsMap = Record<string, ContextMenuSelection>;
 
-/* -------------------------------------------------------
-   Compatibilidade com v1 (menus fixos)
-   ------------------------------------------------------- */
-
-/** @deprecated Usar MenuSelectionsMap para novos prompts */
 export interface MenuOption {
-    id?: number;
-    menuKey: 'tom' | 'publico' | 'idioma' | 'estilo';
-    label: string;
-    value: string;
+  id?: number;
+  menuKey: 'tom' | 'publico' | 'idioma' | 'estilo';
+  label: string;
+  value: string;
 }
 
-/** @deprecated Mantido para compatibilidade */
 export interface MenuSelections {
-    tom: string;
-    publico: string;
-    idioma: string;
-    estilo: string;
+  tom: string;
+  publico: string;
+  idioma: string;
+  estilo: string;
 }
 
-/** Menu keys tipados (v1) */
 export type MenuKey = 'tom' | 'publico' | 'idioma' | 'estilo';
 
-/** Menu labels em português (v1) */
 export const MENU_LABELS: Record<MenuKey, string> = {
-    tom: 'Tom',
-    publico: 'Público',
-    idioma: 'Idioma',
-    estilo: 'Estilo',
+  tom: 'Tom',
+  publico: 'Público',
+  idioma: 'Idioma',
+  estilo: 'Estilo',
 };
 
-/* -------------------------------------------------------
-   Modelo de Prompt
-   ------------------------------------------------------- */
-
-/** Exemplo few-shot */
 export interface FewShotExample {
-    input: string;
-    output: string;
+  input: string;
+  output: string;
 }
 
-/** Schema de saída do prompt */
-export interface OutputSchema {
-    formato: OutputFormat;
-    estrutura: string;
+export interface PromptOutputSchemaLegacy {
+  formato: string;
+  estrutura: string;
 }
 
-/** Prompt completo (modelo interno) */
 export interface Prompt {
-    id?: number;
-    remoteId?: number; // ID do Supabase
-    syncStatus?: SyncStatus;
-    categoryId: number;
-    title: string;
-    systemRole: string;
-    task: string;
-    context: string;
-    /** @deprecated v1 menus fixos — mantido para retrocompatibilidade */
-    menus: MenuSelections;
-    /** v2 menus hierárquicos */
-    contextMenus: MenuSelectionsMap;
-    /** IDs dos menus de contexto habilitados neste prompt */
-    enabledMenuIds: string[];
-    constraints: string[];
-    negativePrompt: string[];
-    outputSchema: OutputSchema;
-    fewShotExamples: FewShotExample[];
-    /** URL opcional informada pelo usuário (não é buscada automaticamente) */
-    referenceUrl?: string;
-    createdAt: Date;
-    updatedAt: Date;
+  id?: number;
+  remoteId?: number;
+  syncStatus?: SyncStatus;
+  categoryId: number;
+  title: string;
+  promptPayload: PromptContract;
+  schemaVersion: string;
+  language: string;
+  outputFormat: PromptOutputFormat;
+  referenceUrl?: string;
+  fewShotExamples: FewShotExample[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-/* -------------------------------------------------------
-   Formatos de Exportação
-   ------------------------------------------------------- */
+export type PromptExportFormat = PromptContract;
 
-/** Formato de exportação JSON cognitivo */
-export interface PromptExportFormat {
-    system_role: string;
-    task: string;
-    input_data: {
-        context: string;
-        reference_url?: string;
-        menus_selecionados: Record<string, {
-            opcao: string;
-            sub_opcoes: string[];
-        }>;
-    };
-    constraints: string[];
-    negative_prompt: string[];
-    output_schema: {
-        formato: string;
-        estrutura: string;
-    };
-    few_shot_examples: FewShotExample[];
-}
-
-/** Formato de exportação em lote */
 export interface BulkExport {
-    app: string;
-    version: string;
-    exportedAt: string;
-    contextMenus?: ContextMenu[];
-    prompts: Array<{
-        title: string;
-        category: string;
-        prompt: PromptExportFormat;
-    }>;
+  app: string;
+  version: string;
+  exportedAt: string;
+  menuDefinitions?: MenuDefinition[];
+  prompts: Array<{
+    title: string;
+    category: string;
+    schemaVersion: string;
+    prompt: PromptContract;
+  }>;
 }
 
+export type PromptMenuSelection = SelectedOption;
 export type SyncStatus = 'pending' | 'synced' | 'error';
-import type { OutputFormat } from './outputSchema';

@@ -1,20 +1,23 @@
-/* ======================================================
-   Serviço de Importação Aprimorado
-   ====================================================== */
-
 import { db } from '@/db/database';
+import {
+  MenuDefinitionSchema,
+  PromptContractSchema,
+  createPromptPayloadFromLegacyRecord,
+  getPrimaryReferenceUrl,
+  getPromptSummaryFields,
+  type PromptContract,
+} from '@/models/promptSchema';
+import type { ContextMenu, Prompt } from '@/models/types';
 import { saveCategoryToSupabase } from '@/services/supabaseCategories';
 import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { normalizeOutputSchema, sanitizeUrlField } from '@/models/outputSchema';
-import type { Prompt, BulkExport, PromptExportFormat, ContextMenu, MenuSelectionsMap } from '@/models/types';
 
 export interface ImportError {
   type: 'validation' | 'processing' | 'network' | 'conflict';
   field: string;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface ImportResult {
@@ -25,210 +28,241 @@ export interface ImportResult {
   processingTime: number;
 }
 
-/**
- * Valida se o objeto é um PromptExportFormat válido
- */
-function isValidPromptExport(obj: unknown): obj is PromptExportFormat {
-  if (!obj || typeof obj !== 'object') return false;
-  const p = obj as Record<string, unknown>;
-  return (
-    typeof p.system_role === 'string' &&
-    typeof p.task === 'string' &&
-    typeof p.input_data === 'object' &&
-    p.input_data !== null
-  );
+function isObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-/**
- * Valida se é um export em lote
- */
-function isBulkExport(obj: unknown): obj is BulkExport {
-  if (!obj || typeof obj !== 'object') return false;
-  const b = obj as Record<string, unknown>;
-  return b.app === 'Prompt App' && Array.isArray(b.prompts);
+function isBulkExport(value: unknown): value is {
+  app: string;
+  prompts: Array<{ title?: string; category?: string; prompt: unknown }>;
+  menuDefinitions?: unknown[];
+  contextMenus?: unknown[];
+} {
+  return isObject(value) && Array.isArray(value.prompts);
 }
 
-/**
- * Converte menus_selecionados do JSON para MenuSelectionsMap
- */
-function parseMenuSelections(
-  menus: Record<string, unknown> | undefined
-): MenuSelectionsMap {
-  if (!menus || typeof menus !== 'object') return {};
-
-  const result: MenuSelectionsMap = {};
-
-  for (const [key, value] of Object.entries(menus)) {
-    if (typeof value === 'string') {
-      // Formato v1: { tom: "formal" }
-      if (value) {
-        result[key] = { option: value, subOptions: [] };
-      }
-    } else if (value && typeof value === 'object') {
-      // Formato v2: { tom: { opcao: "formal", sub_opcoes: [...] } }
-      const v = value as Record<string, unknown>;
-      result[key] = {
-        option: (v.opcao as string) || '',
-        subOptions: Array.isArray(v.sub_opcoes) ? v.sub_opcoes : [],
-      };
-    }
+function parsePromptContract(value: unknown): PromptContract {
+  const parsed = PromptContractSchema.safeParse(value);
+  if (parsed.success) {
+    return parsed.data;
   }
 
-  return result;
+  if (isObject(value)) {
+    return createPromptPayloadFromLegacyRecord({
+      title: typeof value.title === 'string' ? value.title : '',
+      systemRole: typeof value.system_role === 'string'
+        ? value.system_role
+        : typeof value.systemRole === 'string'
+          ? value.systemRole
+          : '',
+      task: typeof value.task === 'string' ? value.task : '',
+      context: isObject(value.input_data) && typeof value.input_data.context === 'string'
+        ? value.input_data.context
+        : typeof value.context === 'string'
+          ? value.context
+          : '',
+      contextMenus: isObject(value.input_data) && isObject(value.input_data.menus_selecionados)
+        ? Object.fromEntries(
+            Object.entries(value.input_data.menus_selecionados).map(([group, selected]) => {
+              if (typeof selected === 'string') {
+                return [group, { option: selected, subOptions: [] }];
+              }
+
+              const normalized = isObject(selected)
+                ? {
+                    option: typeof selected.opcao === 'string' ? selected.opcao : '',
+                    subOptions: Array.isArray(selected.sub_opcoes)
+                      ? selected.sub_opcoes.filter((sub): sub is string => typeof sub === 'string')
+                      : [],
+                  }
+                : { option: '', subOptions: [] };
+
+              return [group, normalized];
+            })
+          )
+        : undefined,
+      enabledMenuIds:
+        isObject(value.input_data) && isObject(value.input_data.menus_selecionados)
+          ? Object.keys(value.input_data.menus_selecionados)
+          : undefined,
+      constraints: Array.isArray(value.constraints)
+        ? value.constraints.filter((item): item is string => typeof item === 'string')
+        : [],
+      negativePrompt: Array.isArray(value.negative_prompt)
+        ? value.negative_prompt.filter((item): item is string => typeof item === 'string')
+        : [],
+      outputSchema: isObject(value.output_schema)
+        ? {
+            formato: typeof value.output_schema.formato === 'string' ? value.output_schema.formato : 'markdown',
+            estrutura: typeof value.output_schema.estrutura === 'string' ? value.output_schema.estrutura : '',
+          }
+        : undefined,
+      referenceUrl:
+        isObject(value.input_data) && typeof value.input_data.reference_url === 'string'
+          ? value.input_data.reference_url
+          : undefined,
+    });
+  }
+
+  throw new Error('Formato de prompt inválido');
 }
 
-/**
- * Converte PromptExportFormat para Prompt interno
- */
-function fromExportFormat(
-  exported: PromptExportFormat,
-  categoryId: number,
-  title: string,
-  warnings: string[]
-): Omit<Prompt, 'id'> {
-  const inputData = exported.input_data as Record<string, unknown> | undefined;
-  const menusRaw = inputData?.menus_selecionados as Record<string, unknown> | undefined;
-  const contextMenus = parseMenuSelections(menusRaw);
-  const urlResult = sanitizeUrlField((inputData as any)?.reference_url);
-
-  if (urlResult.error) {
-    warnings.push(`URL ignorada em "${title}": ${urlResult.error}`);
-  }
+function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
+  const summary = getPromptSummaryFields(promptPayload);
+  const now = new Date();
 
   return {
     categoryId,
-    title,
-    systemRole: exported.system_role || '',
-    task: exported.task || '',
-    context: (inputData?.context as string) || '',
-    menus: {
-      tom: '',
-      publico: '',
-      idioma: '',
-      estilo: '',
-    },
-    contextMenus,
-    enabledMenuIds: Object.keys(contextMenus),
-    constraints: Array.isArray(exported.constraints) ? exported.constraints.filter(Boolean) : [],
-    negativePrompt: Array.isArray(exported.negative_prompt) ? exported.negative_prompt.filter(Boolean) : [],
-    outputSchema: normalizeOutputSchema(exported.output_schema as any),
-    referenceUrl: urlResult.value,
-    fewShotExamples: Array.isArray(exported.few_shot_examples) ? exported.few_shot_examples : [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    title: summary.title,
+    promptPayload,
+    schemaVersion: summary.schemaVersion,
+    language: summary.language,
+    outputFormat: summary.outputFormat,
+    referenceUrl: getPrimaryReferenceUrl(promptPayload),
+    fewShotExamples: [],
+    createdAt: now,
+    updatedAt: now,
   };
 }
 
-/**
- * Importa menus de contexto de um export em lote
- */
-async function importContextMenus(
-  menus: ContextMenu[],
+function definitionToContextMenu(definition: unknown): Omit<ContextMenu, 'id'> {
+  const parsed = MenuDefinitionSchema.parse(definition);
+  const now = new Date();
+
+  return {
+    menuId: parsed.id,
+    menuName: parsed.label,
+    description: parsed.description,
+    selectionMode: parsed.selection_mode,
+    options: parsed.options.map((option) => ({
+      value: option.value,
+      label: option.label,
+      subOptions: option.sub_options.map((subOption) => ({
+        value: subOption.value,
+        label: subOption.label,
+      })),
+    })),
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+async function importMenuDefinitions(
+  menuDefinitions: unknown[],
   errors: ImportError[],
   warnings: string[]
 ): Promise<number> {
   let count = 0;
-  for (const menu of menus) {
+
+  for (const definition of menuDefinitions) {
     try {
-      const existing = await db.contextMenus
-        .where('menuId')
-        .equals(menu.menuId)
-        .first();
-      
-      if (!existing) {
-        await db.contextMenus.add({
-          ...menu,
-          id: undefined,
-          syncStatus: 'pending',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-        try {
-          const savedRemote = await saveMenuToSupabase({
-            ...menu,
-            id: undefined,
-          });
-          const local = await db.contextMenus.where('menuId').equals(menu.menuId).first();
-          if (local?.id) {
-            await db.contextMenus.update(local.id, {
-              remoteId: savedRemote.id,
-              syncStatus: 'synced',
-            });
-          }
-        } catch (error: any) {
-          warnings.push(`Menu "${menu.menuName}" salvo localmente. Sincronize ao fazer login.`);
-        }
-        count++;
+      const contextMenu = definitionToContextMenu(definition);
+      const existing = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
+      if (existing) {
+        continue;
       }
+
+      await db.contextMenus.add({
+        ...contextMenu,
+        syncStatus: 'pending',
+      } as ContextMenu);
+
+      try {
+        const savedRemote = await saveMenuToSupabase(contextMenu);
+        const localMenu = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
+        if (localMenu?.id) {
+          await db.contextMenus.update(localMenu.id, {
+            remoteId: savedRemote.id,
+            syncStatus: 'synced',
+          });
+        }
+      } catch {
+        warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
+      }
+
+      count++;
     } catch (error: any) {
       errors.push({
         type: 'processing',
-        field: `menu:${menu.menuId}`,
-        message: `Erro ao importar menu "${menu.menuName}": ${error.message}`,
-        data: menu
+        field: 'menu_definition',
+        message: error.message || 'Falha ao importar definição de menu',
+        data: definition,
       });
     }
   }
+
   return count;
 }
 
-/**
- * Processa importação de prompts individuais
- */
+async function ensureImportCategory(warnings: string[]): Promise<number> {
+  const existingCategory = await db.categories.where('name').equals('Importados').first();
+  if (existingCategory?.id) {
+    return existingCategory.id;
+  }
+
+  try {
+    const savedRemote = await saveCategoryToSupabase({
+      name: 'Importados',
+      icon: '📥',
+      color: '#6366f1',
+    });
+
+    return (await db.categories.add({
+      name: 'Importados',
+      icon: '📥',
+      color: '#6366f1',
+      remoteId: savedRemote.id,
+      createdAt: new Date(),
+      syncStatus: 'synced',
+    })) as number;
+  } catch {
+    warnings.push('Categoria "Importados" salva localmente. Sincronize ao fazer login.');
+    return (await db.categories.add({
+      name: 'Importados',
+      icon: '📥',
+      color: '#6366f1',
+      createdAt: new Date(),
+      syncStatus: 'pending',
+    })) as number;
+  }
+}
+
 async function processPromptImport(
-  promptData: any,
+  rawPrompt: unknown,
   categoryId: number,
-  title: string,
   errors: ImportError[],
   warnings: string[]
 ): Promise<boolean> {
   try {
-    if (!isValidPromptExport(promptData)) {
-      errors.push({
-        type: 'validation',
-        field: 'prompt_format',
-        message: `Formato de prompt inválido: ${title}`,
-        data: promptData
-      });
-      return false;
-    }
-
-    const internalPrompt = fromExportFormat(promptData, categoryId, title, warnings);
-    
-    // Validar campos obrigatórios
-    if (!internalPrompt.title?.trim()) {
-      errors.push({
-        type: 'validation',
-        field: 'title',
-        message: 'Título do prompt é obrigatório',
-        data: promptData
-      });
-      return false;
-    }
-
-    const localId = await db.prompts.add({ ...internalPrompt, syncStatus: 'pending' });
+    const promptPayload = parsePromptContract(rawPrompt);
+    const promptRecord = buildPromptRecord(promptPayload, categoryId);
+    const localId = await db.prompts.add({
+      ...promptRecord,
+      syncStatus: 'pending',
+    } as Prompt);
 
     try {
-      const savedRemote = await savePromptToSupabase(internalPrompt);
-      await db.prompts.update(localId, { remoteId: savedRemote.id, syncStatus: 'synced' });
-    } catch (error: any) {
-      warnings.push(`Prompt "${title}" salvo localmente. Sincronize ao fazer login.`);
+      const savedRemote = await savePromptToSupabase(promptRecord);
+      await db.prompts.update(localId, {
+        remoteId: savedRemote.id,
+        syncStatus: 'synced',
+      });
+    } catch {
+      warnings.push(`Prompt "${promptRecord.title}" salvo localmente. Sincronize ao fazer login.`);
     }
+
     return true;
   } catch (error: any) {
     errors.push({
-      type: error.message?.includes('network') ? 'network' : 'processing',
-      field: 'prompt_save',
-      message: `Erro ao salvar prompt "${title}": ${error.message}`,
-      data: promptData
+      type: 'validation',
+      field: 'prompt',
+      message: error.message || 'Formato de prompt inválido',
+      data: rawPrompt,
     });
     return false;
   }
 }
 
-/**
- * Lê e importa um arquivo JSON de prompts com tratamento completo de erros
- */
 export async function importFromFile(file: File): Promise<ImportResult> {
   const startTime = Date.now();
   const errors: ImportError[] = [];
@@ -236,175 +270,118 @@ export async function importFromFile(file: File): Promise<ImportResult> {
   let count = 0;
 
   try {
-    // Validar tipo de arquivo
     if (!file.name.endsWith('.json')) {
       throw new Error('Apenas arquivos .json são aceitos');
     }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB
-      warnings.push('Arquivo muito grande, a importação pode levar algum tempo');
-    }
+    const parsed = JSON.parse(await file.text()) as unknown;
+    const importCategoryId = await ensureImportCategory(warnings);
 
-    const text = await file.text();
-    
-    // Validar JSON
-    let parsed: any;
-    try {
-      parsed = JSON.parse(text);
-    } catch (parseError: any) {
-      throw new Error(`JSON inválido: ${parseError.message}`);
-    }
-
-    // Obter ou criar categoria padrão para importação
-    let importCategoryId: number;
-    const existingCategory = await db.categories
-      .where('name')
-      .equals('Importados')
-      .first();
-    
-    if (existingCategory?.id) {
-      importCategoryId = existingCategory.id;
-    } else {
-      try {
-        const savedRemote = await saveCategoryToSupabase({
-          name: 'Importados',
-          icon: '📥',
-          color: '#6366f1',
-        });
-        importCategoryId = (await db.categories.add({
-          name: 'Importados',
-          icon: '📥',
-          color: '#6366f1',
-          remoteId: savedRemote.id,
-          createdAt: new Date(),
-          syncStatus: 'synced',
-        })) as number;
-      } catch (err) {
-        console.error("Erro ao criar categoria importada no supabase", err);
-        importCategoryId = (await db.categories.add({
-          name: 'Importados',
-          icon: '📥',
-          color: '#6366f1',
-          createdAt: new Date(),
-          syncStatus: 'pending',
-        })) as number;
-        warnings.push('Categoria "Importados" salva localmente. Sincronize ao fazer login.');
-      }
-    }
-
-    // Processar diferentes formatos de importação
     if (isBulkExport(parsed)) {
-      // Importar menus de contexto se existirem
-      if (Array.isArray(parsed.contextMenus)) {
-        const menuCount = await importContextMenus(parsed.contextMenus, errors, warnings);
-        if (menuCount > 0) {
-          console.log(`✅ ${menuCount} menus de contexto importados`);
-        }
+      const menuDefinitions = Array.isArray(parsed.menuDefinitions)
+        ? parsed.menuDefinitions
+        : Array.isArray(parsed.contextMenus)
+          ? parsed.contextMenus.map((menu) =>
+              isObject(menu)
+                ? {
+                    id: menu.menuId,
+                    label: menu.menuName,
+                    description: menu.description,
+                    selection_mode: menu.selectionMode || 'single',
+                    options: Array.isArray(menu.options)
+                      ? menu.options.map((option) => ({
+                          value: isObject(option) ? option.value : '',
+                          label: isObject(option) ? option.label : '',
+                          sub_options:
+                            isObject(option) && Array.isArray(option.subOptions)
+                              ? option.subOptions.map((subOption) => ({
+                                  value: isObject(subOption) ? subOption.value : '',
+                                  label: isObject(subOption) ? subOption.label : '',
+                                }))
+                              : [],
+                        }))
+                      : [],
+                  }
+                : menu
+            )
+          : [];
+
+      if (menuDefinitions.length > 0) {
+        await importMenuDefinitions(menuDefinitions, errors, warnings);
       }
 
-      // Importação em lote
-      for (const [index, item] of parsed.prompts.entries()) {
-        try {
-          if (!item.prompt || !isValidPromptExport(item.prompt)) {
-            errors.push({
-              type: 'validation',
-              field: `prompt_${index}`,
-              message: 'Formato de prompt inválido no item ' + (index + 1),
-              data: item
-            });
-            continue;
-          }
+      for (const item of parsed.prompts) {
+        let categoryId = importCategoryId;
 
-          // Tentar encontrar ou criar categoria pelo nome
-          let catId = importCategoryId;
-          if (item.category) {
-            const cat = await db.categories
-              .where('name')
-              .equals(item.category)
-              .first();
-            if (cat?.id) {
-              catId = cat.id;
-            }
+        if (item.category) {
+          const existingCategory = await db.categories.where('name').equals(item.category).first();
+          if (existingCategory?.id) {
+            categoryId = existingCategory.id;
           }
+        }
 
-          const title = item.title || `Prompt importado ${index + 1}`;
-          const success = await processPromptImport(item.prompt, catId, title, errors, warnings);
-          if (success) count++;
-        } catch (itemError: any) {
-          errors.push({
-            type: 'processing',
-            field: `item_${index}`,
-            message: `Erro ao processar item ${index + 1}: ${itemError.message}`,
-            data: item
-          });
+        const success = await processPromptImport(item.prompt, categoryId, errors, warnings);
+        if (success) {
+          count++;
         }
       }
-    } else if (isValidPromptExport(parsed)) {
-      // Prompt único
-      const title = file.name.replace('.json', '') || 'Prompt importado';
-      const success = await processPromptImport(parsed, importCategoryId, title, errors, warnings);
-      if (success) count = 1;
     } else if (Array.isArray(parsed)) {
-      // Array de prompts
-      for (const [index, item] of parsed.entries()) {
-        const title = `Prompt importado ${index + 1}`;
-        const success = await processPromptImport(item, importCategoryId, title, errors, warnings);
-        if (success) count++;
+      for (const item of parsed) {
+        const success = await processPromptImport(item, importCategoryId, errors, warnings);
+        if (success) {
+          count++;
+        }
       }
     } else {
-      throw new Error('Formato de arquivo não reconhecido. Use um export válido do Prompt App.');
+      const success = await processPromptImport(parsed, importCategoryId, errors, warnings);
+      if (success) {
+        count = 1;
+      }
     }
 
-    // Salvar backup após importação bem-sucedida
     if (count > 0) {
       await saveLocalBackup();
     }
 
-    const processingTime = Date.now() - startTime;
-    
     return {
       success: errors.length === 0,
       count,
       errors,
       warnings,
-      processingTime
+      processingTime: Date.now() - startTime,
     };
-
   } catch (error: any) {
-    const processingTime = Date.now() - startTime;
-    
     return {
       success: false,
       count: 0,
-      errors: [{
-        type: 'processing',
-        field: 'general',
-        message: error.message || 'Erro desconhecido durante a importação'
-      }],
+      errors: [
+        {
+          type: 'processing',
+          field: 'general',
+          message: error.message || 'Erro desconhecido durante a importação',
+        },
+      ],
       warnings,
-      processingTime
+      processingTime: Date.now() - startTime,
     };
   }
 }
 
-/**
- * Retorna estatísticas da última importação
- */
 export function getImportStats(result: ImportResult): string {
   const duration = (result.processingTime / 1000).toFixed(2);
   const errorCount = result.errors.length;
   const warningCount = result.warnings.length;
-  
+
   let stats = `Importação concluída em ${duration}s\n`;
   stats += `✓ ${result.count} prompts importados com sucesso\n`;
-  
+
   if (errorCount > 0) {
     stats += `✗ ${errorCount} erro(s) encontrados\n`;
   }
-  
+
   if (warningCount > 0) {
     stats += `⚠ ${warningCount} aviso(s)\n`;
   }
-  
+
   return stats;
 }
