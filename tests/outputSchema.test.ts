@@ -63,9 +63,9 @@ describe('toExportFormat with new schema', () => {
     referenceUrl: 'https://ref.com',
   };
 
-  it('exports canonical payload with reference_urls and normalized format', () => {
+  it('exports canonical template payload with normalized format', () => {
     const exported = toExportFormat(basePrompt);
-    expect(exported.project.reference_urls).toEqual(['https://ref.com']);
+    expect(exported.meta.template_name).toBe('Teste');
     expect(exported.output_contract.format).toBe('image');
   });
 });

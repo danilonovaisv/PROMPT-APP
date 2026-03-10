@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import type { Category, Prompt, ContextMenu } from '@/models/types';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { parsePromptPayload } from '@/models/promptSchema';
+import { compilePromptPayload, parsePromptPayload, parseUserSelection } from '@/models/promptSchema';
 
 // Canais de realtime para cada tabela
 let categoriesChannel: any = null;
@@ -192,6 +192,18 @@ async function handlePromptChange(payload: any) {
           categoryId: localCategoryId,
           title: remoteData.title,
           promptPayload,
+          selectionPayload: parseUserSelection(
+            remoteData.selection_payload_jsonb,
+            promptPayload.meta.template_id,
+            {
+              title: remoteData.title,
+              schemaVersion: remoteData.schema_version,
+              language: remoteData.language,
+              contextMenus: remoteData.context_menus,
+              enabledMenuIds: remoteData.enabled_menu_ids,
+            }
+          ),
+          compiledPayload: remoteData.compiled_payload_jsonb || undefined,
           schemaVersion: remoteData.schema_version || '1.0.0',
           language: remoteData.language || 'pt-BR',
           outputFormat: remoteData.output_format || 'markdown',
@@ -203,9 +215,15 @@ async function handlePromptChange(payload: any) {
         };
 
         if (existingLocal) {
+          if (!promptData.compiledPayload && promptData.selectionPayload && promptData.promptPayload) {
+            promptData.compiledPayload = compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
+          }
           await db.prompts.update(existingLocal.id!, promptData);
           console.log(`🔄 Prompt atualizado localmente: ${remoteData.title}`);
         } else {
+          if (!promptData.compiledPayload && promptData.selectionPayload && promptData.promptPayload) {
+            promptData.compiledPayload = compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
+          }
           await db.prompts.add(promptData as Prompt);
           console.log(`➕ Prompt adicionado localmente: ${remoteData.title}`);
         }

@@ -19,7 +19,7 @@ const PromptCard: React.FC<PromptCardProps> = ({
     onDelete,
     formatDate,
 }) => {
-    const roleDescription = prompt.promptPayload.role.description;
+    const roleDescription = prompt.promptPayload.prompt_definition.system_role;
 
     return (
         <div className="prompt-item">

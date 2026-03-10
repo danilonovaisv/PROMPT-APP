@@ -95,7 +95,7 @@ export default function CategoryPage() {
         <>
             <SEO
                 title={category.name}
-                description={`Explore ${prompts.length} prompts na categoria ${category.name}.`}
+                description={`Explore ${prompts.length} templates na categoria ${category.name}.`}
             />
             <header className="app-header">
                 <div className="flex-row-center">
@@ -120,7 +120,7 @@ export default function CategoryPage() {
                         onClick={() => navigate(`/editor/novo?categoria=${categoryId}`)}
                     >
                         <Plus size={16} />
-                        Novo Prompt
+                        Novo Template
                     </button>
                 </div>
             </header>
@@ -129,16 +129,16 @@ export default function CategoryPage() {
                 {prompts.length === 0 ? (
                     <div className="empty-state">
                         <div className="empty-state__icon">{category.icon}</div>
-                        <h3 className="empty-state__title">Nenhum prompt nesta categoria</h3>
+                        <h3 className="empty-state__title">Nenhum template nesta categoria</h3>
                         <p className="empty-state__description">
-                            Crie seu primeiro prompt para a categoria "{category.name}".
+                            Crie seu primeiro template para a categoria "{category.name}".
                         </p>
                         <button
                             className="btn btn--primary"
                             onClick={() => navigate(`/editor/novo?categoria=${categoryId}`)}
                         >
                             <Plus size={16} />
-                            Criar Prompt
+                            Criar Template
                         </button>
                     </div>
                 ) : (

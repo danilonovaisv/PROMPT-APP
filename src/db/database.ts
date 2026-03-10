@@ -133,7 +133,7 @@ db.version(6).stores({
         prompt.schemaVersion = summary.schemaVersion;
         prompt.language = summary.language;
         prompt.outputFormat = summary.outputFormat;
-        prompt.referenceUrl = promptPayload.project.reference_urls[0];
+        prompt.referenceUrl = undefined;
         prompt.fewShotExamples = Array.isArray(prompt.fewShotExamples)
             ? prompt.fewShotExamples
             : [];
@@ -152,6 +152,25 @@ db.version(6).stores({
     await contextMenus.toCollection().modify((menu: Record<string, unknown>) => {
         if (!menu.selectionMode) {
             menu.selectionMode = 'single';
+        }
+    });
+});
+
+db.version(7).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+}).upgrade(async (tx) => {
+    const prompts = tx.table('prompts');
+
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.selectionPayload) {
+            prompt.selectionPayload = undefined;
+        }
+
+        if (!prompt.compiledPayload) {
+            prompt.compiledPayload = undefined;
         }
     });
 });

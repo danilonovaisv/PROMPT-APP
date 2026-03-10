@@ -1,65 +1,42 @@
 import { describe, expect, it } from '@jest/globals';
 
 import {
+  CompiledPromptPayloadSchema,
   MenuDefinitionSchema,
-  PromptContractSchema,
-  createPromptPayloadFromLegacyRecord,
-  sanitizeSelectedOptions,
+  TemplatePayloadSchema,
+  UserSelectionSchema,
+  compilePromptPayload,
+  createEmptyTemplatePayload,
+  createTemplatePayloadFromLegacyRecord,
+  sanitizeUserSelection,
 } from '../src/models/promptSchema';
 
-describe('PromptContractSchema', () => {
+describe('TemplatePayloadSchema', () => {
   it('rejects unknown top-level properties', () => {
-    const result = PromptContractSchema.safeParse({
+    const result = TemplatePayloadSchema.safeParse({
       meta: {
-        prompt_id: 'prompt_app_audit',
-        name: 'Audit prompt',
+        template_id: 'scene_generator_v1',
+        template_name: 'Gerador de cenas',
+        template_type: 'scene_generation',
         schema_version: '1.0.0',
         language: 'pt-BR',
-        owner: 'webapp',
+        status: 'active',
       },
-      role: {
-        id: 'senior_auditor',
-        description: 'Audita o app',
+      prompt_definition: {
+        system_role: 'Você é um diretor criativo',
+        task: 'Gerar cenas',
+        context: 'Aplicar a peça em um contexto real',
+        constraints: [],
+        negative_prompt: [],
+        few_shot_examples: [],
       },
-      objective: {
-        task: 'Executar auditoria',
-        focus: [],
-        priority_order: [],
-      },
-      project: {
-        name: 'PROMPT-APP',
-        production_url: 'https://prompt-app-dan.netlify.app',
-        repository_url: '',
-        target_environment: ['web_desktop'],
-        app_type: 'prompt_management_webapp',
-      },
-      scope: {
-        audit_areas_minimum: [],
-        critical_flows: [],
-        route_discovery: {
-          mode: 'auto',
-          spa_fallback: true,
-          fallback_route: '/',
-          include_internal_states: true,
-        },
-      },
-      selected_options: [],
-      rules: {},
-      policies: {
-        must: [],
-        must_not: [],
-      },
+      menu_definitions: [],
       output_contract: {
-        format: 'markdown',
+        format: 'json',
         language: 'pt-BR',
         strict_mode: true,
-        require_evidence_for_claims: true,
-        required_sections: [],
-        route_audit_order: [],
-        ordered_evaluation_blocks: [],
-        acceptance_criteria: [],
-        status_enum: ['approved', 'approved_with_issues', 'failed'],
-        severity_enum: ['critical', 'high', 'medium', 'low'],
+        required_fields: [],
+        response_rules: [],
       },
       unexpected: true,
     });
@@ -68,139 +45,323 @@ describe('PromptContractSchema', () => {
   });
 });
 
-describe('sanitizeSelectedOptions', () => {
-  const menuDefinitions = [
-    MenuDefinitionSchema.parse({
-      id: 'audit_type',
-      label: 'Audit Type',
-      selection_mode: 'single',
-      options: [
-        {
-          value: 'structure',
-          label: 'Structure',
-          sub_options: [
-            { value: 'server_client_boundaries', label: 'Server/Client Boundaries' },
-          ],
-        },
-        {
-          value: 'seo',
-          label: 'SEO',
-          sub_options: [],
-        },
-      ],
-    }),
-    MenuDefinitionSchema.parse({
-      id: 'scope',
-      label: 'Scope',
-      selection_mode: 'multiple',
-      options: [
-        {
-          value: 'admin',
-          label: 'Admin',
-          sub_options: [
-            { value: 'publish_view', label: 'Publish View' },
-          ],
-        },
-        {
-          value: 'landing_pages',
-          label: 'Landing Pages',
-          sub_options: [],
-        },
-      ],
-    }),
-  ];
+describe('sanitizeUserSelection', () => {
+  const template = TemplatePayloadSchema.parse({
+    meta: {
+      template_id: 'scene_generator_v1',
+      template_name: 'Gerador de cenas',
+      template_type: 'scene_generation',
+      schema_version: '1.0.0',
+      language: 'pt-BR',
+      status: 'active',
+    },
+    prompt_definition: {
+      system_role: 'Você é um diretor criativo',
+      task: 'Gerar cenas',
+      context: 'Aplicar a peça em um contexto real',
+      constraints: [],
+      negative_prompt: [],
+      few_shot_examples: [],
+    },
+    menu_definitions: [
+      MenuDefinitionSchema.parse({
+        menu_id: 'personagens',
+        menu_name: 'Personagens',
+        description: 'Define a composição humana da cena',
+        selection_mode: 'single',
+        required: true,
+        options: [
+          {
+            label: '1 pessoa',
+            value: 'uma_pessoa',
+            sub_options: [
+              { label: 'Jovem adulto', value: '1p_jovem_adulto_18_29' },
+            ],
+          },
+          {
+            label: 'Sem personagens',
+            value: 'sem_personagens',
+            sub_options: [],
+          },
+        ],
+      }),
+      MenuDefinitionSchema.parse({
+        menu_id: 'ambiente',
+        menu_name: 'Ambiente',
+        description: 'Onde a peça aparece',
+        selection_mode: 'multiple',
+        required: false,
+        options: [
+          {
+            label: 'Loja',
+            value: 'loja',
+            sub_options: [{ label: 'Vitrine', value: 'vitrine' }],
+          },
+          {
+            label: 'Rua',
+            value: 'rua',
+            sub_options: [],
+          },
+        ],
+      }),
+    ],
+    output_contract: {
+      format: 'json',
+      language: 'pt-BR',
+      strict_mode: true,
+      required_fields: ['scene_type'],
+      response_rules: ['Return only one final JSON object'],
+    },
+  });
 
-  it('keeps only one option for single groups and filters invalid sub-options', () => {
-    const sanitized = sanitizeSelectedOptions(
-      [
-        {
-          group: 'audit_type',
-          option: 'structure',
-          sub_options: ['server_client_boundaries', 'invalid_sub'],
+  it('keeps one option for single menus, filters invalid references and enforces required menus', () => {
+    const sanitized = sanitizeUserSelection(
+      template,
+      UserSelectionSchema.parse({
+        template_id: 'scene_generator_v1',
+        selected_menus: [
+          {
+            menu_id: 'personagens',
+            selected_options: [
+              {
+                option_value: 'uma_pessoa',
+                selected_sub_options: ['1p_jovem_adulto_18_29', 'invalid_sub'],
+              },
+              {
+                option_value: 'sem_personagens',
+                selected_sub_options: [],
+              },
+            ],
+          },
+          {
+            menu_id: 'ambiente',
+            selected_options: [
+              {
+                option_value: 'loja',
+                selected_sub_options: ['vitrine'],
+              },
+              {
+                option_value: 'rua',
+                selected_sub_options: ['invalid_sub'],
+              },
+            ],
+          },
+          {
+            menu_id: 'inexistente',
+            selected_options: [
+              {
+                option_value: 'ignorar',
+                selected_sub_options: [],
+              },
+            ],
+          },
+        ],
+        free_inputs: {
+          user_scene_description: 'Produto em destaque',
         },
-        {
-          group: 'audit_type',
-          option: 'seo',
-          sub_options: ['will_be_removed'],
-        },
-        {
-          group: 'scope',
-          option: 'admin',
-          sub_options: ['publish_view'],
-        },
-        {
-          group: 'scope',
-          option: 'landing_pages',
-          sub_options: ['not_allowed'],
-        },
-      ],
-      menuDefinitions
+      })
     );
 
-    expect(sanitized).toEqual([
+    expect(sanitized.selected_menus).toEqual([
       {
-        group: 'audit_type',
-        option: 'seo',
-        sub_options: [],
+        menu_id: 'personagens',
+        selected_options: [
+          {
+            option_value: 'sem_personagens',
+            selected_sub_options: [],
+          },
+        ],
       },
       {
-        group: 'scope',
-        option: 'admin',
-        sub_options: ['publish_view'],
-      },
-      {
-        group: 'scope',
-        option: 'landing_pages',
-        sub_options: [],
+        menu_id: 'ambiente',
+        selected_options: [
+          {
+            option_value: 'loja',
+            selected_sub_options: ['vitrine'],
+          },
+          {
+            option_value: 'rua',
+            selected_sub_options: [],
+          },
+        ],
       },
     ]);
   });
 });
 
-describe('createPromptPayloadFromLegacyRecord', () => {
-  it('migrates legacy prompt fields into the canonical contract', () => {
-    const payload = createPromptPayloadFromLegacyRecord({
+describe('compilePromptPayload', () => {
+  it('builds a deterministic compiled payload from template + selection', () => {
+    const template = TemplatePayloadSchema.parse({
+      meta: {
+        template_id: 'scene_generator_v1',
+        template_name: 'Gerador de cenas',
+        template_type: 'scene_generation',
+        schema_version: '1.0.0',
+        language: 'pt-BR',
+        status: 'active',
+      },
+      prompt_definition: {
+        system_role: 'Você é um diretor criativo',
+        task: 'Gerar cenas publicitárias',
+        context: 'Aplicar a peça em contexto real',
+        constraints: ['Não alterar a arte'],
+        negative_prompt: ['Não inventar novos textos'],
+        few_shot_examples: [],
+      },
+      menu_definitions: [
+        {
+          menu_id: 'personagens',
+          menu_name: 'Personagens',
+          description: 'Quem aparece',
+          selection_mode: 'multiple',
+          required: false,
+          options: [
+            {
+              label: '1 pessoa',
+              value: 'uma_pessoa',
+              sub_options: [
+                { label: 'Jovem adulto', value: '1p_jovem_adulto_18_29' },
+              ],
+            },
+            {
+              label: 'Interação com a peça',
+              value: 'interacao_com_peca',
+              sub_options: [
+                { label: 'Olhando para a peça', value: 'int_olhando_para_peca' },
+              ],
+            },
+          ],
+        },
+      ],
+      output_contract: {
+        format: 'json',
+        language: 'pt-BR',
+        strict_mode: true,
+        required_fields: ['scene_type', 'scenes'],
+        response_rules: ['Return only one final JSON object'],
+      },
+    });
+
+    const compiled = compilePromptPayload(
+      template,
+      UserSelectionSchema.parse({
+        template_id: 'scene_generator_v1',
+        selected_menus: [
+          {
+            menu_id: 'personagens',
+            selected_options: [
+              {
+                option_value: 'uma_pessoa',
+                selected_sub_options: ['1p_jovem_adulto_18_29'],
+              },
+              {
+                option_value: 'interacao_com_peca',
+                selected_sub_options: ['int_olhando_para_peca'],
+              },
+            ],
+          },
+        ],
+        free_inputs: {
+          user_scene_description: 'Produto em close sobre mesa de café',
+          scene_type: 'lifestyle',
+        },
+      })
+    );
+
+    expect(CompiledPromptPayloadSchema.parse(compiled)).toEqual({
+      template_id: 'scene_generator_v1',
+      meta: {
+        template_name: 'Gerador de cenas',
+        template_type: 'scene_generation',
+        schema_version: '1.0.0',
+        language: 'pt-BR',
+      },
+      compiled_context: {
+        menu_interpretation: {
+          personagens: {
+            selected_options: ['uma_pessoa', 'interacao_com_peca'],
+            selected_sub_options: ['1p_jovem_adulto_18_29', 'int_olhando_para_peca'],
+            selections: [
+              {
+                option_value: 'uma_pessoa',
+                option_label: '1 pessoa',
+                selected_sub_options: [
+                  {
+                    value: '1p_jovem_adulto_18_29',
+                    label: 'Jovem adulto',
+                  },
+                ],
+              },
+              {
+                option_value: 'interacao_com_peca',
+                option_label: 'Interação com a peça',
+                selected_sub_options: [
+                  {
+                    value: 'int_olhando_para_peca',
+                    label: 'Olhando para a peça',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        free_inputs: {
+          user_scene_description: 'Produto em close sobre mesa de café',
+          scene_type: 'lifestyle',
+        },
+      },
+      prompt_definition: {
+        system_role: 'Você é um diretor criativo',
+        task: 'Gerar cenas publicitárias',
+        context: 'Aplicar a peça em contexto real',
+        constraints: ['Não alterar a arte'],
+        negative_prompt: ['Não inventar novos textos'],
+        few_shot_examples: [],
+      },
+      output_contract: {
+        format: 'json',
+        language: 'pt-BR',
+        strict_mode: true,
+        required_fields: ['scene_type', 'scenes'],
+        response_rules: ['Return only one final JSON object'],
+      },
+    });
+  });
+});
+
+describe('createTemplatePayloadFromLegacyRecord', () => {
+  it('migrates legacy prompt fields into the template-centric contract', () => {
+    const template = createTemplatePayloadFromLegacyRecord({
       title: 'Auditoria Ghost',
       systemRole: 'Você é um auditor sênior',
       task: 'Auditar o app inteiro',
       context: 'Aplicar checklist editorial e técnico.',
-      contextMenus: {
-        audit_type: {
-          option: 'structure',
-          subOptions: ['server_client_boundaries'],
-        },
-      },
-      enabledMenuIds: ['audit_type'],
       constraints: ['Priorizar acessibilidade'],
       negativePrompt: ['Não reescrever copy'],
       outputSchema: {
         formato: 'markdown',
         estrutura: 'overview, findings',
       },
-      referenceUrl: 'https://prompt-app-dan.netlify.app',
+      schemaVersion: '1.0.0',
+      language: 'pt-BR',
     });
 
-    expect(payload.meta.name).toBe('Auditoria Ghost');
-    expect(payload.meta.schema_version).toBe('1.0.0');
-    expect(payload.role.description).toBe('Você é um auditor sênior');
-    expect(payload.objective.task).toBe('Auditar o app inteiro');
-    expect(payload.project.context).toBe('Aplicar checklist editorial e técnico.');
-    expect(payload.project.reference_urls).toEqual(['https://prompt-app-dan.netlify.app']);
-    expect(payload.selected_options).toEqual([
-      {
-        group: 'audit_type',
-        option: 'structure',
-        sub_options: ['server_client_boundaries'],
-      },
-    ]);
-    expect(payload.policies.must).toEqual(['Priorizar acessibilidade']);
-    expect(payload.policies.must_not).toEqual(['Não reescrever copy']);
-    expect(payload.output_contract.format).toBe('markdown');
-    expect(payload.output_contract.structure_notes).toBe('overview, findings');
-    expect(payload.output_contract.status_enum).toEqual([
-      'approved',
-      'approved_with_issues',
-      'failed',
-    ]);
+    expect(template.meta.template_name).toBe('Auditoria Ghost');
+    expect(template.meta.template_type).toBe('generic_prompt');
+    expect(template.prompt_definition.system_role).toBe('Você é um auditor sênior');
+    expect(template.prompt_definition.task).toBe('Auditar o app inteiro');
+    expect(template.prompt_definition.context).toBe('Aplicar checklist editorial e técnico.');
+    expect(template.prompt_definition.constraints).toEqual(['Priorizar acessibilidade']);
+    expect(template.prompt_definition.negative_prompt).toEqual(['Não reescrever copy']);
+    expect(template.output_contract.format).toBe('markdown');
+    expect(template.output_contract.response_rules).toEqual(['overview', 'findings']);
+  });
+
+  it('creates a valid empty template payload by default', () => {
+    const template = createEmptyTemplatePayload('Novo Template');
+
+    expect(template.meta.template_name).toBe('Novo Template');
+    expect(template.menu_definitions).toEqual([]);
+    expect(template.output_contract.format).toBe('markdown');
   });
 });

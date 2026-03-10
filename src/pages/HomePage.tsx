@@ -18,7 +18,7 @@ export default function HomePage() {
 
     const stats = useMemo(() => [
         { label: 'Categorias', value: categories.length, color: '#0048ff' },
-        { label: 'Prompts', value: prompts.length, color: '#7b2ff7' },
+        { label: 'Templates', value: prompts.length, color: '#7b2ff7' },
     ], [categories.length, prompts.length]);
 
     const countsMap = useMemo(() => {
@@ -36,14 +36,14 @@ export default function HomePage() {
         <>
             <SEO
                 title="Início"
-                description="Organize seus prompts de IA com categorias e exportação profissional."
+                description="Organize seus templates de prompt com menus independentes e exportação estruturada."
             />
             <header className="app-header">
                 <h2 className="app-header__title">Início</h2>
                 <div className="app-header__actions">
                     <button className="btn btn--primary" onClick={() => navigate('/editor/novo')}>
                         <Plus size={16} />
-                        Novo Prompt
+                        Novo Template
                     </button>
                 </div>
             </header>
@@ -58,7 +58,7 @@ export default function HomePage() {
                         Engenharia de Prompts
                     </h1>
                     <p className="hero__subtitle">
-                        Crie, organize e exporte prompts estruturados para LLMs com contexto cognitivo profissional.
+                        Crie, organize e exporte templates estruturados para LLMs com menus e payload compilado.
                     </p>
                 </div>
 
@@ -84,7 +84,7 @@ export default function HomePage() {
                     <div>
                         <h2 className="page-header__title">Categorias</h2>
                         <p className="page-header__subtitle">
-                            Clique em uma categoria para ver seus prompts
+                            Clique em uma categoria para ver seus templates
                         </p>
                     </div>
                     <button className="btn btn--secondary" onClick={() => navigate('/categorias')}>
@@ -98,7 +98,7 @@ export default function HomePage() {
                         <div className="empty-state__icon">📂</div>
                         <h3 className="empty-state__title">Nenhuma categoria</h3>
                         <p className="empty-state__description">
-                            Crie sua primeira categoria para começar a organizar seus prompts.
+                            Crie sua primeira categoria para começar a organizar seus templates.
                         </p>
                         <button className="btn btn--primary" onClick={() => navigate('/categorias')}>
                             Criar Categoria

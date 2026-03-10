@@ -2,56 +2,116 @@ import { z } from 'zod';
 
 const DEFAULT_SCHEMA_VERSION = '1.0.0';
 const DEFAULT_LANGUAGE = 'pt-BR';
-const DEFAULT_OWNER = 'webapp';
-const DEFAULT_PROJECT_NAME = 'PROMPT-APP';
-const DEFAULT_PRODUCTION_URL = 'https://prompt-app-dan.netlify.app';
 
 export const MENU_SELECTION_MODES = ['single', 'multiple'] as const;
-export const PROMPT_OUTPUT_FORMATS = [
-  'markdown',
-  'json',
-  'markdown_and_json',
-  'text',
-  'image',
-  'code',
-] as const;
-
-export const STATUS_ENUM_DEFAULT = ['approved', 'approved_with_issues', 'failed'] as const;
-export const SEVERITY_ENUM_DEFAULT = ['critical', 'high', 'medium', 'low'] as const;
+export const PROMPT_OUTPUT_FORMATS = ['text', 'markdown', 'json', 'image', 'code'] as const;
+export const TEMPLATE_STATUS = ['draft', 'active', 'archived'] as const;
 
 const SelectionModeSchema = z.enum(MENU_SELECTION_MODES);
 const PromptOutputFormatSchema = z.enum(PROMPT_OUTPUT_FORMATS);
+const TemplateStatusSchema = z.enum(TEMPLATE_STATUS);
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .replace(/_{2,}/g, '_');
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+}
+
+function uniqueBy<T>(items: T[], getKey: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = getKey(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+const uniqueArrayBy =
+  <T>(getKey: (item: T) => string, label: string) =>
+  (items: T[], ctx: z.RefinementCtx) => {
+    const seen = new Set<string>();
+    items.forEach((item, index) => {
+      const key = getKey(item);
+      if (seen.has(key)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: `${label} deve ser único`,
+          path: [index],
+        });
+      }
+      seen.add(key);
+    });
+  };
+
+export const FewShotExampleSchema = z
+  .object({
+    input: z.string().trim().min(1),
+    output: z.string().trim().min(1),
+  })
+  .strict();
 
 export const MenuSubOptionSchema = z
   .object({
-    value: z.string().trim().min(1),
     label: z.string().trim().min(1),
+    value: z.string().trim().min(1),
+    description: z.string().trim().default(''),
   })
   .strict();
 
 export const MenuOptionSchema = z
   .object({
-    value: z.string().trim().min(1),
     label: z.string().trim().min(1),
-    sub_options: z.array(MenuSubOptionSchema).default([]),
+    value: z.string().trim().min(1),
+    description: z.string().trim().default(''),
+    sub_options: z
+      .array(MenuSubOptionSchema)
+      .default([])
+      .superRefine(uniqueArrayBy((item) => item.value, 'Sub-option value')),
   })
   .strict();
 
 export const MenuDefinitionSchema = z
   .object({
-    id: z.string().trim().min(1),
-    label: z.string().trim().min(1),
+    menu_id: z.string().trim().min(1),
+    menu_name: z.string().trim().min(1),
     description: z.string().trim().default(''),
     selection_mode: SelectionModeSchema.default('single'),
-    options: z.array(MenuOptionSchema).default([]),
+    required: z.boolean().default(false),
+    options: z
+      .array(MenuOptionSchema)
+      .default([])
+      .superRefine(uniqueArrayBy((item) => item.value, 'Option value')),
   })
   .strict();
 
-export const SelectedOptionSchema = z
+export const TemplateMetaSchema = z
   .object({
-    group: z.string().trim().min(1),
-    option: z.string().trim().min(1),
-    sub_options: z.array(z.string().trim().min(1)).default([]),
+    template_id: z.string().trim().min(1),
+    template_name: z.string().trim().min(1),
+    template_type: z.string().trim().min(1),
+    schema_version: z.string().trim().min(1).default(DEFAULT_SCHEMA_VERSION),
+    language: z.string().trim().min(2).default(DEFAULT_LANGUAGE),
+    status: TemplateStatusSchema.default('draft'),
+  })
+  .strict();
+
+export const PromptDefinitionSchema = z
+  .object({
+    system_role: z.string().trim().default(''),
+    task: z.string().trim().default(''),
+    context: z.string().trim().default(''),
+    constraints: z.array(z.string().trim().min(1)).default([]),
+    negative_prompt: z.array(z.string().trim().min(1)).default([]),
+    few_shot_examples: z.array(FewShotExampleSchema).default([]),
   })
   .strict();
 
@@ -60,149 +120,123 @@ export const PromptOutputContractSchema = z
     format: PromptOutputFormatSchema.default('markdown'),
     language: z.string().trim().min(2).default(DEFAULT_LANGUAGE),
     strict_mode: z.boolean().default(true),
-    require_evidence_for_claims: z.boolean().default(true),
-    required_sections: z.array(z.string().trim().min(1)).default([]),
-    route_audit_order: z.array(z.string().trim().min(1)).default([]),
-    ordered_evaluation_blocks: z.array(z.string().trim().min(1)).default([]),
-    acceptance_criteria: z.array(z.string().trim().min(1)).default([]),
-    status_enum: z
-      .array(z.string().trim().min(1))
-      .min(1)
-      .default([...STATUS_ENUM_DEFAULT]),
-    severity_enum: z
-      .array(z.string().trim().min(1))
-      .min(1)
-      .default([...SEVERITY_ENUM_DEFAULT]),
-    structure_notes: z.string().trim().default(''),
-    area_template: z
-      .object({
-        required_fields: z.array(z.string().trim().min(1)).default([]),
-        status_enum: z.array(z.string().trim().min(1)).default([...STATUS_ENUM_DEFAULT]),
-        severity_enum: z.array(z.string().trim().min(1)).default([...SEVERITY_ENUM_DEFAULT]),
-      })
-      .strict()
-      .optional(),
+    required_fields: z.array(z.string().trim().min(1)).default([]),
+    response_rules: z.array(z.string().trim().min(1)).default([]),
+    optional_enums: z.record(z.string(), z.array(z.string().trim().min(1))).optional(),
   })
   .strict();
 
-const RouteDiscoverySchema = z
+export const TemplatePayloadSchema = z
   .object({
-    mode: z.enum(['auto', 'manual']).default('auto'),
-    spa_fallback: z.boolean().default(true),
-    fallback_route: z.string().trim().min(1).default('/'),
-    include_internal_states: z.boolean().default(true),
+    meta: TemplateMetaSchema,
+    prompt_definition: PromptDefinitionSchema,
+    menu_definitions: z
+      .array(MenuDefinitionSchema)
+      .default([])
+      .superRefine(uniqueArrayBy((item) => item.menu_id, 'Menu id')),
+    output_contract: PromptOutputContractSchema,
   })
   .strict();
 
-export const PromptContractSchema = z
+export const SelectedMenuOptionSchema = z
   .object({
+    option_value: z.string().trim().min(1),
+    selected_sub_options: z.array(z.string().trim().min(1)).default([]),
+  })
+  .strict();
+
+export const SelectedMenuSchema = z
+  .object({
+    menu_id: z.string().trim().min(1),
+    selected_options: z.array(SelectedMenuOptionSchema).default([]),
+  })
+  .strict();
+
+export const UserSelectionSchema = z
+  .object({
+    template_id: z.string().trim().min(1),
+    selected_menus: z
+      .array(SelectedMenuSchema)
+      .default([])
+      .superRefine(uniqueArrayBy((item) => item.menu_id, 'Selected menu id')),
+    free_inputs: z.record(z.string(), z.string()).default({}),
+  })
+  .strict();
+
+export const CompiledPromptMenuSelectionSchema = z
+  .object({
+    option_value: z.string().trim().min(1),
+    option_label: z.string().trim().min(1),
+    selected_sub_options: z
+      .array(
+        z
+          .object({
+            value: z.string().trim().min(1),
+            label: z.string().trim().min(1),
+          })
+          .strict()
+      )
+      .default([]),
+  })
+  .strict();
+
+export const CompiledPromptPayloadSchema = z
+  .object({
+    template_id: z.string().trim().min(1),
     meta: z
       .object({
-        prompt_id: z.string().trim().min(1),
-        name: z.string().trim().min(1),
-        schema_version: z.string().trim().min(1).default(DEFAULT_SCHEMA_VERSION),
-        language: z.string().trim().min(2).default(DEFAULT_LANGUAGE),
-        owner: z.string().trim().min(1).default(DEFAULT_OWNER),
+        template_name: z.string().trim().min(1),
+        template_type: z.string().trim().min(1),
+        schema_version: z.string().trim().min(1),
+        language: z.string().trim().min(2),
       })
       .strict(),
-    role: z
+    compiled_context: z
       .object({
-        id: z.string().trim().min(1),
-        description: z.string().trim().default(''),
+        menu_interpretation: z.record(
+          z.string(),
+          z
+            .object({
+              selected_options: z.array(z.string().trim().min(1)).default([]),
+              selected_sub_options: z.array(z.string().trim().min(1)).default([]),
+              selections: z.array(CompiledPromptMenuSelectionSchema).default([]),
+            })
+            .strict()
+        ),
+        free_inputs: z.record(z.string(), z.string()).default({}),
       })
       .strict(),
-    objective: z
-      .object({
-        task: z.string().trim().default(''),
-        focus: z.array(z.string().trim().min(1)).default([]),
-        priority_order: z.array(z.string().trim().min(1)).default([]),
-      })
-      .strict(),
-    project: z
-      .object({
-        name: z.string().trim().min(1).default(DEFAULT_PROJECT_NAME),
-        production_url: z.string().trim().default(DEFAULT_PRODUCTION_URL),
-        repository_url: z.string().trim().default(''),
-        reference_urls: z.array(z.string().trim().min(1)).default([]),
-        target_environment: z.array(z.string().trim().min(1)).default(['web_desktop', 'web_mobile']),
-        app_type: z.string().trim().min(1).default('prompt_management_webapp'),
-        context: z.string().trim().default(''),
-      })
-      .strict(),
-    scope: z
-      .object({
-        audit_areas_minimum: z.array(z.string().trim().min(1)).default([]),
-        critical_flows: z.array(z.string().trim().min(1)).default([]),
-        route_discovery: RouteDiscoverySchema.default({
-          mode: 'auto',
-          spa_fallback: true,
-          fallback_route: '/',
-          include_internal_states: true,
-        }),
-      })
-      .strict(),
-    selected_options: z.array(SelectedOptionSchema).default([]),
-    rules: z
-      .object({
-        motion: z
-          .object({
-            disallow: z.array(z.string().trim().min(1)).default([]),
-            allow: z.array(z.string().trim().min(1)).default([]),
-            translateY_max_px: z.number().int().nonnegative().optional(),
-            respect_reduced_motion: z.boolean().optional(),
-          })
-          .strict()
-          .optional(),
-        a11y: z
-          .object({
-            wcag_target: z.string().trim().optional(),
-            require_visible_focus: z.boolean().optional(),
-            require_keyboard_navigation: z.boolean().optional(),
-            require_semantic_structure: z.boolean().optional(),
-            editor_form_requirements: z.array(z.string().trim().min(1)).default([]),
-          })
-          .strict()
-          .optional(),
-        mobile: z
-          .object({
-            min_width_px: z.number().int().nonnegative().optional(),
-            min_touch_target_px: z.number().int().nonnegative().optional(),
-            disallow_horizontal_overflow: z.boolean().optional(),
-          })
-          .strict()
-          .optional(),
-        performance_targets: z
-          .object({
-            initial_weight_mb_max: z.number().nonnegative().optional(),
-            fcp_seconds_max: z.number().nonnegative().optional(),
-            lcp_seconds_max: z.number().nonnegative().optional(),
-            tti_seconds_max_3g: z.number().nonnegative().optional(),
-            cls_max: z.number().nonnegative().optional(),
-            lighthouse_min: z.number().nonnegative().optional(),
-          })
-          .strict()
-          .optional(),
-      })
-      .strict()
-      .default({}),
-    policies: z
-      .object({
-        must: z.array(z.string().trim().min(1)).default([]),
-        must_not: z.array(z.string().trim().min(1)).default([]),
-      })
-      .strict(),
+    prompt_definition: PromptDefinitionSchema,
     output_contract: PromptOutputContractSchema,
   })
   .strict();
 
 export type MenuDefinition = z.infer<typeof MenuDefinitionSchema>;
-export type SelectedOption = z.infer<typeof SelectedOptionSchema>;
+export type SelectedMenu = z.infer<typeof SelectedMenuSchema>;
+export type UserSelection = z.infer<typeof UserSelectionSchema>;
+export type TemplatePayload = z.infer<typeof TemplatePayloadSchema>;
+export type PromptContract = TemplatePayload;
 export type PromptOutputContract = z.infer<typeof PromptOutputContractSchema>;
-export type PromptContract = z.infer<typeof PromptContractSchema>;
 export type PromptOutputFormat = z.infer<typeof PromptOutputFormatSchema>;
 export type MenuSelectionMode = z.infer<typeof SelectionModeSchema>;
+export type CompiledPromptPayload = z.infer<typeof CompiledPromptPayloadSchema>;
 
-type LegacyContextMenuSelection = {
+export const PromptContractSchema = TemplatePayloadSchema;
+export const SelectedOptionSchema = z
+  .object({
+    group: z.string().trim().min(1),
+    option: z.string().trim().min(1),
+    sub_options: z.array(z.string().trim().min(1)).default([]),
+  })
+  .strict();
+
+export type SelectedOption = {
+  group: string;
+  option: string;
+  sub_options: string[];
+};
+
+export type LegacyContextMenuSelection = {
   option?: string;
   subOptions?: string[];
 };
@@ -222,69 +256,100 @@ type LegacyPromptRecord = Partial<{
   schemaVersion: string;
 }>;
 
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .replace(/_{2,}/g, '_');
+function normalizeOutputFormat(raw: string | undefined): PromptOutputFormat {
+  const normalized = (raw || '').trim().toLowerCase();
+  if (normalized === 'texto') return 'text';
+  if (normalized === 'imagem') return 'image';
+  if (PROMPT_OUTPUT_FORMATS.includes(normalized as PromptOutputFormat)) {
+    return normalized as PromptOutputFormat;
+  }
+  return 'markdown';
 }
 
-function uniqueValues(values: string[]): string[] {
-  return [...new Set(values.filter(Boolean).map((item) => item.trim()).filter(Boolean))];
+function convertContextMenuSelectionToSelectedMenus(
+  contextMenus: Record<string, LegacyContextMenuSelection> | undefined,
+  enabledMenuIds?: string[]
+): SelectedMenu[] {
+  if (!contextMenus) return [];
+
+  return Object.entries(contextMenus)
+    .filter(([menuId]) => !enabledMenuIds || enabledMenuIds.includes(menuId))
+    .map(([menu_id, selection]) => ({
+      menu_id,
+      selected_options:
+        selection?.option
+          ? [
+              {
+                option_value: selection.option,
+                selected_sub_options: uniqueStrings(selection.subOptions || []),
+              },
+            ]
+          : [],
+    }))
+    .filter((menu) => menu.selected_options.length > 0);
+}
+
+function selectedMenusToLegacyContextMenus(selected_menus: SelectedMenu[]) {
+  return selected_menus.reduce<Record<string, { option: string; subOptions: string[] }>>(
+    (accumulator, menuSelection) => {
+      if (menuSelection.selected_options[0]) {
+        accumulator[menuSelection.menu_id] = {
+          option: menuSelection.selected_options[0].option_value,
+          subOptions: menuSelection.selected_options[0].selected_sub_options,
+        };
+      }
+      return accumulator;
+    },
+    {}
+  );
+}
+
+function normalizeLegacyResponseRules(raw: string | undefined): string[] {
+  return uniqueStrings(
+    (raw || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  );
 }
 
 export function createDefaultOutputContract(): PromptOutputContract {
   return PromptOutputContractSchema.parse({});
 }
 
-export function createEmptyPromptPayload(name = 'Novo Prompt'): PromptContract {
-  const safeName = name.trim() || 'Novo Prompt';
-  return PromptContractSchema.parse({
+export function createEmptyTemplatePayload(name = 'Novo Template'): TemplatePayload {
+  const templateName = name.trim() || 'Novo Template';
+  return TemplatePayloadSchema.parse({
     meta: {
-      prompt_id: slugify(safeName) || 'novo_prompt',
-      name: safeName,
+      template_id: slugify(templateName) || 'novo_template',
+      template_name: templateName,
+      template_type: 'generic_prompt',
       schema_version: DEFAULT_SCHEMA_VERSION,
       language: DEFAULT_LANGUAGE,
-      owner: DEFAULT_OWNER,
+      status: 'draft',
     },
-    role: {
-      id: 'custom_role',
-      description: '',
-    },
-    objective: {
+    prompt_definition: {
+      system_role: '',
       task: '',
-      focus: [],
-      priority_order: [],
-    },
-    project: {
-      name: DEFAULT_PROJECT_NAME,
-      production_url: DEFAULT_PRODUCTION_URL,
-      repository_url: '',
-      reference_urls: [],
-      target_environment: ['web_desktop', 'web_mobile'],
-      app_type: 'prompt_management_webapp',
       context: '',
+      constraints: [],
+      negative_prompt: [],
+      few_shot_examples: [],
     },
-    scope: {
-      audit_areas_minimum: [],
-      critical_flows: [],
-      route_discovery: {
-        mode: 'auto',
-        spa_fallback: true,
-        fallback_route: '/',
-        include_internal_states: true,
-      },
-    },
-    selected_options: [],
-    rules: {},
-    policies: {
-      must: [],
-      must_not: [],
-    },
+    menu_definitions: [],
     output_contract: createDefaultOutputContract(),
+  });
+}
+
+export function createEmptyPromptPayload(name = 'Novo Template'): TemplatePayload {
+  return createEmptyTemplatePayload(name);
+}
+
+export function createEmptyUserSelection(templateId: string): UserSelection {
+  return UserSelectionSchema.parse({
+    template_id: templateId,
+    selected_menus: [],
+    free_inputs: {},
   });
 }
 
@@ -292,186 +357,417 @@ export function sanitizeSelectedOptions(
   selectedOptions: SelectedOption[],
   menuDefinitions: MenuDefinition[]
 ): SelectedOption[] {
-  const definitionMap = new Map(menuDefinitions.map((definition) => [definition.id, definition]));
-  const multipleSelections: SelectedOption[] = [];
-  const singleSelections = new Map<string, SelectedOption>();
+  const selection = sanitizeUserSelection(
+    TemplatePayloadSchema.parse({
+      meta: {
+        template_id: 'temporary_template',
+        template_name: 'Temporary Template',
+        template_type: 'temporary',
+        schema_version: DEFAULT_SCHEMA_VERSION,
+        language: DEFAULT_LANGUAGE,
+        status: 'draft',
+      },
+      prompt_definition: {
+        system_role: '',
+        task: '',
+        context: '',
+        constraints: [],
+        negative_prompt: [],
+        few_shot_examples: [],
+      },
+      menu_definitions: menuDefinitions,
+      output_contract: createDefaultOutputContract(),
+    }),
+    UserSelectionSchema.parse({
+      template_id: 'temporary_template',
+      selected_menus: uniqueBy(
+        selectedOptions.map((item) => ({
+          menu_id: item.group,
+          selected_options: [
+            {
+              option_value: item.option,
+              selected_sub_options: item.sub_options,
+            },
+          ],
+        })),
+        (item) => `${item.menu_id}:${item.selected_options[0]?.option_value || ''}`
+      ).reduce<SelectedMenu[]>((accumulator, item) => {
+        const existing = accumulator.find((entry) => entry.menu_id === item.menu_id);
+        if (existing) {
+          existing.selected_options.push(...item.selected_options);
+          return accumulator;
+        }
+        accumulator.push(item);
+        return accumulator;
+      }, []),
+      free_inputs: {},
+    })
+  );
 
-  for (const rawSelection of selectedOptions) {
-    const definition = definitionMap.get(rawSelection.group);
-    if (!definition) continue;
+  return selection.selected_menus.flatMap((menuSelection) =>
+    menuSelection.selected_options.map((optionSelection) => ({
+      group: menuSelection.menu_id,
+      option: optionSelection.option_value,
+      sub_options: optionSelection.selected_sub_options,
+    }))
+  );
+}
 
-    const optionDefinition = definition.options.find((option) => option.value === rawSelection.option);
-    if (!optionDefinition) continue;
+export function sanitizeUserSelection(
+  template: TemplatePayload,
+  rawSelection: UserSelection
+): UserSelection {
+  const definitionMap = new Map(template.menu_definitions.map((menu) => [menu.menu_id, menu]));
+  const selectedMenus: SelectedMenu[] = [];
 
-    const allowedSubOptions = new Set(optionDefinition.sub_options.map((subOption) => subOption.value));
-    const normalizedSelection = SelectedOptionSchema.parse({
-      group: rawSelection.group,
-      option: rawSelection.option,
-      sub_options: uniqueValues(rawSelection.sub_options).filter((subOption) =>
-        allowedSubOptions.has(subOption)
-      ),
-    });
+  for (const menuSelection of rawSelection.selected_menus) {
+    const menuDefinition = definitionMap.get(menuSelection.menu_id);
+    if (!menuDefinition) continue;
 
-    if (definition.selection_mode === 'single') {
-      singleSelections.set(definition.id, normalizedSelection);
-      continue;
-    }
+    const optionSelections = uniqueBy(menuSelection.selected_options, (item) => item.option_value)
+      .map((selectedOption) => {
+        const optionDefinition = menuDefinition.options.find(
+          (option) => option.value === selectedOption.option_value
+        );
 
-    const exists = multipleSelections.some(
-      (selection) =>
-        selection.group === normalizedSelection.group && selection.option === normalizedSelection.option
-    );
+        if (!optionDefinition) {
+          return null;
+        }
 
-    if (!exists) {
-      multipleSelections.push(normalizedSelection);
+        const allowedSubOptions = new Set(optionDefinition.sub_options.map((item) => item.value));
+        return {
+          option_value: selectedOption.option_value,
+          selected_sub_options: uniqueStrings(selectedOption.selected_sub_options).filter((item) =>
+            allowedSubOptions.has(item)
+          ),
+        };
+      })
+      .filter((item): item is z.infer<typeof SelectedMenuOptionSchema> => Boolean(item));
+
+    const normalizedSelections =
+      menuDefinition.selection_mode === 'single'
+        ? optionSelections.slice(-1)
+        : optionSelections;
+
+    if (normalizedSelections.length > 0) {
+      selectedMenus.push({
+        menu_id: menuSelection.menu_id,
+        selected_options: normalizedSelections,
+      });
     }
   }
 
-  return [...singleSelections.values(), ...multipleSelections];
+  for (const requiredMenu of template.menu_definitions.filter((menu) => menu.required)) {
+    if (!selectedMenus.some((menu) => menu.menu_id === requiredMenu.menu_id)) {
+      throw new Error(`O menu obrigatório "${requiredMenu.menu_name}" precisa de pelo menos uma seleção.`);
+    }
+  }
+
+  return UserSelectionSchema.parse({
+    template_id: template.meta.template_id,
+    selected_menus: selectedMenus,
+    free_inputs: Object.fromEntries(
+      Object.entries(rawSelection.free_inputs || {}).map(([key, value]) => [key.trim(), value.trim()])
+    ),
+  });
+}
+
+export function createTemplatePayloadFromLegacyRecord(
+  legacyPrompt: LegacyPromptRecord,
+  menuDefinitions: MenuDefinition[] = []
+): TemplatePayload {
+  const templateName = legacyPrompt.title?.trim() || 'Novo Template';
+  const responseRules = normalizeLegacyResponseRules(legacyPrompt.outputSchema?.estrutura);
+
+  return TemplatePayloadSchema.parse({
+    meta: {
+      template_id: slugify(templateName) || 'novo_template',
+      template_name: templateName,
+      template_type: 'generic_prompt',
+      schema_version: legacyPrompt.schemaVersion || DEFAULT_SCHEMA_VERSION,
+      language: legacyPrompt.language || DEFAULT_LANGUAGE,
+      status: 'active',
+    },
+    prompt_definition: {
+      system_role: legacyPrompt.systemRole?.trim() || '',
+      task: legacyPrompt.task?.trim() || '',
+      context: legacyPrompt.context?.trim() || '',
+      constraints: uniqueStrings(legacyPrompt.constraints || []),
+      negative_prompt: uniqueStrings(legacyPrompt.negativePrompt || []),
+      few_shot_examples: [],
+    },
+    menu_definitions: menuDefinitions,
+    output_contract: {
+      format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
+      language: legacyPrompt.language || DEFAULT_LANGUAGE,
+      strict_mode: true,
+      required_fields: [],
+      response_rules: responseRules,
+    },
+  });
 }
 
 export function createPromptPayloadFromLegacyRecord(
-  legacyPrompt: LegacyPromptRecord
-): PromptContract {
-  const title = legacyPrompt.title?.trim() || 'Novo Prompt';
-  const format =
-    typeof legacyPrompt.outputSchema?.formato === 'string' && legacyPrompt.outputSchema.formato.trim()
-      ? legacyPrompt.outputSchema.formato.trim().toLowerCase()
-      : 'markdown';
-  const compatibleFormat: PromptOutputFormat = PROMPT_OUTPUT_FORMATS.includes(
-    format as PromptOutputFormat
-  )
-    ? (format as PromptOutputFormat)
-    : 'markdown';
-
-  const selectedOptions = Object.entries(legacyPrompt.contextMenus || {})
-    .filter(([group]) => !legacyPrompt.enabledMenuIds || legacyPrompt.enabledMenuIds.includes(group))
-    .filter(([, selection]) => Boolean(selection?.option))
-    .map(([group, selection]) =>
-      SelectedOptionSchema.parse({
-        group,
-        option: selection?.option || '',
-        sub_options: selection?.subOptions || [],
-      })
-    );
-
-  const payload = {
-    meta: {
-      prompt_id: slugify(title) || 'novo_prompt',
-      name: title,
-      schema_version: legacyPrompt.schemaVersion || DEFAULT_SCHEMA_VERSION,
-      language: legacyPrompt.language || DEFAULT_LANGUAGE,
-      owner: DEFAULT_OWNER,
-    },
-    role: {
-      id: slugify(legacyPrompt.systemRole || 'custom_role') || 'custom_role',
-      description: legacyPrompt.systemRole?.trim() || '',
-    },
-    objective: {
-      task: legacyPrompt.task?.trim() || '',
-      focus: [],
-      priority_order: [],
-    },
-    project: {
-      name: DEFAULT_PROJECT_NAME,
-      production_url: DEFAULT_PRODUCTION_URL,
-      repository_url: '',
-      reference_urls: legacyPrompt.referenceUrl ? [legacyPrompt.referenceUrl.trim()] : [],
-      target_environment: ['web_desktop', 'web_mobile'],
-      app_type: 'prompt_management_webapp',
-      context: legacyPrompt.context?.trim() || '',
-    },
-    scope: {
-      audit_areas_minimum: [],
-      critical_flows: [],
-      route_discovery: {
-        mode: 'auto',
-        spa_fallback: true,
-        fallback_route: '/',
-        include_internal_states: true,
-      },
-    },
-    selected_options: selectedOptions,
-    rules: {},
-    policies: {
-      must: uniqueValues(legacyPrompt.constraints || []),
-      must_not: uniqueValues(legacyPrompt.negativePrompt || []),
-    },
-    output_contract: {
-      ...createDefaultOutputContract(),
-      format: compatibleFormat,
-      language: legacyPrompt.language || DEFAULT_LANGUAGE,
-      structure_notes: legacyPrompt.outputSchema?.estrutura?.trim() || '',
-    },
-  };
-
-  return PromptContractSchema.parse(payload);
+  legacyPrompt: LegacyPromptRecord,
+  menuDefinitions: MenuDefinition[] = []
+): TemplatePayload {
+  return createTemplatePayloadFromLegacyRecord(legacyPrompt, menuDefinitions);
 }
 
-export function parsePromptPayload(rawPayload: unknown, fallback?: LegacyPromptRecord): PromptContract {
+export function parseTemplatePayload(
+  rawPayload: unknown,
+  fallback?: LegacyPromptRecord,
+  menuDefinitions: MenuDefinition[] = []
+): TemplatePayload {
   if (typeof rawPayload === 'string' && rawPayload.trim()) {
     try {
-      const parsed = JSON.parse(rawPayload);
-      return PromptContractSchema.parse(parsed);
+      return parseTemplatePayload(JSON.parse(rawPayload), fallback, menuDefinitions);
     } catch (error) {
-      if (!fallback) {
-        throw error;
-      }
+      if (!fallback) throw error;
     }
+  }
+
+  const parsedTemplate = TemplatePayloadSchema.safeParse(rawPayload);
+  if (parsedTemplate.success) {
+    if (parsedTemplate.data.menu_definitions.length > 0 || menuDefinitions.length === 0) {
+      return parsedTemplate.data;
+    }
+
+    return TemplatePayloadSchema.parse({
+      ...parsedTemplate.data,
+      menu_definitions: menuDefinitions,
+    });
   }
 
   if (rawPayload && typeof rawPayload === 'object') {
-    try {
-      return PromptContractSchema.parse(rawPayload);
-    } catch (error) {
-      if (!fallback) {
-        throw error;
-      }
+    const legacyPromptContract = rawPayload as Record<string, unknown>;
+    if ('meta' in legacyPromptContract && 'role' in legacyPromptContract && 'objective' in legacyPromptContract) {
+      const legacySelectionMap =
+        legacyPromptContract.context_menus && typeof legacyPromptContract.context_menus === 'object'
+          ? (legacyPromptContract.context_menus as Record<string, LegacyContextMenuSelection>)
+          : {};
+
+      return createTemplatePayloadFromLegacyRecord(
+        {
+          title:
+            typeof legacyPromptContract.meta === 'object' &&
+            legacyPromptContract.meta &&
+            typeof (legacyPromptContract.meta as Record<string, unknown>).name === 'string'
+              ? ((legacyPromptContract.meta as Record<string, unknown>).name as string)
+              : fallback?.title,
+          systemRole:
+            typeof legacyPromptContract.role === 'object' &&
+            legacyPromptContract.role &&
+            typeof (legacyPromptContract.role as Record<string, unknown>).description === 'string'
+              ? ((legacyPromptContract.role as Record<string, unknown>).description as string)
+              : fallback?.systemRole,
+          task:
+            typeof legacyPromptContract.objective === 'object' &&
+            legacyPromptContract.objective &&
+            typeof (legacyPromptContract.objective as Record<string, unknown>).task === 'string'
+              ? ((legacyPromptContract.objective as Record<string, unknown>).task as string)
+              : fallback?.task,
+          context:
+            typeof legacyPromptContract.project === 'object' &&
+            legacyPromptContract.project &&
+            typeof (legacyPromptContract.project as Record<string, unknown>).context === 'string'
+              ? ((legacyPromptContract.project as Record<string, unknown>).context as string)
+              : fallback?.context,
+          constraints:
+            typeof legacyPromptContract.policies === 'object' &&
+            legacyPromptContract.policies &&
+            Array.isArray((legacyPromptContract.policies as Record<string, unknown>).must)
+              ? ((legacyPromptContract.policies as Record<string, unknown>).must as string[])
+              : fallback?.constraints,
+          negativePrompt:
+            typeof legacyPromptContract.policies === 'object' &&
+            legacyPromptContract.policies &&
+            Array.isArray((legacyPromptContract.policies as Record<string, unknown>).must_not)
+              ? ((legacyPromptContract.policies as Record<string, unknown>).must_not as string[])
+              : fallback?.negativePrompt,
+          outputSchema:
+            typeof legacyPromptContract.output_contract === 'object' &&
+            legacyPromptContract.output_contract
+              ? {
+                  formato: String(
+                    (legacyPromptContract.output_contract as Record<string, unknown>).format || 'markdown'
+                  ),
+                  estrutura: Array.isArray(
+                    (legacyPromptContract.output_contract as Record<string, unknown>).response_rules
+                  )
+                    ? ((legacyPromptContract.output_contract as Record<string, unknown>).response_rules as string[]).join(
+                        ', '
+                      )
+                    : '',
+                }
+              : fallback?.outputSchema,
+          schemaVersion:
+            typeof legacyPromptContract.meta === 'object' &&
+            legacyPromptContract.meta &&
+            typeof (legacyPromptContract.meta as Record<string, unknown>).schema_version === 'string'
+              ? ((legacyPromptContract.meta as Record<string, unknown>).schema_version as string)
+              : fallback?.schemaVersion,
+          language:
+            typeof legacyPromptContract.meta === 'object' &&
+            legacyPromptContract.meta &&
+            typeof (legacyPromptContract.meta as Record<string, unknown>).language === 'string'
+              ? ((legacyPromptContract.meta as Record<string, unknown>).language as string)
+              : fallback?.language,
+          contextMenus: Object.keys(legacySelectionMap).length > 0 ? legacySelectionMap : fallback?.contextMenus,
+          enabledMenuIds:
+            Array.isArray(legacyPromptContract.enabled_menu_ids)
+              ? (legacyPromptContract.enabled_menu_ids as string[])
+              : fallback?.enabledMenuIds,
+        },
+        menuDefinitions
+      );
     }
   }
 
-  return createPromptPayloadFromLegacyRecord(fallback || {});
+  return createTemplatePayloadFromLegacyRecord(fallback || {}, menuDefinitions);
 }
 
-export function getPrimaryReferenceUrl(payload: PromptContract): string | undefined {
-  return payload.project.reference_urls[0];
+export function parsePromptPayload(
+  rawPayload: unknown,
+  fallback?: LegacyPromptRecord,
+  menuDefinitions: MenuDefinition[] = []
+): TemplatePayload {
+  return parseTemplatePayload(rawPayload, fallback, menuDefinitions);
 }
 
-export function getPromptSummaryFields(payload: PromptContract) {
-  return {
-    title: payload.meta.name,
-    schemaVersion: payload.meta.schema_version,
-    language: payload.meta.language,
-    outputFormat: payload.output_contract.format,
-  };
+export function parseUserSelection(
+  rawSelection: unknown,
+  templateId: string,
+  fallback?: LegacyPromptRecord
+): UserSelection {
+  const parsedSelection = UserSelectionSchema.safeParse(rawSelection);
+  if (parsedSelection.success) {
+    return parsedSelection.data;
+  }
+
+  return UserSelectionSchema.parse({
+    template_id: templateId,
+    selected_menus: convertContextMenuSelectionToSelectedMenus(
+      fallback?.contextMenus,
+      fallback?.enabledMenuIds
+    ),
+    free_inputs: {},
+  });
 }
 
-export function selectedOptionsToContextMenuMap(selectedOptions: SelectedOption[]) {
-  return selectedOptions.reduce<Record<string, { option: string; subOptions: string[] }>>(
-    (accumulator, selection) => {
-      accumulator[selection.group] = {
-        option: selection.option,
-        subOptions: selection.sub_options,
+export function compilePromptPayload(
+  template: TemplatePayload,
+  rawSelection: UserSelection
+): CompiledPromptPayload {
+  const selection = sanitizeUserSelection(template, rawSelection);
+  const definitionMap = new Map(template.menu_definitions.map((menu) => [menu.menu_id, menu]));
+  const menuInterpretation = selection.selected_menus.reduce<Record<string, unknown>>(
+    (accumulator, menuSelection) => {
+      const menuDefinition = definitionMap.get(menuSelection.menu_id);
+      if (!menuDefinition) return accumulator;
+
+      accumulator[menuSelection.menu_id] = {
+        selected_options: menuSelection.selected_options.map((item) => item.option_value),
+        selected_sub_options: menuSelection.selected_options.flatMap((item) => item.selected_sub_options),
+        selections: menuSelection.selected_options.map((selectedOption) => {
+          const optionDefinition = menuDefinition.options.find(
+            (option) => option.value === selectedOption.option_value
+          );
+
+          return {
+            option_value: selectedOption.option_value,
+            option_label: optionDefinition?.label || selectedOption.option_value,
+            selected_sub_options: selectedOption.selected_sub_options.map((subOptionValue) => {
+              const subOptionDefinition = optionDefinition?.sub_options.find(
+                (subOption) => subOption.value === subOptionValue
+              );
+
+              return {
+                value: subOptionValue,
+                label: subOptionDefinition?.label || subOptionValue,
+              };
+            }),
+          };
+        }),
       };
       return accumulator;
     },
     {}
   );
+
+  return CompiledPromptPayloadSchema.parse({
+    template_id: template.meta.template_id,
+    meta: {
+      template_name: template.meta.template_name,
+      template_type: template.meta.template_type,
+      schema_version: template.meta.schema_version,
+      language: template.meta.language,
+    },
+    compiled_context: {
+      menu_interpretation: menuInterpretation,
+      free_inputs: selection.free_inputs,
+    },
+    prompt_definition: template.prompt_definition,
+    output_contract: template.output_contract,
+  });
 }
 
-export function getLegacyPromptColumns(payload: PromptContract) {
+export function getPromptSummaryFields(payload: TemplatePayload) {
   return {
-    system_role: payload.role.description,
-    task: payload.objective.task,
-    context: payload.project.context,
+    title: payload.meta.template_name,
+    schemaVersion: payload.meta.schema_version,
+    language: payload.meta.language,
+    outputFormat: payload.output_contract.format,
+    templateType: payload.meta.template_type,
+    templateId: payload.meta.template_id,
+    status: payload.meta.status,
+  };
+}
+
+export function getPrimaryReferenceUrl(_payload?: TemplatePayload): string | undefined {
+  return undefined;
+}
+
+export function getLegacyPromptColumns(
+  template: TemplatePayload,
+  selection?: UserSelection,
+  compiledPayload?: CompiledPromptPayload
+) {
+  const normalizedSelection = selection
+    ? sanitizeUserSelection(template, selection)
+    : createEmptyUserSelection(template.meta.template_id);
+
+  return {
+    system_role: template.prompt_definition.system_role,
+    task: template.prompt_definition.task,
+    context: template.prompt_definition.context,
     menus: {},
-    context_menus: selectedOptionsToContextMenuMap(payload.selected_options),
-    enabled_menu_ids: uniqueValues(payload.selected_options.map((selection) => selection.group)),
-    constraints: payload.policies.must,
-    negative_prompt: payload.policies.must_not,
+    context_menus: selectedMenusToLegacyContextMenus(normalizedSelection.selected_menus),
+    enabled_menu_ids: normalizedSelection.selected_menus.map((item) => item.menu_id),
+    constraints: template.prompt_definition.constraints,
+    negative_prompt: template.prompt_definition.negative_prompt,
     output_schema: {
-      formato: payload.output_contract.format,
-      estrutura: payload.output_contract.structure_notes,
+      formato: template.output_contract.format,
+      estrutura: template.output_contract.response_rules.join(', '),
     },
+    selection_payload_jsonb: normalizedSelection,
+    compiled_payload_jsonb: compiledPayload || compilePromptPayload(template, normalizedSelection),
+  };
+}
+
+export function buildLegacyFallbackFromTemplate(template: TemplatePayload): LegacyPromptRecord {
+  return {
+    title: template.meta.template_name,
+    systemRole: template.prompt_definition.system_role,
+    task: template.prompt_definition.task,
+    context: template.prompt_definition.context,
+    constraints: template.prompt_definition.constraints,
+    negativePrompt: template.prompt_definition.negative_prompt,
+    outputSchema: {
+      formato: template.output_contract.format,
+      estrutura: template.output_contract.response_rules.join(', '),
+    },
+    language: template.meta.language,
+    schemaVersion: template.meta.schema_version,
   };
 }

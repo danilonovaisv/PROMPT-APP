@@ -2,7 +2,7 @@ import { db } from '@/db/database';
 import {
   MenuDefinitionSchema,
   PromptContractSchema,
-  createPromptPayloadFromLegacyRecord,
+  parsePromptPayload,
   getPrimaryReferenceUrl,
   getPromptSummaryFields,
   type PromptContract,
@@ -46,65 +46,7 @@ function parsePromptContract(value: unknown): PromptContract {
   if (parsed.success) {
     return parsed.data;
   }
-
-  if (isObject(value)) {
-    return createPromptPayloadFromLegacyRecord({
-      title: typeof value.title === 'string' ? value.title : '',
-      systemRole: typeof value.system_role === 'string'
-        ? value.system_role
-        : typeof value.systemRole === 'string'
-          ? value.systemRole
-          : '',
-      task: typeof value.task === 'string' ? value.task : '',
-      context: isObject(value.input_data) && typeof value.input_data.context === 'string'
-        ? value.input_data.context
-        : typeof value.context === 'string'
-          ? value.context
-          : '',
-      contextMenus: isObject(value.input_data) && isObject(value.input_data.menus_selecionados)
-        ? Object.fromEntries(
-            Object.entries(value.input_data.menus_selecionados).map(([group, selected]) => {
-              if (typeof selected === 'string') {
-                return [group, { option: selected, subOptions: [] }];
-              }
-
-              const normalized = isObject(selected)
-                ? {
-                    option: typeof selected.opcao === 'string' ? selected.opcao : '',
-                    subOptions: Array.isArray(selected.sub_opcoes)
-                      ? selected.sub_opcoes.filter((sub): sub is string => typeof sub === 'string')
-                      : [],
-                  }
-                : { option: '', subOptions: [] };
-
-              return [group, normalized];
-            })
-          )
-        : undefined,
-      enabledMenuIds:
-        isObject(value.input_data) && isObject(value.input_data.menus_selecionados)
-          ? Object.keys(value.input_data.menus_selecionados)
-          : undefined,
-      constraints: Array.isArray(value.constraints)
-        ? value.constraints.filter((item): item is string => typeof item === 'string')
-        : [],
-      negativePrompt: Array.isArray(value.negative_prompt)
-        ? value.negative_prompt.filter((item): item is string => typeof item === 'string')
-        : [],
-      outputSchema: isObject(value.output_schema)
-        ? {
-            formato: typeof value.output_schema.formato === 'string' ? value.output_schema.formato : 'markdown',
-            estrutura: typeof value.output_schema.estrutura === 'string' ? value.output_schema.estrutura : '',
-          }
-        : undefined,
-      referenceUrl:
-        isObject(value.input_data) && typeof value.input_data.reference_url === 'string'
-          ? value.input_data.reference_url
-          : undefined,
-    });
-  }
-
-  throw new Error('Formato de prompt inválido');
+  return parsePromptPayload(value);
 }
 
 function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
@@ -130,8 +72,8 @@ function definitionToContextMenu(definition: unknown): Omit<ContextMenu, 'id'> {
   const now = new Date();
 
   return {
-    menuId: parsed.id,
-    menuName: parsed.label,
+    menuId: parsed.menu_id,
+    menuName: parsed.menu_name,
     description: parsed.description,
     selectionMode: parsed.selection_mode,
     options: parsed.options.map((option) => ({

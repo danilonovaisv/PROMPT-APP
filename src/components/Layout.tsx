@@ -9,7 +9,6 @@ import { db } from '@/db/database';
 import {
     Home,
     FolderPlus,
-    Layers,
     Download,
     Upload,
     Menu,
@@ -73,15 +72,6 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         Gerenciar Categorias
                     </NavLink>
 
-                    <NavLink
-                        to="/menus"
-                        className={navItemClass}
-                        onClick={() => setSidebarOpen(false)}
-                    >
-                        <Layers size={18} />
-                        Menus de Contexto
-                    </NavLink>
-
                     {/* Categorias */}
                     <div className="app-sidebar__section-title">Categorias</div>
                     {categories.map((cat) => (
@@ -103,7 +93,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                     <button className="app-sidebar__nav-item" onClick={onOpenImportExport}>
                         <Upload size={18} />
-                        Importar Prompts
+                        Importar Templates
                     </button>
                     <button
                         className="app-sidebar__nav-item"
@@ -116,7 +106,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                 <div className="app-sidebar__footer">
                     <div className="sidebar-version">
-                        Prompt App v2.0
+                        Prompt App v3.0
                     </div>
                 </div>
             </aside>

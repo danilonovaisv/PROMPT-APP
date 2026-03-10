@@ -3,10 +3,12 @@ import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
 import {
+    compilePromptPayload,
     getLegacyPromptColumns,
     getPrimaryReferenceUrl,
     getPromptSummaryFields,
     parsePromptPayload,
+    parseUserSelection,
 } from '@/models/promptSchema';
 
 export const syncToCloud = async () => {
@@ -133,7 +135,11 @@ export const syncToCloud = async () => {
         // No schema: category_id bigint references categories...
 
         const summary = getPromptSummaryFields(data.promptPayload);
-        const legacyColumns = getLegacyPromptColumns(data.promptPayload);
+        const legacyColumns = getLegacyPromptColumns(
+            data.promptPayload,
+            data.selectionPayload,
+            data.compiledPayload
+        );
 
         const payload = {
             user_id: userId,
@@ -297,6 +303,8 @@ export const downloadFromCloud = async () => {
                         language: p.language,
                         schemaVersion: p.schema_version,
                     }),
+                    selectionPayload: undefined as Prompt['selectionPayload'],
+                    compiledPayload: undefined as Prompt['compiledPayload'],
                     remoteId: p.id,
                     categoryId: localCategoryId,
                     title: p.title,
@@ -309,6 +317,22 @@ export const downloadFromCloud = async () => {
                     updatedAt: new Date(p.updated_at),
                     syncStatus: 'synced' as const,
                 };
+
+                promptData.selectionPayload = parseUserSelection(
+                    p.selection_payload_jsonb,
+                    promptData.promptPayload.meta.template_id,
+                    {
+                        title: p.title,
+                        schemaVersion: p.schema_version,
+                        language: p.language,
+                        contextMenus: p.context_menus,
+                        enabledMenuIds: p.enabled_menu_ids,
+                    }
+                );
+
+                promptData.compiledPayload =
+                    p.compiled_payload_jsonb ||
+                    compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
 
                 if (existing && existing.id) {
                     await db.prompts.update(existing.id, promptData);

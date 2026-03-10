@@ -1,9 +1,10 @@
 import type {
+  CompiledPromptPayload,
   MenuDefinition,
   MenuSelectionMode,
-  PromptContract,
+  TemplatePayload,
+  UserSelection,
   PromptOutputFormat,
-  SelectedOption,
 } from './promptSchema';
 
 export interface Category {
@@ -86,7 +87,9 @@ export interface Prompt {
   syncStatus?: SyncStatus;
   categoryId: number;
   title: string;
-  promptPayload: PromptContract;
+  promptPayload: TemplatePayload;
+  selectionPayload?: UserSelection;
+  compiledPayload?: CompiledPromptPayload;
   schemaVersion: string;
   language: string;
   outputFormat: PromptOutputFormat;
@@ -96,7 +99,7 @@ export interface Prompt {
   updatedAt: Date;
 }
 
-export type PromptExportFormat = PromptContract;
+export type PromptExportFormat = TemplatePayload;
 
 export interface BulkExport {
   app: string;
@@ -107,9 +110,9 @@ export interface BulkExport {
     title: string;
     category: string;
     schemaVersion: string;
-    prompt: PromptContract;
+    prompt: TemplatePayload;
   }>;
 }
 
-export type PromptMenuSelection = SelectedOption;
+export type PromptMenuSelection = UserSelection;
 export type SyncStatus = 'pending' | 'synced' | 'error';

@@ -6,10 +6,12 @@ import { db } from '@/db/database';
 import { supabase } from '@/lib/supabase';
 import { saveLocalBackup } from '@/utils/backupManager';
 import {
+  compilePromptPayload,
   getLegacyPromptColumns,
   getPrimaryReferenceUrl,
   getPromptSummaryFields,
   parsePromptPayload,
+  parseUserSelection,
 } from '@/models/promptSchema';
 // Tipos utilizados para tipagem
 
@@ -157,23 +159,38 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
 
     case 'prompt':
       if (remoteData) {
+        const promptPayload = parsePromptPayload(remoteData.prompt_payload_jsonb, {
+          title: remoteData.title,
+          systemRole: remoteData.system_role,
+          task: remoteData.task,
+          context: remoteData.context,
+          contextMenus: remoteData.context_menus,
+          enabledMenuIds: remoteData.enabled_menu_ids,
+          constraints: remoteData.constraints,
+          negativePrompt: remoteData.negative_prompt,
+          outputSchema: remoteData.output_schema,
+          referenceUrl: remoteData.reference_url,
+          language: remoteData.language,
+          schemaVersion: remoteData.schema_version,
+        });
+        const selectionPayload = parseUserSelection(
+          remoteData.selection_payload_jsonb,
+          promptPayload.meta.template_id,
+          {
+            title: remoteData.title,
+            schemaVersion: remoteData.schema_version,
+            language: remoteData.language,
+            contextMenus: remoteData.context_menus,
+            enabledMenuIds: remoteData.enabled_menu_ids,
+          }
+        );
         await db.prompts.update(update.id, {
           categoryId: remoteData.category_id,
           title: remoteData.title,
-          promptPayload: parsePromptPayload(remoteData.prompt_payload_jsonb, {
-            title: remoteData.title,
-            systemRole: remoteData.system_role,
-            task: remoteData.task,
-            context: remoteData.context,
-            contextMenus: remoteData.context_menus,
-            enabledMenuIds: remoteData.enabled_menu_ids,
-            constraints: remoteData.constraints,
-            negativePrompt: remoteData.negative_prompt,
-            outputSchema: remoteData.output_schema,
-            referenceUrl: remoteData.reference_url,
-            language: remoteData.language,
-            schemaVersion: remoteData.schema_version,
-          }),
+          promptPayload,
+          selectionPayload,
+          compiledPayload:
+            remoteData.compiled_payload_jsonb || compilePromptPayload(promptPayload, selectionPayload),
           schemaVersion: remoteData.schema_version || '1.0.0',
           language: remoteData.language || 'pt-BR',
           outputFormat: remoteData.output_format || 'markdown',
@@ -239,7 +256,11 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         reference_url: getPrimaryReferenceUrl(localItem.promptPayload),
         few_shot_examples: localItem.fewShotExamples || [],
         user_id: session.user.id,
-        ...getLegacyPromptColumns(localItem.promptPayload),
+        ...getLegacyPromptColumns(
+          localItem.promptPayload,
+          localItem.selectionPayload,
+          localItem.compiledPayload
+        ),
       };
       break;
     case 'menu':

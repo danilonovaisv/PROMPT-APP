@@ -9,16 +9,19 @@ import type { BulkExport, ContextMenu, Prompt } from '@/models/types';
 
 function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
     return MenuDefinitionSchema.parse({
-        id: menu.menuId,
-        label: menu.menuName,
+        menu_id: menu.menuId,
+        menu_name: menu.menuName,
         description: menu.description,
         selection_mode: menu.selectionMode,
+        required: false,
         options: (menu.options || []).map((option) => ({
-            value: option.value,
             label: option.label,
+            value: option.value,
+            description: '',
             sub_options: (option.subOptions || []).map((subOption) => ({
-                value: subOption.value,
                 label: subOption.label,
+                value: subOption.value,
+                description: '',
             })),
         })),
     });
@@ -72,58 +75,28 @@ export async function downloadAllPrompts() {
 export function getTemplateFile(): Blob {
     const template = PromptContractSchema.parse({
         meta: {
-            prompt_id: 'novo_prompt',
-            name: 'Novo Prompt',
+            template_id: 'novo_template',
+            template_name: 'Novo Template',
+            template_type: 'generic_prompt',
             schema_version: '1.0.0',
             language: 'pt-BR',
-            owner: 'webapp',
+            status: 'draft',
         },
-        role: {
-            id: 'custom_role',
-            description: '',
-        },
-        objective: {
+        prompt_definition: {
+            system_role: '',
             task: '',
-            focus: [],
-            priority_order: [],
-        },
-        project: {
-            name: 'PROMPT-APP',
-            production_url: 'https://prompt-app-dan.netlify.app',
-            repository_url: '',
-            reference_urls: [],
-            target_environment: ['web_desktop', 'web_mobile'],
-            app_type: 'prompt_management_webapp',
             context: '',
+            constraints: [],
+            negative_prompt: [],
+            few_shot_examples: [],
         },
-        scope: {
-            audit_areas_minimum: [],
-            critical_flows: [],
-            route_discovery: {
-                mode: 'auto',
-                spa_fallback: true,
-                fallback_route: '/',
-                include_internal_states: true,
-            },
-        },
-        selected_options: [],
-        rules: {},
-        policies: {
-            must: [],
-            must_not: [],
-        },
+        menu_definitions: [],
         output_contract: {
             format: 'markdown',
             language: 'pt-BR',
             strict_mode: true,
-            require_evidence_for_claims: true,
-            required_sections: [],
-            route_audit_order: [],
-            ordered_evaluation_blocks: [],
-            acceptance_criteria: [],
-            status_enum: ['approved', 'approved_with_issues', 'failed'],
-            severity_enum: ['critical', 'high', 'medium', 'low'],
-            structure_notes: '',
+            required_fields: [],
+            response_rules: [],
         },
     });
 
