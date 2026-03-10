@@ -134,6 +134,7 @@ export const TemplatePayloadSchema = z
       .array(MenuDefinitionSchema)
       .default([])
       .superRefine(uniqueArrayBy((item) => item.menu_id, 'Menu id')),
+    menu_ids: z.array(z.string()).default([]),
     output_contract: PromptOutputContractSchema,
   })
   .strict();

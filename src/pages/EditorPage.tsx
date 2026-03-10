@@ -13,6 +13,8 @@ import {
   Save,
   Settings2,
   Trash2,
+  PanelRightClose,
+  PanelRightOpen,
   X,
   Zap,
 } from 'lucide-react';
@@ -20,11 +22,9 @@ import {
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { useDebounce } from '@/hooks/useDebounce';
-import type { Category, ContextMenu, Prompt } from '@/models/types';
+import type { Category, Prompt } from '@/models/types';
 import {
   CompiledPromptPayload,
-  MenuDefinition,
-  MenuDefinitionSchema,
   PROMPT_OUTPUT_FORMATS,
   PromptOutputContract,
   PromptOutputContractSchema,
@@ -56,25 +56,7 @@ type TemplateFormState = {
   freeInputs: FreeInputEntry[];
 };
 
-function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
-  return MenuDefinitionSchema.parse({
-    menu_id: menu.menuId,
-    menu_name: menu.menuName,
-    description: menu.description,
-    selection_mode: menu.selectionMode,
-    required: false,
-    options: (menu.options || []).map((option) => ({
-      label: option.label,
-      value: option.value,
-      description: '',
-      sub_options: (option.subOptions || []).map((subOption) => ({
-        label: subOption.label,
-        value: subOption.value,
-        description: '',
-      })),
-    })),
-  });
-}
+
 
 function splitLines(value: string): string[] {
   return value
@@ -100,21 +82,6 @@ function fromFreeInputEntries(entries: FreeInputEntry[]): Record<string, string>
   );
 }
 
-function mergeLegacyMenusIntoTemplate(template: TemplatePayload, contextMenus: ContextMenu[]): TemplatePayload {
-  if (template.menu_definitions.length > 0) {
-    return template;
-  }
-
-  if (contextMenus.length === 0) {
-    return template;
-  }
-
-  return TemplatePayloadSchema.parse({
-    ...template,
-    menu_definitions: contextMenus.map(contextMenuToDefinition),
-  });
-}
-
 function buildInitialFormState(categoryId = 0): TemplateFormState {
   const template = createEmptyPromptPayload('Novo Template');
   return {
@@ -125,8 +92,8 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
   };
 }
 
-function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): TemplateFormState {
-  const template = mergeLegacyMenusIntoTemplate(parsePromptPayload(prompt.promptPayload), contextMenus);
+function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
+  const template = parsePromptPayload(prompt.promptPayload);
   const selection = parseUserSelection(prompt.selectionPayload, template.meta.template_id, {
     title: prompt.title,
     schemaVersion: prompt.schemaVersion,
@@ -141,14 +108,6 @@ function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): 
   };
 }
 
-function replaceMenuAt(template: TemplatePayload, index: number, nextMenu: MenuDefinition): TemplatePayload {
-  const menu_definitions = [...template.menu_definitions];
-  menu_definitions[index] = nextMenu;
-  return TemplatePayloadSchema.parse({
-    ...template,
-    menu_definitions,
-  });
-}
 
 function buildPersistedArtifacts(form: TemplateFormState) {
   const normalizedTemplate = TemplatePayloadSchema.parse({
@@ -196,6 +155,7 @@ export default function EditorPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
 
   const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
@@ -221,11 +181,11 @@ export default function EditorPage() {
 
     db.prompts.get(Number(id)).then((prompt) => {
       if (prompt) {
-        setForm(buildFormStateFromPrompt(prompt, contextMenus));
+        setForm(buildFormStateFromPrompt(prompt));
       }
       setLoaded(true);
     });
-  }, [contextMenus, id, isNew]);
+  }, [id, isNew]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -336,206 +296,28 @@ export default function EditorPage() {
     );
   };
 
-  const addMenuGroup = () => {
-    updateTemplate((current) =>
-      TemplatePayloadSchema.parse({
-        ...current,
-        menu_definitions: [
-          ...current.menu_definitions,
-          {
-            menu_id: '',
-            menu_name: '',
-            description: '',
-            selection_mode: 'single',
-            required: false,
-            options: [],
-          },
-        ],
-      })
-    );
-  };
-
-  const removeMenuGroup = (menuIndex: number) => {
+  const toggleOptionSelection = (menuId: string, selectionMode: string, optionValue: string) => {
     setForm((current) => {
-      const removedMenu = current.template.menu_definitions[menuIndex];
-      const nextTemplate = TemplatePayloadSchema.parse({
-        ...current.template,
-        menu_definitions: current.template.menu_definitions.filter((_, index) => index !== menuIndex),
-      });
-
-      const nextSelection = UserSelectionSchema.parse({
-        ...current.selection,
-        selected_menus: current.selection.selected_menus.filter((item) => item.menu_id !== removedMenu?.menu_id),
-      });
-
-      return {
-        ...current,
-        template: nextTemplate,
-        selection: nextSelection,
-      };
-    });
-  };
-
-  const updateMenuGroup = (menuIndex: number, updater: (menu: MenuDefinition) => MenuDefinition) => {
-    updateTemplate((current) => replaceMenuAt(current, menuIndex, updater(current.menu_definitions[menuIndex])));
-  };
-
-  const addMenuOption = (menuIndex: number) => {
-    updateMenuGroup(menuIndex, (menu) =>
-      MenuDefinitionSchema.parse({
-        ...menu,
-        options: [
-          ...menu.options,
-          {
-            label: '',
-            value: '',
-            description: '',
-            sub_options: [],
-          },
-        ],
-      })
-    );
-  };
-
-  const removeMenuOption = (menuIndex: number, optionIndex: number) => {
-    setForm((current) => {
-      const menu = current.template.menu_definitions[menuIndex];
-      const removedOption = menu.options[optionIndex];
-      const nextMenu = MenuDefinitionSchema.parse({
-        ...menu,
-        options: menu.options.filter((_, index) => index !== optionIndex),
-      });
-
-      const nextTemplate = replaceMenuAt(current.template, menuIndex, nextMenu);
-      const nextSelection = UserSelectionSchema.parse({
-        ...current.selection,
-        selected_menus: current.selection.selected_menus.map((selectedMenu) => {
-          if (selectedMenu.menu_id !== menu.menu_id) return selectedMenu;
-          return {
-            ...selectedMenu,
-            selected_options: selectedMenu.selected_options.filter(
-              (selectedOption) => selectedOption.option_value !== removedOption?.value
-            ),
-          };
-        }),
-      });
-
-      return {
-        ...current,
-        template: nextTemplate,
-        selection: nextSelection,
-      };
-    });
-  };
-
-  const updateMenuOption = (
-    menuIndex: number,
-    optionIndex: number,
-    updater: (option: MenuDefinition['options'][number]) => MenuDefinition['options'][number]
-  ) => {
-    updateMenuGroup(menuIndex, (menu) =>
-      MenuDefinitionSchema.parse({
-        ...menu,
-        options: menu.options.map((option, index) => (index === optionIndex ? updater(option) : option)),
-      })
-    );
-  };
-
-  const addSubOption = (menuIndex: number, optionIndex: number) => {
-    updateMenuOption(menuIndex, optionIndex, (option) => ({
-      ...option,
-      sub_options: [
-        ...option.sub_options,
-        {
-          label: '',
-          value: '',
-          description: '',
-        },
-      ],
-    }));
-  };
-
-  const removeSubOption = (menuIndex: number, optionIndex: number, subOptionIndex: number) => {
-    setForm((current) => {
-      const menu = current.template.menu_definitions[menuIndex];
-      const option = menu.options[optionIndex];
-      const removedSubOption = option.sub_options[subOptionIndex];
-
-      const nextOption = {
-        ...option,
-        sub_options: option.sub_options.filter((_, index) => index !== subOptionIndex),
-      };
-
-      const nextMenu = MenuDefinitionSchema.parse({
-        ...menu,
-        options: menu.options.map((item, index) => (index === optionIndex ? nextOption : item)),
-      });
-
-      const nextTemplate = replaceMenuAt(current.template, menuIndex, nextMenu);
-      const nextSelection = UserSelectionSchema.parse({
-        ...current.selection,
-        selected_menus: current.selection.selected_menus.map((selectedMenu) => {
-          if (selectedMenu.menu_id !== menu.menu_id) return selectedMenu;
-
-          return {
-            ...selectedMenu,
-            selected_options: selectedMenu.selected_options.map((selectedOption) => {
-              if (selectedOption.option_value !== option.value) return selectedOption;
-              return {
-                ...selectedOption,
-                selected_sub_options: selectedOption.selected_sub_options.filter(
-                  (value) => value !== removedSubOption?.value
-                ),
-              };
-            }),
-          };
-        }),
-      });
-
-      return {
-        ...current,
-        template: nextTemplate,
-        selection: nextSelection,
-      };
-    });
-  };
-
-  const updateSubOption = (
-    menuIndex: number,
-    optionIndex: number,
-    subOptionIndex: number,
-    updater: (subOption: MenuDefinition['options'][number]['sub_options'][number]) => MenuDefinition['options'][number]['sub_options'][number]
-  ) => {
-    updateMenuOption(menuIndex, optionIndex, (option) => ({
-      ...option,
-      sub_options: option.sub_options.map((subOption, index) =>
-        index === subOptionIndex ? updater(subOption) : subOption
-      ),
-    }));
-  };
-
-  const toggleOptionSelection = (menu: MenuDefinition, optionValue: string) => {
-    setForm((current) => {
-      const existingMenu = current.selection.selected_menus.find((item) => item.menu_id === menu.menu_id);
+      const existingMenu = current.selection.selected_menus.find((item) => item.menu_id === menuId);
       const hasOption = existingMenu?.selected_options.some((item) => item.option_value === optionValue);
 
       let selected_menus = [...current.selection.selected_menus];
 
-      if (menu.selection_mode === 'single') {
+      if (selectionMode === 'single') {
         if (hasOption) {
-          selected_menus = selected_menus.filter((item) => item.menu_id !== menu.menu_id);
+          selected_menus = selected_menus.filter((item) => item.menu_id !== menuId);
         } else {
           selected_menus = [
-            ...selected_menus.filter((item) => item.menu_id !== menu.menu_id),
+            ...selected_menus.filter((item) => item.menu_id !== menuId),
             {
-              menu_id: menu.menu_id,
+              menu_id: menuId,
               selected_options: [{ option_value: optionValue, selected_sub_options: [] }],
             },
           ];
         }
       } else if (existingMenu) {
         selected_menus = selected_menus.map((item) => {
-          if (item.menu_id !== menu.menu_id) return item;
+          if (item.menu_id !== menuId) return item;
           return {
             ...item,
             selected_options: hasOption
@@ -547,7 +329,7 @@ export default function EditorPage() {
         selected_menus = [
           ...selected_menus,
           {
-            menu_id: menu.menu_id,
+            menu_id: menuId,
             selected_options: [{ option_value: optionValue, selected_sub_options: [] }],
           },
         ];
@@ -563,6 +345,8 @@ export default function EditorPage() {
       };
     });
   };
+
+
 
   const toggleSubOptionSelection = (menuId: string, optionValue: string, subOptionValue: string) => {
     setForm((current) => ({
@@ -758,8 +542,10 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="app-content">
-        <div className="editor-form--constrained">
+      <div className="editor-sidebar-container">
+        <div className="editor-main-scrollable">
+          <div className="app-content">
+            <div className="editor-form--constrained">
           <div className="form-section">
             <h3 className="form-section__title">
               <FileText size={18} /> Metadados do Template
@@ -910,229 +696,51 @@ export default function EditorPage() {
             <div className="page-header">
               <div>
                 <h3 className="form-section__title">
-                  <Layers size={18} /> Menus do Template
+                  <Layers size={18} /> Menus Vinculados
                 </h3>
                 <p className="page-header__subtitle">
-                  Cada template define seus próprios grupos, opções e sub-opções.
+                  Selecione os menus do sistema (gerenciados na aba Menus do Template) que você deseja associar a este template.
                 </p>
               </div>
-              <button className="btn btn--secondary" onClick={addMenuGroup}>
-                <Plus size={16} /> Novo grupo
-              </button>
             </div>
 
-            {form.template.menu_definitions.length === 0 ? (
-              <p className="ctx-empty-hint">Nenhum grupo criado para este template.</p>
+            {contextMenus.length === 0 ? (
+              <p className="ctx-empty-hint">Nenhum menu global encontrado. Crie um em "Menus do Template".</p>
             ) : (
-              <div className="dynamic-list">
-                {form.template.menu_definitions.map((menu, menuIndex) => (
-                  <div key={`${menu.menu_id || 'menu'}-${menuIndex}`} className="card card--active">
-                    <div className="page-header">
-                      <div>
-                        <h4 className="page-header__title">{menu.menu_name || `Grupo ${menuIndex + 1}`}</h4>
-                        <p className="page-header__subtitle">{menu.description || 'Sem descrição'}</p>
+              <div className="menu-selector-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                {contextMenus.map((menu) => {
+                  const isSelected = form.template.menu_ids?.includes(menu.menuId);
+                  return (
+                    <label 
+                      key={menu.menuId} 
+                      className={`card ${isSelected ? 'card--active' : ''}`}
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '12px' }}
+                    >
+                      <input 
+                        type="checkbox" 
+                        checked={isSelected}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          updateTemplate((current) => {
+                            const newIds = checked 
+                              ? [...(current.menu_ids || []), menu.menuId]
+                              : (current.menu_ids || []).filter(id => id !== menu.menuId);
+                            return TemplatePayloadSchema.parse({
+                              ...current,
+                              menu_ids: newIds
+                            });
+                          });
+                        }} 
+                      />
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>{menu.menuName}</h4>
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          {menu.menuId}
+                        </span>
                       </div>
-                      <button
-                        className="btn btn--ghost btn--icon"
-                        onClick={() => removeMenuGroup(menuIndex)}
-                        aria-label="Remover grupo"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Menu ID</label>
-                      <input
-                        value={menu.menu_id}
-                        onChange={(event) =>
-                          updateMenuGroup(menuIndex, (currentMenu) => ({
-                            ...currentMenu,
-                            menu_id: event.target.value,
-                          }))
-                        }
-                        placeholder="personagens"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Menu name</label>
-                      <input
-                        value={menu.menu_name}
-                        onChange={(event) =>
-                          updateMenuGroup(menuIndex, (currentMenu) => ({
-                            ...currentMenu,
-                            menu_name: event.target.value,
-                          }))
-                        }
-                        placeholder="PERSONAGENS NA CENA"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Description</label>
-                      <textarea
-                        value={menu.description}
-                        onChange={(event) =>
-                          updateMenuGroup(menuIndex, (currentMenu) => ({
-                            ...currentMenu,
-                            description: event.target.value,
-                          }))
-                        }
-                        rows={3}
-                        placeholder="Explique o objetivo do grupo"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">Selection mode</label>
-                      <select
-                        value={menu.selection_mode}
-                        onChange={(event) =>
-                          updateMenuGroup(menuIndex, (currentMenu) => ({
-                            ...currentMenu,
-                            selection_mode: event.target.value as MenuDefinition['selection_mode'],
-                          }))
-                        }
-                      >
-                        <option value="single">single</option>
-                        <option value="multiple">multiple</option>
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label className="form-label">
-                        <input
-                          type="checkbox"
-                          checked={menu.required}
-                          onChange={(event) =>
-                            updateMenuGroup(menuIndex, (currentMenu) => ({
-                              ...currentMenu,
-                              required: event.target.checked,
-                            }))
-                          }
-                        />
-                        {' '}Grupo obrigatório
-                      </label>
-                    </div>
-
-                    <div className="dynamic-list">
-                      {menu.options.map((option, optionIndex) => (
-                        <div key={`${option.value || 'option'}-${optionIndex}`} className="card">
-                          <div className="page-header">
-                            <div>
-                              <h4 className="page-header__title">{option.label || `Opção ${optionIndex + 1}`}</h4>
-                            </div>
-                            <button
-                              className="btn btn--ghost btn--icon"
-                              onClick={() => removeMenuOption(menuIndex, optionIndex)}
-                              aria-label="Remover opção"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-
-                          <div className="form-group">
-                            <label className="form-label">Label</label>
-                            <input
-                              value={option.label}
-                              onChange={(event) =>
-                                updateMenuOption(menuIndex, optionIndex, (currentOption) => ({
-                                  ...currentOption,
-                                  label: event.target.value,
-                                }))
-                              }
-                              placeholder="1 pessoa"
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label className="form-label">Value</label>
-                            <input
-                              value={option.value}
-                              onChange={(event) =>
-                                updateMenuOption(menuIndex, optionIndex, (currentOption) => ({
-                                  ...currentOption,
-                                  value: event.target.value,
-                                }))
-                              }
-                              placeholder="uma_pessoa"
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label className="form-label">Description</label>
-                            <input
-                              value={option.description}
-                              onChange={(event) =>
-                                updateMenuOption(menuIndex, optionIndex, (currentOption) => ({
-                                  ...currentOption,
-                                  description: event.target.value,
-                                }))
-                              }
-                              placeholder="Cena com uma pessoa"
-                            />
-                          </div>
-
-                          <div className="dynamic-list">
-                            {option.sub_options.map((subOption, subOptionIndex) => (
-                              <div key={`${subOption.value || 'sub'}-${subOptionIndex}`} className="card">
-                                <div className="page-header">
-                                  <div>
-                                    <h4 className="page-header__title">{subOption.label || `Sub-opção ${subOptionIndex + 1}`}</h4>
-                                  </div>
-                                  <button
-                                    className="btn btn--ghost btn--icon"
-                                    onClick={() => removeSubOption(menuIndex, optionIndex, subOptionIndex)}
-                                    aria-label="Remover sub-opção"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                </div>
-
-                                <div className="form-group">
-                                  <label className="form-label">Label</label>
-                                  <input
-                                    value={subOption.label}
-                                    onChange={(event) =>
-                                      updateSubOption(menuIndex, optionIndex, subOptionIndex, (currentSubOption) => ({
-                                        ...currentSubOption,
-                                        label: event.target.value,
-                                      }))
-                                    }
-                                    placeholder="Jovem adulto (18-29)"
-                                  />
-                                </div>
-
-                                <div className="form-group">
-                                  <label className="form-label">Value</label>
-                                  <input
-                                    value={subOption.value}
-                                    onChange={(event) =>
-                                      updateSubOption(menuIndex, optionIndex, subOptionIndex, (currentSubOption) => ({
-                                        ...currentSubOption,
-                                        value: event.target.value,
-                                      }))
-                                    }
-                                    placeholder="1p_jovem_adulto_18_29"
-                                  />
-                                </div>
-                              </div>
-                            ))}
-
-                            <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={() => addSubOption(menuIndex, optionIndex)}>
-                              <Plus size={14} /> Nova sub-opção
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-
-                      <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={() => addMenuOption(menuIndex)}>
-                        <Plus size={14} /> Nova opção
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                    </label>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1203,8 +811,31 @@ export default function EditorPage() {
             </div>
           </div>
 
-          <div className="form-section">
-            <div className="page-header">
+          <div className="editor-footer" style={{ marginTop: '2rem' }}>
+            <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
+              Cancelar
+            </button>
+            <button className="btn btn--primary btn--lg" onClick={handleSave}>
+              <Save size={18} /> Salvar Template
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* SIDEBAR DO PLAYGROUND */}
+    <aside className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}>
+      <div className="editor-floating-sidebar__header">
+        <h3 className="form-section__title" style={{ margin: 0, border: 'none', padding: 0 }}>
+          <Settings2 size={18} /> Playground
+        </h3>
+        <button className="btn btn--ghost btn--icon" onClick={() => setIsSidebarOpen(false)}>
+          <X size={18} />
+        </button>
+      </div>
+      <div className="editor-floating-sidebar__content">
+        <div className="form-section">
+          <div className="page-header">
               <div>
                 <h3 className="form-section__title">
                   <Settings2 size={18} /> Playground de Uso
@@ -1252,23 +883,25 @@ export default function EditorPage() {
               </button>
             </div>
 
-            {form.template.menu_definitions.length === 0 ? (
-              <p className="ctx-empty-hint">Crie grupos de menu acima para testar a compilação.</p>
+            {(!form.template.menu_ids || form.template.menu_ids.length === 0) ? (
+              <p className="ctx-empty-hint">Vincule menus na seção acima para testar a compilação.</p>
             ) : (
               <div className="ctx-editor-grid">
-                {form.template.menu_definitions.map((menu) => (
-                  <div key={menu.menu_id} className="ctx-editor-menu">
+                {contextMenus
+                  .filter((menu) => form.template.menu_ids?.includes(menu.menuId))
+                  .map((menu) => (
+                  <div key={menu.menuId} className="ctx-editor-menu">
                     <div className="ctx-editor-menu__header">
-                      <span className="ctx-editor-menu__name">{menu.menu_name || menu.menu_id}</span>
+                      <span className="ctx-editor-menu__name">{menu.menuName || menu.menuId}</span>
                       <span className="ctx-editor-menu__selection">
-                        {menu.selection_mode === 'multiple' ? 'Múltipla' : 'Única'}
+                        {menu.selectionMode === 'multiple' ? 'Múltipla' : 'Única'}
                       </span>
                     </div>
                     {menu.description && <p className="form-label__hint">{menu.description}</p>}
                     <div className="menu-selector">
-                      {menu.options.map((option) => {
+                      {(menu.options || []).map((option) => {
                         const selection = form.selection.selected_menus
-                          .find((item) => item.menu_id === menu.menu_id)
+                          .find((item) => item.menu_id === menu.menuId)
                           ?.selected_options.find((item) => item.option_value === option.value);
 
                         return (
@@ -1276,7 +909,7 @@ export default function EditorPage() {
                             key={option.value}
                             type="button"
                             className={`menu-tag ${selection ? 'menu-tag--selected' : ''}`}
-                            onClick={() => toggleOptionSelection(menu, option.value)}
+                            onClick={() => toggleOptionSelection(menu.menuId, menu.selectionMode, option.value)}
                           >
                             {option.label}
                           </button>
@@ -1284,20 +917,20 @@ export default function EditorPage() {
                       })}
                     </div>
 
-                    {(form.selection.selected_menus.find((item) => item.menu_id === menu.menu_id)?.selected_options || []).map(
+                    {(form.selection.selected_menus.find((item) => item.menu_id === menu.menuId)?.selected_options || []).map(
                       (selectedOption) => {
-                        const optionDefinition = menu.options.find((option) => option.value === selectedOption.option_value);
-                        if (!optionDefinition || optionDefinition.sub_options.length === 0) {
+                        const optionDefinition = (menu.options || []).find((option) => option.value === selectedOption.option_value);
+                        if (!optionDefinition || !optionDefinition.subOptions || optionDefinition.subOptions.length === 0) {
                           return null;
                         }
 
                         return (
-                          <div key={`${menu.menu_id}-${selectedOption.option_value}`} className="ctx-editor-suboptions">
+                          <div key={`${menu.menuId}-${selectedOption.option_value}`} className="ctx-editor-suboptions">
                             <span className="ctx-editor-suboptions__label">
                               Sub-opções de "{optionDefinition.label}"
                             </span>
                             <div className="menu-selector menu-selector--sub">
-                              {optionDefinition.sub_options.map((subOption) => (
+                              {optionDefinition.subOptions.map((subOption) => (
                                 <button
                                   key={subOption.value}
                                   type="button"
@@ -1306,7 +939,7 @@ export default function EditorPage() {
                                       ? 'menu-tag--selected'
                                       : ''
                                   }`}
-                                  onClick={() => toggleSubOptionSelection(menu.menu_id, optionDefinition.value, subOption.value)}
+                                  onClick={() => toggleSubOptionSelection(menu.menuId, optionDefinition.value, subOption.value)}
                                 >
                                   {subOption.label}
                                 </button>
@@ -1321,19 +954,20 @@ export default function EditorPage() {
               </div>
             )}
           </div>
-
-          <div className="editor-footer">
-            <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
-              Cancelar
-            </button>
-            <button className="btn btn--primary btn--lg" onClick={handleSave}>
-              <Save size={18} /> Salvar Template
-            </button>
-          </div>
         </div>
-      </div>
+      </aside>
 
-      {showPreview && (
+      {/* Toggle Button for Mobile / Closed State */}
+      <button
+        className={`editor-floating-toggle ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        aria-label="Alternar Playground"
+      >
+        {isSidebarOpen ? <PanelRightClose size={24} /> : <PanelRightOpen size={24} />}
+      </button>
+    </div>
+
+    {showPreview && (
         <div className="modal-overlay" onClick={() => setShowPreview(false)}>
           <div className="modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal__header">

@@ -1790,6 +1790,95 @@ select option {
   }
 }
 
+/* --- Editor: Floating Sidebar --- */
+.editor-sidebar-container {
+  display: flex;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-main-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+.editor-floating-sidebar {
+  width: 380px;
+  background-color: var(--color-surface-1);
+  border-left: 1px solid var(--color-border);
+  position: fixed;
+  right: 0;
+  top: var(--header-height);
+  bottom: 0;
+  z-index: 90;
+  transform: translateX(100%);
+  transition: transform var(--transition-spring);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.editor-floating-sidebar--open {
+  transform: translateX(0);
+}
+
+.editor-floating-sidebar__header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(4, 0, 19, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+.editor-floating-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+.editor-floating-toggle {
+  position: fixed;
+  right: var(--space-6);
+  bottom: var(--space-6);
+  z-index: 95;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.editor-floating-toggle:hover {
+  transform: scale(1.05);
+  background: var(--color-primary-light);
+}
+
+.editor-floating-toggle--active {
+  background: var(--color-accent);
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .editor-floating-sidebar {
+    width: 100%;
+    top: 0;
+  }
+  .editor-floating-toggle {
+    right: var(--space-4);
+    bottom: var(--space-4);
+  }
+}
+
 /* ==============================================
    Import Menus Modal — Styles
    ============================================== */
