@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
-    "@supabase/supabase-js": "^2.97.0",
+    "@supabase/supabase-js": "^2.99.0",
     "agentic-flow": "^2.0.7",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
@@ -23,8 +23,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "^25.3.3",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^25.4.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
