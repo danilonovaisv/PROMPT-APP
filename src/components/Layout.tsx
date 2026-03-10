@@ -14,6 +14,7 @@ import {
     Menu,
     X,
     Sparkles,
+    Layers,
 } from 'lucide-react';
 import { downloadAllPrompts } from '@/utils/exportJson';
 import CloudSyncItem from './CloudSyncItem';
@@ -69,7 +70,16 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         onClick={() => setSidebarOpen(false)}
                     >
                         <FolderPlus size={18} />
-                        Gerenciar Categorias
+                        Categorias
+                    </NavLink>
+
+                    <NavLink
+                        to="/menus"
+                        className={navItemClass}
+                        onClick={() => setSidebarOpen(false)}
+                    >
+                        <Layers size={18} />
+                        Menus do Template
                     </NavLink>
 
                     {/* Categorias */}

@@ -1831,6 +1831,7 @@ select option {
   justify-content: space-between;
   align-items: center;
   background-color: rgba(4, 0, 19, 0.95);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -1856,6 +1857,46 @@ select option {
   box-shadow: var(--shadow-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
+}
+
+.editor-floating-sidebar__title {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.menu-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.menu-selector-card {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+}
+
+.menu-selector-card__info {
+  flex: 1;
+}
+
+.menu-selector-card__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.menu-selector-card__id {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.editor-footer--spaced {
+  margin-top: 2rem;
 }
 
 .editor-floating-toggle:hover {

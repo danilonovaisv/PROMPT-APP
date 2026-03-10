@@ -707,14 +707,13 @@ export default function EditorPage() {
             {contextMenus.length === 0 ? (
               <p className="ctx-empty-hint">Nenhum menu global encontrado. Crie um em "Menus do Template".</p>
             ) : (
-              <div className="menu-selector-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+              <div className="menu-selector-grid">
                 {contextMenus.map((menu) => {
                   const isSelected = form.template.menu_ids?.includes(menu.menuId);
                   return (
                     <label 
                       key={menu.menuId} 
-                      className={`card ${isSelected ? 'card--active' : ''}`}
-                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '12px' }}
+                      className={`card menu-selector-card ${isSelected ? 'card--active' : ''}`}
                     >
                       <input 
                         type="checkbox" 
@@ -732,9 +731,9 @@ export default function EditorPage() {
                           });
                         }} 
                       />
-                      <div style={{ flex: 1 }}>
-                        <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>{menu.menuName}</h4>
-                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      <div className="menu-selector-card__info">
+                        <h4 className="menu-selector-card__title">{menu.menuName}</h4>
+                        <span className="menu-selector-card__id">
                           {menu.menuId}
                         </span>
                       </div>
@@ -811,7 +810,7 @@ export default function EditorPage() {
             </div>
           </div>
 
-          <div className="editor-footer" style={{ marginTop: '2rem' }}>
+          <div className="editor-footer editor-footer--spaced">
             <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
               Cancelar
             </button>
@@ -826,10 +825,10 @@ export default function EditorPage() {
     {/* SIDEBAR DO PLAYGROUND */}
     <aside className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}>
       <div className="editor-floating-sidebar__header">
-        <h3 className="form-section__title" style={{ margin: 0, border: 'none', padding: 0 }}>
+        <h3 className="form-section__title editor-floating-sidebar__title">
           <Settings2 size={18} /> Playground
         </h3>
-        <button className="btn btn--ghost btn--icon" onClick={() => setIsSidebarOpen(false)}>
+        <button className="btn btn--ghost btn--icon" onClick={() => setIsSidebarOpen(false)} aria-label="Fechar Playground" title="Fechar Playground">
           <X size={18} />
         </button>
       </div>

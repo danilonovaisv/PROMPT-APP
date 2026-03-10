@@ -1,5 +1,5 @@
 /* ======================================================
-   Gerenciador de Menus de Contexto — CRUD hierárquico
+   Gerenciador de Menus do Template — CRUD hierárquico
    ====================================================== */
 
 import { useState } from 'react';
@@ -254,7 +254,7 @@ export default function MenuManagerPage() {
                     >
                         <ArrowLeft size={18} />
                     </button>
-                    <h1 className="app-header__title">Menus de Contexto</h1>
+                    <h1 className="app-header__title">Menus do Template</h1>
                 </div>
                 <div className="app-header__actions">
                     <button
@@ -289,7 +289,7 @@ export default function MenuManagerPage() {
                 {(isCreating || isEditing !== null) && (
                     <div className="card card--active">
                         <h3 className="card__title">
-                            {isEditing ? 'Editar Menu' : 'Novo Menu de Contexto'}
+                            {isEditing ? 'Editar Menu' : 'Novo Menu do Template'}
                         </h3>
 
                         <div className="form-group">
@@ -326,7 +326,7 @@ export default function MenuManagerPage() {
                             <textarea
                                 value={form.description}
                                 onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-                                placeholder="Descreva o propósito deste menu de contexto..."
+                                placeholder="Descreva o propósito deste menu dinâmico..."
                                 rows={2}
                             />
                         </div>
@@ -479,9 +479,9 @@ export default function MenuManagerPage() {
                 {menus.length === 0 ? (
                     <div className="empty-state">
                         <div className="empty-state__icon"><Settings size={48} /></div>
-                        <h3 className="empty-state__title">Nenhum menu de contexto</h3>
+                        <h3 className="empty-state__title">Nenhum menu do template</h3>
                         <p className="empty-state__description">
-                            Menus de contexto são conjuntos reutilizáveis de opções que enriquecem seus prompts.
+                            Menus do template são conjuntos reutilizáveis de opções configuráveis que enriquecem seus formatos de saída.
                             Clique em "Novo Menu" para começar.
                         </p>
                     </div>
