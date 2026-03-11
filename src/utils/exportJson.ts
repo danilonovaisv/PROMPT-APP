@@ -1,31 +1,14 @@
 import { db } from '@/db/database';
 import {
-    MenuDefinitionSchema,
     PromptContractSchema,
-    type MenuDefinition,
     type PromptContract,
 } from '@/models/promptSchema';
-import type { BulkExport, ContextMenu, Prompt } from '@/models/types';
-
-function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
-    return MenuDefinitionSchema.parse({
-        menu_id: menu.menuId,
-        menu_name: menu.menuName,
-        description: menu.description,
-        selection_mode: menu.selectionMode,
-        required: false,
-        options: (menu.options || []).map((option) => ({
-            label: option.label,
-            value: option.value,
-            description: '',
-            sub_options: (option.subOptions || []).map((subOption) => ({
-                label: subOption.label,
-                value: subOption.value,
-                description: '',
-            })),
-        })),
-    });
-}
+import type { BulkExport, Prompt } from '@/models/types';
+import { contextMenuToDefinition } from '@/utils/promptArtifacts';
+import {
+    CURRENT_BULK_EXPORT_VERSION,
+    CURRENT_PROMPT_SCHEMA_VERSION,
+} from '@/utils/schemaCompatibility';
 
 export function toExportFormat(prompt: Prompt): PromptContract {
     return PromptContractSchema.parse(prompt.promptPayload);
@@ -58,7 +41,9 @@ export async function downloadAllPrompts() {
 
     const bulk: BulkExport = {
         app: 'Prompt App',
-        version: '3.0.0',
+        version: CURRENT_BULK_EXPORT_VERSION,
+        format: 'prompt-app-bulk-export',
+        schemaVersion: CURRENT_PROMPT_SCHEMA_VERSION,
         exportedAt: new Date().toISOString(),
         menuDefinitions: contextMenus.map(contextMenuToDefinition),
         prompts: prompts.map((prompt) => ({
@@ -78,7 +63,7 @@ export function getTemplateFile(): Blob {
             template_id: 'novo_template',
             template_name: 'Novo Template',
             template_type: 'generic_prompt',
-            schema_version: '1.0.0',
+            schema_version: CURRENT_PROMPT_SCHEMA_VERSION,
             language: 'pt-BR',
             status: 'draft',
         },

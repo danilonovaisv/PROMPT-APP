@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
@@ -21,8 +21,9 @@ import {
 
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { useDebounce } from '@/hooks/useDebounce';
-import type { Category, Prompt } from '@/models/types';
+import type { Category, ContextMenu, Prompt } from '@/models/types';
 import {
   CompiledPromptPayload,
   PROMPT_OUTPUT_FORMATS,
@@ -41,8 +42,10 @@ import {
   sanitizeUserSelection,
 } from '@/models/promptSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
+import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { copyToClipboard, downloadJson } from '@/utils/exportJson';
+import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 type FreeInputEntry = {
   key: string;
@@ -94,6 +97,7 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
 
 function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
   const template = parsePromptPayload(prompt.promptPayload);
+  const linkedMenuIds = [...new Set([...(template.menu_ids || []), ...template.menu_definitions.map((menu) => menu.menu_id)])];
   const selection = parseUserSelection(prompt.selectionPayload, template.meta.template_id, {
     title: prompt.title,
     schemaVersion: prompt.schemaVersion,
@@ -102,14 +106,17 @@ function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
 
   return {
     categoryId: prompt.categoryId,
-    template,
+    template: TemplatePayloadSchema.parse({
+      ...template,
+      menu_ids: linkedMenuIds,
+    }),
     selection,
     freeInputs: toFreeInputEntries(selection),
   };
 }
 
 
-function buildPersistedArtifacts(form: TemplateFormState) {
+function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextMenu[]) {
   const normalizedTemplate = TemplatePayloadSchema.parse({
     ...form.template,
     meta: {
@@ -128,21 +135,35 @@ function buildPersistedArtifacts(form: TemplateFormState) {
     },
     output_contract: PromptOutputContractSchema.parse(form.template.output_contract),
   });
+  const migration = migrateTemplateToCurrentSchema(
+    syncTemplateWithLinkedMenus(normalizedTemplate, contextMenus)
+  );
+  const syncedTemplate = migration.template;
 
   const rawSelection = UserSelectionSchema.parse({
     ...form.selection,
-    template_id: normalizedTemplate.meta.template_id,
+    template_id: syncedTemplate.meta.template_id,
     free_inputs: fromFreeInputEntries(form.freeInputs),
   });
 
-  const normalizedSelection = sanitizeUserSelection(normalizedTemplate, rawSelection);
-  const compiledPayload = compilePromptPayload(normalizedTemplate, normalizedSelection);
+  const normalizedSelection = sanitizeUserSelection(syncedTemplate, rawSelection);
+  const compiledPayload = compilePromptPayload(syncedTemplate, normalizedSelection);
+  const renderedPrompt = renderFinalPromptText(syncedTemplate, compiledPayload);
 
   return {
-    template: normalizedTemplate,
+    template: syncedTemplate,
     selection: normalizedSelection,
     compiledPayload,
+    renderedPrompt,
+    migrationWarnings: migration.warnings,
   };
+}
+
+function isUnauthenticatedCloudError(error: unknown) {
+  return (
+    error instanceof Error &&
+    (error.message.includes('Usuário não autenticado') || error.name === 'AuthSessionMissingError')
+  );
 }
 
 export default function EditorPage() {
@@ -150,6 +171,8 @@ export default function EditorPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const previewModalRef = useRef<HTMLDivElement>(null);
+  const previewCloseButtonRef = useRef<HTMLButtonElement>(null);
   const isNew = id === 'novo';
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -160,6 +183,10 @@ export default function EditorPage() {
 
   const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
   const debouncedForm = useDebounce(form, 1200);
+  const availableContextMenus = useMemo(
+    () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
+    [contextMenus]
+  );
 
   useEffect(() => {
     (async () => {
@@ -215,11 +242,12 @@ export default function EditorPage() {
 
   const previewState = useMemo(() => {
     try {
-      const artifacts = buildPersistedArtifacts(form);
+      const artifacts = buildPersistedArtifacts(form, availableContextMenus);
       return {
         payload: artifacts.compiledPayload,
         template: artifacts.template,
         selection: artifacts.selection,
+        renderedPrompt: artifacts.renderedPrompt,
         error: null,
       };
     } catch (error: any) {
@@ -227,10 +255,18 @@ export default function EditorPage() {
         payload: null,
         template: null,
         selection: null,
+        renderedPrompt: '',
         error: error.message || 'Payload inválido',
       };
     }
-  }, [form]);
+  }, [availableContextMenus, form]);
+
+  useAccessibleModal({
+    isOpen: showPreview,
+    onClose: () => setShowPreview(false),
+    containerRef: previewModalRef,
+    initialFocusRef: previewCloseButtonRef,
+  });
 
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
     setForm((current) => {
@@ -415,9 +451,10 @@ export default function EditorPage() {
     let template: TemplatePayload;
     let selection: UserSelection;
     let compiledPayload: CompiledPromptPayload;
+    let migrationWarnings: string[] = [];
 
     try {
-      ({ template, selection, compiledPayload } = buildPersistedArtifacts(form));
+      ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus));
     } catch (error: any) {
       showToast(error.message || 'Template inválido', 'error');
       return;
@@ -466,6 +503,8 @@ export default function EditorPage() {
       return;
     }
 
+    migrationWarnings.forEach((warning) => showToast(warning, 'info'));
+
     try {
       const existingPrompt = !isNew && localId !== null ? await db.prompts.get(localId) : undefined;
       const savedRemote = await savePromptToSupabase({
@@ -482,19 +521,21 @@ export default function EditorPage() {
 
       showToast(isNew ? 'Template criado e sincronizado!' : 'Template atualizado e sincronizado!', 'success');
     } catch (error) {
-      console.error('Erro ao salvar no Supabase:', error);
+      if (!isUnauthenticatedCloudError(error)) {
+        console.error('Erro ao salvar no Supabase:', error);
+      }
       showToast('Template salvo localmente. Sincronize ao fazer login.', 'info');
     }
   };
 
   const handleCopy = async () => {
-    if (!previewState.payload) {
+    if (!previewState.payload || !previewState.renderedPrompt) {
       showToast(previewState.error || 'Payload inválido', 'error');
       return;
     }
 
-    const ok = await copyToClipboard(JSON.stringify(previewState.payload, null, 2));
-    showToast(ok ? 'Payload compilado copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
+    const ok = await copyToClipboard(previewState.renderedPrompt);
+    showToast(ok ? 'Prompt final copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
   };
 
   const handleDownload = () => {
@@ -528,10 +569,10 @@ export default function EditorPage() {
         </div>
         <div className="app-header__actions">
           <button className="btn btn--ghost" onClick={() => setShowPreview(true)}>
-            <Eye size={16} /> Preview compilado
+            <Eye size={16} /> Preview do prompt
           </button>
           <button className="btn btn--secondary" onClick={handleCopy}>
-            <Copy size={16} /> Copiar
+            <Copy size={16} /> Copiar prompt
           </button>
           <button className="btn btn--secondary" onClick={handleDownload}>
             <Download size={16} /> Baixar
@@ -543,7 +584,11 @@ export default function EditorPage() {
       </header>
 
       <div className="editor-sidebar-container">
-        <div className="editor-main-scrollable">
+        <div
+          className={`editor-main-scrollable ${
+            isSidebarOpen ? 'editor-main-scrollable--with-sidebar' : ''
+          }`}
+        >
           <div className="app-content">
             <div className="editor-form--constrained">
           <div className="form-section">
@@ -699,16 +744,16 @@ export default function EditorPage() {
                   <Layers size={18} /> Menus Vinculados
                 </h3>
                 <p className="page-header__subtitle">
-                  Selecione os menus do sistema (gerenciados na aba Menus do Template) que você deseja associar a este template.
+                  Vincule menus globais e gere um snapshot confiável para este template.
                 </p>
               </div>
             </div>
 
-            {contextMenus.length === 0 ? (
+            {availableContextMenus.length === 0 ? (
               <p className="ctx-empty-hint">Nenhum menu global encontrado. Crie um em "Menus do Template".</p>
             ) : (
               <div className="menu-selector-grid">
-                {contextMenus.map((menu) => {
+                {availableContextMenus.map((menu) => {
                   const isSelected = form.template.menu_ids?.includes(menu.menuId);
                   return (
                     <label 
@@ -720,14 +765,28 @@ export default function EditorPage() {
                         checked={isSelected}
                         onChange={(e) => {
                           const checked = e.target.checked;
-                          updateTemplate((current) => {
-                            const newIds = checked 
-                              ? [...(current.menu_ids || []), menu.menuId]
-                              : (current.menu_ids || []).filter(id => id !== menu.menuId);
-                            return TemplatePayloadSchema.parse({
+                          setForm((current) => {
+                            const nextMenuIds = checked
+                              ? [...(current.template.menu_ids || []), menu.menuId]
+                              : (current.template.menu_ids || []).filter((id) => id !== menu.menuId);
+                            const uniqueMenuIds = [...new Set(nextMenuIds)];
+
+                            return {
                               ...current,
-                              menu_ids: newIds
-                            });
+                              template: syncTemplateWithLinkedMenus(
+                                TemplatePayloadSchema.parse({
+                                  ...current.template,
+                                  menu_ids: uniqueMenuIds,
+                                }),
+                                availableContextMenus
+                              ),
+                              selection: UserSelectionSchema.parse({
+                                ...current.selection,
+                                selected_menus: current.selection.selected_menus.filter((item) =>
+                                  uniqueMenuIds.includes(item.menu_id)
+                                ),
+                              }),
+                            };
                           });
                         }} 
                       />
@@ -840,7 +899,7 @@ export default function EditorPage() {
                   <Settings2 size={18} /> Playground de Uso
                 </h3>
                 <p className="page-header__subtitle">
-                  Essas seleções são persistidas e alimentam o payload compilado.
+                  Essas seleções alimentam o prompt final copiável e o payload técnico.
                 </p>
               </div>
             </div>
@@ -886,7 +945,7 @@ export default function EditorPage() {
               <p className="ctx-empty-hint">Vincule menus na seção acima para testar a compilação.</p>
             ) : (
               <div className="ctx-editor-grid">
-                {contextMenus
+                {availableContextMenus
                   .filter((menu) => form.template.menu_ids?.includes(menu.menuId))
                   .map((menu) => (
                   <div key={menu.menuId} className="ctx-editor-menu">
@@ -968,10 +1027,19 @@ export default function EditorPage() {
 
     {showPreview && (
         <div className="modal-overlay" onClick={() => setShowPreview(false)}>
-          <div className="modal" onClick={(event) => event.stopPropagation()}>
+          <div
+            ref={previewModalRef}
+            className="modal"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="editor-preview-title"
+            tabIndex={-1}
+          >
             <div className="modal__header">
-              <h2>Preview compilado</h2>
+              <h2 id="editor-preview-title">Preview do prompt</h2>
               <button
+                ref={previewCloseButtonRef}
                 className="btn btn--ghost btn--icon"
                 onClick={() => setShowPreview(false)}
                 aria-label="Fechar preview"
@@ -981,7 +1049,16 @@ export default function EditorPage() {
             </div>
             <div className="modal__body">
               {previewState.payload ? (
-                <pre className="json-preview">{JSON.stringify(previewState.payload, null, 2)}</pre>
+                <>
+                  <div className="form-section form-section--flush">
+                    <h3 className="section-title">Prompt final</h3>
+                    <pre className="json-preview json-preview--prompt">{previewState.renderedPrompt}</pre>
+                  </div>
+                  <div className="form-section form-section--flush">
+                    <h3 className="section-title">Payload técnico</h3>
+                    <pre className="json-preview">{JSON.stringify(previewState.payload, null, 2)}</pre>
+                  </div>
+                </>
               ) : (
                 <div className="form-error" role="alert">
                   {previewState.error}
@@ -990,7 +1067,7 @@ export default function EditorPage() {
             </div>
             <div className="modal__footer">
               <button className="btn btn--secondary" onClick={handleCopy}>
-                <Copy size={16} /> Copiar
+                <Copy size={16} /> Copiar prompt
               </button>
               <button className="btn btn--primary" onClick={handleDownload}>
                 <Download size={16} /> Baixar .json

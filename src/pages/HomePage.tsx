@@ -119,6 +119,14 @@ export default function HomePage() {
                         <div
                             className="card card--clickable category-card category-card--add"
                             onClick={() => navigate('/categorias')}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault();
+                                    navigate('/categorias');
+                                }
+                            }}
+                            role="button"
+                            tabIndex={0}
                         >
                             <div className="category-card--add__content">
                                 <Plus size={32} className="category-card--add__icon" />

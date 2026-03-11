@@ -104,6 +104,8 @@ export type PromptExportFormat = TemplatePayload;
 export interface BulkExport {
   app: string;
   version: string;
+  format?: string;
+  schemaVersion?: string;
   exportedAt: string;
   menuDefinitions?: MenuDefinition[];
   prompts: Array<{

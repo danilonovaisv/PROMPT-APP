@@ -246,6 +246,14 @@ export default function CategoryManagerPage() {
                                 <div
                                     className="cat-list-item"
                                     onClick={() => navigate(`/categoria/${cat.id}`)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                            event.preventDefault();
+                                            navigate(`/categoria/${cat.id}`);
+                                        }
+                                    }}
+                                    role="button"
+                                    tabIndex={0}
                                 >
                                     <span
                                         className={`cat-list-item__icon util-cat-color-${cat.color.replace('#', '')}`}

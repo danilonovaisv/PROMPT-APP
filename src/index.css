@@ -1804,6 +1804,10 @@ select option {
   padding-bottom: 80px;
 }
 
+.editor-main-scrollable--with-sidebar {
+  padding-right: calc(380px + var(--space-5));
+}
+
 .editor-floating-sidebar {
   width: 380px;
   background-color: var(--color-surface-1);
@@ -1910,6 +1914,10 @@ select option {
 }
 
 @media (max-width: 768px) {
+  .editor-main-scrollable--with-sidebar {
+    padding-right: 0;
+  }
+
   .editor-floating-sidebar {
     width: 100%;
     top: 0;

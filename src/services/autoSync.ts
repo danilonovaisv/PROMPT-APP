@@ -1,8 +1,19 @@
 import { db } from '@/db/database';
+import { supabase } from '@/lib/supabase';
 import { syncToCloud } from './syncService';
 
 let timer: ReturnType<typeof setTimeout> | null = null;
+let autoSyncInstalled = false;
 const DEBOUNCE_MS = 10000; // 10 segundos para não floodar o Supabase
+
+async function runAutoSyncIfAuthenticated() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+        return;
+    }
+
+    await syncToCloud();
+}
 
 function scheduleSync() {
     if (timer) clearTimeout(timer);
@@ -12,11 +23,17 @@ function scheduleSync() {
     console.log('⏳ Auto-sync agendado para 10s...');
     timer = setTimeout(() => {
         console.log('🚀 Executando Auto-sync (Push)...');
-        syncToCloud().catch(err => console.error('Erro no auto-sync:', err));
+        runAutoSyncIfAuthenticated().catch(err => console.error('Erro no auto-sync:', err));
     }, DEBOUNCE_MS);
 }
 
 export function setupAutoSync() {
+    if (autoSyncInstalled) {
+        return;
+    }
+
+    autoSyncInstalled = true;
+
     // Hooks para Prompts
     db.prompts.hook('creating', () => { scheduleSync(); });
     db.prompts.hook('updating', () => { scheduleSync(); });

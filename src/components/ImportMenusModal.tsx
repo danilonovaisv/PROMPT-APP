@@ -5,6 +5,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { useToast } from '@/context/ToastContext';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import {
     importMenusFromFile,
     validateMenuImportFile,
@@ -38,6 +39,8 @@ type ModalStep = 'upload' | 'preview' | 'result';
 export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalProps) {
     const { showToast } = useToast();
     const fileRef = useRef<HTMLInputElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
     const [step, setStep] = useState<ModalStep>('upload');
     const [file, setFile] = useState<File | null>(null);
     const [parsedData, setParsedData] = useState<MenuImportSchema | null>(null);
@@ -65,6 +68,13 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
         reset();
         onClose();
     };
+
+    useAccessibleModal({
+        isOpen,
+        onClose: handleClose,
+        containerRef: modalRef,
+        initialFocusRef: closeButtonRef,
+    });
 
     if (!isOpen) return null;
 
@@ -153,12 +163,21 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
 
     return (
         <div className="modal-overlay" onClick={handleClose}>
-            <div className="modal modal--lg" onClick={(e) => e.stopPropagation()}>
+            <div
+                ref={modalRef}
+                className="modal modal--lg"
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="import-menus-title"
+                tabIndex={-1}
+            >
                 <div className="modal__header">
-                    <h2>
+                    <h2 id="import-menus-title">
                         <Upload size={20} /> Importar Menus (JSON)
                     </h2>
                     <button
+                        ref={closeButtonRef}
                         className="btn btn--ghost btn--icon"
                         onClick={handleClose}
                         aria-label="Fechar modal"

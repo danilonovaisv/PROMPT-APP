@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { supabase } from '@/lib/supabase';
 import { X, Mail, Lock, LogIn, UserPlus, KeyRound } from 'lucide-react';
 
@@ -10,10 +11,19 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const { showToast } = useToast();
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
     const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
+    useAccessibleModal({
+        isOpen,
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeButtonRef,
+    });
 
     if (!isOpen) return null;
 
@@ -55,12 +65,22 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <div
+                ref={modalRef}
+                className="modal"
+                onClick={(e) => e.stopPropagation()}
+                style={{ maxWidth: '400px' }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="auth-modal-title"
+                tabIndex={-1}
+            >
                 <div className="modal__header">
-                    <h2>
+                    <h2 id="auth-modal-title">
                         {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : 'Recuperar Senha'}
                     </h2>
                     <button
+                        ref={closeButtonRef}
                         className="btn btn--ghost btn--icon"
                         onClick={onClose}
                         aria-label="Fechar modal"
@@ -142,4 +162,3 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </div>
     );
 }
-

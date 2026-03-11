@@ -2,7 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
-import { downloadPrompt, toExportFormat, copyToClipboard } from '@/utils/exportJson';
+import { downloadPrompt, copyToClipboard } from '@/utils/exportJson';
+import { renderPromptTextFromPrompt } from '@/utils/promptArtifacts';
 import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     Plus,
@@ -31,10 +32,9 @@ export default function CategoryPage() {
     const handleCopy = useCallback(async (promptId: number) => {
         const prompt = await db.prompts.get(promptId);
         if (!prompt) return;
-        const exported = toExportFormat(prompt);
-        const json = JSON.stringify(exported, null, 2);
-        const ok = await copyToClipboard(json);
-        showToast(ok ? 'Prompt copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
+        const renderedPrompt = renderPromptTextFromPrompt(prompt);
+        const ok = await copyToClipboard(renderedPrompt);
+        showToast(ok ? 'Prompt final copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
     }, [showToast]);
 
     const handleDownload = useCallback(async (promptId: number) => {

@@ -12,6 +12,9 @@ import { saveCategoryToSupabase } from '@/services/supabaseCategories';
 import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { saveLocalBackup } from '@/utils/backupManager';
+import { syncTemplateWithMenuDefinitions } from '@/utils/promptArtifacts';
+import { getBulkExportWarning, getPromptSchemaWarning } from '@/utils/schemaCompatibility';
+import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 export interface ImportError {
   type: 'validation' | 'processing' | 'network' | 'conflict';
@@ -34,11 +37,17 @@ function isObject(value: unknown): value is Record<string, unknown> {
 
 function isBulkExport(value: unknown): value is {
   app: string;
+  version?: string;
   prompts: Array<{ title?: string; category?: string; prompt: unknown }>;
   menuDefinitions?: unknown[];
   contextMenus?: unknown[];
 } {
   return isObject(value) && Array.isArray(value.prompts);
+}
+
+function pushUniqueWarning(warnings: string[], warning: string | null) {
+  if (!warning || warnings.includes(warning)) return;
+  warnings.push(warning);
 }
 
 function parsePromptContract(value: unknown): PromptContract {
@@ -47,6 +56,54 @@ function parsePromptContract(value: unknown): PromptContract {
     return parsed.data;
   }
   return parsePromptPayload(value);
+}
+
+function normalizeBulkMenuDefinition(menu: unknown): unknown {
+  if (!isObject(menu)) return menu;
+
+  if (typeof menu.menu_id === 'string' && typeof menu.menu_name === 'string') {
+    return {
+      ...menu,
+      required: typeof menu.required === 'boolean' ? menu.required : false,
+    };
+  }
+
+  if (typeof menu.menuId === 'string' && typeof menu.menuName === 'string') {
+    return {
+      menu_id: menu.menuId,
+      menu_name: menu.menuName,
+      description: typeof menu.description === 'string' ? menu.description : '',
+      selection_mode: typeof menu.selectionMode === 'string' ? menu.selectionMode : 'single',
+      required: false,
+      options: Array.isArray(menu.options)
+        ? menu.options.map((option) =>
+            isObject(option)
+              ? {
+                  value: typeof option.value === 'string' ? option.value : '',
+                  label: typeof option.label === 'string' ? option.label : '',
+                  description: typeof option.description === 'string' ? option.description : '',
+                  sub_options: Array.isArray(option.subOptions)
+                    ? option.subOptions.map((subOption) =>
+                        isObject(subOption)
+                          ? {
+                              value: typeof subOption.value === 'string' ? subOption.value : '',
+                              label: typeof subOption.label === 'string' ? subOption.label : '',
+                              description:
+                                typeof subOption.description === 'string'
+                                  ? subOption.description
+                                  : '',
+                            }
+                          : subOption
+                      )
+                    : [],
+                }
+              : option
+          )
+        : [],
+    };
+  }
+
+  return menu;
 }
 
 function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
@@ -173,10 +230,19 @@ async function processPromptImport(
   rawPrompt: unknown,
   categoryId: number,
   errors: ImportError[],
-  warnings: string[]
+  warnings: string[],
+  importedMenuDefinitions: PromptContract['menu_definitions'] = []
 ): Promise<boolean> {
   try {
-    const promptPayload = parsePromptContract(rawPrompt);
+    const migration = migrateTemplateToCurrentSchema(
+      syncTemplateWithMenuDefinitions(
+        parsePromptContract(rawPrompt),
+        importedMenuDefinitions
+      )
+    );
+    const promptPayload = migration.template;
+    migration.warnings.forEach((warning) => pushUniqueWarning(warnings, warning));
+    pushUniqueWarning(warnings, getPromptSchemaWarning(promptPayload.meta.schema_version));
     const promptRecord = buildPromptRecord(promptPayload, categoryId);
     const localId = await db.prompts.add({
       ...promptRecord,
@@ -206,47 +272,37 @@ async function processPromptImport(
 }
 
 export async function importFromFile(file: File): Promise<ImportResult> {
+  return importFromJsonText(await file.text(), file.name);
+}
+
+export async function importFromJsonText(
+  rawJson: string,
+  sourceName = 'clipboard.json'
+): Promise<ImportResult> {
   const startTime = Date.now();
   const errors: ImportError[] = [];
   const warnings: string[] = [];
   let count = 0;
 
   try {
-    if (!file.name.endsWith('.json')) {
+    if (!sourceName.endsWith('.json')) {
       throw new Error('Apenas arquivos .json são aceitos');
     }
 
-    const parsed = JSON.parse(await file.text()) as unknown;
+    const parsed = JSON.parse(rawJson) as unknown;
     const importCategoryId = await ensureImportCategory(warnings);
 
     if (isBulkExport(parsed)) {
+      pushUniqueWarning(warnings, getBulkExportWarning(parsed.version || '0.0.0'));
       const menuDefinitions = Array.isArray(parsed.menuDefinitions)
-        ? parsed.menuDefinitions
+        ? parsed.menuDefinitions.map(normalizeBulkMenuDefinition)
         : Array.isArray(parsed.contextMenus)
-          ? parsed.contextMenus.map((menu) =>
-              isObject(menu)
-                ? {
-                    id: menu.menuId,
-                    label: menu.menuName,
-                    description: menu.description,
-                    selection_mode: menu.selectionMode || 'single',
-                    options: Array.isArray(menu.options)
-                      ? menu.options.map((option) => ({
-                          value: isObject(option) ? option.value : '',
-                          label: isObject(option) ? option.label : '',
-                          sub_options:
-                            isObject(option) && Array.isArray(option.subOptions)
-                              ? option.subOptions.map((subOption) => ({
-                                  value: isObject(subOption) ? subOption.value : '',
-                                  label: isObject(subOption) ? subOption.label : '',
-                                }))
-                              : [],
-                        }))
-                      : [],
-                  }
-                : menu
-            )
+          ? parsed.contextMenus.map(normalizeBulkMenuDefinition)
           : [];
+      const parsedMenuDefinitions = menuDefinitions.flatMap((definition) => {
+        const parsedDefinition = MenuDefinitionSchema.safeParse(definition);
+        return parsedDefinition.success ? [parsedDefinition.data] : [];
+      });
 
       if (menuDefinitions.length > 0) {
         await importMenuDefinitions(menuDefinitions, errors, warnings);
@@ -262,7 +318,13 @@ export async function importFromFile(file: File): Promise<ImportResult> {
           }
         }
 
-        const success = await processPromptImport(item.prompt, categoryId, errors, warnings);
+        const success = await processPromptImport(
+          item.prompt,
+          categoryId,
+          errors,
+          warnings,
+          parsedMenuDefinitions
+        );
         if (success) {
           count++;
         }

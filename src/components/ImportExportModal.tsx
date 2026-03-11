@@ -2,7 +2,7 @@
    Modal de Importação e Exportação
    ====================================================== */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     FileUp,
     Download,
@@ -12,9 +12,10 @@ import {
     Copy,
     Save,
 } from 'lucide-react';
-import { importFromFile, type ImportResult } from '@/services/importService';
+import { importFromFile, importFromJsonText, type ImportResult } from '@/services/importService';
+import { useToast } from '@/context/ToastContext';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { downloadAllPrompts, getTemplateFile } from '@/utils/exportJson';
-import { toast } from 'react-hot-toast';
 
 interface ImportExportModalProps {
     isOpen: boolean;
@@ -26,8 +27,26 @@ export default function ImportExportModal({
     onClose,
 }: ImportExportModalProps) {
     const fileRef = useRef<HTMLInputElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+    const { showToast } = useToast();
     const [importing, setImporting] = useState(false);
     const [result, setResult] = useState<ImportResult | null>(null);
+    const [jsonInput, setJsonInput] = useState('');
+
+    useAccessibleModal({
+        isOpen,
+        onClose,
+        containerRef: modalRef,
+        initialFocusRef: closeButtonRef,
+    });
+
+    useEffect(() => {
+        if (!isOpen) {
+            setResult(null);
+            setJsonInput('');
+        }
+    }, [isOpen]);
 
     const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -40,15 +59,40 @@ export default function ImportExportModal({
             const res = await importFromFile(file);
             setResult(res);
             if (res.success) {
-                toast.success(`${res.count} prompts importados!`);
+                showToast(`${res.count} prompts importados!`, 'success');
             } else {
-                toast.error('Importação concluída com erros.');
+                showToast('Importação concluída com erros.', 'error');
             }
         } catch (error: any) {
-            toast.error(error.message || 'Erro ao importar');
+            showToast(error.message || 'Erro ao importar', 'error');
         } finally {
             setImporting(false);
             if (fileRef.current) fileRef.current.value = '';
+        }
+    };
+
+    const handleImportFromText = async () => {
+        if (!jsonInput.trim()) {
+            showToast('Cole um JSON válido para importar.', 'error');
+            return;
+        }
+
+        setImporting(true);
+        setResult(null);
+
+        try {
+            const res = await importFromJsonText(jsonInput, 'clipboard.json');
+            setResult(res);
+            if (res.success) {
+                showToast(`${res.count} prompts importados!`, 'success');
+                setJsonInput('');
+            } else {
+                showToast('Importação concluída com erros.', 'error');
+            }
+        } catch (error: any) {
+            showToast(error.message || 'Erro ao importar JSON colado', 'error');
+        } finally {
+            setImporting(false);
         }
     };
 
@@ -67,15 +111,19 @@ export default function ImportExportModal({
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div
+                ref={modalRef}
                 className="modal-content modal-content--large"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-labelledby="modal-title"
                 aria-modal="true"
+                aria-describedby="modal-description"
+                tabIndex={-1}
             >
                 <div className="modal-header">
                     <h2 id="modal-title">Dados e Backup</h2>
                     <button
+                        ref={closeButtonRef}
                         className="btn-icon"
                         onClick={onClose}
                         aria-label="Fechar modal"
@@ -88,7 +136,7 @@ export default function ImportExportModal({
                     {/* Importar */}
                     <div className="form-section">
                         <h3 className="section-title">Importar</h3>
-                        <p className="section-desc">
+                        <p className="section-desc" id="modal-description">
                             Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
                         </p>
 
@@ -106,6 +154,27 @@ export default function ImportExportModal({
                                 aria-labelledby="import-dropzone"
                             />
                         </label>
+
+                        <div className="form-group">
+                            <label className="form-label" htmlFor="json-import-input">
+                                Ou cole o JSON diretamente
+                            </label>
+                            <textarea
+                                id="json-import-input"
+                                value={jsonInput}
+                                onChange={(event) => setJsonInput(event.target.value)}
+                                rows={8}
+                                placeholder="Cole aqui um prompt exportado ou um backup em JSON"
+                            />
+                        </div>
+
+                        <button
+                            className="btn btn--secondary"
+                            onClick={handleImportFromText}
+                            disabled={importing}
+                        >
+                            <Copy size={16} /> Importar JSON colado
+                        </button>
 
                         {result && (
                             <div
@@ -134,6 +203,20 @@ export default function ImportExportModal({
                                         <div>✗ {result.errors.length} erro(s)</div>
                                     )}
                                 </div>
+
+                                {result.warnings.length > 0 && (
+                                    <div className="import-result__errors">
+                                        <strong>Avisos de compatibilidade:</strong>
+                                        <ul>
+                                            {result.warnings.slice(0, 3).map((warning, idx) => (
+                                                <li key={idx}>{warning}</li>
+                                            ))}
+                                            {result.warnings.length > 3 && (
+                                                <li>+ {result.warnings.length - 3} outros avisos...</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
 
                                 {result.errors.length > 0 && (
                                     <div className="import-result__errors">
@@ -186,8 +269,8 @@ export default function ImportExportModal({
                     <div className="info-box">
                         <Copy size={18} />
                         <div>
-                            <strong>Dica:</strong> Você também pode importar prompts copiando o JSON
-                            e colando diretamente no editor.
+                            <strong>Dica:</strong> O JSON técnico continua disponível para backup;
+                            a ação primária de uso do produto deve ser copiar o prompt final no editor.
                         </div>
                     </div>
                 </div>
