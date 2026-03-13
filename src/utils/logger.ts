@@ -3,8 +3,6 @@
  * Replaces direct console.* calls with environment-aware logging
  */
 
-type LogLevel = "debug" | "info" | "warn" | "error";
-
 interface Logger {
   debug: (msg: string, data?: unknown) => void;
   info: (msg: string, data?: unknown) => void;

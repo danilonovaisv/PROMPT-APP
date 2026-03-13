@@ -4,7 +4,12 @@
 
 import { supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
-import type { Category, ContextMenu, Prompt } from "@/models/types";
+import type {
+  Category,
+  ContextMenu,
+  ContextMenuOption,
+  Prompt,
+} from "@/models/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { saveLocalBackup } from "@/utils/backupManager";
 import {
@@ -287,40 +292,47 @@ async function handleMenuChange(payload: {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
+  if (!remoteData) return;
+
   try {
     switch (eventType) {
       case "INSERT":
       case "UPDATE":
         const existingLocal = await db.contextMenus
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(remoteData.id as number)
           .first();
 
         const menuData: Partial<ContextMenu> = {
-          remoteId: remoteData.id,
-          menuId: remoteData.menu_id,
-          menuName: remoteData.menu_name,
-          description: remoteData.description,
-          selectionMode: remoteData.selection_mode || "single",
-          options: remoteData.options || [],
-          createdAt: new Date(remoteData.created_at),
-          updatedAt: new Date(remoteData.updated_at),
+          remoteId: remoteData.id as number,
+          menuId: remoteData.menu_id as string,
+          menuName: remoteData.menu_name as string,
+          description: remoteData.description as string,
+          selectionMode: (remoteData.selection_mode as "single" | "multiple") ||
+            "single",
+          options: remoteData.options as ContextMenuOption[] || [],
+          createdAt: new Date(remoteData.created_at as string),
+          updatedAt: new Date(remoteData.updated_at as string),
           syncStatus: "synced",
         };
 
         if (existingLocal) {
           await db.contextMenus.update(existingLocal.id!, menuData);
-          console.log(`🔄 Menu atualizado localmente: ${remoteData.menu_name}`);
+          console.log(
+            `🔄 Menu atualizado localmente: ${remoteData.menu_name as string}`,
+          );
         } else {
           await db.contextMenus.add(menuData as ContextMenu);
-          console.log(`➕ Menu adicionado localmente: ${remoteData.menu_name}`);
+          console.log(
+            `➕ Menu adicionado localmente: ${remoteData.menu_name as string}`,
+          );
         }
         break;
 
       case "DELETE":
         const toDelete = await db.contextMenus
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(remoteData.id as number)
           .first();
 
         if (toDelete) {
