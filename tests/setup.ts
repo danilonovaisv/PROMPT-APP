@@ -1,12 +1,10 @@
 import "@testing-library/jest-dom";
+import "fake-indexeddb/auto";
 
-// Mock IndexedDB for tests
-const mockIndexedDB = {
-  open: jest.fn(),
-  deleteDatabase: jest.fn(),
-};
-
-global.indexedDB = mockIndexedDB as any;
+// Polyfill structuredClone for older Node.js versions and test environments
+if (typeof global.structuredClone === "undefined") {
+  global.structuredClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
+}
 
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {

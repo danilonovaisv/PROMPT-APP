@@ -11,8 +11,12 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@playwright/test@^1.58.2",
         "npm:@supabase/ssr@0.8",
         "npm:@supabase/supabase-js@^2.99.0",
+        "npm:@testing-library/jest-dom@^6.9.1",
+        "npm:@testing-library/react@^16.3.2",
+        "npm:@testing-library/user-event@^14.6.1",
         "npm:@types/jest@^29.5.14",
         "npm:@types/node@^25.4.0",
         "npm:@types/react-dom@^19.2.3",
@@ -21,7 +25,10 @@
         "npm:agentic-flow@^2.0.7",
         "npm:dexie-react-hooks@^4.2.0",
         "npm:dexie@^4.3.0",
+        "npm:fake-indexeddb@^6.2.5",
+        "npm:jest-environment-jsdom@^30.3.0",
         "npm:jest@^29.7.0",
+        "npm:jsdom@^28.1.0",
         "npm:lucide-react@0.575",
         "npm:react-dom@^19.2.4",
         "npm:react-hot-toast@^2.6.0",
