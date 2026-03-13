@@ -153,14 +153,17 @@ export async function resolveConflicts(
 async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
   const remoteData = update.data;
 
+  // Type assertions for remote data
+  const rd = remoteData as Record<string, any>;
+
   switch (update.type) {
     case "category":
       if (remoteData) {
         await db.categories.update(update.id, {
-          name: remoteData.name,
-          icon: remoteData.icon,
-          color: remoteData.color,
-          // updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
+          name: rd.name,
+          icon: rd.icon,
+          color: rd.color,
+          // updatedAt: new Date(rd.updated_at || rd.created_at)
         });
         console.log(`📥 Categoria #${update.id} atualizada com dados remotos`);
       }
@@ -169,46 +172,46 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
     case "prompt":
       if (remoteData) {
         const promptPayload = parsePromptPayload(
-          remoteData.prompt_payload_jsonb,
+          rd.prompt_payload_jsonb,
           {
-            title: remoteData.title,
-            systemRole: remoteData.system_role,
-            task: remoteData.task,
-            context: remoteData.context,
-            contextMenus: remoteData.context_menus,
-            enabledMenuIds: remoteData.enabled_menu_ids,
-            constraints: remoteData.constraints,
-            negativePrompt: remoteData.negative_prompt,
-            outputSchema: remoteData.output_schema,
-            referenceUrl: remoteData.reference_url,
-            language: remoteData.language,
-            schemaVersion: remoteData.schema_version,
+            title: rd.title,
+            systemRole: rd.system_role,
+            task: rd.task,
+            context: rd.context,
+            contextMenus: rd.context_menus,
+            enabledMenuIds: rd.enabled_menu_ids,
+            constraints: rd.constraints,
+            negativePrompt: rd.negative_prompt,
+            outputSchema: rd.output_schema,
+            referenceUrl: rd.reference_url,
+            language: rd.language,
+            schemaVersion: rd.schema_version,
           },
         );
         const selectionPayload = parseUserSelection(
-          remoteData.selection_payload_jsonb,
+          rd.selection_payload_jsonb,
           promptPayload.meta.template_id,
           {
-            title: remoteData.title,
-            schemaVersion: remoteData.schema_version,
-            language: remoteData.language,
-            contextMenus: remoteData.context_menus,
-            enabledMenuIds: remoteData.enabled_menu_ids,
+            title: rd.title,
+            schemaVersion: rd.schema_version,
+            language: rd.language,
+            contextMenus: rd.context_menus,
+            enabledMenuIds: rd.enabled_menu_ids,
           },
         );
         await db.prompts.update(update.id, {
-          categoryId: remoteData.category_id,
-          title: remoteData.title,
+          categoryId: rd.category_id,
+          title: rd.title,
           promptPayload,
           selectionPayload,
-          compiledPayload: remoteData.compiled_payload_jsonb ||
+          compiledPayload: rd.compiled_payload_jsonb ||
             compilePromptPayload(promptPayload, selectionPayload),
-          schemaVersion: remoteData.schema_version || "1.0.0",
-          language: remoteData.language || "pt-BR",
-          outputFormat: remoteData.output_format || "markdown",
-          referenceUrl: remoteData.reference_url || undefined,
-          fewShotExamples: remoteData.few_shot_examples || [],
-          updatedAt: new Date(remoteData.updated_at || remoteData.created_at),
+          schemaVersion: rd.schema_version || "1.0.0",
+          language: rd.language || "pt-BR",
+          outputFormat: rd.output_format || "markdown",
+          referenceUrl: rd.reference_url || undefined,
+          fewShotExamples: rd.few_shot_examples || [],
+          updatedAt: new Date(rd.updated_at || rd.created_at),
         });
         console.log(`📥 Prompt #${update.id} atualizado com dados remotos`);
       }
@@ -217,12 +220,12 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
     case "menu":
       if (remoteData) {
         await db.contextMenus.update(update.id, {
-          menuId: remoteData.menu_id,
-          menuName: remoteData.menu_name,
-          description: remoteData.description,
-          selectionMode: remoteData.selection_mode || "single",
-          options: remoteData.options || [],
-          updatedAt: new Date(remoteData.updated_at || remoteData.created_at),
+          menuId: rd.menu_id,
+          menuName: rd.menu_name,
+          description: rd.description,
+          selectionMode: rd.selection_mode || "single",
+          options: rd.options || [],
+          updatedAt: new Date(rd.updated_at || rd.created_at),
         });
         console.log(`📥 Menu #${update.id} atualizado com dados remotos`);
       }

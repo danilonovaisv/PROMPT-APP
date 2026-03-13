@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ArrowLeft, Copy, Download, Eye, Save, PanelRightClose, PanelRightOpen, X } from 'lucide-react';
+import { ArrowLeft, Copy, Download, Eye, Save, PanelRightClose, PanelRightOpen, X, Settings2 } from 'lucide-react';
 
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
@@ -22,6 +22,7 @@ import {
   getPromptSummaryFields,
   parsePromptPayload,
   parseUserSelection,
+  sanitizeUserSelection,
 } from '@/models/promptSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
@@ -142,6 +143,7 @@ export default function EditorPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const previewModalRef = useRef<HTMLDivElement>(null);
   const isNew = id === 'novo';
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -216,7 +218,7 @@ export default function EditorPage() {
     }
   }, [availableContextMenus, form]);
 
-  useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false) });
+  useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false), containerRef: previewModalRef });
 
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
     setForm((current) => {

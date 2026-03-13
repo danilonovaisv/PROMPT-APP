@@ -1,3 +1,4 @@
+import { Plus, Trash2 } from 'lucide-react';
 import type { TemplatePayload, UserSelection } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 

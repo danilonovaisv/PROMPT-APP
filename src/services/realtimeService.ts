@@ -108,6 +108,10 @@ async function handleCategoryChange(payload: {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
+  if (!remoteData) return;
+
+  const rd = remoteData as Record<string, any>;
+
   try {
     switch (eventType) {
       case "INSERT":
@@ -115,33 +119,33 @@ async function handleCategoryChange(payload: {
         // Verificar se já existe localmente
         const existingLocal = await db.categories
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(rd.id)
           .first();
 
         const categoryData: Partial<Category> = {
-          remoteId: remoteData.id,
-          name: remoteData.name,
-          icon: remoteData.icon,
-          color: remoteData.color,
-          createdAt: new Date(remoteData.created_at),
+          remoteId: rd.id,
+          name: rd.name,
+          icon: rd.icon,
+          color: rd.color,
+          createdAt: new Date(rd.created_at),
           syncStatus: "synced",
         };
 
         if (existingLocal) {
           // Atualizar existente
           await db.categories.update(existingLocal.id!, categoryData);
-          console.log(`🔄 Categoria atualizada localmente: ${remoteData.name}`);
+          console.log(`🔄 Categoria atualizada localmente: ${rd.name}`);
         } else {
           // Criar novo
           await db.categories.add(categoryData as Category);
-          console.log(`➕ Categoria adicionada localmente: ${remoteData.name}`);
+          console.log(`➕ Categoria adicionada localmente: ${rd.name}`);
         }
         break;
 
       case "DELETE":
         const toDelete = await db.categories
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(rd.id)
           .first();
 
         if (toDelete) {
@@ -166,74 +170,76 @@ async function handlePromptChange(payload: {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
+  if (!remoteData) return;
+
+  // Type assertions for Supabase realtime data
+  const rd = remoteData as Record<string, any>;
+
   try {
     switch (eventType) {
       case "INSERT":
       case "UPDATE":
         const existingLocal = await db.prompts
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(rd.id)
           .first();
 
         // Resolver ID local da categoria a partir do remoteId do Supabase
         let localCategoryId = 0;
-        if (remoteData.category_id) {
+        if (rd.category_id) {
           const cat = await db.categories.where("remoteId").equals(
-            remoteData.category_id,
+            rd.category_id,
           ).first();
           if (cat) {
             localCategoryId = cat.id!;
           } else {
-            // Se não achamos a categoria local, talvez ela ainda não tenha sido sincronizada
-            // ou foi deletada. Mantemos o remoteId como fallback se o schema permitir,
-            // mas o ideal é 0 ou null se não achou local.
             localCategoryId = 0;
           }
         }
 
         const promptPayload = parsePromptPayload(
-          remoteData.prompt_payload_jsonb,
+          rd.prompt_payload_jsonb,
           {
-            title: remoteData.title,
-            systemRole: remoteData.system_role,
-            task: remoteData.task,
-            context: remoteData.context,
-            contextMenus: remoteData.context_menus,
-            enabledMenuIds: remoteData.enabled_menu_ids,
-            constraints: remoteData.constraints,
-            negativePrompt: remoteData.negative_prompt,
-            outputSchema: remoteData.output_schema,
-            referenceUrl: remoteData.reference_url,
-            language: remoteData.language,
-            schemaVersion: remoteData.schema_version,
+            title: rd.title,
+            systemRole: rd.system_role,
+            task: rd.task,
+            context: rd.context,
+            contextMenus: rd.context_menus,
+            enabledMenuIds: rd.enabled_menu_ids,
+            constraints: rd.constraints,
+            negativePrompt: rd.negative_prompt,
+            outputSchema: rd.output_schema,
+            referenceUrl: rd.reference_url,
+            language: rd.language,
+            schemaVersion: rd.schema_version,
           },
         );
 
         // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
-          remoteId: remoteData.id,
+          remoteId: rd.id,
           categoryId: localCategoryId,
-          title: remoteData.title,
+          title: rd.title,
           promptPayload,
           selectionPayload: parseUserSelection(
-            remoteData.selection_payload_jsonb,
+            rd.selection_payload_jsonb,
             promptPayload.meta.template_id,
             {
-              title: remoteData.title,
-              schemaVersion: remoteData.schema_version,
-              language: remoteData.language,
-              contextMenus: remoteData.context_menus,
-              enabledMenuIds: remoteData.enabled_menu_ids,
+              title: rd.title,
+              schemaVersion: rd.schema_version,
+              language: rd.language,
+              contextMenus: rd.context_menus,
+              enabledMenuIds: rd.enabled_menu_ids,
             },
           ),
-          compiledPayload: remoteData.compiled_payload_jsonb || undefined,
-          schemaVersion: remoteData.schema_version || "1.0.0",
-          language: remoteData.language || "pt-BR",
-          outputFormat: remoteData.output_format || "markdown",
-          referenceUrl: remoteData.reference_url || undefined,
-          fewShotExamples: remoteData.few_shot_examples || [],
-          createdAt: new Date(remoteData.created_at),
-          updatedAt: new Date(remoteData.updated_at),
+          compiledPayload: rd.compiled_payload_jsonb || undefined,
+          schemaVersion: rd.schema_version || "1.0.0",
+          language: rd.language || "pt-BR",
+          outputFormat: rd.output_format || "markdown",
+          referenceUrl: rd.reference_url || undefined,
+          fewShotExamples: rd.few_shot_examples || [],
+          createdAt: new Date(rd.created_at),
+          updatedAt: new Date(rd.updated_at),
           syncStatus: "synced",
         };
 
@@ -248,7 +254,7 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.update(existingLocal.id!, promptData);
-          console.log(`🔄 Prompt atualizado localmente: ${remoteData.title}`);
+          console.log(`🔄 Prompt atualizado localmente: ${rd.title}`);
         } else {
           if (
             !promptData.compiledPayload && promptData.selectionPayload &&
@@ -260,14 +266,14 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.add(promptData as Prompt);
-          console.log(`➕ Prompt adicionado localmente: ${remoteData.title}`);
+          console.log(`➕ Prompt adicionado localmente: ${rd.title}`);
         }
         break;
 
       case "DELETE":
         const toDelete = await db.prompts
           .where("remoteId")
-          .equals(remoteData.id)
+          .equals(rd.id)
           .first();
 
         if (toDelete) {

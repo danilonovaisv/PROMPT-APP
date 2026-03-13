@@ -1,5 +1,5 @@
 import type { ContextMenu, ContextMenuOption } from '@/models/types';
-import { X, Check, Plus, Layers, Upload, Download, ArrowLeft } from 'lucide-react';
+import { X, Check, Plus, Layers } from 'lucide-react';
 import { MenuOptionEditor } from './MenuOptionEditor';
 
 type MenuFormProps = {
@@ -10,12 +10,12 @@ type MenuFormProps = {
     selectionMode: ContextMenu['selectionMode'];
     options: ContextMenuOption[];
   };
-  isEditing: boolean | null;
+  isEditing: number | null;
   expandedOption: number | null;
   toSlug: (text: string) => string;
   onCancel: () => void;
   onSave: () => void;
-  onFieldChange: <K extends keyof any>(field: K, value: any) => void;
+  onFieldChange: <K extends keyof typeof form>(field: K, value: (typeof form)[K]) => void;
   onOptionUpdate: (index: number, field: keyof ContextMenuOption, value: string) => void;
   onOptionRemove: (index: number) => void;
   onSubOptionUpdate: (optIndex: number, subIndex: number, field: any, value: string) => void;
