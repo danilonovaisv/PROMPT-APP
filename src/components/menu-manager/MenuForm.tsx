@@ -15,7 +15,7 @@ type MenuFormProps = {
   toSlug: (text: string) => string;
   onCancel: () => void;
   onSave: () => void;
-  onFieldChange: <K extends keyof typeof form>(field: K, value: (typeof form)[K]) => void;
+  onFieldChange: <K extends keyof MenuFormProps['form']>(field: K, value: MenuFormProps['form'][K]) => void;
   onOptionUpdate: (index: number, field: keyof ContextMenuOption, value: string) => void;
   onOptionRemove: (index: number) => void;
   onSubOptionUpdate: (optIndex: number, subIndex: number, field: any, value: string) => void;
@@ -90,7 +90,7 @@ export function MenuForm({
         <select
           id="menu-selection-mode"
           value={form.selectionMode}
-          onChange={(e) => onFieldChange('selectionMode', e.target.value)}
+          onChange={(e) => onFieldChange('selectionMode', e.target.value as ContextMenu['selectionMode'])}
         >
           <option value="single">Seleção única</option>
           <option value="multiple">Seleção múltipla</option>
