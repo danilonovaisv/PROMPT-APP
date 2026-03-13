@@ -1,0 +1,12 @@
+{
+  "enabled": true,
+  "autoOptimize": true,
+  "optimizationInterval": 24,
+  "performanceThreshold": 0.75,
+  "costThreshold": 0.05,
+  "preferredModels": [
+    "gpt-4-turbo",
+    "claude-3-opus"
+  ],
+  "blacklistedModels": []
+}

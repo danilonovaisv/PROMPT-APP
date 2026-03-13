@@ -1,0 +1,72 @@
+{
+  "scanned_at": "2026-03-13T15:46:19.760Z",
+  "project_name": "PROMPT-APP",
+  "project_path": "/Users/PROJETOS DEV/PROMPT-APP",
+  "type": [
+    "node"
+  ],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "React",
+    "TypeScript"
+  ],
+  "build_system": null,
+  "package_manager": "pnpm",
+  "entry_points": [
+    "src"
+  ],
+  "config_files": {
+    "package.json": {
+      "name": "prompt-app",
+      "version": "1.0.0",
+      "description": "",
+      "scripts": {
+        "dev": "vite",
+        "build": "tsc -p tsconfig.app.json && vite build",
+        "preview": "vite preview",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watch",
+        "test:e2e": "playwright test",
+        "test:e2e:ui": "playwright test --ui",
+        "test:e2e:debug": "playwright test --debug"
+      }
+    },
+    "README.md": "# 🧠 Prompt App\n\n> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.\n\n![Version](https://img.shields.io/badge/version-2.0.0-blueviolet)\n![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)\n![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)\n![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite)\n[![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)\n\n---\n\n## 📋 Índice\n\n- [Visão Geral](#-visão-geral)\n- [Tech Stack](#-tech-stack)\n- [Funcionalidades](#-funcionalidades)\n- [Início Rápido](#-início-rápido)\n- [Arquit"
+  },
+  "source_structure": [
+    "src"
+  ],
+  "dependencies": [
+    "@supabase/ssr",
+    "@supabase/supabase-js",
+    "agentic-flow",
+    "dexie",
+    "dexie-react-hooks",
+    "lucide-react",
+    "react",
+    "react-dom",
+    "react-hot-toast",
+    "react-router-dom",
+    "zod",
+    "@playwright/test",
+    "@testing-library/jest-dom",
+    "@testing-library/react",
+    "@testing-library/user-event",
+    "@types/jest",
+    "@types/node",
+    "@types/react",
+    "@types/react-dom",
+    "@vitejs/plugin-react",
+    "fake-indexeddb",
+    "jest",
+    "jest-environment-jsdom",
+    "jsdom",
+    "ts-jest",
+    "typescript",
+    "vite"
+  ],
+  "description": "> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo."
+}

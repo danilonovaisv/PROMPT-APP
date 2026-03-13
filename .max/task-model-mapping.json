@@ -1,0 +1,74 @@
+{
+  "project_analysis": {
+    "primary": "claude-3-opus",
+    "fallback": [
+      "gpt-4-turbo",
+      "gpt-4"
+    ],
+    "minScore": 0.8,
+    "maxCost": 0.03
+  },
+  "code_generation": {
+    "primary": "gpt-4-turbo",
+    "fallback": [
+      "gpt-4",
+      "claude-3-opus"
+    ],
+    "minScore": 0.75,
+    "maxCost": 0.02
+  },
+  "debugging": {
+    "primary": "gpt-4",
+    "fallback": [
+      "gpt-4-turbo",
+      "claude-3-opus"
+    ],
+    "minScore": 0.8,
+    "maxCost": 0.015
+  },
+  "architecture_design": {
+    "primary": "claude-3-opus",
+    "fallback": [
+      "gpt-4-turbo",
+      "gpt-4"
+    ],
+    "minScore": 0.85,
+    "maxCost": 0.04
+  },
+  "documentation": {
+    "primary": "gpt-4-turbo",
+    "fallback": [
+      "gpt-4",
+      "gpt-3.5-turbo"
+    ],
+    "minScore": 0.7,
+    "maxCost": 0.01
+  },
+  "refactoring": {
+    "primary": "gpt-4-turbo",
+    "fallback": [
+      "gpt-4",
+      "claude-3-opus"
+    ],
+    "minScore": 0.8,
+    "maxCost": 0.025
+  },
+  "testing": {
+    "primary": "gpt-4-turbo",
+    "fallback": [
+      "gpt-4",
+      "gpt-3.5-turbo"
+    ],
+    "minScore": 0.75,
+    "maxCost": 0.02
+  },
+  "review": {
+    "primary": "claude-3-opus",
+    "fallback": [
+      "gpt-4-turbo",
+      "gpt-4"
+    ],
+    "minScore": 0.85,
+    "maxCost": 0.035
+  }
+}
