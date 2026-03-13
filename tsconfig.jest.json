@@ -4,7 +4,8 @@
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.jest.tsbuildinfo",
     "types": ["jest"],
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "esModuleInterop": true
   },
   "include": ["tests/**/*.ts", "src/**/*.ts"]
 }

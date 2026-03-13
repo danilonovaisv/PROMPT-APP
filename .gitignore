@@ -1,20 +1,22 @@
-# Local Netlify folder
-.netlify
-node_modules
+# Build Artifacts
+dist/
+build/
+.tsbuildinfo/
+
+# Dependencies
+node_modules/
+.pnpm-store/
 
 # Environment Variables
 .env
 .env.local
 .env.*
 
+# Local Netlify folder
+.netlify
+
 # OS Artifacts
 .DS_Store
-
-# Build Artifacts
-dis/
-dist/
-build/
-coverage/
 
 # Logs
 npm-debug.log*
@@ -25,7 +27,6 @@ pnpm-debug.log*
 # Editor Config
 .vscode/
 .idea/
-node_modules
-node_modules
-node_modules
-.pnpm-store/
+
+# Testing
+coverage/

@@ -2,9 +2,9 @@
    Gerenciador de Assets e Atualizações
    ====================================================== */
 
-import { db } from '@/db/database';
-import { supabase } from '@/lib/supabase';
-import { saveLocalBackup } from '@/utils/backupManager';
+import { db } from "@/db/database";
+import { supabase } from "@/lib/supabase";
+import { saveLocalBackup } from "@/utils/backupManager";
 import {
   compilePromptPayload,
   getLegacyPromptColumns,
@@ -12,20 +12,20 @@ import {
   getPromptSummaryFields,
   parsePromptPayload,
   parseUserSelection,
-} from '@/models/promptSchema';
+} from "@/models/promptSchema";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
-  type: 'category' | 'prompt' | 'menu';
+  type: "category" | "prompt" | "menu";
   id: number;
   remoteId?: number;
-  action: 'created' | 'updated' | 'deleted';
+  action: "created" | "updated" | "deleted";
   timestamp: Date;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 export interface ConflictResolution {
-  strategy: 'localWins' | 'remoteWins' | 'merge' | 'askUser';
+  strategy: "localWins" | "remoteWins" | "merge" | "askUser";
   timestamp: Date;
   resolved: boolean;
 }
@@ -42,8 +42,8 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
   try {
     // Buscar dados remotos
     const [catRes, promptRes] = await Promise.all([
-      supabase.from('categories').select('*').eq('user_id', session.user.id),
-      supabase.from('prompts').select('*').eq('user_id', session.user.id),
+      supabase.from("categories").select("*").eq("user_id", session.user.id),
+      supabase.from("prompts").select("*").eq("user_id", session.user.id),
       // supabase.from('context_menus').select('*').eq('user_id', session.user.id),
     ]);
 
@@ -52,19 +52,21 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     const localCategories = await db.categories.toArray();
 
     for (const remote of remoteCategories) {
-      const local = localCategories.find(c => c.remoteId === remote.id);
+      const local = localCategories.find((c) => c.remoteId === remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
-        const localUpdated = new Date((local as any).updatedAt || local.createdAt);
+        const localUpdated = new Date(
+          (local as any).updatedAt || local.createdAt,
+        );
 
         if (remoteUpdated > localUpdated) {
           conflicts.push({
-            type: 'category',
+            type: "category",
             id: local.id!,
             remoteId: remote.id,
-            action: 'updated',
+            action: "updated",
             timestamp: remoteUpdated,
-            data: remote
+            data: remote,
           });
         }
       }
@@ -75,19 +77,21 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     const localPrompts = await db.prompts.toArray();
 
     for (const remote of remotePrompts) {
-      const local = localPrompts.find(p => p.remoteId === remote.id);
+      const local = localPrompts.find((p) => p.remoteId === remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
-        const localUpdated = new Date((local as any).updatedAt || local.createdAt);
+        const localUpdated = new Date(
+          (local as any).updatedAt || local.createdAt,
+        );
 
         if (remoteUpdated > localUpdated) {
           conflicts.push({
-            type: 'prompt',
+            type: "prompt",
             id: local.id!,
             remoteId: remote.id,
-            action: 'updated',
+            action: "updated",
             timestamp: remoteUpdated,
-            data: remote
+            data: remote,
           });
         }
       }
@@ -95,7 +99,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     return conflicts;
   } catch (error) {
-    console.error('❌ Erro ao detectar conflitos:', error);
+    console.error("❌ Erro ao detectar conflitos:", error);
     return [];
   }
 }
@@ -105,37 +109,42 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
  */
 export async function resolveConflicts(
   conflicts: AssetUpdate[],
-  strategy: ConflictResolution['strategy'] = 'remoteWins'
+  strategy: ConflictResolution["strategy"] = "remoteWins",
 ): Promise<void> {
-  console.log(`🔄 Resolvendo ${conflicts.length} conflitos usando estratégia: ${strategy}`);
+  console.log(
+    `🔄 Resolvendo ${conflicts.length} conflitos usando estratégia: ${strategy}`,
+  );
 
   for (const conflict of conflicts) {
     try {
       switch (strategy) {
-        case 'remoteWins':
+        case "remoteWins":
           await applyRemoteChanges(conflict);
           break;
 
-        case 'localWins':
+        case "localWins":
           await pushLocalChanges(conflict);
           break;
 
-        case 'merge':
+        case "merge":
           await mergeChanges(conflict);
           break;
 
-        case 'askUser':
+        case "askUser":
           // Implementar lógica para perguntar ao usuário
-          console.log('❓ Conflito requer decisão do usuário:', conflict);
+          console.log("❓ Conflito requer decisão do usuário:", conflict);
           break;
       }
     } catch (error) {
-      console.error(`❌ Erro ao resolver conflito ${conflict.type} #${conflict.id}:`, error);
+      console.error(
+        `❌ Erro ao resolver conflito ${conflict.type} #${conflict.id}:`,
+        error,
+      );
     }
   }
 
   await saveLocalBackup();
-  console.log('✅ Resolução de conflitos concluída');
+  console.log("✅ Resolução de conflitos concluída");
 }
 
 /**
@@ -145,7 +154,7 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
   const remoteData = update.data;
 
   switch (update.type) {
-    case 'category':
+    case "category":
       if (remoteData) {
         await db.categories.update(update.id, {
           name: remoteData.name,
@@ -157,22 +166,25 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
       }
       break;
 
-    case 'prompt':
+    case "prompt":
       if (remoteData) {
-        const promptPayload = parsePromptPayload(remoteData.prompt_payload_jsonb, {
-          title: remoteData.title,
-          systemRole: remoteData.system_role,
-          task: remoteData.task,
-          context: remoteData.context,
-          contextMenus: remoteData.context_menus,
-          enabledMenuIds: remoteData.enabled_menu_ids,
-          constraints: remoteData.constraints,
-          negativePrompt: remoteData.negative_prompt,
-          outputSchema: remoteData.output_schema,
-          referenceUrl: remoteData.reference_url,
-          language: remoteData.language,
-          schemaVersion: remoteData.schema_version,
-        });
+        const promptPayload = parsePromptPayload(
+          remoteData.prompt_payload_jsonb,
+          {
+            title: remoteData.title,
+            systemRole: remoteData.system_role,
+            task: remoteData.task,
+            context: remoteData.context,
+            contextMenus: remoteData.context_menus,
+            enabledMenuIds: remoteData.enabled_menu_ids,
+            constraints: remoteData.constraints,
+            negativePrompt: remoteData.negative_prompt,
+            outputSchema: remoteData.output_schema,
+            referenceUrl: remoteData.reference_url,
+            language: remoteData.language,
+            schemaVersion: remoteData.schema_version,
+          },
+        );
         const selectionPayload = parseUserSelection(
           remoteData.selection_payload_jsonb,
           promptPayload.meta.template_id,
@@ -182,35 +194,35 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
             language: remoteData.language,
             contextMenus: remoteData.context_menus,
             enabledMenuIds: remoteData.enabled_menu_ids,
-          }
+          },
         );
         await db.prompts.update(update.id, {
           categoryId: remoteData.category_id,
           title: remoteData.title,
           promptPayload,
           selectionPayload,
-          compiledPayload:
-            remoteData.compiled_payload_jsonb || compilePromptPayload(promptPayload, selectionPayload),
-          schemaVersion: remoteData.schema_version || '1.0.0',
-          language: remoteData.language || 'pt-BR',
-          outputFormat: remoteData.output_format || 'markdown',
+          compiledPayload: remoteData.compiled_payload_jsonb ||
+            compilePromptPayload(promptPayload, selectionPayload),
+          schemaVersion: remoteData.schema_version || "1.0.0",
+          language: remoteData.language || "pt-BR",
+          outputFormat: remoteData.output_format || "markdown",
           referenceUrl: remoteData.reference_url || undefined,
           fewShotExamples: remoteData.few_shot_examples || [],
-          updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
+          updatedAt: new Date(remoteData.updated_at || remoteData.created_at),
         });
         console.log(`📥 Prompt #${update.id} atualizado com dados remotos`);
       }
       break;
 
-    case 'menu':
+    case "menu":
       if (remoteData) {
         await db.contextMenus.update(update.id, {
           menuId: remoteData.menu_id,
           menuName: remoteData.menu_name,
           description: remoteData.description,
-          selectionMode: remoteData.selection_mode || 'single',
+          selectionMode: remoteData.selection_mode || "single",
           options: remoteData.options || [],
-          updatedAt: new Date(remoteData.updated_at || remoteData.created_at)
+          updatedAt: new Date(remoteData.updated_at || remoteData.created_at),
         });
         console.log(`📥 Menu #${update.id} atualizado com dados remotos`);
       }
@@ -230,12 +242,12 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
 
   console.log(`📤 Enviando mudanças locais para ${update.type} #${update.id}`);
 
-  let table = '';
+  let table = "";
   let payload: any = {};
 
   switch (update.type) {
-    case 'category':
-      table = 'categories';
+    case "category":
+      table = "categories";
       payload = {
         name: localItem.name,
         icon: localItem.icon,
@@ -243,9 +255,9 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         user_id: session.user.id,
       };
       break;
-    case 'prompt':
+    case "prompt":
       const promptSummary = getPromptSummaryFields(localItem.promptPayload);
-      table = 'prompts';
+      table = "prompts";
       payload = {
         category_id: localItem.categoryId,
         title: promptSummary.title,
@@ -259,17 +271,17 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         ...getLegacyPromptColumns(
           localItem.promptPayload,
           localItem.selectionPayload,
-          localItem.compiledPayload
+          localItem.compiledPayload,
         ),
       };
       break;
-    case 'menu':
-      table = 'context_menus';
+    case "menu":
+      table = "context_menus";
       payload = {
         menu_id: localItem.menuId,
         menu_name: localItem.menuName,
         description: localItem.description,
-        selection_mode: localItem.selectionMode || 'single',
+        selection_mode: localItem.selectionMode || "single",
         options: localItem.options || [],
         user_id: session.user.id,
       };
@@ -280,22 +292,27 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
     const { error } = await supabase
       .from(table)
       .update({ ...payload, updated_at: new Date().toISOString() })
-      .eq('id', localItem.remoteId)
-      .eq('user_id', session.user.id);
+      .eq("id", localItem.remoteId)
+      .eq("user_id", session.user.id);
     if (error) throw error;
   } else {
     const { data, error } = await supabase
       .from(table)
-      .insert({ ...payload, created_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .select('id')
+      .insert({
+        ...payload,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select("id")
       .single();
     if (error) throw error;
 
     // Atualiza localmente com o novo remoteId
-    await (db as any)[table !== 'context_menus' ? table : 'contextMenus'].update(update.id, {
-      remoteId: data.id,
-      syncStatus: 'synced'
-    });
+    await (db as any)[table !== "context_menus" ? table : "contextMenus"]
+      .update(update.id, {
+        remoteId: data.id,
+        syncStatus: "synced",
+      });
   }
 }
 
@@ -324,13 +341,16 @@ async function mergeChanges(update: AssetUpdate): Promise<void> {
 /**
  * Obtém item local pelo tipo e ID
  */
-async function getLocalItem(type: AssetUpdate['type'], id: number): Promise<any> {
+async function getLocalItem(
+  type: AssetUpdate["type"],
+  id: number,
+): Promise<any> {
   switch (type) {
-    case 'category':
+    case "category":
       return await db.categories.get(id);
-    case 'prompt':
+    case "prompt":
       return await db.prompts.get(id);
-    case 'menu':
+    case "menu":
       return await db.contextMenus.get(id);
     default:
       return null;
@@ -343,9 +363,9 @@ async function getLocalItem(type: AssetUpdate['type'], id: number): Promise<any>
 export async function smartSync(): Promise<{
   pulled: number;
   pushed: number;
-  conflicts: number
+  conflicts: number;
 }> {
-  console.log('🧠 Iniciando sincronização inteligente...');
+  console.log("🧠 Iniciando sincronização inteligente...");
 
   const result = { pulled: 0, pushed: 0, conflicts: 0 };
 
@@ -356,7 +376,7 @@ export async function smartSync(): Promise<{
 
     if (conflicts.length > 0) {
       console.log(`⚠️ ${conflicts.length} conflito(s) detectado(s)`);
-      await resolveConflicts(conflicts, 'remoteWins');
+      await resolveConflicts(conflicts, "remoteWins");
     }
 
     // 2. Pull de dados remotos (dados mais recentes)
@@ -369,11 +389,13 @@ export async function smartSync(): Promise<{
 
     await saveLocalBackup();
 
-    console.log(`✅ Sync inteligente concluído: ${result.pulled} recebidos, ${result.pushed} enviados, ${result.conflicts} conflitos`);
+    console.log(
+      `✅ Sync inteligente concluído: ${result.pulled} recebidos, ${result.pushed} enviados, ${result.conflicts} conflitos`,
+    );
 
     return result;
   } catch (error) {
-    console.error('❌ Erro na sincronização inteligente:', error);
+    console.error("❌ Erro na sincronização inteligente:", error);
     throw error;
   }
 }
@@ -385,36 +407,41 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return { pulled: 0 };
 
-  console.log('📥 Puxando últimas mudanças do servidor...');
+  console.log("📥 Puxando últimas mudanças do servidor...");
   let pulledCount = 0;
 
   // Buscar todos os IDs remotos
   const [catRes, promptRes, menuRes] = await Promise.all([
-    supabase.from('categories').select('*').eq('user_id', session.user.id),
-    supabase.from('prompts').select('*').eq('user_id', session.user.id),
-    supabase.from('context_menus').select('*').eq('user_id', session.user.id),
+    supabase.from("categories").select("*").eq("user_id", session.user.id),
+    supabase.from("prompts").select("*").eq("user_id", session.user.id),
+    supabase.from("context_menus").select("*").eq("user_id", session.user.id),
   ]);
 
-  const pullItems = async (remoteItems: any[] | null, localTable: any, type: AssetUpdate['type']) => {
+  const pullItems = async (
+    remoteItems: any[] | null,
+    localTable: any,
+    type: AssetUpdate["type"],
+  ) => {
     if (!remoteItems) return;
     for (const remote of remoteItems) {
-      const exists = await localTable.where('remoteId').equals(remote.id).first();
+      const exists = await localTable.where("remoteId").equals(remote.id)
+        .first();
       if (!exists) {
         await applyRemoteChanges({
           type,
           id: 0, // Novo item
-          action: 'created',
+          action: "created",
           timestamp: new Date(remote.created_at),
-          data: remote
+          data: remote,
         });
         pulledCount++;
       }
     }
   };
 
-  await pullItems(catRes.data, db.categories, 'category');
-  await pullItems(promptRes.data, db.prompts, 'prompt');
-  await pullItems(menuRes.data, db.contextMenus, 'menu');
+  await pullItems(catRes.data, db.categories, "category");
+  await pullItems(promptRes.data, db.prompts, "prompt");
+  await pullItems(menuRes.data, db.contextMenus, "menu");
 
   return { pulled: pulledCount };
 }
@@ -426,26 +453,26 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return { pushed: 0 };
 
-  console.log('📤 Enviando mudanças locais pendentes...');
+  console.log("📤 Enviando mudanças locais pendentes...");
   let pushedCount = 0;
 
-  const findPending = async (table: any, type: AssetUpdate['type']) => {
-    const pending = await table.where('syncStatus').equals('pending').toArray();
+  const findPending = async (table: any, type: AssetUpdate["type"]) => {
+    const pending = await table.where("syncStatus").equals("pending").toArray();
     for (const item of pending) {
       await pushLocalChanges({
         type,
         id: item.id!,
-        action: item.remoteId ? 'updated' : 'created',
+        action: item.remoteId ? "updated" : "created",
         timestamp: new Date(),
-        data: item
+        data: item,
       });
       pushedCount++;
     }
   };
 
-  await findPending(db.categories, 'category');
-  await findPending(db.prompts, 'prompt');
-  await findPending(db.contextMenus, 'menu');
+  await findPending(db.categories, "category");
+  await findPending(db.prompts, "prompt");
+  await findPending(db.contextMenus, "menu");
 
   return { pushed: pushedCount };
 }
@@ -467,5 +494,5 @@ export function setupAssetMonitoring() {
   // - Status de sincronização
   // - Notificações de atualizações disponíveis
 
-  console.log('👀 Monitoramento de assets ativado');
+  console.log("👀 Monitoramento de assets ativado");
 }

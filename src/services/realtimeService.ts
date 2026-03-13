@@ -2,16 +2,21 @@
    Serviço de Realtime do Supabase
    ====================================================== */
 
-import { supabase } from '@/lib/supabase';
-import { db } from '@/db/database';
-import type { Category, Prompt, ContextMenu } from '@/models/types';
-import { saveLocalBackup } from '@/utils/backupManager';
-import { compilePromptPayload, parsePromptPayload, parseUserSelection } from '@/models/promptSchema';
+import { supabase } from "@/lib/supabase";
+import { db } from "@/db/database";
+import type { Category, ContextMenu, Prompt } from "@/models/types";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+import { saveLocalBackup } from "@/utils/backupManager";
+import {
+  compilePromptPayload,
+  parsePromptPayload,
+  parseUserSelection,
+} from "@/models/promptSchema";
 
 // Canais de realtime para cada tabela
-let categoriesChannel: any = null;
-let promptsChannel: any = null;
-let menusChannel: any = null;
+let categoriesChannel: RealtimeChannel | null = null;
+let promptsChannel: RealtimeChannel | null = null;
+let menusChannel: RealtimeChannel | null = null;
 
 /**
  * Inicializa os listeners de realtime do Supabase
@@ -19,88 +24,92 @@ let menusChannel: any = null;
 export async function setupRealtimeListeners() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    console.log('⏭️ Usuário não autenticado - realtime desativado');
+    console.log("⏭️ Usuário não autenticado - realtime desativado");
     return;
   }
 
   const userId = session.user.id;
 
-  console.log('📡 Iniciando listeners de realtime...');
+  console.log("📡 Iniciando listeners de realtime...");
 
   // Canal para Categorias
   categoriesChannel = supabase
-    .channel('categories_changes')
+    .channel("categories_changes")
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'categories',
-        filter: `user_id=eq.${userId}`
+        event: "*",
+        schema: "public",
+        table: "categories",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log('📡 Categoria alterada:', payload);
+        console.log("📡 Categoria alterada:", payload);
         await handleCategoryChange(payload);
         await saveLocalBackup();
-      }
+      },
     )
     .subscribe();
 
   // Canal para Prompts
   promptsChannel = supabase
-    .channel('prompts_changes')
+    .channel("prompts_changes")
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'prompts',
-        filter: `user_id=eq.${userId}`
+        event: "*",
+        schema: "public",
+        table: "prompts",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log('📡 Prompt alterado:', payload);
+        console.log("📡 Prompt alterado:", payload);
         await handlePromptChange(payload);
         await saveLocalBackup();
-      }
+      },
     )
     .subscribe();
 
   // Canal para Menus de Contexto
   menusChannel = supabase
-    .channel('context_menus_changes')
+    .channel("context_menus_changes")
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'context_menus',
-        filter: `user_id=eq.${userId}`
+        event: "*",
+        schema: "public",
+        table: "context_menus",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log('📡 Menu alterado:', payload);
+        console.log("📡 Menu alterado:", payload);
         await handleMenuChange(payload);
         await saveLocalBackup();
-      }
+      },
     )
     .subscribe();
 
-  console.log('✅ Listeners de realtime ativados');
+  console.log("✅ Listeners de realtime ativados");
 }
 
 /**
  * Trata mudanças em categorias vindas do realtime
  */
-async function handleCategoryChange(payload: any) {
+async function handleCategoryChange(payload: {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown> | null;
+  old: Record<string, unknown> | null;
+}) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
   try {
     switch (eventType) {
-      case 'INSERT':
-      case 'UPDATE':
+      case "INSERT":
+      case "UPDATE":
         // Verificar se já existe localmente
         const existingLocal = await db.categories
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
@@ -110,7 +119,7 @@ async function handleCategoryChange(payload: any) {
           icon: remoteData.icon,
           color: remoteData.color,
           createdAt: new Date(remoteData.created_at),
-          syncStatus: 'synced',
+          syncStatus: "synced",
         };
 
         if (existingLocal) {
@@ -124,9 +133,9 @@ async function handleCategoryChange(payload: any) {
         }
         break;
 
-      case 'DELETE':
+      case "DELETE":
         const toDelete = await db.categories
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
@@ -137,54 +146,63 @@ async function handleCategoryChange(payload: any) {
         break;
     }
   } catch (error) {
-    console.error('❌ Erro ao processar mudança de categoria:', error);
+    console.error("❌ Erro ao processar mudança de categoria:", error);
   }
 }
 
 /**
  * Trata mudanças em prompts vindas do realtime
  */
-async function handlePromptChange(payload: any) {
+async function handlePromptChange(payload: {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown> | null;
+  old: Record<string, unknown> | null;
+}) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
   try {
     switch (eventType) {
-      case 'INSERT':
-      case 'UPDATE':
+      case "INSERT":
+      case "UPDATE":
         const existingLocal = await db.prompts
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
         // Resolver ID local da categoria a partir do remoteId do Supabase
         let localCategoryId = 0;
         if (remoteData.category_id) {
-          const cat = await db.categories.where('remoteId').equals(remoteData.category_id).first();
+          const cat = await db.categories.where("remoteId").equals(
+            remoteData.category_id,
+          ).first();
           if (cat) {
             localCategoryId = cat.id!;
           } else {
             // Se não achamos a categoria local, talvez ela ainda não tenha sido sincronizada
-            // ou foi deletada. Mantemos o remoteId como fallback se o schema permitir, 
+            // ou foi deletada. Mantemos o remoteId como fallback se o schema permitir,
             // mas o ideal é 0 ou null se não achou local.
             localCategoryId = 0;
           }
         }
 
-        const promptPayload = parsePromptPayload(remoteData.prompt_payload_jsonb, {
-          title: remoteData.title,
-          systemRole: remoteData.system_role,
-          task: remoteData.task,
-          context: remoteData.context,
-          contextMenus: remoteData.context_menus,
-          enabledMenuIds: remoteData.enabled_menu_ids,
-          constraints: remoteData.constraints,
-          negativePrompt: remoteData.negative_prompt,
-          outputSchema: remoteData.output_schema,
-          referenceUrl: remoteData.reference_url,
-          language: remoteData.language,
-          schemaVersion: remoteData.schema_version,
-        });
+        const promptPayload = parsePromptPayload(
+          remoteData.prompt_payload_jsonb,
+          {
+            title: remoteData.title,
+            systemRole: remoteData.system_role,
+            task: remoteData.task,
+            context: remoteData.context,
+            contextMenus: remoteData.context_menus,
+            enabledMenuIds: remoteData.enabled_menu_ids,
+            constraints: remoteData.constraints,
+            negativePrompt: remoteData.negative_prompt,
+            outputSchema: remoteData.output_schema,
+            referenceUrl: remoteData.reference_url,
+            language: remoteData.language,
+            schemaVersion: remoteData.schema_version,
+          },
+        );
 
         // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
@@ -201,37 +219,49 @@ async function handlePromptChange(payload: any) {
               language: remoteData.language,
               contextMenus: remoteData.context_menus,
               enabledMenuIds: remoteData.enabled_menu_ids,
-            }
+            },
           ),
           compiledPayload: remoteData.compiled_payload_jsonb || undefined,
-          schemaVersion: remoteData.schema_version || '1.0.0',
-          language: remoteData.language || 'pt-BR',
-          outputFormat: remoteData.output_format || 'markdown',
+          schemaVersion: remoteData.schema_version || "1.0.0",
+          language: remoteData.language || "pt-BR",
+          outputFormat: remoteData.output_format || "markdown",
           referenceUrl: remoteData.reference_url || undefined,
           fewShotExamples: remoteData.few_shot_examples || [],
           createdAt: new Date(remoteData.created_at),
           updatedAt: new Date(remoteData.updated_at),
-          syncStatus: 'synced',
+          syncStatus: "synced",
         };
 
         if (existingLocal) {
-          if (!promptData.compiledPayload && promptData.selectionPayload && promptData.promptPayload) {
-            promptData.compiledPayload = compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
+          if (
+            !promptData.compiledPayload && promptData.selectionPayload &&
+            promptData.promptPayload
+          ) {
+            promptData.compiledPayload = compilePromptPayload(
+              promptData.promptPayload,
+              promptData.selectionPayload,
+            );
           }
           await db.prompts.update(existingLocal.id!, promptData);
           console.log(`🔄 Prompt atualizado localmente: ${remoteData.title}`);
         } else {
-          if (!promptData.compiledPayload && promptData.selectionPayload && promptData.promptPayload) {
-            promptData.compiledPayload = compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
+          if (
+            !promptData.compiledPayload && promptData.selectionPayload &&
+            promptData.promptPayload
+          ) {
+            promptData.compiledPayload = compilePromptPayload(
+              promptData.promptPayload,
+              promptData.selectionPayload,
+            );
           }
           await db.prompts.add(promptData as Prompt);
           console.log(`➕ Prompt adicionado localmente: ${remoteData.title}`);
         }
         break;
 
-      case 'DELETE':
+      case "DELETE":
         const toDelete = await db.prompts
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
@@ -242,23 +272,27 @@ async function handlePromptChange(payload: any) {
         break;
     }
   } catch (error) {
-    console.error('❌ Erro ao processar mudança de prompt:', error);
+    console.error("❌ Erro ao processar mudança de prompt:", error);
   }
 }
 
 /**
  * Trata mudanças em menus vindas do realtime
  */
-async function handleMenuChange(payload: any) {
+async function handleMenuChange(payload: {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown> | null;
+  old: Record<string, unknown> | null;
+}) {
   const remoteData = payload.new || payload.old;
   const eventType = payload.eventType;
 
   try {
     switch (eventType) {
-      case 'INSERT':
-      case 'UPDATE':
+      case "INSERT":
+      case "UPDATE":
         const existingLocal = await db.contextMenus
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
@@ -267,11 +301,11 @@ async function handleMenuChange(payload: any) {
           menuId: remoteData.menu_id,
           menuName: remoteData.menu_name,
           description: remoteData.description,
-          selectionMode: remoteData.selection_mode || 'single',
+          selectionMode: remoteData.selection_mode || "single",
           options: remoteData.options || [],
           createdAt: new Date(remoteData.created_at),
           updatedAt: new Date(remoteData.updated_at),
-          syncStatus: 'synced',
+          syncStatus: "synced",
         };
 
         if (existingLocal) {
@@ -283,9 +317,9 @@ async function handleMenuChange(payload: any) {
         }
         break;
 
-      case 'DELETE':
+      case "DELETE":
         const toDelete = await db.contextMenus
-          .where('remoteId')
+          .where("remoteId")
           .equals(remoteData.id)
           .first();
 
@@ -296,7 +330,7 @@ async function handleMenuChange(payload: any) {
         break;
     }
   } catch (error) {
-    console.error('❌ Erro ao processar mudança de menu:', error);
+    console.error("❌ Erro ao processar mudança de menu:", error);
   }
 }
 
@@ -319,7 +353,7 @@ export function cleanupRealtimeListeners() {
     menusChannel = null;
   }
 
-  console.log('🧹 Listeners de realtime removidos');
+  console.log("🧹 Listeners de realtime removidos");
 }
 
 /**
@@ -328,5 +362,5 @@ export function cleanupRealtimeListeners() {
 export async function reconnectRealtime() {
   cleanupRealtimeListeners();
   await setupRealtimeListeners();
-  console.log('🔄 Realtime reconectado');
+  console.log("🔄 Realtime reconectado");
 }

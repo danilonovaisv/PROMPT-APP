@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -p tsconfig.app.json && vite build",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
