@@ -50,9 +50,13 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     // Verificar categorias
     const remoteCategories = catRes.data || [];
     const localCategories = await db.categories.toArray();
+    const localCategoriesMap = new Map<number, typeof localCategories[0]>();
+    for (const cat of localCategories) {
+      if (cat.remoteId) localCategoriesMap.set(cat.remoteId, cat);
+    }
 
     for (const remote of remoteCategories) {
-      const local = localCategories.find((c) => c.remoteId === remote.id);
+      const local = localCategoriesMap.get(remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
@@ -75,9 +79,13 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     // Verificar prompts (similar para menus)
     const remotePrompts = promptRes.data || [];
     const localPrompts = await db.prompts.toArray();
+    const localPromptsMap = new Map<number, typeof localPrompts[0]>();
+    for (const prompt of localPrompts) {
+      if (prompt.remoteId) localPromptsMap.set(prompt.remoteId, prompt);
+    }
 
     for (const remote of remotePrompts) {
-      const local = localPrompts.find((p) => p.remoteId === remote.id);
+      const local = localPromptsMap.get(remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
