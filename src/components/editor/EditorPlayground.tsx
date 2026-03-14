@@ -42,8 +42,9 @@ export function EditorPlayground({
         {freeInputs.map((entry, index) => (
           <div key={`free-input-${index}`} className="card">
             <div className="form-group">
-              <label className="form-label">Chave</label>
+              <label className="form-label" htmlFor={`free-input-key-${index}`}>Chave</label>
               <input
+                id={`free-input-key-${index}`}
                 value={entry.key}
                 onChange={(event) => onUpdateFreeInput(index, { ...entry, key: event.target.value })}
                 placeholder="user_scene_description"
@@ -51,8 +52,9 @@ export function EditorPlayground({
             </div>
 
             <div className="form-group">
-              <label className="form-label">Valor</label>
+              <label className="form-label" htmlFor={`free-input-value-${index}`}>Valor</label>
               <textarea
+                id={`free-input-value-${index}`}
                 value={entry.value}
                 onChange={(event) => onUpdateFreeInput(index, { ...entry, value: event.target.value })}
                 rows={3}
@@ -63,7 +65,7 @@ export function EditorPlayground({
             <button
               className="btn btn--ghost btn--icon"
               onClick={() => onRemoveFreeInput(index)}
-              aria-label="Remover input livre"
+              aria-label={`Remover input livre: ${entry.key || index}`}
             >
               <Trash2 size={16} />
             </button>
