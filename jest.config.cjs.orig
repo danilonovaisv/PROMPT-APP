@@ -21,7 +21,6 @@ module.exports = {
     '!src/lib/**',
     '!src/vite-env.d.ts',
   ],
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/tests/e2e/'],
   coverageThreshold: {
     global: {
       branches: 10,
