@@ -45,7 +45,7 @@ export function MenuOptionEditor({
             e.stopPropagation();
             onRemove();
           }}
-          aria-label="Remover opção"
+          aria-label={`Remover opção: ${option.label || index}`}
           title="Remover opção"
         >
           <Trash2 size={14} />
@@ -56,16 +56,18 @@ export function MenuOptionEditor({
         <div className="ctx-option-card__body">
           <div className="ctx-option-card__fields">
             <div className="form-group form-group--tight">
-              <label className="form-label">Label</label>
+              <label className="form-label" htmlFor={`option-label-${index}`}>Label</label>
               <input
+                id={`option-label-${index}`}
                 value={option.label}
                 onChange={(e) => onUpdate('label', e.target.value)}
                 placeholder="Ex: Formal"
               />
             </div>
             <div className="form-group form-group--tight">
-              <label className="form-label">Valor</label>
+              <label className="form-label" htmlFor={`option-value-${index}`}>Valor</label>
               <input
+                id={`option-value-${index}`}
                 value={option.value}
                 onChange={(e) => onUpdate('value', e.target.value)}
                 placeholder="Auto-gerado"
@@ -97,17 +99,19 @@ export function MenuOptionEditor({
                   onChange={(e) => onUpdateSubOption(subIdx, 'label', e.target.value)}
                   placeholder="Label"
                   className="ctx-suboption-row__input"
+                  aria-label={`Rótulo da sub-opção ${subIdx}`}
                 />
                 <input
                   value={sub.value}
                   onChange={(e) => onUpdateSubOption(subIdx, 'value', e.target.value)}
                   placeholder="Valor"
                   className="ctx-suboption-row__input"
+                  aria-label={`Valor da sub-opção ${subIdx}`}
                 />
                 <button
                   className="btn btn--ghost btn--icon btn--sm"
                   onClick={() => onRemoveSubOption(subIdx)}
-                  aria-label="Remover sub-opção"
+                  aria-label={`Remover sub-opção: ${sub.label || subIdx}`}
                   title="Remover"
                 >
                   <X size={14} />
