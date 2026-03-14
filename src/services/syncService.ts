@@ -214,9 +214,18 @@ export const downloadFromCloud = async () => {
         const remoteToLocalCatMap = new Map<number, number>();
 
         if (catRes.data) {
+            // Load all local categories once to prevent N+1 queries
+            const allLocalCategories = await db.categories.toArray();
+            const localCategoryByRemoteId = new Map<number, typeof allLocalCategories[0]>();
+            for (const cat of allLocalCategories) {
+                if (cat.remoteId != null) {
+                    localCategoryByRemoteId.set(cat.remoteId, cat);
+                }
+            }
+
             for (const c of catRes.data) {
                 // Tenta encontrar categoria local pelo remoteId
-                const existing = await db.categories.where('remoteId').equals(c.id).first();
+                const existing = localCategoryByRemoteId.get(c.id);
 
                 const catData = {
                     remoteId: c.id,
@@ -244,12 +253,26 @@ export const downloadFromCloud = async () => {
 
         // --- B. Sincronizar Menus ---
         if (menuRes.data) {
+            // Load all local context menus once to prevent N+1 queries
+            const allLocalMenus = await db.contextMenus.toArray();
+            const localMenuByRemoteId = new Map<number, typeof allLocalMenus[0]>();
+            const localMenuByMenuId = new Map<string, typeof allLocalMenus[0]>();
+
+            for (const m of allLocalMenus) {
+                if (m.remoteId != null) {
+                    localMenuByRemoteId.set(m.remoteId, m);
+                }
+                if (m.menuId != null) {
+                    localMenuByMenuId.set(m.menuId, m);
+                }
+            }
+
             for (const m of menuRes.data) {
-                const existing = await db.contextMenus.where('remoteId').equals(m.id).first();
+                const existing = localMenuByRemoteId.get(m.id);
                 // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
                 // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
                 const existingBySlug = !existing
-                    ? await db.contextMenus.where('menuId').equals(m.menu_id).first()
+                    ? localMenuByMenuId.get(m.menu_id)
                     : null;
 
                 const targetId = existing?.id || existingBySlug?.id;
@@ -276,8 +299,17 @@ export const downloadFromCloud = async () => {
 
         // --- C. Sincronizar Prompts ---
         if (promptRes.data) {
+            // Load all local prompts once to prevent N+1 queries
+            const allLocalPrompts = await db.prompts.toArray();
+            const localPromptByRemoteId = new Map<number, typeof allLocalPrompts[0]>();
+            for (const p of allLocalPrompts) {
+                if (p.remoteId != null) {
+                    localPromptByRemoteId.set(p.remoteId, p);
+                }
+            }
+
             for (const p of promptRes.data) {
-                const existing = await db.prompts.where('remoteId').equals(p.id).first();
+                const existing = localPromptByRemoteId.get(p.id);
 
                 // Resolver Categoria Local
                 // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente
