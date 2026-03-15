@@ -430,8 +430,8 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     const localItems = await localTable.toArray();
     const existingRemoteIds = new Set(
       localItems
-        .map((item: { remoteId?: number }) => item.remoteId)
-        .filter((id): id is number => id != null)
+        .map((item: any) => item.remoteId)
+        .filter(Boolean)
     );
 
     for (const remote of remoteItems) {
