@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, useTransition } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, Copy, Download, Eye, Save, PanelRightClose, PanelRightOpen, X, Settings2 } from 'lucide-react';
@@ -220,14 +220,18 @@ export default function EditorPage() {
 
   useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false), containerRef: previewModalRef });
 
+  const [, startTransition] = useTransition();
+
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
-    setForm((current) => {
-      const nextTemplate = updater(current.template);
-      const nextSelection =
-        current.selection.template_id === current.template.meta.template_id
-          ? { ...current.selection, template_id: nextTemplate.meta.template_id }
-          : current.selection;
-      return { ...current, template: nextTemplate, selection: nextSelection };
+    startTransition(() => {
+      setForm((current) => {
+        const nextTemplate = updater(current.template);
+        const nextSelection =
+          current.selection.template_id === current.template.meta.template_id
+            ? { ...current.selection, template_id: nextTemplate.meta.template_id }
+            : current.selection;
+        return { ...current, template: nextTemplate, selection: nextSelection };
+      });
     });
   };
 
@@ -251,78 +255,90 @@ export default function EditorPage() {
   };
 
   const toggleOptionSelection = (menuId: string, selectionMode: string, optionValue: string) => {
-    setForm((current) => {
-      const existingMenu = current.selection.selected_menus.find((item) => item.menu_id === menuId);
-      const hasOption = existingMenu?.selected_options.some((item) => item.option_value === optionValue);
-      let selected_menus = [...current.selection.selected_menus];
+    startTransition(() => {
+      setForm((current) => {
+        const existingMenu = current.selection.selected_menus.find((item) => item.menu_id === menuId);
+        const hasOption = existingMenu?.selected_options.some((item) => item.option_value === optionValue);
+        let selected_menus = [...current.selection.selected_menus];
 
-      if (selectionMode === 'single') {
-        selected_menus = hasOption
-          ? selected_menus.filter((item) => item.menu_id !== menuId)
-          : [...selected_menus.filter((item) => item.menu_id !== menuId), { menu_id: menuId, selected_options: [{ option_value: optionValue, selected_sub_options: [] }] }];
-      } else if (existingMenu) {
-        selected_menus = selected_menus.map((item) =>
-          item.menu_id !== menuId
-            ? item
-            : {
-                ...item,
-                selected_options: hasOption
-                  ? item.selected_options.filter((selectedOption) => selectedOption.option_value !== optionValue)
-                  : [...item.selected_options, { option_value: optionValue, selected_sub_options: [] }],
-              }
-        );
-      } else {
-        selected_menus = [...selected_menus, { menu_id: menuId, selected_options: [{ option_value: optionValue, selected_sub_options: [] }] }];
-      }
+        if (selectionMode === 'single') {
+          selected_menus = hasOption
+            ? selected_menus.filter((item) => item.menu_id !== menuId)
+            : [...selected_menus.filter((item) => item.menu_id !== menuId), { menu_id: menuId, selected_options: [{ option_value: optionValue, selected_sub_options: [] }] }];
+        } else if (existingMenu) {
+          selected_menus = selected_menus.map((item) =>
+            item.menu_id !== menuId
+              ? item
+              : {
+                  ...item,
+                  selected_options: hasOption
+                    ? item.selected_options.filter((selectedOption) => selectedOption.option_value !== optionValue)
+                    : [...item.selected_options, { option_value: optionValue, selected_sub_options: [] }],
+                }
+          );
+        } else {
+          selected_menus = [...selected_menus, { menu_id: menuId, selected_options: [{ option_value: optionValue, selected_sub_options: [] }] }];
+        }
 
-      return {
-        ...current,
-        selection: UserSelectionSchema.parse({
-          ...current.selection,
-          template_id: current.template.meta.template_id,
-          selected_menus: selected_menus.filter((item) => item.selected_options.length > 0),
-        }),
-      };
+        return {
+          ...current,
+          selection: UserSelectionSchema.parse({
+            ...current.selection,
+            template_id: current.template.meta.template_id,
+            selected_menus: selected_menus.filter((item) => item.selected_options.length > 0),
+          }),
+        };
+      });
     });
   };
 
   const toggleSubOptionSelection = (menuId: string, optionValue: string, subOptionValue: string) => {
-    setForm((current) => ({
-      ...current,
-      selection: UserSelectionSchema.parse({
-        ...current.selection,
-        selected_menus: current.selection.selected_menus.map((menuSelection) => {
-          if (menuSelection.menu_id !== menuId) return menuSelection;
-          return {
-            ...menuSelection,
-            selected_options: menuSelection.selected_options.map((selectedOption) => {
-              if (selectedOption.option_value !== optionValue) return selectedOption;
-              const alreadySelected = selectedOption.selected_sub_options.includes(subOptionValue);
-              return {
-                ...selectedOption,
-                selected_sub_options: alreadySelected
-                  ? selectedOption.selected_sub_options.filter((value) => value !== subOptionValue)
-                  : [...selectedOption.selected_sub_options, subOptionValue],
-              };
-            }),
-          };
+    startTransition(() => {
+      setForm((current) => ({
+        ...current,
+        selection: UserSelectionSchema.parse({
+          ...current.selection,
+          selected_menus: current.selection.selected_menus.map((menuSelection) => {
+            if (menuSelection.menu_id !== menuId) return menuSelection;
+            return {
+              ...menuSelection,
+              selected_options: menuSelection.selected_options.map((selectedOption) => {
+                if (selectedOption.option_value !== optionValue) return selectedOption;
+                const alreadySelected = selectedOption.selected_sub_options.includes(subOptionValue);
+                return {
+                  ...selectedOption,
+                  selected_sub_options: alreadySelected
+                    ? selectedOption.selected_sub_options.filter((value) => value !== subOptionValue)
+                    : [...selectedOption.selected_sub_options, subOptionValue],
+                };
+              }),
+            };
+          }),
         }),
-      }),
-    }));
+      }));
+    });
   };
 
   const updateFreeInput = (index: number, nextEntry: FreeInputEntry) => {
-    setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? nextEntry : entry)) }));
+    startTransition(() => {
+      setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? nextEntry : entry)) }));
+    });
   };
 
-  const addFreeInput = () => setForm((current) => ({ ...current, freeInputs: [...current.freeInputs, { key: '', value: '' }] }));
+  const addFreeInput = () => {
+    startTransition(() => {
+      setForm((current) => ({ ...current, freeInputs: [...current.freeInputs, { key: '', value: '' }] }));
+    });
+  };
   const removeFreeInput = (index: number) => {
-    setForm((current) => ({
-      ...current,
-      freeInputs: current.freeInputs.filter((_, i) => i !== index).length > 0
-        ? current.freeInputs.filter((_, i) => i !== index)
-        : [{ key: '', value: '' }],
-    }));
+    startTransition(() => {
+      setForm((current) => ({
+        ...current,
+        freeInputs: current.freeInputs.filter((_, i) => i !== index).length > 0
+          ? current.freeInputs.filter((_, i) => i !== index)
+          : [{ key: '', value: '' }],
+      }));
+    });
   };
 
   const clearDraft = () => localStorage.removeItem(`template_draft_${id}`);
@@ -420,22 +436,24 @@ export default function EditorPage() {
   };
 
   const handleMenuToggle = (menuId: string, checked: boolean) => {
-    setForm((current) => {
-      const nextMenuIds = checked
-        ? [...(current.template.menu_ids || []), menuId]
-        : (current.template.menu_ids || []).filter((id) => id !== menuId);
-      const uniqueMenuIds = [...new Set(nextMenuIds)];
-      return {
-        ...current,
-        template: syncTemplateWithLinkedMenus(
-          TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
-          availableContextMenus
-        ),
-        selection: UserSelectionSchema.parse({
-          ...current.selection,
-          selected_menus: current.selection.selected_menus.filter((item) => uniqueMenuIds.includes(item.menu_id)),
-        }),
-      };
+    startTransition(() => {
+      setForm((current) => {
+        const nextMenuIds = checked
+          ? [...(current.template.menu_ids || []), menuId]
+          : (current.template.menu_ids || []).filter((id) => id !== menuId);
+        const uniqueMenuIds = [...new Set(nextMenuIds)];
+        return {
+          ...current,
+          template: syncTemplateWithLinkedMenus(
+            TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
+            availableContextMenus
+          ),
+          selection: UserSelectionSchema.parse({
+            ...current.selection,
+            selected_menus: current.selection.selected_menus.filter((item) => uniqueMenuIds.includes(item.menu_id)),
+          }),
+        };
+      });
     });
   };
 
