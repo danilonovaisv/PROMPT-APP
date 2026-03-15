@@ -100,37 +100,50 @@ export function renderFinalPromptText(
   const outputContract = template.output_contract;
 
   if (promptDefinition.system_role.trim()) {
-    sections.push(`System role:\n${promptDefinition.system_role.trim()}`);
+    sections.push(`# ROLE: ${promptDefinition.system_role.trim()}`);
   }
 
+  const purposeSection: string[] = [];
   if (promptDefinition.task.trim()) {
-    sections.push(`Task:\n${promptDefinition.task.trim()}`);
+    purposeSection.push(`Task:\n${promptDefinition.task.trim()}`);
   }
-
   if (promptDefinition.context.trim()) {
-    sections.push(`Contexto base:\n${promptDefinition.context.trim()}`);
+    purposeSection.push(`Contexto base:\n${promptDefinition.context.trim()}`);
+  }
+  if (purposeSection.length > 0) {
+    sections.push(`## 1. PURPOSE & CONTEXT\n${purposeSection.join('\n\n')}`);
   }
 
+  const dynamicInputs: string[] = [];
   const menuLines = buildMenuLines(template, compiledPayload);
   if (menuLines.length > 0) {
-    sections.push(['Menus selecionados:', ...menuLines].join('\n'));
+    dynamicInputs.push(['Menus selecionados:', ...menuLines].join('\n'));
   }
-
   const freeInputs = Object.entries(compiledPayload.compiled_context.free_inputs || {}).map(
     ([key, value]) => `${key}: ${value}`
   );
   if (freeInputs.length > 0) {
-    sections.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
+    dynamicInputs.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
+  }
+  if (dynamicInputs.length > 0) {
+    sections.push(`## 2. DYNAMIC INPUTS (MENUS)\n${dynamicInputs.join('\n\n')}`);
   }
 
+  const constraintsAndRules: string[] = [];
   const constraintBlock = buildListBlock('Restrições:', promptDefinition.constraints);
   if (constraintBlock.length > 0) {
-    sections.push(constraintBlock.join('\n'));
+    constraintsAndRules.push(constraintBlock.join('\n'));
   }
-
   const negativeBlock = buildListBlock('Evitar:', promptDefinition.negative_prompt);
   if (negativeBlock.length > 0) {
-    sections.push(negativeBlock.join('\n'));
+    constraintsAndRules.push(negativeBlock.join('\n'));
+  }
+  if (outputContract.response_rules.length > 0) {
+    const rulesBlock = buildListBlock('Regras de Resposta:', outputContract.response_rules);
+    constraintsAndRules.push(rulesBlock.join('\n'));
+  }
+  if (constraintsAndRules.length > 0) {
+    sections.push(`## 3. CONSTRAINTS & RULES\n${constraintsAndRules.join('\n\n')}`);
   }
 
   const outputLines = [
@@ -138,16 +151,10 @@ export function renderFinalPromptText(
     `Idioma: ${outputContract.language}`,
     `Modo estrito: ${outputContract.strict_mode ? 'sim' : 'não'}`,
   ];
-
   if (outputContract.required_fields.length > 0) {
     outputLines.push(`Campos obrigatórios: ${outputContract.required_fields.join(', ')}`);
   }
-
-  if (outputContract.response_rules.length > 0) {
-    outputLines.push(...outputContract.response_rules.map((rule) => `Regra: ${rule}`));
-  }
-
-  sections.push(['Contrato de saída:', ...outputLines.map((line) => `- ${line}`)].join('\n'));
+  sections.push(`## 4. OUTPUT CONTRACT\n${outputLines.map((line) => `- ${line}`).join('\n')}`);
 
   return sections.filter(Boolean).join('\n\n').trim();
 }

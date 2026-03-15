@@ -84,7 +84,7 @@
   /* Layout */
   --sidebar-width: 260px;
   --header-height: 64px;
-  --max-content-width: 1200px;
+  --max-content-width: 1280px;
 }
 
 /* --- Reset & Base --- */
@@ -435,6 +435,8 @@ select option {
 .app-content {
   padding: var(--space-8);
   max-width: var(--max-content-width);
+  margin-inline: auto;
+  width: 100%;
 }
 
 /* --- Mobile hamburger toggle --- */
@@ -2239,8 +2241,12 @@ select option {
   }
 
   .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: 1fr;
     gap: var(--space-4);
+  }
+
+  .editor-menus-grid {
+    grid-template-columns: 1fr;
   }
 
   .page-header {
