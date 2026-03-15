@@ -895,8 +895,6 @@ select option {
   background-color: var(--color-surface-2);
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
-  min-height: 48px;
-  min-width: 48px;
 }
 
 .menu-tag:hover {
@@ -2438,14 +2436,5 @@ select option {
 
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

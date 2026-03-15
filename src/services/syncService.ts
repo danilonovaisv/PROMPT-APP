@@ -244,21 +244,13 @@ export const downloadFromCloud = async () => {
 
         // --- B. Sincronizar Menus ---
         if (menuRes.data) {
-            // Pre-fetch all local menus to avoid N+1 queries in the loop
-            const localMenus = await db.contextMenus.toArray();
-            const localMenuByRemoteId = new Map<number, ContextMenu>();
-            const localMenuBySlug = new Map<string, ContextMenu>();
-
-            for (const menu of localMenus) {
-                if (menu.remoteId) localMenuByRemoteId.set(menu.remoteId, menu);
-                if (menu.menuId) localMenuBySlug.set(menu.menuId, menu);
-            }
-
             for (const m of menuRes.data) {
-                const existing = localMenuByRemoteId.get(m.id);
+                const existing = await db.contextMenus.where('remoteId').equals(m.id).first();
                 // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
                 // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
-                const existingBySlug = !existing ? localMenuBySlug.get(m.menu_id) : null;
+                const existingBySlug = !existing
+                    ? await db.contextMenus.where('menuId').equals(m.menu_id).first()
+                    : null;
 
                 const targetId = existing?.id || existingBySlug?.id;
 

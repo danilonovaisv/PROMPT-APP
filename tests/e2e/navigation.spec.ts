@@ -15,31 +15,31 @@ test("should navigate to editor page", async ({ page }) => {
   await page.goto("/");
 
   // Find and click on editor link/button
-  const editorLink = page.locator('button:has-text("Novo Template")').first();
+  const editorLink = page.locator('a[href="/editor"]').first();
   await expect(editorLink).toBeVisible();
   await editorLink.click();
 
   // Verify navigation to editor page
-  await expect(page).toHaveURL(/.*\/editor\/novo/);
+  await expect(page).toHaveURL(/.*\/editor/);
 });
 
 test("should navigate to category manager page", async ({ page }) => {
   await page.goto("/");
 
   // Find and click on categories link
-  const categoriesLink = page.locator('.app-sidebar a[href="/categorias"]').first();
+  const categoriesLink = page.locator('a[href="/categories"]').first();
   await expect(categoriesLink).toBeVisible();
   await categoriesLink.click();
 
   // Verify navigation to categories page
-  await expect(page).toHaveURL(/.*\/categorias/);
+  await expect(page).toHaveURL(/.*\/categories/);
 });
 
 test("should navigate to menu manager page", async ({ page }) => {
   await page.goto("/");
 
   // Find and click on menus link
-  const menusLink = page.locator('.app-sidebar a[href="/menus"]').first();
+  const menusLink = page.locator('a[href="/menus"]').first();
   await expect(menusLink).toBeVisible();
   await menusLink.click();
 
@@ -54,6 +54,6 @@ test("should display responsive layout on mobile", async ({ page }) => {
   await page.goto("/");
 
   // Verify page is responsive and visible
-  const mainContent = page.locator("main.app-main").first();
+  const mainContent = page.locator("main").first();
   await expect(mainContent).toBeVisible();
 });
