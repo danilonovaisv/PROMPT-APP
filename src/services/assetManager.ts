@@ -78,10 +78,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     const remotePrompts = promptRes.data || [];
     const localPrompts = await db.prompts.toArray();
 
-    const localPromptsMap = new Map();
-    for (const p of localPrompts) {
-      if (p.remoteId != null) localPromptsMap.set(p.remoteId, p);
-    }
+    const localPromptsMap = new Map(localPrompts.filter(p => p.remoteId != null).map(p => [p.remoteId!, p]));
 
     for (const remote of remotePrompts) {
       const local = localPromptsMap.get(remote.id);
