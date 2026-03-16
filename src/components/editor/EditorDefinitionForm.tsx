@@ -65,7 +65,7 @@ export function EditorDefinitionForm({ template, contextMenus, selectedMenuIds, 
             id="context-menus-select"
             multiple
             className="form-select w-full p-2 rounded-md border border-slate-200 min-h-[120px]"
-            value={selectedMenuIds.map(String)}
+            value={(selectedMenuIds || []).map(String)}
             onChange={(e) => {
               const options = Array.from(e.target.selectedOptions);
               onMenuChange(options.map(o => Number(o.value)));
