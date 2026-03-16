@@ -103,30 +103,28 @@ export function renderFinalPromptText(
     sections.push(`# ROLE: ${promptDefinition.system_role.trim()}`);
   }
 
-  const purposeSection: string[] = [];
+  const contextParts: string[] = [];
   if (promptDefinition.task.trim()) {
-    purposeSection.push(`Task:\n${promptDefinition.task.trim()}`);
+    contextParts.push(`Task:\n${promptDefinition.task.trim()}`);
   }
   if (promptDefinition.context.trim()) {
-    purposeSection.push(`Contexto base:\n${promptDefinition.context.trim()}`);
-  }
-  if (purposeSection.length > 0) {
-    sections.push(`## 1. PURPOSE & CONTEXT\n${purposeSection.join('\n\n')}`);
+    contextParts.push(`Contexto base:\n${promptDefinition.context.trim()}`);
   }
 
-  const dynamicInputs: string[] = [];
   const menuLines = buildMenuLines(template, compiledPayload);
   if (menuLines.length > 0) {
-    dynamicInputs.push(['Menus selecionados:', ...menuLines].join('\n'));
+    contextParts.push(['Menus selecionados:', ...menuLines].join('\n'));
   }
+
   const freeInputs = Object.entries(compiledPayload.compiled_context.free_inputs || {}).map(
     ([key, value]) => `${key}: ${value}`
   );
   if (freeInputs.length > 0) {
-    dynamicInputs.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
+    contextParts.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
   }
-  if (dynamicInputs.length > 0) {
-    sections.push(`## 2. DYNAMIC INPUTS (MENUS)\n${dynamicInputs.join('\n\n')}`);
+
+  if (contextParts.length > 0) {
+    sections.push(`## CONTEXT\n${contextParts.join('\n\n')}`);
   }
 
   const constraintsAndRules: string[] = [];
@@ -143,7 +141,7 @@ export function renderFinalPromptText(
     constraintsAndRules.push(rulesBlock.join('\n'));
   }
   if (constraintsAndRules.length > 0) {
-    sections.push(`## 3. CONSTRAINTS & RULES\n${constraintsAndRules.join('\n\n')}`);
+    sections.push(`## CONSTRAINTS\n${constraintsAndRules.join('\n\n')}`);
   }
 
   const outputLines = [
@@ -154,7 +152,7 @@ export function renderFinalPromptText(
   if (outputContract.required_fields.length > 0) {
     outputLines.push(`Campos obrigatórios: ${outputContract.required_fields.join(', ')}`);
   }
-  sections.push(`## 4. OUTPUT CONTRACT\n${outputLines.map((line) => `- ${line}`).join('\n')}`);
+  sections.push(`## OUTPUT FORMAT\n${outputLines.map((line) => `- ${line}`).join('\n')}`);
 
   return sections.filter(Boolean).join('\n\n').trim();
 }
