@@ -51,10 +51,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     const remoteCategories = catRes.data || [];
     const localCategories = await db.categories.toArray();
 
-    const localCategoriesMap = new Map();
-    for (const c of localCategories) {
-      if (c.remoteId != null) localCategoriesMap.set(c.remoteId, c);
-    }
+    const localCategoriesMap = new Map(localCategories.filter(c => c.remoteId != null).map(c => [c.remoteId!, c]));
 
     for (const remote of remoteCategories) {
       const local = localCategoriesMap.get(remote.id);
