@@ -31,8 +31,4 @@ test-results/
 # Dependencies and Code Coverage
 .pnpm-store/
 coverage/
-
-# Env files
 .env
-.env.*
-!.env.example
