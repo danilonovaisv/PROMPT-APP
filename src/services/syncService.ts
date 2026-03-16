@@ -216,12 +216,12 @@ export const downloadFromCloud = async () => {
         if (catRes.data) {
             // Load all local categories once to prevent N+1 queries
             const allLocalCategories = await db.categories.toArray();
-            const localCategoryByRemoteId = new Map<number, typeof allLocalCategories[0]>();
-            for (const cat of allLocalCategories) {
-                if (cat.remoteId != null) {
-                    localCategoryByRemoteId.set(cat.remoteId, cat);
-                }
-            }
+const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
+    if (cat.remoteId != null) {
+        map.set(cat.remoteId, cat);
+    }
+    return map;
+}, new Map<number, Category>());
 
             for (const c of catRes.data) {
                 // Tenta encontrar categoria local pelo remoteId
