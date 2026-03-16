@@ -112,9 +112,10 @@ export default function MenuManagerPage() {
         localId = newId ?? null;
       }
       await saveLocalBackup();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar localmente:', error);
-      showToast(error.message || 'Erro ao salvar o menu localmente.', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao salvar o menu localmente.';
+      showToast(errorMessage, 'error');
       return;
     }
 
@@ -136,7 +137,7 @@ export default function MenuManagerPage() {
       }
       showToast(isEditing ? 'Menu sincronizado!' : 'Menu criado e sincronizado!');
       cancel();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar no Supabase:', error);
       showToast('Menu salvo localmente. Sincronize ao fazer login.', 'info');
       cancel();
@@ -152,9 +153,10 @@ export default function MenuManagerPage() {
       await db.contextMenus.delete(id);
       await saveLocalBackup();
       showToast('Menu excluído do servidor!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao excluir do Supabase:', error);
-      showToast(error.message || 'Erro ao deletar menu no servidor.', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Erro ao deletar menu no servidor.';
+      showToast(errorMessage, 'error');
     }
   };
 
