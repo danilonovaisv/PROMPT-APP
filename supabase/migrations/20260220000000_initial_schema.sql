@@ -39,6 +39,20 @@ BEGIN
       user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
       category_id BIGINT REFERENCES public.categories(id) ON DELETE CASCADE,
       title TEXT NOT NULL,
+      -- Legacy columns for v3 migration
+      system_role TEXT,
+      task TEXT,
+      context TEXT,
+      menus JSONB DEFAULT '{}'::jsonb,
+      context_menus JSONB DEFAULT '{}'::jsonb,
+      enabled_menu_ids TEXT[] DEFAULT '{}'::text[],
+      constraints JSONB DEFAULT '[]'::jsonb,
+      negative_prompt JSONB DEFAULT '[]'::jsonb,
+      output_schema JSONB DEFAULT '{}'::jsonb,
+      -- Performance/Tracking columns
+      selected_menu_ids BIGINT[] DEFAULT '{}'::bigint[],
+      few_shot_examples JSONB DEFAULT '[]'::jsonb,
+      -- Metadata
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
