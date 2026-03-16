@@ -21,7 +21,7 @@ export default function CloudSyncItem() {
 
     useEffect(() => {
         // 1. Check session on mount
-        supabase.auth.getSession().then(({ data: { session: currentSession }, error }) => {
+        supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
             setSession(currentSession);
             if (currentSession) {
                 triggerAutoSync();
