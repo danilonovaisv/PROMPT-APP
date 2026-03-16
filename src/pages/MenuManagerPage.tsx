@@ -8,7 +8,7 @@ import { exportMenusToJson } from '@/utils/importMenusJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
 import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
-import type { ContextMenu, ContextMenuOption } from '@/models/types';
+import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
 
 import { MenuForm } from '@/components/menu-manager/MenuForm';
@@ -196,7 +196,7 @@ export default function MenuManagerPage() {
     });
   };
 
-  const updateSubOption = (optIdx: number, subIdx: number, field: keyof any, value: string) => {
+  const updateSubOption = (optIdx: number, subIdx: number, field: keyof ContextMenuSubOption, value: string) => {
     setForm((prev) => {
       const options = [...prev.options];
       const subs = [...(options[optIdx].subOptions || [])];
