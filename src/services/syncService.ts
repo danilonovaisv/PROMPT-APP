@@ -146,6 +146,7 @@ export const syncToCloud = async () => {
             category_id: remoteCategoryId || null, // Se null, perde a categoria mas salva o prompt
             title: summary.title,
             prompt_payload_jsonb: data.promptPayload,
+            selected_menu_ids: data.selectedMenuIds || [],
             schema_version: summary.schemaVersion,
             output_format: summary.outputFormat,
             language: summary.language,
@@ -340,6 +341,7 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                     remoteId: p.id,
                     categoryId: localCategoryId,
                     title: p.title,
+                    selectedMenuIds: p.selected_menu_ids || [],
                     schemaVersion: p.schema_version || '1.0.0',
                     language: p.language || 'pt-BR',
                     outputFormat: p.output_format || 'markdown',
