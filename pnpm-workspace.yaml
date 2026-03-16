@@ -11,3 +11,4 @@ ignoredBuiltDependencies:
   - sharp
   - sqlite3
   - tldjs
+  - unrs-resolver
