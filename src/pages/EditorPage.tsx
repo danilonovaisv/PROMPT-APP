@@ -163,8 +163,11 @@ export default function EditorPage() {
   );
   
   const filteredContextMenus = useMemo(
-    () => availableContextMenus.filter(m => m.id && form.selectedMenuIds.includes(m.id)),
-    [availableContextMenus, form.selectedMenuIds]
+    () => {
+      const linkedIds = new Set(form.template.menu_ids || []);
+      return availableContextMenus.filter(m => linkedIds.has(m.menuId));
+    },
+    [availableContextMenus, form.template.menu_ids]
   );
 
   useEffect(() => {
@@ -434,8 +437,21 @@ export default function EditorPage() {
         ? [...(current.template.menu_ids || []), menuId]
         : (current.template.menu_ids || []).filter((id) => id !== menuId);
       const uniqueMenuIds = [...new Set(nextMenuIds)];
+
+      // Sync numeric selectedMenuIds for the Prompt record
+      const menu = availableContextMenus.find(m => m.menuId === menuId);
+      let nextSelectedIds = [...current.selectedMenuIds];
+      if (menu?.id) {
+        if (checked) {
+          if (!nextSelectedIds.includes(menu.id)) nextSelectedIds.push(menu.id);
+        } else {
+          nextSelectedIds = nextSelectedIds.filter(id => id !== menu.id);
+        }
+      }
+
       return {
         ...current,
+        selectedMenuIds: nextSelectedIds,
         template: syncTemplateWithLinkedMenus(
           TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
           availableContextMenus
@@ -489,16 +505,13 @@ export default function EditorPage() {
 
               <EditorDefinitionForm
                 template={form.template}
-                contextMenus={availableContextMenus}
-                selectedMenuIds={form.selectedMenuIds}
-                onMenuChange={(ids) => setForm((curr) => ({ ...curr, selectedMenuIds: ids }))}
                 updatePromptDefinitionField={updatePromptDefinitionField}
                 updateOutputContractField={updateOutputContractField}
               />
 
               <EditorContextMenuSelector
                 template={form.template}
-                contextMenus={filteredContextMenus}
+                contextMenus={availableContextMenus}
                 onMenuToggle={handleMenuToggle}
               />
 

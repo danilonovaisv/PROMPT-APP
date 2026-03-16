@@ -1,11 +1,7 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
-import type { ContextMenu } from '@/models/types';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
-  contextMenus: ContextMenu[];
-  selectedMenuIds: number[];
-  onMenuChange: (selectedIds: number[]) => void;
   updatePromptDefinitionField: <K extends keyof TemplatePayload['prompt_definition']>(
     field: K,
     value: TemplatePayload['prompt_definition'][K]
@@ -18,7 +14,7 @@ type EditorDefinitionFormProps = {
 
 const PROMPT_OUTPUT_FORMATS = ['markdown', 'json', 'xml', 'yaml', 'html', 'text'] as const;
 
-export function EditorDefinitionForm({ template, contextMenus, selectedMenuIds, onMenuChange, updatePromptDefinitionField, updateOutputContractField }: EditorDefinitionFormProps) {
+export function EditorDefinitionForm({ template, updatePromptDefinitionField, updateOutputContractField }: EditorDefinitionFormProps) {
   return (
     <>
       <div className="form-section">
@@ -59,27 +55,6 @@ export function EditorDefinitionForm({ template, contextMenus, selectedMenuIds, 
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="context-menus-select">Context Menus Disponíveis</label>
-          <select
-            id="context-menus-select"
-            multiple
-            className="form-select w-full p-2 rounded-md border border-slate-200 min-h-[120px]"
-            value={(selectedMenuIds || []).map(String)}
-            onChange={(e) => {
-              const options = Array.from(e.target.selectedOptions);
-              onMenuChange(options.map(o => Number(o.value)));
-            }}
-            size={5}
-          >
-            {contextMenus.map(menu => (
-              <option key={menu.id} value={menu.id}>
-                {menu.menuName} ({menu.menuId})
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-slate-500 mt-1">Segure Ctrl/Cmd para selecionar múltiplos menus.</p>
-        </div>
 
         <div className="form-group">
           <label className="form-label" htmlFor="constraints">Constraints</label>
