@@ -32,7 +32,7 @@ test-results/
 .pnpm-store/
 coverage/
 
-# Environment variables
+# Env files
 .env
 .env.*
 !.env.example
