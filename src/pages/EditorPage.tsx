@@ -43,6 +43,7 @@ type TemplateFormState = {
   template: TemplatePayload;
   selection: UserSelection;
   freeInputs: FreeInputEntry[];
+  selectedMenuIds: number[];
 };
 
 function splitLines(value: string): string[] {
@@ -71,6 +72,7 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
     template,
     selection: createEmptyUserSelection(template.meta.template_id),
     freeInputs: [{ key: '', value: '' }],
+    selectedMenuIds: [],
   };
 }
 
@@ -90,6 +92,7 @@ function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
     template: TemplatePayloadSchema.parse({ ...template, menu_ids: linkedMenuIds }),
     selection,
     freeInputs: toFreeInputEntries(selection),
+    selectedMenuIds: prompt.selectedMenuIds || [],
   };
 }
 
@@ -157,6 +160,11 @@ export default function EditorPage() {
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
+  );
+  
+  const filteredContextMenus = useMemo(
+    () => availableContextMenus.filter(m => m.id && form.selectedMenuIds.includes(m.id)),
+    [availableContextMenus, form.selectedMenuIds]
   );
 
   useEffect(() => {
@@ -354,6 +362,7 @@ export default function EditorPage() {
     const promptRecord: Omit<Prompt, 'id'> = {
       categoryId: form.categoryId,
       title: summary.title,
+      selectedMenuIds: form.selectedMenuIds,
       promptPayload: template,
       selectionPayload: selection,
       compiledPayload,
@@ -480,13 +489,16 @@ export default function EditorPage() {
 
               <EditorDefinitionForm
                 template={form.template}
+                contextMenus={availableContextMenus}
+                selectedMenuIds={form.selectedMenuIds}
+                onMenuChange={(ids) => setForm((curr) => ({ ...curr, selectedMenuIds: ids }))}
                 updatePromptDefinitionField={updatePromptDefinitionField}
                 updateOutputContractField={updateOutputContractField}
               />
 
               <EditorContextMenuSelector
                 template={form.template}
-                contextMenus={availableContextMenus}
+                contextMenus={filteredContextMenus}
                 onMenuToggle={handleMenuToggle}
               />
 
@@ -515,7 +527,7 @@ export default function EditorPage() {
             <EditorPlayground
               template={form.template}
               selection={form.selection}
-              contextMenus={availableContextMenus}
+              contextMenus={filteredContextMenus}
               onAddFreeInput={addFreeInput}
               onRemoveFreeInput={removeFreeInput}
               onUpdateFreeInput={updateFreeInput}
