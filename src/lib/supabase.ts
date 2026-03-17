@@ -5,6 +5,8 @@ const supabaseAnonKey =
     import.meta.env.VITE_SUPABASE_ANON_KEY ||
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
 if (!supabaseUrl || !supabaseAnonKey) {
     console.warn(
         'Supabase credentials missing. Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY). Cloud sync will be disabled.'

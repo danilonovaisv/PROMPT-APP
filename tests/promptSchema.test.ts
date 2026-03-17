@@ -9,6 +9,7 @@ import {
   createEmptyTemplatePayload,
   createTemplatePayloadFromLegacyRecord,
   sanitizeUserSelection,
+  parsePromptPayload,
 } from '../src/models/promptSchema';
 
 describe('TemplatePayloadSchema', () => {
@@ -186,6 +187,36 @@ describe('sanitizeUserSelection', () => {
         ],
       },
     ]);
+  });
+});
+
+
+describe('parsePromptPayload', () => {
+  it('maps flat legacy JSON keys used by import templates', () => {
+    const payload = parsePromptPayload({
+      title: 'Template legado',
+      system_role: 'Você é especialista em prompts',
+      task: 'Gerar um plano de ação',
+      input_data: {
+        context: 'Contexto vindo de input_data.context',
+      },
+      constraints: ['Não inventar dados'],
+      negative_prompt: ['Não sair do escopo'],
+      output_schema: {
+        formato: 'json',
+        estrutura: 'items[]',
+      },
+      language: 'pt-BR',
+      schema_version: '2.0.0',
+    });
+
+    expect(payload.prompt_definition.system_role).toBe('Você é especialista em prompts');
+    expect(payload.prompt_definition.task).toBe('Gerar um plano de ação');
+    expect(payload.prompt_definition.context).toBe('Contexto vindo de input_data.context');
+    expect(payload.prompt_definition.constraints).toEqual(['Não inventar dados']);
+    expect(payload.prompt_definition.negative_prompt).toEqual(['Não sair do escopo']);
+    expect(payload.output_contract.format).toBe('json');
+    expect(payload.output_contract.response_rules).toEqual(['items[]']);
   });
 });
 
