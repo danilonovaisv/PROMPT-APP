@@ -3,6 +3,11 @@ import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
 import {
+    persistContextMenuRecord,
+    type ContextMenuCloudPayload,
+    type ContextMenuSyncRepository,
+} from '@/services/contextMenuSync';
+import {
     compilePromptPayload,
     getLegacyPromptColumns,
     getPrimaryReferenceUrl,
@@ -10,6 +15,49 @@ import {
     parsePromptPayload,
     parseUserSelection,
 } from '@/models/promptSchema';
+
+const contextMenuRepository: ContextMenuSyncRepository = {
+    async findRemoteIdByUserAndMenuId(userId, menuId) {
+        const { data, error } = await supabase
+            .from('context_menus')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('menu_id', menuId)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return data?.id ?? null;
+    },
+    async insert(payload) {
+        const { data, error } = await supabase
+            .from('context_menus')
+            .insert(payload)
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return { id: data.id };
+    },
+    async updateById(id, payload) {
+        const { data, error } = await supabase
+            .from('context_menus')
+            .upsert({ id, ...payload })
+            .select()
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        return { id: data.id };
+    },
+};
 
 export const syncToCloud = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -79,7 +127,7 @@ export const syncToCloud = async () => {
     for (const menu of menusToSync) {
         const { id, remoteId, ...data } = menu as ContextMenu;
 
-        const payload = {
+        const payload: ContextMenuCloudPayload = {
             user_id: userId,
             menu_id: data.menuId,      // map camelCase -> snake_case
             menu_name: data.menuName,
@@ -88,35 +136,19 @@ export const syncToCloud = async () => {
             options: data.options
         };
 
-        // Para menus, temos constraint unique(user_id, menu_id)
-        // Podemos usar upsert com onConflict se não tivermos remoteId
-        // Mas se tivermos, melhor usar ID.
+        try {
+            const result = await persistContextMenuRecord(contextMenuRepository, payload, remoteId);
 
-        let result;
-        if (remoteId) {
-            result = await supabase.from('context_menus')
-                .upsert({ id: remoteId, ...payload })
-                .select()
-                .single();
-        } else {
-            // Tenta upsert pelo unique key para recuperar ID se existir
-            result = await supabase.from('context_menus')
-                .upsert(payload, { onConflict: 'user_id, menu_id' })
-                .select()
-                .single();
-        }
-
-        if (result.error) {
-            console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, result.error);
+            if (id && result.id !== remoteId) {
+                await db.contextMenus.update(id, { remoteId: result.id, syncStatus: 'synced' });
+            }
+            if (id && result.id === remoteId) {
+                await db.contextMenus.update(id, { syncStatus: 'synced' });
+            }
+        } catch (error) {
+            console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, error);
             if (id) {
                 await db.contextMenus.update(id, { syncStatus: 'error' });
-            }
-        } else if (result.data) {
-            if (id && result.data.id !== remoteId) {
-                await db.contextMenus.update(id, { remoteId: result.data.id, syncStatus: 'synced' });
-            }
-            if (id && result.data.id === remoteId) {
-                await db.contextMenus.update(id, { syncStatus: 'synced' });
             }
         }
     }
