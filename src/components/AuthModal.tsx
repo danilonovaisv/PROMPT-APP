@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
-import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { X, Mail, Lock, LogIn, UserPlus, KeyRound } from 'lucide-react';
 
 interface AuthModalProps {
@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         setLoading(true);
 
         if (!isSupabaseConfigured) {
-            showToast('Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.', 'error');
+            showToast(supabaseConfigErrorMessage, 'error');
             setLoading(false);
             return;
         }

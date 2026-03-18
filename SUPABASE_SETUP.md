@@ -13,6 +13,16 @@ VITE_SUPABASE_URL=sua_url_aqui
 VITE_SUPABASE_ANON_KEY=sua_chave_anon_aqui
 ```
 
+> URL já conhecida do projeto em produção: `https://dpejskjpghoozbpfxkpf.supabase.co`.
+> A `VITE_SUPABASE_ANON_KEY` deve ser obtida no painel Supabase em **Project Settings > API > anon public key** e configurada no ambiente (não commitar em código).
+
+### Netlify (produção)
+
+No Netlify, configure as mesmas variáveis em **Site configuration → Environment variables**:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
 ## 2. Tabelas do Banco de Dados (SQL)
 
 Execute o script abaixo no **SQL Editor** do seu painel Supabase.

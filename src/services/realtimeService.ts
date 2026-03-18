@@ -2,16 +2,16 @@
    Serviço de Realtime do Supabase
    ====================================================== */
 
-import { supabase } from "@/lib/supabase";
+import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import type {
   Category,
   ContextMenu,
-  ContextMenuOption,
   Prompt,
 } from "@/models/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { saveLocalBackup } from "@/utils/backupManager";
+import { normalizeContextMenuOptions } from "@/utils/contextMenuOptions";
 import {
   compilePromptPayload,
   parsePromptPayload,
@@ -27,6 +27,8 @@ let menusChannel: RealtimeChannel | null = null;
  * Inicializa os listeners de realtime do Supabase
  */
 export async function setupRealtimeListeners() {
+  assertSupabaseConfigured();
+
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     console.log("⏭️ Usuário não autenticado - realtime desativado");
@@ -316,7 +318,7 @@ async function handleMenuChange(payload: {
           description: remoteData.description as string,
           selectionMode: (remoteData.selection_mode as "single" | "multiple") ||
             "single",
-          options: remoteData.options as ContextMenuOption[] || [],
+          options: normalizeContextMenuOptions(remoteData.options),
           createdAt: new Date(remoteData.created_at as string),
           updatedAt: new Date(remoteData.updated_at as string),
           syncStatus: "synced",
