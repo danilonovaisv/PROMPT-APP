@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 /**
  * Logger utility for consistent logging across the application
  * Replaces direct console.* calls with environment-aware logging
@@ -31,10 +32,15 @@ export const logger: Logger = {
 
   error: (msg: string, error?: Error | unknown) => {
     console.error(`[ERROR] ${msg}`, error ?? "");
-    // TODO: Integrate with Sentry or other error tracking service
-    // if (import.meta.env.PROD && error instanceof Error) {
-    //   Sentry.captureException(error);
-    // }
+    if (import.meta.env.PROD && error instanceof Error && import.meta.env.VITE_SENTRY_DSN) {
+      Sentry.captureException(error, {
+        extra: { msg }
+      });
+    } else if (import.meta.env.PROD && error !== undefined && import.meta.env.VITE_SENTRY_DSN) {
+       Sentry.captureMessage(`[ERROR] ${msg}`, {
+          extra: { error }
+       });
+    }
   },
 };
 
