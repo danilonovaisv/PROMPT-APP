@@ -9,7 +9,7 @@ import { seedDatabase } from '@/db/database';
 import { setupAutoSync } from '@/services/autoSync';
 import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
 import { syncToCloud } from '@/services/syncService';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -55,6 +55,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔐 Auth state changed:', event);
       

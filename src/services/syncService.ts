@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { assertSupabaseConfigured, supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
@@ -15,6 +15,7 @@ import {
     parsePromptPayload,
     parseUserSelection,
 } from '@/models/promptSchema';
+import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 
 const contextMenuRepository: ContextMenuSyncRepository = {
     async findRemoteIdByUserAndMenuId(userId, menuId) {
@@ -60,6 +61,8 @@ const contextMenuRepository: ContextMenuSyncRepository = {
 };
 
 export const syncToCloud = async () => {
+    assertSupabaseConfigured();
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
         throw new Error('Usuário não autenticado');
@@ -133,7 +136,7 @@ export const syncToCloud = async () => {
             menu_name: data.menuName,
             description: data.description,
             selection_mode: data.selectionMode,
-            options: data.options
+            options: normalizeContextMenuOptions(data.options)
         };
 
         try {
@@ -221,6 +224,8 @@ export const syncToCloud = async () => {
 };
 
 export const downloadFromCloud = async () => {
+    assertSupabaseConfigured();
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('Usuário não autenticado');
 
@@ -316,7 +321,7 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                     menuName: m.menu_name,
                     description: m.description,
                     selectionMode: m.selection_mode || 'single',
-                    options: m.options, // JSONB vem direto
+                    options: normalizeContextMenuOptions(m.options),
                     createdAt: new Date(m.created_at),
                     updatedAt: new Date(m.updated_at),
                     syncStatus: 'synced' as const,

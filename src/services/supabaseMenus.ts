@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import type { ContextMenu } from '@/models/types';
+import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 
 export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
@@ -14,7 +15,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         menu_name: input.menuName,
         description: input.description,
         selection_mode: input.selectionMode || 'single',
-        options: input.options || [],
+        options: normalizeContextMenuOptions(input.options),
         updated_at: new Date().toISOString(),
     };
 

@@ -3,7 +3,7 @@
    ====================================================== */
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
@@ -20,6 +20,10 @@ export default function CloudSyncItem() {
     const { showToast } = useToast();
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            return;
+        }
+
         // 1. Check session on mount
         supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
             setSession(currentSession);
@@ -83,6 +87,10 @@ export default function CloudSyncItem() {
     };
 
     const handleLogin = () => {
+        if (!isSupabaseConfigured) {
+            showToast(supabaseConfigErrorMessage, 'error');
+            return;
+        }
         setIsAuthModalOpen(true);
     };
 
