@@ -58,7 +58,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
-          (local as any).updatedAt || local.createdAt,
+          'updatedAt' in local ? (local as { updatedAt: Date }).updatedAt : local.createdAt,
         );
 
         if (remoteUpdated > localUpdated) {
@@ -85,7 +85,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
-          (local as any).updatedAt || local.createdAt,
+          local.updatedAt || local.createdAt,
         );
 
         if (remoteUpdated > localUpdated) {
