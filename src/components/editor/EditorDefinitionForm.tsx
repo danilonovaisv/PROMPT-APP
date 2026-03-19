@@ -1,4 +1,7 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
+import type { ContextMenu } from '@/models/types';
+import { useState } from 'react';
+import { ChevronDown, Plus, X, Search } from 'lucide-react';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -10,11 +13,47 @@ type EditorDefinitionFormProps = {
     field: K,
     value: PromptOutputContract[K]
   ) => void;
+  selectedMenuIds?: number[];
+  onMenuSelectionChange?: (menuIds: number[]) => void;
+  availableContextMenus?: ContextMenu[];
 };
 
-const PROMPT_OUTPUT_FORMATS = ['markdown', 'json', 'xml', 'yaml', 'html', 'text'] as const;
+const PROMPT_OUTPUT_FORMATS = ['text', 'json', 'xml', 'yaml', 'html', 'code'] as const;
 
-export function EditorDefinitionForm({ template, updatePromptDefinitionField, updateOutputContractField }: EditorDefinitionFormProps) {
+export function EditorDefinitionForm({ 
+  template, 
+  updatePromptDefinitionField, 
+  updateOutputContractField,
+  selectedMenuIds = [],
+  onMenuSelectionChange,
+  availableContextMenus = []
+}: EditorDefinitionFormProps) {
+  const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false);
+  const [menuSearch, setMenuSearch] = useState('');
+
+  const filteredAvailableMenus = availableContextMenus.filter(menu => 
+    !selectedMenuIds.includes(menu.id!) &&
+    (menu.menuName.toLowerCase().includes(menuSearch.toLowerCase()) || 
+     menu.menuId.toLowerCase().includes(menuSearch.toLowerCase()))
+  );
+
+  const selectedMenus = availableContextMenus.filter(menu => 
+    selectedMenuIds.includes(menu.id!)
+  );
+
+  const handleAddMenu = (menuId: number) => {
+    if (onMenuSelectionChange) {
+      onMenuSelectionChange([...selectedMenuIds, menuId]);
+    }
+    setMenuSearch('');
+  };
+
+  const handleRemoveMenu = (menuId: number) => {
+    if (onMenuSelectionChange) {
+      onMenuSelectionChange(selectedMenuIds.filter(id => id !== menuId));
+    }
+  };
+
   return (
     <>
       <div className="form-section">
@@ -77,6 +116,102 @@ export function EditorDefinitionForm({ template, updatePromptDefinitionField, up
             placeholder="Uma proibição por linha"
           />
         </div>
+
+        {/* Menu Selection Multi-Select */}
+        {availableContextMenus.length > 0 && (
+          <div className="form-group">
+            <label className="form-label">
+              Menus do Template
+            </label>
+            <p className="form-label__hint" style={{ marginBottom: '0.5rem' }}>
+              Selecione os menus que estarão disponíveis neste template
+            </p>
+            
+            <div className="ctx-picker" style={{ position: 'relative' }}>
+              <div className="ctx-picker__row">
+                <div className="ctx-picker__wrapper">
+                  <button 
+                    type="button"
+                    className={`btn btn--secondary ctx-picker__trigger ${isMenuDropdownOpen ? 'btn--active' : ''}`}
+                    onClick={() => setIsMenuDropdownOpen(!isMenuDropdownOpen)}
+                  >
+                    <Plus size={16} />
+                    <span>Adicionar Menu</span>
+                    <ChevronDown size={14} className={`ctx-chevron ${isMenuDropdownOpen ? 'ctx-chevron--open' : ''}`} />
+                  </button>
+
+                  {isMenuDropdownOpen && (
+                    <div className="ctx-picker__dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100 }}>
+                      <div className="ctx-picker__search">
+                        <Search size={14} />
+                        <input 
+                          type="text" 
+                          placeholder="Pesquisar menus..." 
+                          value={menuSearch}
+                          onChange={(e) => setMenuSearch(e.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                      
+                      <div className="ctx-picker__options-list">
+                        {filteredAvailableMenus.length === 0 ? (
+                          <div className="ctx-picker__empty">
+                            {menuSearch ? 'Nenhum menu corresponde à pesquisa' : 'Todos os menus já foram selecionados'}
+                          </div>
+                        ) : (
+                          filteredAvailableMenus.map((menu) => (
+                            <button
+                              key={menu.id}
+                              type="button"
+                              className="ctx-picker__option"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                handleAddMenu(menu.id!);
+                                setIsMenuDropdownOpen(false);
+                              }}
+                            >
+                              <div className="ctx-picker__option-info">
+                                <span className="ctx-picker__option-name">{menu.menuName}</span>
+                                <span className="ctx-picker__option-id">{menu.menuId}</span>
+                              </div>
+                              <Plus size={14} />
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="ctx-picker__summary">
+                  {selectedMenus.length} selecionado(s)
+                </div>
+              </div>
+
+              <div className="ctx-tag-cloud" style={{ marginTop: '0.75rem' }}>
+                {selectedMenus.length === 0 ? (
+                  <div className="ctx-empty-hint">
+                    <span className="opacity-50 italic">Nenhum menu selecionado. Clique no botão acima para adicionar.</span>
+                  </div>
+                ) : (
+                  selectedMenus.map((menu) => (
+                    <div key={menu.id} className="ctx-tag">
+                      <span className="ctx-tag__name">{menu.menuName}</span>
+                      <button
+                        type="button"
+                        className="ctx-tag__remove"
+                        onClick={() => handleRemoveMenu(menu.id!)}
+                        title={`Remover ${menu.menuName}`}
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="form-section">

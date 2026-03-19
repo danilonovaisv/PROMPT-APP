@@ -27,7 +27,7 @@ import {
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { copyToClipboard, downloadJson } from '@/utils/exportJson';
+import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
 import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
@@ -413,11 +413,18 @@ export default function EditorPage() {
   };
 
   const handleCopy = async () => {
-    if (!previewState.payload || !previewState.renderedPrompt) {
+    if (!previewState.payload || previewState.error) {
       showToast(previewState.error || 'Payload inválido', 'error');
       return;
     }
-    const ok = await copyToClipboard(previewState.renderedPrompt);
+    
+    // Use structured markdown format
+    const templatePayload = previewState.template as TemplatePayload | null;
+    const markdownPrompt = templatePayload && previewState.payload
+      ? formatPromptAsMarkdown(templatePayload, previewState.payload)
+      : previewState.renderedPrompt;
+    
+    const ok = await copyToClipboard(markdownPrompt);
     showToast(ok ? 'Prompt final copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
   };
 

@@ -123,7 +123,9 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
             {/* Main */}
             <main className="app-main" id="main-content" tabIndex={-1}>
-                {children}
+                <div className="app-content-wrapper">
+                    {children}
+                </div>
                 <footer className="app-footer">
                     <span>Prompt App • Engenharia de Prompts</span>
                     <nav className="app-footer__links" aria-label="Links informativos">
