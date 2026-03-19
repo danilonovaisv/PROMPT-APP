@@ -284,33 +284,6 @@ INSERT INTO "public"."categories" ("id", "user_id", "name", "icon", "color", "cr
 SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 6, true);
 
 
---
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."categories_id_seq"', 6, true);
-
-
---
--- Name: context_menus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."context_menus_id_seq"', 1, false);
-
-
---
--- Name: prompts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."prompts_id_seq"', 1, false);
-
-
---
--- Name: templates_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('"public"."templates_id_seq"', 3, true);
-
 
 --
 -- Name: hooks_id_seq; Type: SEQUENCE SET; Schema: supabase_functions; Owner: supabase_functions_admin
