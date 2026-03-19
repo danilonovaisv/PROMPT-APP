@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "analysis_depth",
+      "menu_name": "Analysis Depth",
+      "description": "Set the level of detail for the material analysis output. Higher depth produces more granular optical and surface properties but results in longer analysis time.",
+      "options": [
+        {
+          "label": "Quick Scan — Prompt Ready (Phase 3 Only)",
+          "value": "quick_scan",
+          "sub_options": [
+            { "label": "Single Model Prompt", "value": "quick_single_model" },
+            { "label": "All Three Models", "value": "quick_all_models" }
+          ]
+        },
+        {
+          "label": "Standard — Full 5-Phase Analysis",
+          "value": "standard_full",
+          "sub_options": [
+            { "label": "With Summary Card", "value": "standard_with_card" },
+            { "label": "Without Summary Card", "value": "standard_no_card" }
+          ]
+        },
+        {
+          "label": "Deep Engineering — Maximum Detail",
+          "value": "deep_engineering",
+          "sub_options": [
+            { "label": "Include Ra Surface Roughness Values", "value": "deep_with_ra_values" },
+            { "label": "Include Refractive Index Estimates", "value": "deep_with_ior" },
+            { "label": "Include BRDF Model Specification", "value": "deep_with_brdf_spec" },
+            { "label": "Full Engineering Report (All Sub-analyses)", "value": "deep_full_report" }
+          ]
+        },
+        {
+          "label": "Negative Prompts Only",
+          "value": "negative_prompts_only",
+          "sub_options": [
+            { "label": "Universal Negatives Only", "value": "negatives_universal" },
+            { "label": "Universal + Material-Specific Negatives", "value": "negatives_full" }
+          ]
+        }
+      ]
+    }
+  ]
+}

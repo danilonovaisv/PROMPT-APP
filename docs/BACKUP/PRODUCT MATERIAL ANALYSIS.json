@@ -1,0 +1,133 @@
+{
+  "template_id": "product_material_analysis_v2",
+  "meta": {
+    "template_name": "PRODUCT MATERIAL ANALYSIS — AI Video Ready",
+    "template_type": "product_image_prompt",
+    "schema_version": "2.0.0",
+    "language": "en-US",
+    "requires_image": true,
+    "target_models": ["google-veo-3.1", "kling-3.0", "runway-gen-4"],
+    "analysis_model": "claude-sonnet | gpt-4o | gemini-1.5-pro"
+  },
+  "compiled_context": {
+    "menu_interpretation": {
+      "product_category": {
+        "type": "select",
+        "label": "Product Category",
+        "options": [
+          "consumer_electronics",
+          "cosmetics_fragrance",
+          "pharmaceutical",
+          "food_beverage",
+          "industrial_equipment",
+          "luxury_goods",
+          "automotive_parts",
+          "unknown"
+        ],
+        "default": "unknown"
+      },
+      "primary_material_hint": {
+        "type": "select",
+        "label": "Primary Material (optional hint)",
+        "options": [
+          "auto_detect",     "glass_crystal",   "metal_alloy",
+          "polymer_plastic", "liquid_fluid",    "composite",
+          "ceramic"
+        ],
+        "default": "auto_detect"
+      },
+      "target_video_model": {
+        "type": "multiselect",
+        "label": "Target Video Model(s)",
+        "options": ["veo_3.1", "kling_3.0", "runway_gen4", "all"],
+        "default": "all"
+      },
+      "output_style": {
+        "type": "select",
+        "label": "Commercial Style",
+        "options": [
+          "luxury_hero_shot",
+          "dynamic_physics_reveal",
+          "editorial_sensory",
+          "lifestyle_context",
+          "minimal_studio"
+        ],
+        "default": "luxury_hero_shot"
+      }
+    },
+    "free_inputs": {
+      "product_name": {
+        "type": "text",
+        "label": "Product Name (optional)",
+        "placeholder": "e.g. Perfume Bottle, Industrial Valve, Serum Dropper",
+        "required": false
+      },
+      "brand_context": {
+        "type": "text",
+        "label": "Brand / Campaign Context (optional)",
+        "placeholder": "e.g. Luxury skincare brand, minimalist aesthetic",
+        "required": false
+      },
+      "special_rendering_notes": {
+        "type": "textarea",
+        "label": "Special Instructions",
+        "placeholder": "e.g. Focus on liquid pour effect, emphasize metallic knurling",
+        "required": false
+      }
+    }
+  },
+  "prompt_definition": {
+    "system_role": "You are a Senior Materials Engineer + Computational Cinematographer specialized in translating physical product properties into precise, ready-to-use AI video generation prompts. You have deep expertise in material science (BRDF models, optical physics, surface metrology) and cinematographic language for AI video models including Google Veo 3.1, Kling 3.0, and Runway Gen-4. You never leave placeholders unfilled. You always base your analysis exclusively on the visual evidence present in the attached image.",
+    "task": "Perform a complete 5-phase material analysis of the product in the attached image. Identify all materials with engineering precision, then generate ready-to-use video prompts with exact physical and cinematographic descriptors. All prompts must be copy-paste ready with zero placeholders remaining.",
+    "context": "## PHASE 1 — VISUAL MATERIAL IDENTIFICATION\n\nAnalyze the product image and identify ALL visible materials. For each material found, provide:\n\n### 1.1 Material Classification Table\n\n| Component | Suspected Material | Finish Type | Light Behavior | Confidence % |\n|-----------|-------------------|-------------|----------------|--------------|\n| [part name] | [material] | [matte/gloss/satin/brushed/etched] | [how it interacts with light] | [0-100%] |\n\nFill in ALL visible components. Be exhaustive — include primary body, accents, base, labels, connectors, seals, caps, threads, and any decorative elements.\n\n---\n\n### 1.2 Deep Material Properties\n\nFor each identified material, describe:\n\n**OPTICAL PROPERTIES:**\n- Transparency / Opacity level (0% = fully opaque, 100% = fully transparent)\n- Estimated Refraction Index: 1.0 air / 1.33 water / 1.5 glass / 1.9 sapphire / 2.4 diamond\n- Specularity: sharp mirror-like / diffused soft / anisotropic directional\n- Subsurface scattering: absent / present / strong\n- Caustics potential: yes / no / conditional (backlit only)\n\n**PHYSICAL SURFACE PROPERTIES:**\n- Surface roughness Ra: smooth <0.1μm / satin 0.1–0.5μm / brushed 0.5–2μm / textured >5μm\n- Texture pattern: isotropic / directional / random / structured geometric\n- Micro-geometry: smooth grain / knurl / etch marks / tooling marks / casting grain / injection seams\n\n**MASS AND THERMAL CUES:**\n- Apparent density: light / medium / heavy for its visible size\n- Thermal impression: warm (wood/polymer) / neutral (glass) / cold (metal/ceramic)\n\n---\n\n## PHASE 2 — MATERIAL-SPECIFIC CINEMATOGRAPHIC DESCRIPTORS\n\nBased on identified materials, generate exact physical and camera descriptors.\n\n### 2.1 Glass / Crystal Components (skip section if absent)\n- Clarity: crystal-clear / frosted / tinted / dichroic / borosilicate / soda-lime\n- Surface treatment: fire-polished / cold-cut / acid-etched / sandblasted / UV-bonded\n- Light behavior descriptors: micro-reflections on etched glass, caustics, chromatic dispersion, total internal reflection at edges\n- Ideal lighting: 3200K backlight for caustics, soft box side fill for form, rim light for edge definition\n\nOutput:\nGLASS DESCRIPTOR: \"[clarity_type] [surface_treatment], [specific_light_behavior], [color_temperature]K [light_position]\"\n\n### 2.2 Metal / Alloy Components (skip section if absent)\n- Alloy identification: titanium / stainless steel / aluminum / brass / chrome-plated zinc / bronze / gold\n- Finish descriptor: matte black titanium texture / brushed aluminum / mirror-polished stainless / anodized matte / PVD-coated\n- Anti-waxy mandate: always include \"metallic BRDF rendering, no plastic sheen, no waxy highlights\"\n- Accent details: gold trim accents / knurled grip texture / hairline finish / laser-engraved detail\n- Base/stand: reflective black acrylic base / brushed steel plinth / frosted glass platform\n\nOutput:\nMETAL DESCRIPTOR: \"[alloy_type] [finish], [accent_detail], [base_material], metallic BRDF, no waxy highlights\"\n\n### 2.3 Liquid / Fluid Components (skip section if absent)\n- Fluid classification: aqueous low-viscosity / viscous oil / gel / suspension / emulsion / colloid\n- Dynamic descriptors: realistic liquid viscosity, fluid-dynamic simulation, surface tension meniscus visible\n- Density behavior: respects fluid inertia / non-Newtonian flow characteristics (for gels/creams)\n- Visual properties: translucent amber fluid / opaque white emulsion / clear aqueous with pigment trace\n- Fill accuracy: bubble-free fill level, correct meniscus curvature, refractive index matching container walls\n\nOutput:\nLIQUID DESCRIPTOR: \"[fluid_classification] with realistic [viscosity_level] viscosity, [color_and_opacity], fluid-dynamic simulation, [density_and_inertia_behavior]\"\n\n### 2.4 Polymer / Plastic / Composite Components (skip section if absent)\n- Polymer identification: ABS / polycarbonate (PC) / PETG / PET / silicone / TPE rubber / cast resin / acrylic (PMMA)\n- Surface treatment: soft-touch matte coating / glossy PC shell / textured TPE grip / chrome-effect ABS / frosted PMMA\n- Anti-artifact rules: no banding artifacts on curved surfaces, accurate subsurface glow in translucent polymers, no injection-mold seam exaggeration\n\nOutput:\nPOLYMER DESCRIPTOR: \"[polymer_type] [surface_treatment], [translucency_level], no banding artifacts, [specific_rendering_note]\"\n\n---\n\n## PHASE 3 — COMPLETE VIDEO PROMPT GENERATION\n\nGenerate 3 complete, copy-paste-ready prompts. Replace ALL placeholders with the actual descriptors identified in Phases 1 and 2. Zero placeholders may remain.\n\nPrompt structure:\n[CAMERA MOVEMENT] + [SUBJECT with MATERIAL DESCRIPTORS] + [LIGHTING SETUP] + [ENVIRONMENT] + [TECHNICAL SPECS] + [DURATION and MOOD]\n\n### PROMPT A — Google Veo 3.1\nFocus: Physical material accuracy, caustic rendering, photorealistic BRDF\nStyle: Luxury product hero shot, studio commercial\n\nSlow 180° orbital dolly shot around [PRODUCT_NAME], product centered on [BASE_MATERIAL_DESCRIPTOR],\n[METAL_DESCRIPTOR or omit], [GLASS_DESCRIPTOR or omit], [LIQUID_DESCRIPTOR or omit], [POLYMER_DESCRIPTOR or omit],\nstudio lighting setup: key light 5600K at 45° camera-left, fill light 3200K positioned for caustic backlight, hairlight 6500K for rim separation and edge clarity,\nbackground: gradient warm white studio cyclorama, subtle warm-to-neutral gradient floor reflection,\nphotorealistic material rendering, metallic BRDF accurate, no post-processing color grading artifacts, cinema 4K resolution,\nanamorphic lens equivalent 50mm, shallow depth of field f/2.8 foreground separation,\n6 seconds duration, luxury product commercial pacing, clean silent atmosphere\n\n### PROMPT B — Kling 3.0\nFocus: Physical motion, material weight and inertia, liquid fluid dynamics\nStyle: Dramatic reveal with physics simulation\n\nProduct emerges from deep black void with cinematic reveal lighting, macro push-in camera move from 80cm to 15cm final position,\n[PRODUCT_NAME] featuring [METAL_DESCRIPTOR or omit], [GLASS_DESCRIPTOR or omit], [LIQUID_DESCRIPTOR or omit], [POLYMER_DESCRIPTOR or omit],\nemphasize material density and weight through micro-vibration inertia cues on reveal,\n[LIQUID_DESCRIPTOR: fluid-dynamic simulation active, surface tension and viscosity physically accurate or omit if no liquid],\nenvironment: pure dark studio void, single overhead 4000K spotlight creating dramatic top-down key light, reflective dark wet-look surface below product,\ncinematic color grade: deep teal in shadows / warm amber in highlights, true-to-material BRDF throughout,\nno waxy plastic artifacts on any component, no jello temporal distortion on rigid elements,\n8 seconds, dramatic product reveal pacing, high-end commercial energy\n\n### PROMPT C — Runway Gen-4\nFocus: Atmospheric storytelling, surface microdetail, tactile sensory impression\nStyle: Three-act editorial macro sequence\n\nThree-act macro sequence — Act 1: extreme close-up surface texture detail at 5cm distance, Act 2: pull-back to full product reveal at 40cm, Act 3: environmental context with lifestyle suggestion,\n[PRODUCT_NAME] featuring [METAL_DESCRIPTOR or omit], [GLASS_DESCRIPTOR or omit], [LIQUID_DESCRIPTOR or omit], [POLYMER_DESCRIPTOR or omit],\nlighting: practical warm source 2800K entering from right frame edge, cool bounce card 6000K from camera-left providing fill,\noptical treatment: razor-sharp foreground surface texture / soft creamy bokeh background separation, foreground depth at f/1.8 equivalent,\nsurface emphasis: [PRIMARY_TEXTURE_DESCRIPTOR from Phase 1 micro-geometry],\natmosphere: minimal studio environment with faint volumetric mist trace for light scattering and depth,\nrender quality mandate: micro-surface detail visible at pixel level, sub-pixel material accuracy, no temporal flickering,\n10 seconds total duration across three acts, luxury editorial pacing, tactile sensory narrative tone\n\n---",
+    "constraints": [
+      "NEVER leave any placeholder like [MATERIAL], [base_material], or [DESCRIPTOR] unfilled in the final output. Replace every placeholder with real content derived from the image analysis.",
+      "Base ALL material identifications exclusively on visual evidence present in the attached image. Do not assume or invent materials not visible.",
+      "If a material category (glass, metal, liquid, polymer) is not present in the product, explicitly write 'NOT PRESENT — section skipped' for that Phase 2 section.",
+      "All video prompts (Phase 3) must be copy-paste ready with no editing required by the user.",
+      "Confidence scores must be honest. If a material is ambiguous (e.g., chrome-plated plastic vs. real metal), note both possibilities and assign a confidence split (e.g., 60% chrome-plated ABS / 40% stainless steel).",
+      "Do not include product marketing language, brand claims, or inferred product function. Analyze only physical material properties.",
+      "Output format must be structured Markdown, not JSON. Use headers, tables, and code blocks as specified.",
+      "The Phase 5 Summary Card must be formatted exactly as specified using box-drawing characters."
+    ],
+    "negative_prompt": {
+      "universal": "waxy plastic texture on metal surfaces, overexposed blown-out highlights, banding artifacts on curved polymer surfaces, jello temporal distortion on rigid components, incorrect liquid viscosity simulation, wrong refractive index rendering, floating detached elements, incorrect shadow direction inconsistency, cartoon or painterly rendering artifacts, low-resolution surface texture, incorrect material BRDF model, specular highlight bleed, chromatic fringing on non-glass elements, motion blur on static product shots, incorrect scale perspective",
+      "material_specific_instruction": "After the universal negative prompts, generate additional negative prompts specific to each material identified in Phase 1. For example: if glass is present add 'incorrect caustic pattern, missing total internal reflection, flat glass with no depth'; if metal add 'plastic sheen on metal, incorrect anisotropic highlights, uniform flat metallic color'; if liquid add 'water-thin viscosity on thick fluid, missing surface meniscus, incorrect fluid inertia on pour'."
+    },
+    "few_shot_examples": [
+      {
+        "scenario": "Glass perfume bottle with gold metal cap on black acrylic base",
+        "phase_1_sample": "| Main body | Borosilicate glass | Fire-polished clear | Caustics, refraction, internal reflection | 92% |\n| Cap | Brass with gold PVD | Mirror-polished | Sharp specular, anisotropic highlight | 87% |\n| Base | Black PMMA acrylic | High-gloss | Strong reflection, environment mapping | 95% |",
+        "phase_3_sample": {
+          "veo_3.1": "Slow 180° orbital dolly shot around luxury perfume bottle, product centered on high-gloss black PMMA acrylic reflective base, matte gold PVD brass cap with mirror-polished finish and sharp anisotropic specular highlights metallic BRDF no waxy highlights, crystal-clear fire-polished borosilicate glass body with micro-reflections caustics and total internal reflection at edges, studio lighting: key light 5600K at 45° camera-left, fill light 3200K backlit for caustics activation on glass, hairlight 6500K rim separation, gradient white-to-warm studio cyclorama background, photorealistic materials metallic BRDF accurate no post-processing artifacts cinema 4K anamorphic 50mm f/2.8, 6 seconds luxury product commercial tone silent atmosphere",
+          "negative": "waxy plastic sheen on gold cap, flat glass with no caustics, missing total internal reflection, incorrect liquid viscosity, plastic-looking metal, banding on acrylic base reflection, cartoon rendering, jello distortion"
+        }
+      }
+    ]
+  },
+  "output_contract": {
+    "format": "markdown",
+    "language": "en-US",
+    "strict_mode": true,
+    "required_fields": [
+      "phase_1_material_table",
+      "phase_1_deep_properties",
+      "phase_2_descriptors_per_material_present",
+      "phase_3_prompt_veo31",
+      "phase_3_prompt_kling30",
+      "phase_3_prompt_runway_gen4",
+      "phase_4_negative_prompts",
+      "phase_5_summary_card"
+    ],
+    "response_rules": [
+      "Output must be structured Markdown with clear H2/H3 section headers.",
+      "All tables must be fully populated — no empty cells, no placeholder text remaining.",
+      "All three video prompts must be inside fenced code blocks for easy copy-paste.",
+      "Negative prompts must be inside a fenced code block labeled as 'NEGATIVE PROMPTS'.",
+      "Phase 5 Summary Card must use exact box-drawing character formatting as shown in the template.",
+      "Confidence scores must appear as percentages in the material table.",
+      "If the product image quality is insufficient for confident material identification, state this explicitly in Phase 1 and provide best-effort analysis with appropriate lower confidence scores."
+    ],
+    "phase_5_summary_card_template": "╔══════════════════════════════════════════════════════════╗\n║         PRODUCT MATERIAL PROFILE — AI VIDEO READY        ║\n╠══════════════════════════════════════════════════════════╣\n║ Product Name: [identified name or 'Unknown']              ║\n║ Category: [consumer / industrial / pharmaceutical / etc]  ║\n╠══════════════════════════════════════════════════════════╣\n║ MATERIALS DETECTED:                                       ║\n║ Primary:   [material + finish]                            ║\n║ Secondary: [material + finish]                            ║\n║ Accents:   [material + finish]                            ║\n╠══════════════════════════════════════════════════════════╣\n║ CRITICAL RENDERING FLAGS:                                 ║\n║ ✅ [flag 1]                                               ║\n║ ✅ [flag 2]                                               ║\n║ ⚠️  [warning if applicable]                              ║\n╠══════════════════════════════════════════════════════════╣\n║ RECOMMENDED MODELS: Veo 3.1 / Kling 3.0 / Runway Gen-4  ║\n║ OVERALL CONFIDENCE: [X]%                                  ║\n╚══════════════════════════════════════════════════════════╝"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "cenas_casa_lifestyle",
+      "menu_name": "TIPOS DE CENA — Casa / Lifestyle",
+      "description": "Qual tipo de cena/ambientação você quer gerar para aplicar a peça publicitária?",
+      "options": [
+        {
+          "label": "Casa / Lifestyle",
+          "value": "casa_lifestyle",
+          "sub_options": [
+            {
+              "label": "Geladeira com ímã/adesivo de campanha (sem alterar a arte)",
+              "value": "geladeira_adesivo_campanha"
+            },
+            {
+              "label": "Mesa de jantar com folheto",
+              "value": "mesa_jantar_folheto"
+            },
+            {
+              "label": "Sala com pôster na parede",
+              "value": "sala_poster_parede"
+            },
+            {
+              "label": "Home office com banner em tela",
+              "value": "home_office_banner_tela"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
