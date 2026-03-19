@@ -32,7 +32,6 @@ import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
 import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
-import { EditorContextMenuSelector } from '@/components/editor/EditorContextMenuSelector';
 import { EditorPlayground } from '@/components/editor/EditorPlayground';
 import { EditorPreviewModal } from '@/components/editor/EditorPreviewModal';
 
@@ -76,27 +75,79 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
   };
 }
 
-function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
-  const template = parsePromptPayload(prompt.promptPayload);
-  const linkedMenuIds = [
-    ...new Set([...(template.menu_ids || []), ...template.menu_definitions.map((menu) => menu.menu_id)]),
-  ];
-  const selection = parseUserSelection(prompt.selectionPayload, template.meta.template_id, {
+function getLinkedContextMenusFromSelection(
+  contextMenus: ContextMenu[],
+  selectedMenuIds: number[],
+) {
+  return contextMenus.filter(
+    (menu): menu is ContextMenu & { id: number } =>
+      typeof menu.id === 'number' && selectedMenuIds.includes(menu.id),
+  );
+}
+
+function syncFormMenus(current: TemplateFormState, contextMenus: ContextMenu[]): TemplateFormState {
+  const linkedContextMenus = getLinkedContextMenusFromSelection(
+    contextMenus,
+    current.selectedMenuIds,
+  );
+  const linkedMenuIds = linkedContextMenus.map((menu) => menu.menuId);
+  const template = syncTemplateWithLinkedMenus(
+    TemplatePayloadSchema.parse({ ...current.template, menu_ids: linkedMenuIds }),
+    linkedContextMenus,
+  );
+
+  return {
+    ...current,
+    template,
+    selection: UserSelectionSchema.parse({
+      ...current.selection,
+      template_id: template.meta.template_id,
+      selected_menus: current.selection.selected_menus.filter((item) =>
+        linkedMenuIds.includes(item.menu_id),
+      ),
+    }),
+  };
+}
+
+function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): TemplateFormState {
+  const parsedTemplate = parsePromptPayload(prompt.promptPayload);
+  const persistedMenuIds = prompt.selectedMenuIds || [];
+  const inferredSelectedMenuIds =
+    persistedMenuIds.length > 0
+      ? persistedMenuIds
+      : contextMenus
+          .filter(
+            (menu): menu is ContextMenu & { id: number } =>
+              typeof menu.id === 'number' &&
+              [
+                ...(parsedTemplate.menu_ids || []),
+                ...parsedTemplate.menu_definitions.map((menuDefinition) => menuDefinition.menu_id),
+              ].includes(menu.menuId),
+          )
+          .map((menu) => menu.id);
+  const selection = parseUserSelection(prompt.selectionPayload, parsedTemplate.meta.template_id, {
     title: prompt.title,
     schemaVersion: prompt.schemaVersion,
     language: prompt.language,
   });
 
-  return {
+  const baseState: TemplateFormState = {
     categoryId: prompt.categoryId,
-    template: TemplatePayloadSchema.parse({ ...template, menu_ids: linkedMenuIds }),
+    template: parsedTemplate,
     selection,
     freeInputs: toFreeInputEntries(selection),
-    selectedMenuIds: prompt.selectedMenuIds || [],
+    selectedMenuIds: inferredSelectedMenuIds,
   };
+
+  return contextMenus.length > 0 ? syncFormMenus(baseState, contextMenus) : baseState;
 }
 
 function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextMenu[]) {
+  const linkedContextMenus = getLinkedContextMenusFromSelection(
+    contextMenus,
+    form.selectedMenuIds,
+  );
+  const linkedMenuIds = linkedContextMenus.map((menu) => menu.menuId);
   const normalizedTemplate = TemplatePayloadSchema.parse({
     ...form.template,
     meta: {
@@ -114,10 +165,11 @@ function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextM
       constraints: splitLines(joinLines(form.template.prompt_definition.constraints)),
       negative_prompt: splitLines(joinLines(form.template.prompt_definition.negative_prompt)),
     },
+    menu_ids: linkedMenuIds,
     output_contract: PromptOutputContractSchema.parse(form.template.output_contract),
   });
   const migration = migrateTemplateToCurrentSchema(
-    syncTemplateWithLinkedMenus(normalizedTemplate, contextMenus)
+    syncTemplateWithLinkedMenus(normalizedTemplate, linkedContextMenus)
   );
   const syncedTemplate = migration.template;
 
@@ -161,14 +213,6 @@ export default function EditorPage() {
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
   );
-  
-  const filteredContextMenus = useMemo(
-    () => {
-      const linkedIds = new Set(form.template.menu_ids || []);
-      return availableContextMenus.filter(m => linkedIds.has(m.menuId));
-    },
-    [availableContextMenus, form.template.menu_ids]
-  );
 
   useEffect(() => {
     (async () => {
@@ -186,12 +230,40 @@ export default function EditorPage() {
   }, [categories, isNew, loaded, searchParams]);
 
   useEffect(() => {
-    if (isNew) return;
+    if (isNew || loaded) return;
     db.prompts.get(Number(id)).then((prompt) => {
-      if (prompt) setForm(buildFormStateFromPrompt(prompt));
+      if (prompt) setForm(buildFormStateFromPrompt(prompt, availableContextMenus));
       setLoaded(true);
     });
-  }, [id, isNew]);
+  }, [availableContextMenus, id, isNew, loaded]);
+
+  useEffect(() => {
+    if (!loaded || availableContextMenus.length === 0) {
+      return;
+    }
+
+    setForm((current) => {
+      let nextState = current;
+
+      if (current.selectedMenuIds.length === 0 && (current.template.menu_ids || []).length > 0) {
+        const inferredSelectedMenuIds = availableContextMenus
+          .filter(
+            (menu): menu is ContextMenu & { id: number } =>
+              typeof menu.id === 'number' && (current.template.menu_ids || []).includes(menu.menuId),
+          )
+          .map((menu) => menu.id);
+
+        if (inferredSelectedMenuIds.length > 0) {
+          nextState = {
+            ...current,
+            selectedMenuIds: inferredSelectedMenuIds,
+          };
+        }
+      }
+
+      return syncFormMenus(nextState, availableContextMenus);
+    });
+  }, [availableContextMenus, loaded]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -438,36 +510,17 @@ export default function EditorPage() {
     showToast('Download iniciado!');
   };
 
-  const handleMenuToggle = (menuId: string, checked: boolean) => {
+  const handleSelectedMenuIdsChange = (menuIds: number[]) => {
     setForm((current) => {
-      const nextMenuIds = checked
-        ? [...(current.template.menu_ids || []), menuId]
-        : (current.template.menu_ids || []).filter((id) => id !== menuId);
-      const uniqueMenuIds = [...new Set(nextMenuIds)];
+      const uniqueSelectedIds = [...new Set(menuIds)];
 
-      // Sync numeric selectedMenuIds for the Prompt record
-      const menu = availableContextMenus.find(m => m.menuId === menuId);
-      let nextSelectedIds = [...current.selectedMenuIds];
-      if (menu?.id) {
-        if (checked) {
-          if (!nextSelectedIds.includes(menu.id)) nextSelectedIds.push(menu.id);
-        } else {
-          nextSelectedIds = nextSelectedIds.filter(id => id !== menu.id);
-        }
-      }
-
-      return {
-        ...current,
-        selectedMenuIds: nextSelectedIds,
-        template: syncTemplateWithLinkedMenus(
-          TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
-          availableContextMenus
-        ),
-        selection: UserSelectionSchema.parse({
-          ...current.selection,
-          selected_menus: current.selection.selected_menus.filter((item) => uniqueMenuIds.includes(item.menu_id)),
-        }),
-      };
+      return syncFormMenus(
+        {
+          ...current,
+          selectedMenuIds: uniqueSelectedIds,
+        },
+        availableContextMenus,
+      );
     });
   };
 
@@ -514,12 +567,9 @@ export default function EditorPage() {
                 template={form.template}
                 updatePromptDefinitionField={updatePromptDefinitionField}
                 updateOutputContractField={updateOutputContractField}
-              />
-
-              <EditorContextMenuSelector
-                template={form.template}
-                contextMenus={availableContextMenus}
-                onMenuToggle={handleMenuToggle}
+                selectedMenuIds={form.selectedMenuIds}
+                onMenuSelectionChange={handleSelectedMenuIdsChange}
+                availableContextMenus={availableContextMenus}
               />
 
               <div className="editor-footer editor-footer--spaced">
@@ -547,7 +597,8 @@ export default function EditorPage() {
             <EditorPlayground
               template={form.template}
               selection={form.selection}
-              contextMenus={filteredContextMenus}
+              contextMenus={availableContextMenus}
+              selectedMenuIds={form.selectedMenuIds}
               onAddFreeInput={addFreeInput}
               onRemoveFreeInput={removeFreeInput}
               onUpdateFreeInput={updateFreeInput}

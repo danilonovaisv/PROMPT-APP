@@ -119,7 +119,6 @@ export function formatPromptAsMarkdown(
   // ## 2. DYNAMIC PARAMETERS
   lines.push("## 2. DYNAMIC PARAMETERS");
 
-  // Use compiled_context.menu_interpretation instead of selected_menus
   const menuInterpretation =
     compiledPayload.compiled_context.menu_interpretation;
   if (menuInterpretation && Object.keys(menuInterpretation).length > 0) {
@@ -127,37 +126,52 @@ export function formatPromptAsMarkdown(
       const menuDef = template.menu_definitions.find((m) =>
         m.menu_id === menuId
       );
-      if (menuDef) {
-        menuData.selected_options.forEach((optionValue) => {
-          const optionDef = menuDef.options.find((o) =>
-            o.value === optionValue
-          );
-          if (optionDef) {
-            let paramLine = `- **${menuDef.menu_name}**: ${optionDef.label}`;
-
-            if (
-              menuData.selected_sub_options &&
-              menuData.selected_sub_options.length > 0
-            ) {
-              const subOptionLabels = menuData.selected_sub_options.map(
-                (subValue) => {
-                  const subDef = optionDef.sub_options?.find((s) =>
-                    s.value === subValue
-                  );
-                  return subDef?.label || subValue;
-                },
-              );
-              paramLine += ` (${subOptionLabels.join(", ")})`;
-            }
-
-            lines.push(paramLine);
-          }
-        });
+      if (!menuDef) {
+        return;
       }
+
+      if (menuData.selections.length > 0) {
+        menuData.selections.forEach((selection) => {
+          let paramLine = `- **${menuDef.menu_name}**: ${selection.option_label}`;
+
+          if (selection.selected_sub_options.length > 0) {
+            paramLine += ` (${selection.selected_sub_options
+              .map((subOption) => subOption.label)
+              .join(", ")})`;
+          }
+
+          lines.push(paramLine);
+        });
+        return;
+      }
+
+      menuData.selected_options.forEach((optionValue) => {
+        const optionDef = menuDef.options.find((o) =>
+          o.value === optionValue
+        );
+        if (!optionDef) {
+          return;
+        }
+
+        let paramLine = `- **${menuDef.menu_name}**: ${optionDef.label}`;
+
+        if (menuData.selected_sub_options.length > 0) {
+          const subOptionLabels = menuData.selected_sub_options.map(
+            (subValue) => {
+              const subDef = optionDef.sub_options?.find((s) =>
+                s.value === subValue
+              );
+              return subDef?.label || subValue;
+            },
+          );
+          paramLine += ` (${subOptionLabels.join(", ")})`;
+        }
+
+        lines.push(paramLine);
+      });
     });
   }
 
-  // Use compiled_context.free_inputs
   const freeInputs = compiledPayload.compiled_context.free_inputs;
   if (freeInputs && Object.keys(freeInputs).length > 0) {
     Object.entries(freeInputs).forEach(([key, value]) => {
@@ -175,35 +189,11 @@ export function formatPromptAsMarkdown(
     });
   }
   if (template.prompt_definition.negative_prompt.length > 0) {
-    lines.push("");
-    lines.push("**Proibições:**");
     template.prompt_definition.negative_prompt.forEach((item) => {
-      lines.push(`- ❌ ${item}`);
+      lines.push(`- ${item}`);
     });
   }
   lines.push("");
-
-  // ## 4. OUTPUT CONTRACT (optional)
-  if (
-    template.output_contract.required_fields.length > 0 ||
-    template.output_contract.response_rules.length > 0
-  ) {
-    lines.push("## 4. OUTPUT CONTRACT");
-    if (template.output_contract.required_fields.length > 0) {
-      lines.push("**Campos obrigatórios:**");
-      template.output_contract.required_fields.forEach((field) => {
-        lines.push(`- ${field}`);
-      });
-    }
-    if (template.output_contract.response_rules.length > 0) {
-      lines.push("");
-      lines.push("**Regras de resposta:**");
-      template.output_contract.response_rules.forEach((rule) => {
-        lines.push(`- ${rule}`);
-      });
-    }
-    lines.push("");
-  }
 
   return lines.join("\n");
 }

@@ -26,10 +26,12 @@ export function EditorPlayground({
 }: EditorPlaygroundProps) {
   const freeInputs = Object.entries(selection.free_inputs || {}).map(([key, value]) => ({ key, value }));
 
-  // Filter contextMenus based on selectedMenuIds if provided
-  const displayContextMenus = selectedMenuIds && selectedMenuIds.length > 0
-    ? contextMenus.filter(menu => selectedMenuIds.includes(menu.id!))
-    : contextMenus;
+  const displayContextMenus =
+    selectedMenuIds && selectedMenuIds.length > 0
+      ? contextMenus.filter(
+          (menu) => typeof menu.id === 'number' && selectedMenuIds.includes(menu.id),
+        )
+      : [];
 
   return (
     <div className="form-section">

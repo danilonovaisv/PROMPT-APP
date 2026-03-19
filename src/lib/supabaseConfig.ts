@@ -12,8 +12,8 @@ export interface SupabaseResolvedConfig {
   missingVars: string[];
 }
 
-function normalize(value: string | undefined): string {
-  return (value || '').trim();
+function normalize(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
 export function resolveSupabaseConfig(env: SupabaseEnv): SupabaseResolvedConfig {

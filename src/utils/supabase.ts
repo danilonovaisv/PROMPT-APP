@@ -1,10 +1,11 @@
-
 import { createClient } from '@supabase/supabase-js';
+import { resolveSupabaseConfig } from '@/lib/supabaseConfig';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const resolvedSupabaseConfig = resolveSupabaseConfig(import.meta.env);
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  resolvedSupabaseConfig.url || 'https://placeholder.supabase.co',
+  resolvedSupabaseConfig.anonKey || 'placeholder',
+);
 
-export default supabase
-        
+export default supabase;

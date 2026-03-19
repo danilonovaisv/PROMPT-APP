@@ -6,6 +6,10 @@ import { db } from "@/db/database";
 import type { Category } from "@/models/types";
 
 describe("Database Integration Tests", () => {
+  it("should expose Dexie schema version 10", () => {
+    expect(db.verno).toBe(10);
+  });
+
   beforeEach(async () => {
     // Clear database before each test
     await db.categories.clear();
@@ -91,6 +95,7 @@ describe("Database Integration Tests", () => {
       const prompt = {
         categoryId: categoryId!,
         title: "Test Prompt",
+        selectedMenuIds: [1, 2],
         promptPayload: {
           meta: {
             template_id: "test_prompt",
@@ -140,6 +145,7 @@ describe("Database Integration Tests", () => {
       expect(retrieved).toBeDefined();
       expect(retrieved?.title).toBe("Test Prompt");
       expect(retrieved?.categoryId).toBe(categoryId);
+      expect(retrieved?.selectedMenuIds).toEqual([1, 2]);
     });
 
     it("should cascade delete prompts when category is deleted", async () => {

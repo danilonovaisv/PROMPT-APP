@@ -1,9 +1,18 @@
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
+import { TextDecoder, TextEncoder } from "util";
 
 // Polyfill structuredClone for older Node.js versions and test environments
 if (typeof global.structuredClone === "undefined") {
   global.structuredClone = <T>(obj: T): T => JSON.parse(JSON.stringify(obj));
+}
+
+if (typeof global.TextEncoder === "undefined") {
+  global.TextEncoder = TextEncoder as typeof global.TextEncoder;
+}
+
+if (typeof global.TextDecoder === "undefined") {
+  global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
 // Mock matchMedia for components that use it

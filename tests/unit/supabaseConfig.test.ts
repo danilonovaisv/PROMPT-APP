@@ -44,4 +44,32 @@ describe('resolveSupabaseConfig', () => {
     expect(config.anonKey).toBe('publishable-key');
     expect(config.missingVars).toEqual([]);
   });
+
+  test('normaliza valores com whitespace e ignora entradas não string', () => {
+    const env: SupabaseEnv = {
+      VITE_SUPABASE_URL: '  https://example.supabase.co  ',
+      VITE_SUPABASE_ANON_KEY: '   ',
+      VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: '  publishable-key  ',
+      SOME_OTHER_VALUE: 123,
+    };
+
+    const config = resolveSupabaseConfig(env);
+
+    expect(config.isConfigured).toBe(true);
+    expect(config.url).toBe('https://example.supabase.co');
+    expect(config.anonKey).toBe('publishable-key');
+  });
+
+  test('lista ambas as variáveis obrigatórias quando nenhuma foi definida', () => {
+    const config = resolveSupabaseConfig({});
+
+    expect(config.isConfigured).toBe(false);
+    expect(config.missingVars).toEqual([
+      'VITE_SUPABASE_URL',
+      'VITE_SUPABASE_ANON_KEY',
+    ]);
+    expect(getSupabaseConfigErrorMessage(config.missingVars)).toBe(
+      'Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+    );
+  });
 });
