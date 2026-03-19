@@ -597,6 +597,9 @@ export default function EditorPage() {
             <EditorPlayground
               template={form.template}
               selection={form.selection}
+              freeInputs={form.freeInputs}
+              renderedPrompt={previewState.renderedPrompt}
+              outputError={previewState.error}
               contextMenus={availableContextMenus}
               selectedMenuIds={form.selectedMenuIds}
               onAddFreeInput={addFreeInput}

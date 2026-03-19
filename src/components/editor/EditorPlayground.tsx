@@ -2,9 +2,14 @@ import { Plus, Trash2 } from 'lucide-react';
 import type { TemplatePayload, UserSelection } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 
+type FreeInputEntry = { key: string; value: string };
+
 type EditorPlaygroundProps = {
   template: TemplatePayload;
   selection: UserSelection;
+  freeInputs: FreeInputEntry[];
+  renderedPrompt?: string;
+  outputError?: string | null;
   contextMenus: ContextMenu[];
   selectedMenuIds?: number[];
   onAddFreeInput: () => void;
@@ -16,6 +21,9 @@ type EditorPlaygroundProps = {
 
 export function EditorPlayground({
   selection,
+  freeInputs,
+  renderedPrompt,
+  outputError,
   contextMenus,
   selectedMenuIds,
   onAddFreeInput,
@@ -24,14 +32,14 @@ export function EditorPlayground({
   onToggleOption,
   onToggleSubOption,
 }: EditorPlaygroundProps) {
-  const freeInputs = Object.entries(selection.free_inputs || {}).map(([key, value]) => ({ key, value }));
-
   const displayContextMenus =
     selectedMenuIds && selectedMenuIds.length > 0
       ? contextMenus.filter(
           (menu) => typeof menu.id === 'number' && selectedMenuIds.includes(menu.id),
         )
       : [];
+
+  console.log('[PLAYGROUND] output received:', renderedPrompt);
 
   return (
     <div className="form-section">
@@ -153,6 +161,17 @@ export function EditorPlayground({
           ))}
         </div>
       )}
+
+      <div className="form-section">
+        <h4 className="form-section__title">Prompt compilado</h4>
+        {outputError ? (
+          <div className="form-error" role="alert">{outputError}</div>
+        ) : (
+          <pre className="json-preview json-preview--prompt">
+            {renderedPrompt || '— preencha os campos acima para compilar o prompt —'}
+          </pre>
+        )}
+      </div>
     </div>
   );
 }

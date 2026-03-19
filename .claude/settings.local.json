@@ -1,6 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(find \"/Users/PROJETOS DEV/PROMPT-APP/src\" -not -path '*/node_modules/*' 2>/dev/null | sort | head -150)",
+      "Bash(cd \"/Users/PROJETOS DEV/PROMPT-APP\" && pnpm run build 2>&1 | tail -40)",
+      "Bash(cd \"/Users/PROJETOS DEV/PROMPT-APP\" && pnpm run build 2>&1 | grep -E \"error|warning|Error|Warning|✓|✗|built in\" | head -30)",
+      "Bash(cd \"/Users/PROJETOS DEV/PROMPT-APP\" && npx tsc -p tsconfig.app.json --noEmit 2>&1 | head -40)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "claude-flow"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
