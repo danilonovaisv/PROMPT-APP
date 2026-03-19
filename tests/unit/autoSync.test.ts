@@ -14,7 +14,8 @@ jest.mock('@/lib/supabase', () => ({
     auth: {
       getSession: jest.fn().mockResolvedValue({ data: { session: null } })
     }
-  }
+  },
+  isSupabaseConfigured: true
 }));
 
 jest.mock('@/services/syncService', () => ({
@@ -75,7 +76,7 @@ describe('setupAutoSync', () => {
     setupAutoSync();
 
     // Call the creating hook
-    const createHookCall = (db.prompts.hook as jest.Mock).mock.calls.find(call => call[0] === 'creating');
+    const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
     expect(createHookCall).toBeDefined();
 
     const hookFn = createHookCall[1];
@@ -108,7 +109,7 @@ describe('setupAutoSync', () => {
 
     setupAutoSync();
 
-    const createHookCall = (db.prompts.hook as jest.Mock).mock.calls.find(call => call[0] === 'creating');
+    const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
     const hookFn = createHookCall[1];
 
     // Simulate being offline
@@ -128,11 +129,11 @@ describe('setupAutoSync', () => {
     const { syncToCloud } = await import('@/services/syncService');
 
     // Mock authenticated user
-    (supabase.auth.getSession as jest.Mock).mockResolvedValue({ data: { session: { user: { id: '123' } } } });
+    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({ data: { session: { user: { id: '123' } } } });
 
     setupAutoSync();
 
-    const createHookCall = (db.prompts.hook as jest.Mock).mock.calls.find(call => call[0] === 'creating');
+    const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
     const hookFn = createHookCall[1];
 
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
@@ -157,7 +158,7 @@ describe('setupAutoSync', () => {
 
     setupAutoSync();
 
-    const createHookCall = (db.prompts.hook as jest.Mock).mock.calls.find(call => call[0] === 'creating');
+    const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
     const hookFn = createHookCall[1];
 
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);

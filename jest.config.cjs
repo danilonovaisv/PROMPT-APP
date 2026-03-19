@@ -12,7 +12,7 @@ module.exports = {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: 'tsconfig.app.json',
+        tsconfig: 'tsconfig.jest.json',
       },
     ],
   },

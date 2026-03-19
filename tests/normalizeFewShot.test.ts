@@ -2,7 +2,6 @@
    Unit Tests — normalizeFewShotExamples
    ====================================================== */
 
-import { describe, it, expect } from '@jest/globals';
 import { normalizeFewShotExamples, isValidFewShotExample } from '../src/utils/normalizeFewShot';
 
 describe('normalizeFewShotExamples', () => {
