@@ -12,6 +12,8 @@
     "packageJson": {
       "dependencies": [
         "npm:@playwright/test@^1.58.2",
+        "npm:@sentry/browser@^10.44.0",
+        "npm:@sentry/react@^10.44.0",
         "npm:@supabase/ssr@0.9",
         "npm:@supabase/supabase-js@^2.99.2",
         "npm:@testing-library/jest-dom@^6.9.1",

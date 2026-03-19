@@ -19,7 +19,7 @@ describe("Database Integration Tests", () => {
 
   describe("Categories CRUD", () => {
     it("should create and retrieve a category", async () => {
-      const category: Partial<Category> = {
+      const category: Category = {
         name: "Test Category",
         icon: "📁",
         color: "#3b82f6",
@@ -27,7 +27,7 @@ describe("Database Integration Tests", () => {
         syncStatus: "synced",
       };
 
-      const id = await db.categories.add(category as Category);
+      const id = await db.categories.add(category);
       expect(id).toBeDefined();
 
       const retrieved = await db.categories.get(id);
@@ -89,7 +89,7 @@ describe("Database Integration Tests", () => {
       } as Category);
 
       const prompt = {
-        categoryId,
+        categoryId: categoryId!,
         title: "Test Prompt",
         promptPayload: {
           meta: {
@@ -133,10 +133,10 @@ describe("Database Integration Tests", () => {
         syncStatus: "synced",
       };
 
-      const id = await db.prompts.add(prompt);
+      const id = await db.prompts.add(prompt as any);
       expect(id).toBeDefined();
 
-      const retrieved = await db.prompts.get(id);
+      const retrieved = await db.prompts.get(id!);
       expect(retrieved).toBeDefined();
       expect(retrieved?.title).toBe("Test Prompt");
       expect(retrieved?.categoryId).toBe(categoryId);
@@ -151,7 +151,7 @@ describe("Database Integration Tests", () => {
       } as Category);
 
       await db.prompts.add({
-        categoryId,
+        categoryId: categoryId!,
         title: "Child Prompt",
         promptPayload: {
           meta: {
@@ -229,7 +229,7 @@ describe("Database Integration Tests", () => {
         syncStatus: "synced",
       };
 
-      const id = await db.contextMenus.add(menu);
+      const id = await db.contextMenus.add(menu as any);
       expect(id).toBeDefined();
 
       const retrieved = await db.contextMenus.get(id);
@@ -312,7 +312,7 @@ describe("Database Integration Tests", () => {
 
       await db.prompts.bulkAdd([
         {
-          categoryId: cat1,
+          categoryId: cat1!,
           title: "Prompt 1",
           promptPayload: {
             meta: {
@@ -356,7 +356,7 @@ describe("Database Integration Tests", () => {
           syncStatus: "synced",
         },
         {
-          categoryId: cat2,
+          categoryId: cat2!,
           title: "Prompt 2",
           promptPayload: {
             meta: {
@@ -401,7 +401,7 @@ describe("Database Integration Tests", () => {
         },
       ]);
 
-      const promptsCat1 = await db.prompts.where("categoryId").equals(cat1)
+      const promptsCat1 = await db.prompts.where("categoryId").equals(cat1!)
         .toArray();
       expect(promptsCat1.length).toBe(1);
       expect(promptsCat1[0].title).toBe("Prompt 1");
