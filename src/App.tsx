@@ -11,6 +11,18 @@ import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/rea
 import { syncToCloud } from '@/services/syncService';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+      style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, background: 'red', color: 'white', padding: '10px', borderRadius: '5px' }}
+    >
+      Break the world
+    </button>
+  );
+}
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const CategoryPage = lazy(() => import('@/pages/CategoryPage'));
@@ -82,6 +94,7 @@ export default function App() {
       <ToastProvider>
         <ErrorBoundary>
           <Layout onOpenImportExport={() => setShowImportExport(true)}>
+            <ErrorButton />
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
