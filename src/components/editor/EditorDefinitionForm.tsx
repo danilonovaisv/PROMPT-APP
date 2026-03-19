@@ -55,6 +55,7 @@ export function EditorDefinitionForm({ template, updatePromptDefinitionField, up
           />
         </div>
 
+
         <div className="form-group">
           <label className="form-label" htmlFor="constraints">Constraints</label>
           <textarea

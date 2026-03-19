@@ -542,6 +542,71 @@ export function parseTemplatePayload(
 
   if (rawPayload && typeof rawPayload === 'object') {
     const legacyPromptContract = rawPayload as Record<string, unknown>;
+
+    if (
+      'system_role' in legacyPromptContract ||
+      'task' in legacyPromptContract ||
+      'context' in legacyPromptContract ||
+      'constraints' in legacyPromptContract ||
+      'input_data' in legacyPromptContract
+    ) {
+      const inputData =
+        legacyPromptContract.input_data && typeof legacyPromptContract.input_data === 'object'
+          ? (legacyPromptContract.input_data as Record<string, unknown>)
+          : undefined;
+
+      return createTemplatePayloadFromLegacyRecord(
+        {
+          title:
+            typeof legacyPromptContract.title === 'string'
+              ? legacyPromptContract.title
+              : typeof legacyPromptContract.name === 'string'
+                ? legacyPromptContract.name
+                : fallback?.title,
+          systemRole:
+            typeof legacyPromptContract.system_role === 'string'
+              ? legacyPromptContract.system_role
+              : fallback?.systemRole,
+          task:
+            typeof legacyPromptContract.task === 'string'
+              ? legacyPromptContract.task
+              : fallback?.task,
+          context:
+            typeof legacyPromptContract.context === 'string'
+              ? legacyPromptContract.context
+              : typeof inputData?.context === 'string'
+                ? inputData.context
+                : fallback?.context,
+          constraints: Array.isArray(legacyPromptContract.constraints)
+            ? uniqueStrings(legacyPromptContract.constraints as string[])
+            : fallback?.constraints,
+          negativePrompt: Array.isArray(legacyPromptContract.negative_prompt)
+            ? uniqueStrings(legacyPromptContract.negative_prompt as string[])
+            : fallback?.negativePrompt,
+          outputSchema:
+            typeof legacyPromptContract.output_schema === 'object' && legacyPromptContract.output_schema
+              ? {
+                  formato: String(
+                    (legacyPromptContract.output_schema as Record<string, unknown>).formato || 'markdown'
+                  ),
+                  estrutura: String(
+                    (legacyPromptContract.output_schema as Record<string, unknown>).estrutura || ''
+                  ),
+                }
+              : fallback?.outputSchema,
+          schemaVersion:
+            typeof legacyPromptContract.schema_version === 'string'
+              ? legacyPromptContract.schema_version
+              : fallback?.schemaVersion,
+          language:
+            typeof legacyPromptContract.language === 'string'
+              ? legacyPromptContract.language
+              : fallback?.language,
+        },
+        menuDefinitions
+      );
+    }
+
     if ('meta' in legacyPromptContract && 'role' in legacyPromptContract && 'objective' in legacyPromptContract) {
       const legacySelectionMap =
         legacyPromptContract.context_menus && typeof legacyPromptContract.context_menus === 'object'

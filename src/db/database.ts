@@ -176,6 +176,35 @@ db.version(7).stores({
     });
 });
 
+db.version(8).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+}).upgrade(async (tx) => {
+    const prompts = tx.table('prompts');
+
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.selectedMenuIds) {
+            prompt.selectedMenuIds = [];
+        }
+    });
+});
+
+db.version(9).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+}).upgrade(async (tx) => {
+    const prompts = tx.table('prompts');
+    await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
+        if (!prompt.selectedMenuIds) {
+            prompt.selectedMenuIds = [];
+        }
+    });
+});
+
 const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'remoteId'>[] = [
     { name: 'Copywriting', icon: '✍️', color: '#ff6b35', createdAt: new Date(), syncStatus: 'pending' },
     { name: 'Código', icon: '💻', color: '#0048ff', createdAt: new Date(), syncStatus: 'pending' },
