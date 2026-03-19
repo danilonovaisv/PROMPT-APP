@@ -18,6 +18,7 @@ export default function CloudSyncItem() {
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { showToast } = useToast();
+    const configHintId = 'cloud-sync-config-hint';
 
     useEffect(() => {
         if (!isSupabaseConfigured) {
@@ -58,6 +59,25 @@ export default function CloudSyncItem() {
         return () => clearInterval(interval);
     }, [session]);
 
+    if (!isSupabaseConfigured) {
+        return (
+            <div className="cloud-sync-unavailable" aria-live="polite">
+                <button
+                    type="button"
+                    className="app-sidebar__nav-item app-sidebar__nav-item--disabled"
+                    disabled
+                    aria-describedby={configHintId}
+                >
+                    <CloudOff size={18} />
+                    <span>Nuvem indisponível</span>
+                </button>
+                <p id={configHintId} className="app-sidebar__helper-text">
+                    {supabaseConfigErrorMessage}
+                </p>
+            </div>
+        );
+    }
+
     // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
     const triggerAutoSync = async () => {
         console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
@@ -87,10 +107,6 @@ export default function CloudSyncItem() {
     };
 
     const handleLogin = () => {
-        if (!isSupabaseConfigured) {
-            showToast(supabaseConfigErrorMessage, 'error');
-            return;
-        }
         setIsAuthModalOpen(true);
     };
 

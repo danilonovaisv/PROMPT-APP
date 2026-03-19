@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         setLoading(true);
 
         if (!isSupabaseConfigured) {
-            showToast(supabaseConfigErrorMessage, 'error');
+            showToast(supabaseConfigErrorMessage, 'info');
             setLoading(false);
             return;
         }
