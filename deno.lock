@@ -11,6 +11,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@netlify/neon@~0.1.2",
         "npm:@netlify/vite-plugin@^2.11.1",
         "npm:@playwright/test@^1.58.2",
         "npm:@sentry/browser@^10.44.0",
@@ -29,6 +30,8 @@
         "npm:agentic-flow@^2.0.7",
         "npm:dexie-react-hooks@^4.2.0",
         "npm:dexie@^4.3.0",
+        "npm:drizzle-kit@~0.31.10",
+        "npm:drizzle-orm@~0.45.1",
         "npm:fake-indexeddb@^6.2.5",
         "npm:jest-environment-jsdom@^30.3.0",
         "npm:jest@^30.3.0",
