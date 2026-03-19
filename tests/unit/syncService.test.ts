@@ -14,6 +14,8 @@ jest.mock('@/lib/supabase', () => ({
     },
     from: jest.fn(),
   },
+  assertSupabaseConfigured: jest.fn(),
+  isSupabaseConfigured: true,
 }));
 
 jest.mock('@/db/database', () => ({
@@ -38,11 +40,11 @@ describe('syncToCloud', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: { user: { id: mockUserId } } },
     });
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [],
         contextMenus: [],
@@ -52,7 +54,7 @@ describe('syncToCloud', () => {
   });
 
   test('throws an error if the user is not authenticated', async () => {
-    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: null },
     });
 
@@ -68,7 +70,7 @@ describe('syncToCloud', () => {
       syncStatus: 'pending'
     };
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [mockCategory],
         contextMenus: [],
@@ -80,7 +82,7 @@ describe('syncToCloud', () => {
     const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
     const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
       if (table === 'categories') {
         return { insert: mockInsert };
       }
@@ -103,7 +105,7 @@ describe('syncToCloud', () => {
       syncStatus: 'pending'
     };
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [mockCategory],
         contextMenus: [],
@@ -115,7 +117,7 @@ describe('syncToCloud', () => {
     const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
     const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
       if (table === 'categories') {
         return { insert: mockInsert };
       }
@@ -145,7 +147,7 @@ describe('syncToCloud', () => {
       syncStatus: 'pending'
     };
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [],
         contextMenus: [mockMenu],
@@ -153,7 +155,7 @@ describe('syncToCloud', () => {
       }
     });
 
-    (persistContextMenuRecord as jest.Mock).mockResolvedValue({ id: 303 });
+    (persistContextMenuRecord as unknown as jest.Mock).mockResolvedValue({ id: 303 });
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     const result = await syncToCloud();
@@ -189,7 +191,7 @@ describe('syncToCloud', () => {
       syncStatus: 'pending'
     };
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [mockCategory],
         contextMenus: [],
@@ -201,7 +203,7 @@ describe('syncToCloud', () => {
     const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
     const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
       if (table === 'prompts') {
         return { insert: mockInsert };
       }
@@ -237,7 +239,7 @@ describe('syncToCloud', () => {
       syncStatus: 'pending'
     };
 
-    (createSnapshot as jest.Mock).mockResolvedValue({
+    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
       data: {
         categories: [],
         contextMenus: [],
@@ -249,7 +251,7 @@ describe('syncToCloud', () => {
     const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
     const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
 
-    (supabase.from as jest.Mock).mockImplementation((table) => {
+    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
       if (table === 'prompts') {
         return { insert: mockInsert };
       }

@@ -1,8 +1,12 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), sentryVitePlugin({
+    org: "dannovaisv",
+    project: "javascript-react"
+  })],
   resolve: {
     alias: {
       "@": "/src",
@@ -30,6 +34,8 @@ export default defineConfig({
         },
       },
     },
+
     chunkSizeWarningLimit: 500,
+    sourcemap: true
   },
 });

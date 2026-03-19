@@ -1,4 +1,6 @@
 ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@sentry/cli'
   - agentdb
   - agentic-flow
   - argon2

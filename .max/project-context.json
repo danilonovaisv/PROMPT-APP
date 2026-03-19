@@ -1,5 +1,5 @@
 {
-  "scanned_at": "2026-03-16T22:27:50.527Z",
+  "scanned_at": "2026-03-19T04:50:35.297Z",
   "project_name": "PROMPT-APP",
   "project_path": "/Users/PROJETOS DEV/PROMPT-APP",
   "type": [
@@ -40,6 +40,9 @@
     "src"
   ],
   "dependencies": [
+    "@netlify/vite-plugin",
+    "@sentry/browser",
+    "@sentry/react",
     "@supabase/ssr",
     "@supabase/supabase-js",
     "agentic-flow",
