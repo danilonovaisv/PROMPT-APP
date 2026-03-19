@@ -15,6 +15,11 @@
 
 ---
 
+> [!WARNING]
+> **CRÍTICO:** No Netlify, você **DEVE** adicionar `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` em **Site Configuration > Environment variables** para que a sincronização funcione.
+
+---
+
 ## 1️⃣ Build Local (Validação)
 
 Antes de qualquer deploy, garanta que o build está limpo:
@@ -90,6 +95,7 @@ O projeto **já possui** `netlify.toml` configurado. É a opção mais simples.
 5. Em **Site configuration → Environment variables**, configure:
    - `VITE_SUPABASE_URL` (obrigatória para nuvem)
    - `VITE_SUPABASE_ANON_KEY` (obrigatória para nuvem)
+   - Sem essas duas variáveis a autenticação e a sincronização com Supabase ficam desativadas no app publicado
 6. Clique em **"Deploy site"**
 
 #### Via CLI

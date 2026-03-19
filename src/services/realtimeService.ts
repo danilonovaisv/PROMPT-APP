@@ -2,7 +2,7 @@
    Serviço de Realtime do Supabase
    ====================================================== */
 
-import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import type {
   Category,
@@ -27,7 +27,10 @@ let menusChannel: RealtimeChannel | null = null;
  * Inicializa os listeners de realtime do Supabase
  */
 export async function setupRealtimeListeners() {
-  assertSupabaseConfigured();
+  if (!isSupabaseConfigured) {
+    console.log("⏭️ Supabase não configurado - realtime desativado");
+    return;
+  }
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {

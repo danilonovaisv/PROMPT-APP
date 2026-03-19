@@ -40,10 +40,12 @@ export default function App() {
         saveLocalBackup();
       }, 2000);
       setupAutoSync();
-      try {
-        await setupRealtimeListeners();
-      } catch (error) {
-        console.error('❌ Erro ao iniciar realtime:', error);
+      if (isSupabaseConfigured) {
+        try {
+          await setupRealtimeListeners();
+        } catch (error) {
+          console.error('❌ Erro ao iniciar realtime:', error);
+        }
       }
     };
 
