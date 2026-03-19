@@ -7,6 +7,7 @@ import { persistContextMenuRecord } from '@/services/contextMenuSync';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({
+  assertSupabaseConfigured: jest.fn(),
   supabase: {
     auth: {
       getSession: jest.fn(),

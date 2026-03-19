@@ -8,6 +8,8 @@ jest.mock('@/db/database', () => ({
 }));
 
 jest.mock('@/lib/supabase', () => ({
+  isSupabaseConfigured: true,
+  assertSupabaseConfigured: jest.fn(),
   supabase: {
     auth: {
       getSession: jest.fn().mockResolvedValue({ data: { session: null } })
