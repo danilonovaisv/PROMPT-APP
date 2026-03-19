@@ -16,6 +16,7 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
+    "@netlify/vite-plugin": "^2.11.1",
     "@sentry/browser": "^10.44.0",
     "@sentry/react": "^10.44.0",
     "@supabase/ssr": "^0.9.0",
