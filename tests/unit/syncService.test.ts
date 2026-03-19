@@ -14,7 +14,6 @@ jest.mock('@/lib/supabase', () => ({
     },
     from: jest.fn(),
   },
-  assertSupabaseConfigured: jest.fn(),
   isSupabaseConfigured: true,
 }));
 

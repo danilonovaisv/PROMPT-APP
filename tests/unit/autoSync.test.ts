@@ -14,8 +14,7 @@ jest.mock('@/lib/supabase', () => ({
     auth: {
       getSession: jest.fn().mockResolvedValue({ data: { session: null } })
     }
-  },
-  isSupabaseConfigured: true
+  }
 }));
 
 jest.mock('@/services/syncService', () => ({
