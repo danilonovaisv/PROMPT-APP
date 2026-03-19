@@ -8,19 +8,22 @@ import {
   MenuDefinitionSchema,
   TemplatePayloadSchema,
 } from '@/models/promptSchema';
+import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 export function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
+  const options = normalizeContextMenuOptions(menu.options);
+
   return MenuDefinitionSchema.parse({
     menu_id: menu.menuId,
     menu_name: menu.menuName,
     description: menu.description,
     selection_mode: menu.selectionMode,
     required: false,
-    options: (menu.options || []).map((option) => ({
+    options: options.map((option) => ({
       label: option.label,
       value: option.value,
       description: '',

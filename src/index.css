@@ -351,6 +351,19 @@ select option {
   color: var(--color-text-primary);
 }
 
+.app-sidebar__nav-item:disabled,
+.app-sidebar__nav-item--disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  color: var(--color-text-muted);
+}
+
+.app-sidebar__nav-item:disabled:hover,
+.app-sidebar__nav-item--disabled:hover {
+  background-color: transparent;
+  color: var(--color-text-muted);
+}
+
 .app-sidebar__nav-item--active {
   background-color: var(--color-primary-glow);
   color: var(--color-primary-light);
@@ -368,6 +381,17 @@ select option {
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
   padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.cloud-sync-unavailable {
+  margin-bottom: var(--space-2);
+}
+
+.app-sidebar__helper-text {
+  padding: 0 var(--space-4) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
 }
 
 .app-sidebar__footer {

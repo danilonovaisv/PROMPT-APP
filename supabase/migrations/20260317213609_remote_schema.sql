@@ -138,9 +138,9 @@ alter table "public"."prompts" drop column "schema_version";
 
 alter table "public"."prompts" drop column "selected_menu_ids";
 
+alter table "public"."prompts" alter column "enabled_menu_ids" drop default;
+alter table "public"."prompts" alter column "enabled_menu_ids" set data type jsonb using to_jsonb("enabled_menu_ids");
 alter table "public"."prompts" alter column "enabled_menu_ids" set default '[]'::jsonb;
-
-alter table "public"."prompts" alter column "enabled_menu_ids" set data type jsonb using "enabled_menu_ids"::jsonb;
 
 alter table "public"."prompts" alter column "id" drop default;
 

@@ -1,19 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
+import { getSupabaseConfigErrorMessage, resolveSupabaseConfig } from '@/lib/supabaseConfig';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey =
-    import.meta.env.VITE_SUPABASE_ANON_KEY ||
-    import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const resolvedSupabaseConfig = resolveSupabaseConfig(import.meta.env);
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = resolvedSupabaseConfig.isConfigured;
+export const missingSupabaseVars = resolvedSupabaseConfig.missingVars;
+export const supabaseConfigErrorMessage = getSupabaseConfigErrorMessage(missingSupabaseVars);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn(
-        'Supabase credentials missing. Configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY). Cloud sync will be disabled.'
-    );
+if (!isSupabaseConfigured) {
+  console.warn(`${supabaseConfigErrorMessage} Recursos em nuvem serão desativados.`);
+}
+
+export function assertSupabaseConfigured() {
+  if (!isSupabaseConfigured) {
+    throw new Error(supabaseConfigErrorMessage);
+  }
 }
 
 export const supabase = createClient(
-    supabaseUrl || 'https://placeholder.supabase.co',
-    supabaseAnonKey || 'placeholder'
+  resolvedSupabaseConfig.url || 'https://placeholder.supabase.co',
+  resolvedSupabaseConfig.anonKey || 'placeholder'
 );

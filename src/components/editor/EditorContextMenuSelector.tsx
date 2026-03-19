@@ -54,7 +54,7 @@ export function EditorContextMenuSelector({ template, contextMenus, onMenuToggle
             <button 
               type="button"
               className={`btn btn--secondary ctx-picker__trigger ${isOpen ? 'btn--active' : ''}`}
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
             >
               <Plus size={16} />
               <span>Adicionar Menu Global</span>
@@ -83,16 +83,16 @@ export function EditorContextMenuSelector({ template, contextMenus, onMenuToggle
                     availableMenus.map((menu) => (
                       <button
                         key={menu.menuId}
+                        type="button"
                         className="ctx-picker__option"
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Evita que o input perca o foco ou o dropdown feche
                           onMenuToggle(menu.menuId, true);
                           setSearch('');
-                          // Keep open for multiple additions? 
-                          // The user said "vai adicionando", so keeping it open might be better.
                         }}
                       >
                         <div className="ctx-picker__option-info">
-                          <span className="ctx-picker__option-name">{menu.menuName}</span>
+                          <span className="ctx-picker__option-name">{menu.menuName || menu.menuId}</span>
                           <span className="ctx-picker__option-id">{menu.menuId}</span>
                         </div>
                         <Plus size={14} />
