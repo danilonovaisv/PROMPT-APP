@@ -13,9 +13,13 @@
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "netlify dev:exec drizzle-kit migrate",
+    "db:studio": "netlify dev:exec drizzle-kit studio"
   },
   "dependencies": {
+    "@netlify/neon": "^0.1.2",
     "@netlify/vite-plugin": "^2.11.1",
     "@sentry/browser": "^10.44.0",
     "@sentry/react": "^10.44.0",
@@ -25,6 +29,7 @@
     "agentic-flow": "^2.0.7",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
+    "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -42,6 +47,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "drizzle-kit": "^0.31.10",
     "fake-indexeddb": "^6.2.5",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",

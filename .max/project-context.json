@@ -1,5 +1,5 @@
 {
-  "scanned_at": "2026-03-19T04:50:35.297Z",
+  "scanned_at": "2026-03-19T06:26:11.462Z",
   "project_name": "PROMPT-APP",
   "project_path": "/Users/PROJETOS DEV/PROMPT-APP",
   "type": [
@@ -43,6 +43,7 @@
     "@netlify/vite-plugin",
     "@sentry/browser",
     "@sentry/react",
+    "@sentry/vite-plugin",
     "@supabase/ssr",
     "@supabase/supabase-js",
     "agentic-flow",
@@ -68,8 +69,7 @@
     "jest-environment-jsdom",
     "jsdom",
     "ts-jest",
-    "typescript",
-    "vite"
+    "typescript"
   ],
   "description": "> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo."
 }
