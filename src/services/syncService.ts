@@ -1,12 +1,7 @@
-import { assertSupabaseConfigured, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import { createSnapshot } from '@/utils/backupManager';
 import { Category, ContextMenu, Prompt } from '@/models/types';
-import {
-    persistContextMenuRecord,
-    type ContextMenuCloudPayload,
-    type ContextMenuSyncRepository,
-} from '@/services/contextMenuSync';
 import {
     compilePromptPayload,
     getLegacyPromptColumns,
@@ -15,54 +10,8 @@ import {
     parsePromptPayload,
     parseUserSelection,
 } from '@/models/promptSchema';
-import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
-
-const contextMenuRepository: ContextMenuSyncRepository = {
-    async findRemoteIdByUserAndMenuId(userId, menuId) {
-        const { data, error } = await supabase
-            .from('context_menus')
-            .select('id')
-            .eq('user_id', userId)
-            .eq('menu_id', menuId)
-            .maybeSingle();
-
-        if (error) {
-            throw error;
-        }
-
-        return data?.id ?? null;
-    },
-    async insert(payload) {
-        const { data, error } = await supabase
-            .from('context_menus')
-            .insert(payload)
-            .select()
-            .single();
-
-        if (error) {
-            throw error;
-        }
-
-        return { id: data.id };
-    },
-    async updateById(id, payload) {
-        const { data, error } = await supabase
-            .from('context_menus')
-            .upsert({ id, ...payload })
-            .select()
-            .single();
-
-        if (error) {
-            throw error;
-        }
-
-        return { id: data.id };
-    },
-};
 
 export const syncToCloud = async () => {
-    assertSupabaseConfigured();
-
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
         throw new Error('Usuário não autenticado');
@@ -130,28 +79,44 @@ export const syncToCloud = async () => {
     for (const menu of menusToSync) {
         const { id, remoteId, ...data } = menu as ContextMenu;
 
-        const payload: ContextMenuCloudPayload = {
+        const payload = {
             user_id: userId,
             menu_id: data.menuId,      // map camelCase -> snake_case
             menu_name: data.menuName,
             description: data.description,
             selection_mode: data.selectionMode,
-            options: normalizeContextMenuOptions(data.options)
+            options: data.options
         };
 
-        try {
-            const result = await persistContextMenuRecord(contextMenuRepository, payload, remoteId);
+        // Para menus, temos constraint unique(user_id, menu_id)
+        // Podemos usar upsert com onConflict se não tivermos remoteId
+        // Mas se tivermos, melhor usar ID.
 
-            if (id && result.id !== remoteId) {
-                await db.contextMenus.update(id, { remoteId: result.id, syncStatus: 'synced' });
-            }
-            if (id && result.id === remoteId) {
-                await db.contextMenus.update(id, { syncStatus: 'synced' });
-            }
-        } catch (error) {
-            console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, error);
+        let result;
+        if (remoteId) {
+            result = await supabase.from('context_menus')
+                .upsert({ id: remoteId, ...payload })
+                .select()
+                .single();
+        } else {
+            // Tenta upsert pelo unique key para recuperar ID se existir
+            result = await supabase.from('context_menus')
+                .upsert(payload, { onConflict: 'user_id, menu_id' })
+                .select()
+                .single();
+        }
+
+        if (result.error) {
+            console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, result.error);
             if (id) {
                 await db.contextMenus.update(id, { syncStatus: 'error' });
+            }
+        } else if (result.data) {
+            if (id && result.data.id !== remoteId) {
+                await db.contextMenus.update(id, { remoteId: result.data.id, syncStatus: 'synced' });
+            }
+            if (id && result.data.id === remoteId) {
+                await db.contextMenus.update(id, { syncStatus: 'synced' });
             }
         }
     }
@@ -181,7 +146,6 @@ export const syncToCloud = async () => {
             category_id: remoteCategoryId || null, // Se null, perde a categoria mas salva o prompt
             title: summary.title,
             prompt_payload_jsonb: data.promptPayload,
-            selected_menu_ids: data.selectedMenuIds || [],
             schema_version: summary.schemaVersion,
             output_format: summary.outputFormat,
             language: summary.language,
@@ -224,8 +188,6 @@ export const syncToCloud = async () => {
 };
 
 export const downloadFromCloud = async () => {
-    assertSupabaseConfigured();
-
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('Usuário não autenticado');
 
@@ -252,18 +214,9 @@ export const downloadFromCloud = async () => {
         const remoteToLocalCatMap = new Map<number, number>();
 
         if (catRes.data) {
-            // Load all local categories once to prevent N+1 queries
-            const allLocalCategories = await db.categories.toArray();
-const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
-    if (cat.remoteId != null) {
-        map.set(cat.remoteId, cat);
-    }
-    return map;
-}, new Map<number, Category>());
-
             for (const c of catRes.data) {
                 // Tenta encontrar categoria local pelo remoteId
-                const existing = localCategoryByRemoteId.get(c.id);
+                const existing = await db.categories.where('remoteId').equals(c.id).first();
 
                 const catData = {
                     remoteId: c.id,
@@ -291,26 +244,12 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
 
         // --- B. Sincronizar Menus ---
         if (menuRes.data) {
-            // Load all local context menus once to prevent N+1 queries
-            const allLocalMenus = await db.contextMenus.toArray();
-            const localMenuByRemoteId = new Map<number, typeof allLocalMenus[0]>();
-            const localMenuByMenuId = new Map<string, typeof allLocalMenus[0]>();
-
-            for (const m of allLocalMenus) {
-                if (m.remoteId != null) {
-                    localMenuByRemoteId.set(m.remoteId, m);
-                }
-                if (m.menuId != null) {
-                    localMenuByMenuId.set(m.menuId, m);
-                }
-            }
-
             for (const m of menuRes.data) {
-                const existing = localMenuByRemoteId.get(m.id);
+                const existing = await db.contextMenus.where('remoteId').equals(m.id).first();
                 // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
                 // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
                 const existingBySlug = !existing
-                    ? localMenuByMenuId.get(m.menu_id)
+                    ? await db.contextMenus.where('menuId').equals(m.menu_id).first()
                     : null;
 
                 const targetId = existing?.id || existingBySlug?.id;
@@ -321,7 +260,7 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                     menuName: m.menu_name,
                     description: m.description,
                     selectionMode: m.selection_mode || 'single',
-                    options: normalizeContextMenuOptions(m.options),
+                    options: m.options, // JSONB vem direto
                     createdAt: new Date(m.created_at),
                     updatedAt: new Date(m.updated_at),
                     syncStatus: 'synced' as const,
@@ -337,17 +276,8 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
 
         // --- C. Sincronizar Prompts ---
         if (promptRes.data) {
-            // Load all local prompts once to prevent N+1 queries
-            const allLocalPrompts = await db.prompts.toArray();
-            const localPromptByRemoteId = new Map<number, typeof allLocalPrompts[0]>();
-            for (const p of allLocalPrompts) {
-                if (p.remoteId != null) {
-                    localPromptByRemoteId.set(p.remoteId, p);
-                }
-            }
-
             for (const p of promptRes.data) {
-                const existing = localPromptByRemoteId.get(p.id);
+                const existing = await db.prompts.where('remoteId').equals(p.id).first();
 
                 // Resolver Categoria Local
                 // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente
@@ -378,7 +308,6 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                     remoteId: p.id,
                     categoryId: localCategoryId,
                     title: p.title,
-                    selectedMenuIds: p.selected_menu_ids || [],
                     schemaVersion: p.schema_version || '1.0.0',
                     language: p.language || 'pt-BR',
                     outputFormat: p.output_format || 'markdown',

@@ -113,7 +113,7 @@ BEGIN
       SELECT 1 FROM pg_publication_rel pr
       JOIN pg_class c ON c.oid = pr.prrelid
       JOIN pg_publication p ON p.oid = pr.prpubid
-      WHERE p.pubname = 'supabase_realtime' AND c.relname = 'categories'
+      WHERE p.pubname = ''supabase_realtime'' AND c.relname = ''categories''
     ) THEN
       EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.categories';
     END IF;
@@ -125,7 +125,7 @@ BEGIN
       SELECT 1 FROM pg_publication_rel pr
       JOIN pg_class c ON c.oid = pr.prrelid
       JOIN pg_publication p ON p.oid = pr.prpubid
-      WHERE p.pubname = 'supabase_realtime' AND c.relname = 'prompts'
+      WHERE p.pubname = ''supabase_realtime'' AND c.relname = ''prompts''
     ) THEN
       EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.prompts';
     END IF;
@@ -137,7 +137,7 @@ BEGIN
       SELECT 1 FROM pg_publication_rel pr
       JOIN pg_class c ON c.oid = pr.prrelid
       JOIN pg_publication p ON p.oid = pr.prpubid
-      WHERE p.pubname = 'supabase_realtime' AND c.relname = 'context_menus'
+      WHERE p.pubname = ''supabase_realtime'' AND c.relname = ''context_menus''
     ) THEN
       EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.context_menus';
     END IF;
@@ -149,7 +149,7 @@ BEGIN
       SELECT 1 FROM pg_publication_rel pr
       JOIN pg_class c ON c.oid = pr.prrelid
       JOIN pg_publication p ON p.oid = pr.prpubid
-      WHERE p.pubname = 'supabase_realtime' AND c.relname = 'templates'
+      WHERE p.pubname = ''supabase_realtime'' AND c.relname = ''templates''
     ) THEN
       EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE public.templates';
     END IF;

@@ -55,14 +55,12 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       if (cat.remoteId) localCategoriesMap.set(cat.remoteId, cat);
     }
 
-    const localCategoriesMap = new Map(localCategories.filter(c => c.remoteId != null).map(c => [c.remoteId!, c]));
-
     for (const remote of remoteCategories) {
       const local = localCategoriesMap.get(remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
-          'updatedAt' in local ? (local as { updatedAt: Date }).updatedAt : local.createdAt,
+          (local as any).updatedAt || local.createdAt,
         );
 
         if (remoteUpdated > localUpdated) {
@@ -86,14 +84,12 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       if (prompt.remoteId) localPromptsMap.set(prompt.remoteId, prompt);
     }
 
-    const localPromptsMap = new Map(localPrompts.filter(p => p.remoteId != null).map(p => [p.remoteId!, p]));
-
     for (const remote of remotePrompts) {
       const local = localPromptsMap.get(remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
         const localUpdated = new Date(
-          local.updatedAt || local.createdAt,
+          (local as any).updatedAt || local.createdAt,
         );
 
         if (remoteUpdated > localUpdated) {

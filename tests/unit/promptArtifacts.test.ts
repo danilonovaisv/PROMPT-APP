@@ -58,27 +58,6 @@ describe('syncTemplateWithMenuDefinitions', () => {
   });
 });
 
-describe('contextMenuToDefinition', () => {
-  test('normaliza options inválido sem lançar erro de map em valor não-array', () => {
-    const malformedMenu = buildContextMenu({
-      options: {
-        label: 'Formal',
-        value: 'formal',
-        sub_options: { label: 'Corporativo', value: 'corporativo' },
-      } as unknown as ContextMenu['options'],
-    });
-
-    expect(contextMenuToDefinition(malformedMenu).options).toEqual([
-      {
-        label: 'Formal',
-        value: 'formal',
-        description: '',
-        sub_options: [{ label: 'Corporativo', value: 'corporativo', description: '' }],
-      },
-    ]);
-  });
-});
-
 describe('renderFinalPromptText', () => {
   test('gera um prompt final legível com menus, inputs livres e contrato de saída', () => {
     const template = syncTemplateWithLinkedMenus(

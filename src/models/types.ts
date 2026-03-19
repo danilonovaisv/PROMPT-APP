@@ -87,7 +87,6 @@ export interface Prompt {
   syncStatus?: SyncStatus;
   categoryId: number;
   title: string;
-  selectedMenuIds?: number[];
   promptPayload: TemplatePayload;
   selectionPayload?: UserSelection;
   compiledPayload?: CompiledPromptPayload;

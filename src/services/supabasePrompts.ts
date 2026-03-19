@@ -48,7 +48,6 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         category_id: remoteCategoryId,
         title: summary.title,
         prompt_payload_jsonb: promptPayload,
-        selected_menu_ids: input.selectedMenuIds || [],
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,

@@ -43,7 +43,6 @@ type TemplateFormState = {
   template: TemplatePayload;
   selection: UserSelection;
   freeInputs: FreeInputEntry[];
-  selectedMenuIds: number[];
 };
 
 function splitLines(value: string): string[] {
@@ -72,7 +71,6 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
     template,
     selection: createEmptyUserSelection(template.meta.template_id),
     freeInputs: [{ key: '', value: '' }],
-    selectedMenuIds: [],
   };
 }
 
@@ -92,7 +90,6 @@ function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
     template: TemplatePayloadSchema.parse({ ...template, menu_ids: linkedMenuIds }),
     selection,
     freeInputs: toFreeInputEntries(selection),
-    selectedMenuIds: prompt.selectedMenuIds || [],
   };
 }
 
@@ -160,14 +157,6 @@ export default function EditorPage() {
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
-  );
-  
-  const filteredContextMenus = useMemo(
-    () => {
-      const linkedIds = new Set(form.template.menu_ids || []);
-      return availableContextMenus.filter(m => linkedIds.has(m.menuId));
-    },
-    [availableContextMenus, form.template.menu_ids]
   );
 
   useEffect(() => {
@@ -365,7 +354,6 @@ export default function EditorPage() {
     const promptRecord: Omit<Prompt, 'id'> = {
       categoryId: form.categoryId,
       title: summary.title,
-      selectedMenuIds: form.selectedMenuIds,
       promptPayload: template,
       selectionPayload: selection,
       compiledPayload,
@@ -437,21 +425,8 @@ export default function EditorPage() {
         ? [...(current.template.menu_ids || []), menuId]
         : (current.template.menu_ids || []).filter((id) => id !== menuId);
       const uniqueMenuIds = [...new Set(nextMenuIds)];
-
-      // Sync numeric selectedMenuIds for the Prompt record
-      const menu = availableContextMenus.find(m => m.menuId === menuId);
-      let nextSelectedIds = [...current.selectedMenuIds];
-      if (menu?.id) {
-        if (checked) {
-          if (!nextSelectedIds.includes(menu.id)) nextSelectedIds.push(menu.id);
-        } else {
-          nextSelectedIds = nextSelectedIds.filter(id => id !== menu.id);
-        }
-      }
-
       return {
         ...current,
-        selectedMenuIds: nextSelectedIds,
         template: syncTemplateWithLinkedMenus(
           TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
           availableContextMenus
@@ -540,7 +515,7 @@ export default function EditorPage() {
             <EditorPlayground
               template={form.template}
               selection={form.selection}
-              contextMenus={filteredContextMenus}
+              contextMenus={availableContextMenus}
               onAddFreeInput={addFreeInput}
               onRemoveFreeInput={removeFreeInput}
               onUpdateFreeInput={updateFreeInput}

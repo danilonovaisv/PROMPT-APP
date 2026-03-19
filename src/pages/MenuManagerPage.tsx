@@ -8,7 +8,7 @@ import { exportMenusToJson } from '@/utils/importMenusJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
 import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
-import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
+import type { ContextMenu, ContextMenuOption } from '@/models/types';
 import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
 
 import { MenuForm } from '@/components/menu-manager/MenuForm';
@@ -112,10 +112,9 @@ export default function MenuManagerPage() {
         localId = newId ?? null;
       }
       await saveLocalBackup();
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Erro ao salvar localmente:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao salvar o menu localmente.';
-      showToast(errorMessage, 'error');
+      showToast(error.message || 'Erro ao salvar o menu localmente.', 'error');
       return;
     }
 
@@ -137,7 +136,7 @@ export default function MenuManagerPage() {
       }
       showToast(isEditing ? 'Menu sincronizado!' : 'Menu criado e sincronizado!');
       cancel();
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Erro ao salvar no Supabase:', error);
       showToast('Menu salvo localmente. Sincronize ao fazer login.', 'info');
       cancel();
@@ -153,10 +152,9 @@ export default function MenuManagerPage() {
       await db.contextMenus.delete(id);
       await saveLocalBackup();
       showToast('Menu excluído do servidor!');
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Erro ao excluir do Supabase:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao deletar menu no servidor.';
-      showToast(errorMessage, 'error');
+      showToast(error.message || 'Erro ao deletar menu no servidor.', 'error');
     }
   };
 
@@ -198,7 +196,7 @@ export default function MenuManagerPage() {
     });
   };
 
-  const updateSubOption = (optIdx: number, subIdx: number, field: keyof ContextMenuSubOption, value: string) => {
+  const updateSubOption = (optIdx: number, subIdx: number, field: keyof any, value: string) => {
     setForm((prev) => {
       const options = [...prev.options];
       const subs = [...(options[optIdx].subOptions || [])];

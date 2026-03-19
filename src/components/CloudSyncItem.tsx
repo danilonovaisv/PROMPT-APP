@@ -3,7 +3,7 @@
    ====================================================== */
 
 import { useState, useEffect } from 'react';
-import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
@@ -18,15 +18,10 @@ export default function CloudSyncItem() {
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { showToast } = useToast();
-    const configHintId = 'cloud-sync-config-hint';
 
     useEffect(() => {
-        if (!isSupabaseConfigured) {
-            return;
-        }
-
         // 1. Check session on mount
-        supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+        supabase.auth.getSession().then(({ data: { session: currentSession } }: any) => {
             setSession(currentSession);
             if (currentSession) {
                 triggerAutoSync();
@@ -58,25 +53,6 @@ export default function CloudSyncItem() {
 
         return () => clearInterval(interval);
     }, [session]);
-
-    if (!isSupabaseConfigured) {
-        return (
-            <div className="cloud-sync-unavailable" aria-live="polite">
-                <button
-                    type="button"
-                    className="app-sidebar__nav-item app-sidebar__nav-item--disabled"
-                    disabled
-                    aria-describedby={configHintId}
-                >
-                    <CloudOff size={18} />
-                    <span>Nuvem indisponível</span>
-                </button>
-                <p id={configHintId} className="app-sidebar__helper-text">
-                    {supabaseConfigErrorMessage}
-                </p>
-            </div>
-        );
-    }
 
     // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
     const triggerAutoSync = async () => {

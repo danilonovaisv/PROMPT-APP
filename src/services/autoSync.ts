@@ -1,5 +1,5 @@
 import { db } from '@/db/database';
-import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { syncToCloud } from './syncService';
 
 let timer: ReturnType<typeof setTimeout> | null = null;
@@ -28,10 +28,6 @@ function scheduleSync() {
 }
 
 export function setupAutoSync() {
-    if (!isSupabaseConfigured) {
-        return;
-    }
-
     if (autoSyncInstalled) {
         return;
     }

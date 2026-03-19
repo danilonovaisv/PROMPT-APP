@@ -31,7 +31,3 @@ test-results/
 # Dependencies and Code Coverage
 .pnpm-store/
 coverage/
-.env
-
-# Sentry Config File
-.env.sentry-build-plugin

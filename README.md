@@ -131,17 +131,6 @@ pnpm run dev
 
 A aplicação estará disponível em **<http://localhost:5173/>**
 
-### 🔐 Variáveis de ambiente (Supabase)
-
-Para usar autenticação e sincronização em nuvem, configure um arquivo `.env` com:
-
-```env
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua_chave_anon
-```
-
-> Sem essas variáveis, o app continua funcionando localmente (IndexedDB), mas recursos de nuvem ficam desativados e exibem mensagem de configuração ausente.
-
 ### Build de Produção
 
 ```bash

@@ -1,6 +1,4 @@
 ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - '@sentry/cli'
   - agentdb
   - agentic-flow
   - argon2
@@ -13,4 +11,3 @@ ignoredBuiltDependencies:
   - sharp
   - sqlite3
   - tldjs
-  - unrs-resolver

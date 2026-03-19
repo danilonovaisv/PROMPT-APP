@@ -1,36 +1,12 @@
 import { useRef, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
-import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { X, Mail, Lock, LogIn, UserPlus, KeyRound } from 'lucide-react';
 
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
-}
-
-function getAuthErrorMessage(error: unknown): string {
-    if (error && typeof error === 'object') {
-        const err = error as { message?: string; status?: number; name?: string };
-        if (err.message) {
-            return err.message;
-        }
-
-        if (typeof err.status === 'number') {
-            if (err.status === 400 || err.status === 401) {
-                return 'Credenciais inválidas. Verifique email e senha.';
-            }
-            if (err.status >= 500) {
-                return 'Serviço de autenticação indisponível. Tente novamente em instantes.';
-            }
-        }
-
-        if (err.name === 'TypeError') {
-            return 'Falha de rede ao autenticar. Verifique sua conexão.';
-        }
-    }
-
-    return 'Não foi possível concluir a autenticação. Tente novamente.';
 }
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
@@ -54,12 +30,6 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-
-        if (!isSupabaseConfigured) {
-            showToast(supabaseConfigErrorMessage, 'info');
-            setLoading(false);
-            return;
-        }
 
         try {
             if (mode === 'login') {
@@ -86,8 +56,8 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 showToast('Link de recuperação enviado para o email!', 'success');
                 onClose();
             }
-        } catch (err: unknown) {
-            showToast(getAuthErrorMessage(err), 'error');
+        } catch (err: any) {
+            showToast(err.message, 'error');
         } finally {
             setLoading(false);
         }
