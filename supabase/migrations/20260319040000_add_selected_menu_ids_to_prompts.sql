@@ -1,2 +1,4 @@
 alter table prompts
-add column selected_menu_ids jsonb default '[]'::jsonb;
+alter column selected_menu_ids drop default,
+alter column selected_menu_ids type jsonb using coalesce(to_jsonb(selected_menu_ids), '[]'::jsonb),
+alter column selected_menu_ids set default '[]'::jsonb;
