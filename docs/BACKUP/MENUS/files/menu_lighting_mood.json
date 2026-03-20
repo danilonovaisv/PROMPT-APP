@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "lighting_mood",
+      "menu_name": "Lighting Mood",
+      "description": "Define the lighting mood and atmosphere to be extracted from reference images and reproduced in the CGI prompt.",
+      "options": [
+        {
+          "label": "Studio Controlled",
+          "value": "studio_controlled",
+          "sub_options": [
+            { "label": "Three-Point — Key, Fill, Rim", "value": "three_point_kfr" },
+            { "label": "Beauty Dish — Soft, Frontal Glow", "value": "beauty_dish_soft" },
+            { "label": "Rembrandt — Short-Side Shadow", "value": "rembrandt_short_shadow" },
+            { "label": "Ring Light — Symmetrical Catch Lights", "value": "ring_light_symmetrical" }
+          ]
+        },
+        {
+          "label": "Dramatic / Moody",
+          "value": "dramatic_moody",
+          "sub_options": [
+            { "label": "Single Spot — Hard Shadow, Isolation", "value": "single_spot_hard" },
+            { "label": "Backlit Silhouette — Rim Glow", "value": "backlit_silhouette_rim" },
+            { "label": "Chiaroscuro — Deep Shadow Contrast", "value": "chiaroscuro_deep" },
+            { "label": "Teal-Orange Grade — Cinematic", "value": "teal_orange_cinematic" }
+          ]
+        },
+        {
+          "label": "Natural / Organic",
+          "value": "natural_organic",
+          "sub_options": [
+            { "label": "Window Light — Soft Directional", "value": "window_light_soft" },
+            { "label": "Golden Hour — Warm Raking Light", "value": "golden_hour_warm" },
+            { "label": "Overcast — Diffused, Shadowless", "value": "overcast_diffused" },
+            { "label": "Dappled — Forest / Shade Pattern", "value": "dappled_forest_shade" }
+          ]
+        },
+        {
+          "label": "Caustic / Refractive",
+          "value": "caustic_refractive",
+          "sub_options": [
+            { "label": "Backlit Glass — Caustic Projection", "value": "backlit_glass_caustic" },
+            { "label": "Prismatic — Rainbow Light Split", "value": "prismatic_rainbow" },
+            { "label": "Water Caustic — Underwater Ripple Light", "value": "water_caustic_ripple" }
+          ]
+        },
+        {
+          "label": "High-Key / Bright",
+          "value": "high_key_bright",
+          "sub_options": [
+            { "label": "Airy Overlit — Near White Background", "value": "airy_overlit_white" },
+            { "label": "Softbox Array — Even, Flat Illumination", "value": "softbox_array_flat" },
+            { "label": "Bleached — Desaturated Highlights", "value": "bleached_desaturated" }
+          ]
+        },
+        {
+          "label": "Low-Key / Dark",
+          "value": "low_key_dark",
+          "sub_options": [
+            { "label": "Black Void — Single Source", "value": "black_void_single_source" },
+            { "label": "Neon Accent — Colored Edge Light", "value": "neon_accent_colored" },
+            { "label": "Candlelit / Flame — 1800K Warm Flicker", "value": "candlelit_1800k" },
+            { "label": "Moonlit — Cool Desaturated Blue", "value": "moonlit_cool_blue" }
+          ]
+        }
+      ]
+    }
+  ]
+}

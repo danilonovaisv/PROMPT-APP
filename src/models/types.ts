@@ -15,6 +15,7 @@ export interface Category {
   icon: string;
   color: string;
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface ContextMenuSubOption {

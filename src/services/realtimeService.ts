@@ -23,6 +23,18 @@ let categoriesChannel: RealtimeChannel | null = null;
 let promptsChannel: RealtimeChannel | null = null;
 let menusChannel: RealtimeChannel | null = null;
 
+let _backupTimeout: ReturnType<typeof setTimeout> | null = null;
+const debouncedSaveLocalBackup = () => {
+    if (_backupTimeout) clearTimeout(_backupTimeout);
+    _backupTimeout = setTimeout(async () => {
+        try {
+            await saveLocalBackup();
+        } catch (e) {
+            console.error('Erro ao salvar backup em background', e);
+        }
+    }, 5000); // 5 seconds debounce
+};
+
 /**
  * Inicializa os listeners de realtime do Supabase
  */
@@ -56,7 +68,7 @@ export async function setupRealtimeListeners() {
       async (payload) => {
         console.log("📡 Categoria alterada:", payload);
         await handleCategoryChange(payload);
-        await saveLocalBackup();
+        debouncedSaveLocalBackup();
       },
     )
     .subscribe();
@@ -75,7 +87,7 @@ export async function setupRealtimeListeners() {
       async (payload) => {
         console.log("📡 Prompt alterado:", payload);
         await handlePromptChange(payload);
-        await saveLocalBackup();
+        debouncedSaveLocalBackup();
       },
     )
     .subscribe();
@@ -94,7 +106,7 @@ export async function setupRealtimeListeners() {
       async (payload) => {
         console.log("📡 Menu alterado:", payload);
         await handleMenuChange(payload);
-        await saveLocalBackup();
+        debouncedSaveLocalBackup();
       },
     )
     .subscribe();

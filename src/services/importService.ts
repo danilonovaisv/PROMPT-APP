@@ -284,12 +284,38 @@ export async function importFromJsonText(
   const warnings: string[] = [];
   let count = 0;
 
+  // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
+  const sanitizeJsonString = (jsonStr: string): string => {
+    let cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const firstBrace = cleaned.indexOf('{');
+    const firstBracket = cleaned.indexOf('[');
+    let startIndex = -1;
+    if (firstBrace !== -1 && firstBracket !== -1) {
+        startIndex = Math.min(firstBrace, firstBracket);
+    } else if (firstBrace !== -1) {
+        startIndex = firstBrace;
+    } else if (firstBracket !== -1) {
+        startIndex = firstBracket;
+    }
+    
+    if (startIndex !== -1) {
+        const isObject = cleaned[startIndex] === '{';
+        const closingChar = isObject ? '}' : ']';
+        const lastIndex = cleaned.lastIndexOf(closingChar);
+        if (lastIndex !== -1 && lastIndex >= startIndex) {
+            return cleaned.substring(startIndex, lastIndex + 1);
+        }
+    }
+    return cleaned;
+  };
+
   try {
     if (!sourceName.endsWith('.json')) {
       throw new Error('Apenas arquivos .json são aceitos');
     }
 
-    const parsed = JSON.parse(rawJson) as unknown;
+    const sanitizedStr = sanitizeJsonString(rawJson);
+    const parsed = JSON.parse(sanitizedStr) as unknown;
     const importCategoryId = await ensureImportCategory(warnings);
 
     if (isBulkExport(parsed)) {

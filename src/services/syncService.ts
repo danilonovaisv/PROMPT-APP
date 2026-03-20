@@ -17,6 +17,16 @@ import {
 } from '@/models/promptSchema';
 import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 
+async function withRetry<T>(fn: () => Promise<T> | PromiseLike<T>, retries = 3, backoff = 1000): Promise<T> {
+    try {
+        return await fn();
+    } catch (err) {
+        if (retries <= 0) throw err;
+        await new Promise((res) => setTimeout(res, backoff));
+        return withRetry(fn, retries - 1, backoff * 2);
+    }
+}
+
 const contextMenuRepository: ContextMenuSyncRepository = {
     async findRemoteIdByUserAndMenuId(userId, menuId) {
         const { data, error } = await supabase
@@ -93,17 +103,24 @@ export const syncToCloud = async () => {
 
         let result;
         if (remoteId) {
+            // Last write wins: checar se o remoto é mais novo
+            const { data: remoteData } = await withRetry<any>(() => supabase.from('categories').select('updated_at').eq('id', remoteId).single());
+            if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(cat.updatedAt?.getTime() || 0) / 1000) {
+               console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.name}`);
+               continue;
+            }
+
             // Update existindo remoteId
-            result = await supabase.from('categories')
+            result = await withRetry<any>(() => supabase.from('categories')
                 .upsert({ id: remoteId, ...payload })
                 .select()
-                .single();
+                .single());
         } else {
             // Insert novo
-            result = await supabase.from('categories')
+            result = await withRetry<any>(() => supabase.from('categories')
                 .insert(payload)
                 .select()
-                .single();
+                .single());
         }
 
         if (result.error) {
@@ -193,15 +210,21 @@ export const syncToCloud = async () => {
 
         let result;
         if (remoteId) {
-            result = await supabase.from('prompts')
+            const { data: remoteData } = await withRetry<any>(() => supabase.from('prompts').select('updated_at').eq('id', remoteId).single());
+            if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(prompt.updatedAt?.getTime() || 0) / 1000) {
+               console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.title}`);
+               continue;
+            }
+
+            result = await withRetry<any>(() => supabase.from('prompts')
                 .upsert({ id: remoteId, ...payload })
                 .select()
-                .single();
+                .single());
         } else {
-            result = await supabase.from('prompts')
+            result = await withRetry<any>(() => supabase.from('prompts')
                 .insert(payload)
                 .select()
-                .single();
+                .single());
         }
 
         if (result.error) {
@@ -277,9 +300,13 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                 let localId: number;
 
                 if (existing && existing.id) {
-                    // Atualiza existente
-                    await db.categories.update(existing.id, catData);
-                    localId = existing.id;
+                    if (existing.updatedAt && Math.floor(new Date(c.updated_at).getTime() / 1000) < Math.floor(existing.updatedAt.getTime() / 1000)) {
+                         // Local é mais novo, pula
+                         localId = existing.id;
+                    } else {
+                         await db.categories.update(existing.id, catData);
+                         localId = existing.id;
+                    }
                 } else {
                     // Cria nova
                     localId = await db.categories.add(catData) as number;
@@ -406,7 +433,11 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
                     compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
 
                 if (existing && existing.id) {
-                    await db.prompts.update(existing.id, promptData);
+                    if (existing.updatedAt && Math.floor(new Date(p.updated_at).getTime() / 1000) < Math.floor(existing.updatedAt.getTime() / 1000)) {
+                         // Local is newer, don't overwrite
+                    } else {
+                         await db.prompts.update(existing.id, promptData);
+                    }
                 } else {
                     await db.prompts.add(promptData);
                 }
