@@ -25,7 +25,7 @@ SET row_security = off;
 -- Data for Name: audit_log_entries; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."audit_log_entries" ("instance_id", "id", "payload", "created_at", "ip_address") VALUES
+INSERT INTO "auth"."audit_log_entries" ("instance_id", "id", "payload", "created_at", "ip_address") OVERRIDING SYSTEM VALUE VALUES
 	('00000000-0000-0000-0000-000000000000', '915d79e0-a3c9-41a2-870d-50a0f92e8ff2', '{"action":"user_signedup","actor_id":"9c0f74ed-6618-4f1a-b467-8035e4b9347a","actor_username":"test@example.com","actor_via_sso":false,"log_type":"team","traits":{"provider":"email"}}', '2026-03-16 22:18:04.293553+00', ''),
 	('00000000-0000-0000-0000-000000000000', 'b53192ae-cd24-4229-bcb2-72c323deb155', '{"action":"login","actor_id":"9c0f74ed-6618-4f1a-b467-8035e4b9347a","actor_username":"test@example.com","actor_via_sso":false,"log_type":"account","traits":{"provider":"email"}}', '2026-03-16 22:18:04.335112+00', ''),
 	('00000000-0000-0000-0000-000000000000', '03d2d189-a792-4d8d-b09e-ec7c4498d5db', '{"action":"user_repeated_signup","actor_id":"9c0f74ed-6618-4f1a-b467-8035e4b9347a","actor_username":"test@example.com","actor_via_sso":false,"log_type":"user","traits":{"provider":"email"}}', '2026-03-16 22:18:12.444737+00', ''),
@@ -57,7 +57,7 @@ INSERT INTO "auth"."audit_log_entries" ("instance_id", "id", "payload", "created
 -- Data for Name: users; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") VALUES
+INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encrypted_password", "email_confirmed_at", "invited_at", "confirmation_token", "confirmation_sent_at", "recovery_token", "recovery_sent_at", "email_change_token_new", "email_change", "email_change_sent_at", "last_sign_in_at", "raw_app_meta_data", "raw_user_meta_data", "is_super_admin", "created_at", "updated_at", "phone", "phone_confirmed_at", "phone_change", "phone_change_token", "phone_change_sent_at", "email_change_token_current", "email_change_confirm_status", "banned_until", "reauthentication_token", "reauthentication_sent_at", "is_sso_user", "deleted_at", "is_anonymous") OVERRIDING SYSTEM VALUE VALUES
 	('00000000-0000-0000-0000-000000000000', '10d21777-7ed6-4e45-ab1f-a577b855069a', 'authenticated', 'authenticated', 'agent2@example.com', '$2a$10$FPOlWfFGoMALj42IxD29hevOOTLEhMxbvXcviXtyXsf2S17NPvWFe', '2026-03-16 22:18:30.359885+00', NULL, '', NULL, '', NULL, '', '', NULL, '2026-03-16 22:18:30.372213+00', '{"provider": "email", "providers": ["email"]}', '{"sub": "10d21777-7ed6-4e45-ab1f-a577b855069a", "email": "agent2@example.com", "email_verified": true, "phone_verified": false}', NULL, '2026-03-16 22:18:30.34859+00', '2026-03-16 22:18:30.380051+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
 	('00000000-0000-0000-0000-000000000000', '9c0f74ed-6618-4f1a-b467-8035e4b9347a', 'authenticated', 'authenticated', 'test@example.com', '$2a$10$GYr6Tf015T5bg/iAR6i3V.7XyUcXu9N6jvSKdfVBnoYJMU.ylzeNu', '2026-03-16 22:18:04.298358+00', NULL, '', NULL, '', NULL, '', '', NULL, '2026-03-16 22:18:04.342815+00', '{"provider": "email", "providers": ["email"]}', '{"sub": "9c0f74ed-6618-4f1a-b467-8035e4b9347a", "email": "test@example.com", "email_verified": true, "phone_verified": false}', NULL, '2026-03-16 22:18:04.218841+00', '2026-03-16 22:18:04.375711+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
 	('00000000-0000-0000-0000-000000000000', '2aa3ce85-ce21-49c6-8bc5-2279ebff1c62', 'authenticated', 'authenticated', 'agent3@example.com', '$2a$10$ck1uu6PX80vvqHFLJ3yuFe0XJyRCXNoOAegsdnjFkjeAajCAXimHC', '2026-03-16 22:18:40.229358+00', NULL, '', NULL, '', NULL, '', '', NULL, '2026-03-16 22:18:40.252476+00', '{"provider": "email", "providers": ["email"]}', '{"sub": "2aa3ce85-ce21-49c6-8bc5-2279ebff1c62", "email": "agent3@example.com", "email_verified": true, "phone_verified": false}', NULL, '2026-03-16 22:18:40.200827+00', '2026-03-16 22:18:40.260316+00', NULL, NULL, '', '', NULL, '', 0, NULL, '', NULL, false, NULL, false),
@@ -69,7 +69,7 @@ INSERT INTO "auth"."users" ("instance_id", "id", "aud", "role", "email", "encryp
 -- Data for Name: identities; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at", "id") VALUES
+INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "provider", "last_sign_in_at", "created_at", "updated_at", "id") OVERRIDING SYSTEM VALUE VALUES
 	('9c0f74ed-6618-4f1a-b467-8035e4b9347a', '9c0f74ed-6618-4f1a-b467-8035e4b9347a', '{"sub": "9c0f74ed-6618-4f1a-b467-8035e4b9347a", "email": "test@example.com", "email_verified": false, "phone_verified": false}', 'email', '2026-03-16 22:18:04.282079+00', '2026-03-16 22:18:04.282154+00', '2026-03-16 22:18:04.282154+00', '1122f2d1-e37e-4f4d-b234-3f773198c3b8'),
 	('5ad2523b-68c6-4770-99eb-292b49b8e155', '5ad2523b-68c6-4770-99eb-292b49b8e155', '{"sub": "5ad2523b-68c6-4770-99eb-292b49b8e155", "email": "agent@example.com", "email_verified": false, "phone_verified": false}', 'email', '2026-03-16 22:18:21.679129+00', '2026-03-16 22:18:21.679187+00', '2026-03-16 22:18:21.679187+00', 'b571c61b-8977-45bb-abd8-21e4ec672690'),
 	('10d21777-7ed6-4e45-ab1f-a577b855069a', '10d21777-7ed6-4e45-ab1f-a577b855069a', '{"sub": "10d21777-7ed6-4e45-ab1f-a577b855069a", "email": "agent2@example.com", "email_verified": false, "phone_verified": false}', 'email', '2026-03-16 22:18:30.353105+00', '2026-03-16 22:18:30.353128+00', '2026-03-16 22:18:30.353128+00', '39c05fad-bdcf-4b19-bdab-bdcb2a87b8da'),
@@ -93,7 +93,7 @@ INSERT INTO "auth"."identities" ("provider_id", "user_id", "identity_data", "pro
 -- Data for Name: sessions; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id", "aal", "not_after", "refreshed_at", "user_agent", "ip", "tag", "oauth_client_id", "refresh_token_hmac_key", "refresh_token_counter", "scopes") VALUES
+INSERT INTO "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "factor_id", "aal", "not_after", "refreshed_at", "user_agent", "ip", "tag", "oauth_client_id", "refresh_token_hmac_key", "refresh_token_counter", "scopes") OVERRIDING SYSTEM VALUE VALUES
 	('d7053b44-28c0-4947-8a4c-bdfb9b29dccc', '9c0f74ed-6618-4f1a-b467-8035e4b9347a', '2026-03-16 22:18:04.342951+00', '2026-03-16 22:18:04.342951+00', NULL, 'aal1', NULL, NULL, 'curl/8.7.1', '172.67.135.174', NULL, NULL, NULL, NULL, NULL),
 	('81f45117-6808-44a1-b610-907d009455f1', '5ad2523b-68c6-4770-99eb-292b49b8e155', '2026-03-16 22:18:21.701846+00', '2026-03-16 22:18:21.701846+00', NULL, 'aal1', NULL, NULL, 'curl/8.7.1', '172.67.135.174', NULL, NULL, NULL, NULL, NULL),
 	('5afc7e66-c84e-420d-a1a7-6234df2f23ce', '10d21777-7ed6-4e45-ab1f-a577b855069a', '2026-03-16 22:18:30.37286+00', '2026-03-16 22:18:30.37286+00', NULL, 'aal1', NULL, NULL, 'curl/8.7.1', '172.67.135.174', NULL, NULL, NULL, NULL, NULL),
@@ -105,7 +105,7 @@ INSERT INTO "auth"."sessions" ("id", "user_id", "created_at", "updated_at", "fac
 -- Data for Name: mfa_amr_claims; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "authentication_method", "id") VALUES
+INSERT INTO "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "authentication_method", "id") OVERRIDING SYSTEM VALUE VALUES
 	('d7053b44-28c0-4947-8a4c-bdfb9b29dccc', '2026-03-16 22:18:04.376702+00', '2026-03-16 22:18:04.376702+00', 'password', '983c0363-e43a-4217-93be-1bf71202e508'),
 	('81f45117-6808-44a1-b610-907d009455f1', '2026-03-16 22:18:21.709416+00', '2026-03-16 22:18:21.709416+00', 'password', '36e3ef8f-80b7-4fd3-a918-2280bb3d17d5'),
 	('5afc7e66-c84e-420d-a1a7-6234df2f23ce', '2026-03-16 22:18:30.380654+00', '2026-03-16 22:18:30.380654+00', 'password', 'a6f46dcb-c48b-40d1-a63a-a472f2a170d9'),
@@ -153,7 +153,7 @@ INSERT INTO "auth"."mfa_amr_claims" ("session_id", "created_at", "updated_at", "
 -- Data for Name: refresh_tokens; Type: TABLE DATA; Schema: auth; Owner: supabase_auth_admin
 --
 
-INSERT INTO "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked", "created_at", "updated_at", "parent", "session_id") VALUES
+INSERT INTO "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "revoked", "created_at", "updated_at", "parent", "session_id") OVERRIDING SYSTEM VALUE VALUES
 	('00000000-0000-0000-0000-000000000000', 1, 'ing7wd2k4pdm', '9c0f74ed-6618-4f1a-b467-8035e4b9347a', false, '2026-03-16 22:18:04.353012+00', '2026-03-16 22:18:04.353012+00', NULL, 'd7053b44-28c0-4947-8a4c-bdfb9b29dccc'),
 	('00000000-0000-0000-0000-000000000000', 2, 'mwavvr6okkob', '5ad2523b-68c6-4770-99eb-292b49b8e155', false, '2026-03-16 22:18:21.706316+00', '2026-03-16 22:18:21.706316+00', NULL, '81f45117-6808-44a1-b610-907d009455f1'),
 	('00000000-0000-0000-0000-000000000000', 3, 'mt4eefdjqw2k', '10d21777-7ed6-4e45-ab1f-a577b855069a', false, '2026-03-16 22:18:30.378632+00', '2026-03-16 22:18:30.378632+00', NULL, '5afc7e66-c84e-420d-a1a7-6234df2f23ce'),
@@ -189,7 +189,7 @@ INSERT INTO "auth"."refresh_tokens" ("instance_id", "id", "token", "user_id", "r
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO "public"."categories" ("id", "user_id", "name", "icon", "color", "created_at") VALUES
+INSERT INTO "public"."categories" ("id", "user_id", "name", "icon", "color", "created_at") OVERRIDING SYSTEM VALUE VALUES
 	(1, '9a1c1786-4c33-47b2-b9fd-c2b46be9907e', 'Copywriting', '✍️', '#ff6b35', '2026-03-17 03:21:47.341987+00'),
 	(2, '9a1c1786-4c33-47b2-b9fd-c2b46be9907e', 'Código', '💻', '#0048ff', '2026-03-17 03:21:47.368667+00'),
 	(3, '9a1c1786-4c33-47b2-b9fd-c2b46be9907e', 'Análise de Dados', '📊', '#00d68f', '2026-03-17 03:21:47.38669+00'),
