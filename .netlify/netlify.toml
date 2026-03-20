@@ -1,4 +1,4 @@
-functionsDirectory = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
+functionsDirectory = "/Users/PROJETOS DEV/PROMPT-APP/.netlify/functions-internal"
 functionsDirectoryOrigin = "ui"
 headersOrigin = "config"
 redirectsOrigin = "config"
@@ -19,7 +19,7 @@ publish = "/Users/PROJETOS DEV/PROMPT-APP/dist"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "pnpm run build"
-functions = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
+functions = "/Users/PROJETOS DEV/PROMPT-APP/.netlify/functions-internal"
 
 [build.environment]
 NODE_VERSION = "20"
