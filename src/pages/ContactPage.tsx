@@ -33,12 +33,6 @@ export default function ContactPage() {
                     <h2>Canais disponíveis</h2>
                     <ul className="info-page__list">
                         <li>
-                            Repositório e issues:{' '}
-                            <a href="https://github.com/danilonovaisv/PROMPT-APP">
-                                github.com/danilonovaisv/PROMPT-APP
-                            </a>
-                        </li>
-                        <li>
                             Perfil do autor:{' '}
                             <a href="https://github.com/danilonovaisv">github.com/danilonovaisv</a>
                         </li>

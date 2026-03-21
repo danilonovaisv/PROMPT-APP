@@ -2,7 +2,7 @@
   "version": "1.0",
   "menus": [
     {
-      "menu_id": "target_generation_model",
+      "menu_id": "modelo_de_geracao_imagem",
       "menu_name": "Target Generation Model",
       "description": "Select the AI image or video generation model for which the output prompt will be optimized. Each model has distinct prompt syntax and strengths.",
       "options": [
