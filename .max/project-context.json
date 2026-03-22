@@ -1,12 +1,13 @@
 {
-  "scanned_at": "2026-03-21T23:38:50.139Z",
+  "scanned_at": "2026-03-22T00:44:06.278Z",
   "project_name": "PROMPT-APP",
   "project_path": "/Users/PROJETOS DEV/PROMPT-APP",
   "type": [
     "node"
   ],
   "languages": [
-    "TypeScript"
+    "TypeScript",
+    "JavaScript"
   ],
   "frameworks": [
     "React",
@@ -34,7 +35,9 @@
         "test:e2e:debug": "playwright test --debug",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "netlify dev:exec drizzle-kit migrate",
-        "db:studio": "netlify dev:exec drizzle-kit studio"
+        "db:studio": "netlify dev:exec drizzle-kit studio",
+        "lint": "eslint .",
+        "type-check": "tsc --noEmit"
       }
     },
     "README.md": "# 🧠 Prompt App\n\n> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.\n\n![Version](https://img.shields.io/badge/version-2.0.0-blueviolet)\n![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)\n![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)\n![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite)\n[![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)\n\n---\n\n## 📋 Índice\n\n- [Visão Geral](#-visão-geral)\n- [Tech Stack](#-tech-stack)\n- [Funcionalidades](#-funcionalidades)\n- [Início Rápido](#-início-rápido)\n- [Arquit"
