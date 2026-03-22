@@ -69,7 +69,8 @@ export default function ImportExportModal({
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             showToast(error.message || 'Erro ao importar', 'error');
         } finally {
             setImporting(false);
@@ -101,7 +102,8 @@ export default function ImportExportModal({
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             showToast(error.message || 'Erro ao importar JSON colado', 'error');
         } finally {
             setImporting(false);

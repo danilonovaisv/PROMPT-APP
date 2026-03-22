@@ -4,7 +4,7 @@ export interface AssetUpdate {
     remoteId?: number;
     action: 'created' | 'updated' | 'deleted';
     timestamp: Date;
-    data?: any;
+    data?: unknown;
 }
 export interface ConflictResolution {
     strategy: 'localWins' | 'remoteWins' | 'merge' | 'askUser';

@@ -110,7 +110,7 @@ describe('formatPromptAsMarkdown', () => {
         required_fields: [],
         response_rules: [],
       },
-    } as any;
+    } as unknown as Parameters<typeof formatPromptAsMarkdown>[0];
 
     const compiledPayload = {
       template_id: 'ghost_template',
@@ -134,7 +134,7 @@ describe('formatPromptAsMarkdown', () => {
       },
       prompt_definition: template.prompt_definition,
       output_contract: template.output_contract,
-    } as any;
+    } as unknown as Parameters<typeof formatPromptAsMarkdown>[1];
 
     const markdown = formatPromptAsMarkdown(template, compiledPayload);
 

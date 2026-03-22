@@ -16,7 +16,9 @@
     "test:e2e:debug": "playwright test --debug",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "netlify dev:exec drizzle-kit migrate",
-    "db:studio": "netlify dev:exec drizzle-kit studio"
+    "db:studio": "netlify dev:exec drizzle-kit studio",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@netlify/neon": "^0.1.2",
@@ -54,6 +56,12 @@
     "jsdom": "^29.0.1",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.3",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
+    "typescript-eslint": "^8.18.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "@eslint/js": "^9.16.0"
   }
 }

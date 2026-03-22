@@ -50,7 +50,8 @@ export default function CategoryPage() {
         if (prompt?.remoteId) {
             try {
                 await deletePromptFromSupabase(prompt.remoteId);
-            } catch (error: any) {
+            } catch (e: unknown) {
+        const error = e as Error;
                 console.error("Erro ao deletar no Supabase:", error);
                 showToast(error.message || 'Erro ao deletar o prompt no servidor.', 'error');
                 return;

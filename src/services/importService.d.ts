@@ -2,7 +2,7 @@ export interface ImportError {
     type: 'validation' | 'processing' | 'network' | 'conflict';
     field: string;
     message: string;
-    data?: any;
+    data?: unknown;
 }
 export interface ImportResult {
     success: boolean;
