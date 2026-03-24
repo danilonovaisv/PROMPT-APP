@@ -81,7 +81,7 @@ export function getTemplateFile(): Blob {
     },
     menu_definitions: [],
     output_contract: {
-      format: "plain",
+      format: "text",
       language: "pt-BR",
       strict_mode: true,
       required_fields: [],
