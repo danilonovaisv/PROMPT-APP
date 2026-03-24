@@ -183,14 +183,14 @@ export function validateMenuImportFile(raw: unknown): ValidationResult {
 
 /** Verifica conflitos com menus existentes no banco */
 export async function checkMenuIdConflicts(menuIds: string[]): Promise<string[]> {
-    if (!menuIds || menuIds.length === 0) return [];
-
-    const existingMenus = await db.contextMenus
-        .where('menuId')
-        .anyOf(menuIds)
-        .toArray();
-
-    return existingMenus.map(m => m.menuId);
+    const conflicts: string[] = [];
+    for (const menuId of menuIds) {
+        const existing = await db.contextMenus.where('menuId').equals(menuId).first();
+        if (existing) {
+            conflicts.push(menuId);
+        }
+    }
+    return conflicts;
 }
 
 /* -------------------------------------------------------
