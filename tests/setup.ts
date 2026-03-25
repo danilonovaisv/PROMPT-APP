@@ -18,7 +18,7 @@ if (typeof global.TextDecoder === "undefined") {
 // Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
   Blob.prototype.text = function () {
-    return Promise.resolve(global.TextDecoder ? new global.TextDecoder().decode(this) : "");
+    return Promise.resolve(global.TextDecoder ? new global.TextDecoder().decode(this as any) : "");
   };
 }
 
