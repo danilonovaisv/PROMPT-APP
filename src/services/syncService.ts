@@ -104,20 +104,20 @@ export const syncToCloud = async () => {
         let result;
         if (remoteId) {
             // Last write wins: checar se o remoto é mais novo
-            const { data: remoteData } = await withRetry<any>(() => supabase.from('categories').select('updated_at').eq('id', remoteId).single());
+            const { data: remoteData } = await withRetry(() => supabase.from('categories').select('updated_at').eq('id', remoteId).single());
             if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(cat.updatedAt?.getTime() || 0) / 1000) {
                console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.name}`);
                continue;
             }
 
             // Update existindo remoteId
-            result = await withRetry<any>(() => supabase.from('categories')
+            result = await withRetry(() => supabase.from('categories')
                 .upsert({ id: remoteId, ...payload })
                 .select()
                 .single());
         } else {
             // Insert novo
-            result = await withRetry<any>(() => supabase.from('categories')
+            result = await withRetry(() => supabase.from('categories')
                 .insert(payload)
                 .select()
                 .single());
@@ -210,18 +210,18 @@ export const syncToCloud = async () => {
 
         let result;
         if (remoteId) {
-            const { data: remoteData } = await withRetry<any>(() => supabase.from('prompts').select('updated_at').eq('id', remoteId).single());
+            const { data: remoteData } = await withRetry(() => supabase.from('prompts').select('updated_at').eq('id', remoteId).single());
             if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(prompt.updatedAt?.getTime() || 0) / 1000) {
                console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.title}`);
                continue;
             }
 
-            result = await withRetry<any>(() => supabase.from('prompts')
+            result = await withRetry(() => supabase.from('prompts')
                 .upsert({ id: remoteId, ...payload })
                 .select()
                 .single());
         } else {
-            result = await withRetry<any>(() => supabase.from('prompts')
+            result = await withRetry(() => supabase.from('prompts')
                 .insert(payload)
                 .select()
                 .single());

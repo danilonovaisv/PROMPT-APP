@@ -12,7 +12,9 @@ import {
   getPromptSummaryFields,
   parsePromptPayload,
   parseUserSelection,
+  type LegacyContextMenuSelection,
 } from "@/models/promptSchema";
+import type { Category, ContextMenu, Prompt, FewShotExample } from "@/models/types";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -157,8 +159,40 @@ export async function resolveConflicts(
 async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
   const remoteData = update.data;
 
+interface AssetRemoteData {
+  id: number;
+  name?: string;
+  icon?: string;
+  color?: string;
+  created_at?: string;
+  updated_at?: string;
+  category_id?: number;
+  title?: string;
+  prompt_payload_jsonb?: unknown;
+  system_role?: string;
+  task?: string;
+  context?: string;
+  context_menus?: Record<string, unknown>;
+  enabled_menu_ids?: string[];
+  constraints?: string[];
+  negative_prompt?: string[];
+  output_schema?: { formato?: string; estrutura?: string };
+  reference_url?: string;
+  language?: string;
+  schema_version?: string;
+  selection_payload_jsonb?: unknown;
+  compiled_payload_jsonb?: unknown;
+  output_format?: "markdown" | "json";
+  few_shot_examples?: unknown[];
+  menu_id?: string;
+  menu_name?: string;
+  description?: string;
+  selection_mode?: "single" | "multiple";
+  options?: unknown;
+}
+
   // Type assertions for remote data
-  const rd = remoteData as Record<string, any>;
+  const rd = remoteData as unknown as AssetRemoteData;
 
   switch (update.type) {
     case "category":
@@ -182,7 +216,7 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
             systemRole: rd.system_role,
             task: rd.task,
             context: rd.context,
-            contextMenus: rd.context_menus,
+            contextMenus: rd.context_menus as Record<string, LegacyContextMenuSelection> | undefined,
             enabledMenuIds: rd.enabled_menu_ids,
             constraints: rd.constraints,
             negativePrompt: rd.negative_prompt,
@@ -199,7 +233,7 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
             title: rd.title,
             schemaVersion: rd.schema_version,
             language: rd.language,
-            contextMenus: rd.context_menus,
+            contextMenus: rd.context_menus as Record<string, LegacyContextMenuSelection> | undefined,
             enabledMenuIds: rd.enabled_menu_ids,
           },
         );
@@ -208,14 +242,14 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
           title: rd.title,
           promptPayload,
           selectionPayload,
-          compiledPayload: rd.compiled_payload_jsonb ||
-            compilePromptPayload(promptPayload, selectionPayload),
+          compiledPayload: (rd.compiled_payload_jsonb ||
+            compilePromptPayload(promptPayload, selectionPayload)) as unknown as Prompt["compiledPayload"],
           schemaVersion: rd.schema_version || "1.0.0",
           language: rd.language || "pt-BR",
           outputFormat: rd.output_format || "markdown",
           referenceUrl: rd.reference_url || undefined,
-          fewShotExamples: rd.few_shot_examples || [],
-          updatedAt: new Date(rd.updated_at || rd.created_at),
+          fewShotExamples: (rd.few_shot_examples || []) as FewShotExample[],
+          updatedAt: new Date((rd.updated_at || rd.created_at || new Date().toISOString()) as string),
         });
         console.log(`📥 Prompt #${update.id} atualizado com dados remotos`);
       }
@@ -228,8 +262,8 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
           menuName: rd.menu_name,
           description: rd.description,
           selectionMode: rd.selection_mode || "single",
-          options: rd.options || [],
-          updatedAt: new Date(rd.updated_at || rd.created_at),
+          options: (rd.options || []) as unknown as ContextMenu["options"],
+          updatedAt: new Date((rd.updated_at || rd.created_at || new Date().toISOString()) as string),
         });
         console.log(`📥 Menu #${update.id} atualizado com dados remotos`);
       }
@@ -250,49 +284,55 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
   console.log(`📤 Enviando mudanças locais para ${update.type} #${update.id}`);
 
   let table = "";
-  let payload: any = {};
+  let payload: Record<string, unknown> = {};
 
   switch (update.type) {
-    case "category":
+    case "category": {
+      const category = localItem as Category;
       table = "categories";
       payload = {
-        name: localItem.name,
-        icon: localItem.icon,
-        color: localItem.color,
+        name: category.name,
+        icon: category.icon,
+        color: category.color,
         user_id: session.user.id,
       };
       break;
-    case "prompt":
-      const promptSummary = getPromptSummaryFields(localItem.promptPayload);
+    }
+    case "prompt": {
+      const prompt = localItem as Prompt;
+      const promptSummary = getPromptSummaryFields(prompt.promptPayload as Parameters<typeof getPromptSummaryFields>[0]);
       table = "prompts";
       payload = {
-        category_id: localItem.categoryId,
+        category_id: prompt.categoryId,
         title: promptSummary.title,
-        prompt_payload_jsonb: localItem.promptPayload,
+        prompt_payload_jsonb: prompt.promptPayload,
         schema_version: promptSummary.schemaVersion,
         output_format: promptSummary.outputFormat,
         language: promptSummary.language,
-        reference_url: getPrimaryReferenceUrl(localItem.promptPayload),
-        few_shot_examples: localItem.fewShotExamples || [],
+        reference_url: getPrimaryReferenceUrl(prompt.promptPayload as Parameters<typeof getPrimaryReferenceUrl>[0]),
+        few_shot_examples: prompt.fewShotExamples || [],
         user_id: session.user.id,
         ...getLegacyPromptColumns(
-          localItem.promptPayload,
-          localItem.selectionPayload,
-          localItem.compiledPayload,
+          prompt.promptPayload as Parameters<typeof getLegacyPromptColumns>[0],
+          prompt.selectionPayload as Parameters<typeof getLegacyPromptColumns>[1],
+          prompt.compiledPayload as Parameters<typeof getLegacyPromptColumns>[2],
         ),
       };
       break;
-    case "menu":
+    }
+    case "menu": {
+      const menu = localItem as ContextMenu;
       table = "context_menus";
       payload = {
-        menu_id: localItem.menuId,
-        menu_name: localItem.menuName,
-        description: localItem.description,
-        selection_mode: localItem.selectionMode || "single",
-        options: localItem.options || [],
+        menu_id: menu.menuId,
+        menu_name: menu.menuName,
+        description: menu.description,
+        selection_mode: menu.selectionMode || "single",
+        options: menu.options || [],
         user_id: session.user.id,
       };
       break;
+    }
   }
 
   if (localItem.remoteId) {
@@ -315,7 +355,7 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
     if (error) throw error;
 
     // Atualiza localmente com o novo remoteId
-    await (db as any)[table !== "context_menus" ? table : "contextMenus"]
+    await (db as unknown as Record<string, { update: (id: number, changes: object) => Promise<number> }>)[table !== "context_menus" ? table : "contextMenus"]
       .update(update.id, {
         remoteId: data.id,
         syncStatus: "synced",
@@ -351,14 +391,14 @@ async function mergeChanges(update: AssetUpdate): Promise<void> {
 async function getLocalItem(
   type: AssetUpdate["type"],
   id: number,
-): Promise<any> {
+): Promise<Category | Prompt | ContextMenu | null> {
   switch (type) {
     case "category":
-      return await db.categories.get(id);
+      return (await db.categories.get(id)) || null;
     case "prompt":
-      return await db.prompts.get(id);
+      return (await db.prompts.get(id)) || null;
     case "menu":
-      return await db.contextMenus.get(id);
+      return (await db.contextMenus.get(id)) || null;
     default:
       return null;
   }
@@ -425,7 +465,8 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
   ]);
 
   const pullItems = async (
-    remoteItems: any[] | null,
+    remoteItems: { id: number; created_at?: string; [key: string]: unknown }[] | null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     localTable: any,
     type: AssetUpdate["type"],
   ) => {
@@ -438,7 +479,7 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
           type,
           id: 0, // Novo item
           action: "created",
-          timestamp: new Date(remote.created_at),
+          timestamp: new Date((remote.created_at || new Date().toISOString()) as string),
           data: remote,
         });
         pulledCount++;
@@ -463,6 +504,7 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   console.log("📤 Enviando mudanças locais pendentes...");
   let pushedCount = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const findPending = async (table: any, type: AssetUpdate["type"]) => {
     const pending = await table.where("syncStatus").equals("pending").toArray();
     for (const item of pending) {

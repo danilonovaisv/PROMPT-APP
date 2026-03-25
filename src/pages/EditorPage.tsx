@@ -193,6 +193,8 @@ function isUnauthenticatedCloudError(error: unknown) {
   );
 }
 
+const EMPTY_MENUS: never[] = [];
+
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -207,7 +209,7 @@ export default function EditorPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
 
-  const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
+  const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? EMPTY_MENUS;
   const debouncedForm = useDebounce(form, 1200);
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
@@ -296,7 +298,8 @@ export default function EditorPage() {
         renderedPrompt: artifacts.renderedPrompt,
         error: null,
       };
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: error.message || 'Payload inválido' };
     }
   }, [availableContextMenus, form]);
@@ -427,7 +430,8 @@ export default function EditorPage() {
 
     try {
       ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus));
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       showToast(error.message || 'Template inválido', 'error');
       return;
     }
@@ -461,7 +465,8 @@ export default function EditorPage() {
       }
       clearDraft();
       await saveLocalBackup();
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       console.error('Erro ao salvar localmente:', error);
       showToast(error.message || 'Erro ao salvar localmente', 'error');
       return;

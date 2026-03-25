@@ -5,6 +5,8 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
+/* eslint-disable react-refresh/only-export-components */
+
 type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {

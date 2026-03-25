@@ -3,7 +3,7 @@
  */
 
 import { db } from "@/db/database";
-import type { Category } from "@/models/types";
+import type { Category, Prompt, ContextMenu } from "@/models/types";
 
 describe("Database Integration Tests", () => {
   it("should expose Dexie schema version 10", () => {
@@ -138,7 +138,7 @@ describe("Database Integration Tests", () => {
         syncStatus: "synced",
       };
 
-      const id = await db.prompts.add(prompt as any);
+      const id = await db.prompts.add(prompt as unknown as Prompt);
       expect(id).toBeDefined();
 
       const retrieved = await db.prompts.get(id!);
@@ -235,7 +235,7 @@ describe("Database Integration Tests", () => {
         syncStatus: "synced",
       };
 
-      const id = await db.contextMenus.add(menu as any);
+      const id = await db.contextMenus.add(menu as unknown as ContextMenu);
       expect(id).toBeDefined();
 
       const retrieved = await db.contextMenus.get(id);

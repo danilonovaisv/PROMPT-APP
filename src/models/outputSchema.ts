@@ -52,7 +52,7 @@ export function sanitizeUrlField(raw: unknown): { value?: string; error?: string
       return { error: 'Use apenas http ou https' };
     }
     return { value: trimmed };
-  } catch (err) {
+  } catch {
     return { error: 'URL inválida' };
   }
 }

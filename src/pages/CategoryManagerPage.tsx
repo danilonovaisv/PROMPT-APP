@@ -88,7 +88,8 @@ export default function CategoryManagerPage() {
                 localId = newId ?? null;
             }
             await saveLocalBackup();
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             console.error('Erro ao salvar localmente:', error);
             showToast(error.message || 'Erro ao salvar a categoria localmente.', 'error');
             return;
@@ -111,7 +112,8 @@ export default function CategoryManagerPage() {
 
             showToast(isEditing ? 'Categoria sincronizada!' : 'Categoria criada e sincronizada!');
             cancel();
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             console.error('Erro ao salvar categoria no Supabase:', error);
             showToast('Categoria salva localmente. Sincronize ao fazer login.', 'info');
             cancel();
@@ -132,7 +134,8 @@ export default function CategoryManagerPage() {
             await db.categories.delete(id);
             await saveLocalBackup();
             showToast('Categoria excluída do servidor!');
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             console.error('Erro ao excluir no Supabase:', error);
             showToast(error.message || 'Erro ao deletar categoria no servidor.', 'error');
         }

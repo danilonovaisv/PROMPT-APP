@@ -9,7 +9,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
-    const payload: any = {
+    const payload: Record<string, unknown> = {
         user_id: user.id,
         menu_id: input.menuId,
         menu_name: input.menuName,
