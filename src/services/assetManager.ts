@@ -471,10 +471,17 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     type: AssetUpdate["type"],
   ) => {
     if (!remoteItems) return;
+
+    const allLocalItems = await localTable.toArray();
+    const existingRemoteIds = new Set<number>();
+    for (const item of allLocalItems) {
+      if (item.remoteId != null) {
+        existingRemoteIds.add(item.remoteId);
+      }
+    }
+
     for (const remote of remoteItems) {
-      const exists = await localTable.where("remoteId").equals(remote.id)
-        .first();
-      if (!exists) {
+      if (!existingRemoteIds.has(remote.id)) {
         await applyRemoteChanges({
           type,
           id: 0, // Novo item
