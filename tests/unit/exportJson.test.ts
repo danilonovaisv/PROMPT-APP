@@ -10,12 +10,8 @@ describe('getTemplateFile', () => {
     expect(blob.type).toBe('application/json');
 
     // Extract text from Blob
-    const text = await new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.readAsText(blob);
-    });
-    const json = JSON.parse(text as string);
+    const text = await blob.text();
+    const json = JSON.parse(text);
 
     // Verify it matches the schema
     const result = PromptContractSchema.safeParse(json);

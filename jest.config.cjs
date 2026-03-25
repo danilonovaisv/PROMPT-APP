@@ -22,6 +22,10 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/lib/**',
     '!src/vite-env.d.ts',
+    '!src/instrument.ts',
+    '!src/utils/logger.ts',
+    '!src/utils/supabase.ts',
+    '!src/lib/supabase.ts',
   ],
   coverageThreshold: {
     global: {

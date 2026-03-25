@@ -15,6 +15,13 @@ if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
+// Polyfill Blob.prototype.text for JSDOM
+if (typeof Blob.prototype.text === "undefined") {
+  Blob.prototype.text = function () {
+    return Promise.resolve(global.TextDecoder ? new global.TextDecoder().decode(this) : "");
+  };
+}
+
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {
   writable: true,
