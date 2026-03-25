@@ -210,13 +210,33 @@ export const downloadFromCloud = async () => {
     console.log('☁️ Iniciando Smart Merge (Nuvem -> Local)...');
 
     await db.transaction('rw', [db.categories, db.prompts, db.contextMenus], async () => {
+        // Pre-fetch all local data to avoid N+1 queries during merge
+        const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise.all([
+            db.categories.toArray(),
+            db.contextMenus.toArray(),
+            db.prompts.toArray(),
+        ]);
+
+        const categoriesByRemoteId = new Map(
+            allLocalCategories.filter(c => c.remoteId).map(c => [c.remoteId!, c])
+        );
+        const menusByRemoteId = new Map(
+            allLocalMenus.filter(m => m.remoteId).map(m => [m.remoteId!, m])
+        );
+        const menusByMenuId = new Map(
+            allLocalMenus.map(m => [m.menuId, m])
+        );
+        const promptsByRemoteId = new Map(
+            allLocalPrompts.filter(p => p.remoteId).map(p => [p.remoteId!, p])
+        );
+
         // --- A. Sincronizar Categorias ---
         const remoteToLocalCatMap = new Map<number, number>();
 
         if (catRes.data) {
             for (const c of catRes.data) {
                 // Tenta encontrar categoria local pelo remoteId
-                const existing = await db.categories.where('remoteId').equals(c.id).first();
+                const existing = categoriesByRemoteId.get(c.id);
 
                 const catData = {
                     remoteId: c.id,
@@ -245,11 +265,11 @@ export const downloadFromCloud = async () => {
         // --- B. Sincronizar Menus ---
         if (menuRes.data) {
             for (const m of menuRes.data) {
-                const existing = await db.contextMenus.where('remoteId').equals(m.id).first();
+                const existing = menusByRemoteId.get(m.id);
                 // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
                 // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
                 const existingBySlug = !existing
-                    ? await db.contextMenus.where('menuId').equals(m.menu_id).first()
+                    ? menusByMenuId.get(m.menu_id)
                     : null;
 
                 const targetId = existing?.id || existingBySlug?.id;
@@ -277,7 +297,7 @@ export const downloadFromCloud = async () => {
         // --- C. Sincronizar Prompts ---
         if (promptRes.data) {
             for (const p of promptRes.data) {
-                const existing = await db.prompts.where('remoteId').equals(p.id).first();
+                const existing = promptsByRemoteId.get(p.id);
 
                 // Resolver Categoria Local
                 // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente
