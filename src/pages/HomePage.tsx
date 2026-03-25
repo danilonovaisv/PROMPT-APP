@@ -13,8 +13,9 @@ import { useMemo } from 'react';
 export default function HomePage() {
     const navigate = useNavigate();
 
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
-    const prompts = useLiveQuery(() => db.prompts.toArray()) ?? [];
+    const EMPTY_ARRAY: never[] = [];
+    const categories = useLiveQuery(() => db.categories.toArray()) ?? EMPTY_ARRAY;
+    const prompts = useLiveQuery(() => db.prompts.toArray()) ?? EMPTY_ARRAY;
 
     const stats = useMemo(() => [
         { label: 'Categorias', value: categories.length, color: '#0048ff' },

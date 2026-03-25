@@ -8,7 +8,7 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
-    const payload: any = {
+    const payload: Record<string, unknown> = {
         user_id: user.id,
         name: input.name,
         icon: input.icon,

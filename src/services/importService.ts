@@ -180,7 +180,8 @@ async function importMenuDefinitions(
       }
 
       count++;
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       errors.push({
         type: 'processing',
         field: 'menu_definition',
@@ -260,7 +261,8 @@ async function processPromptImport(
     }
 
     return true;
-  } catch (error: any) {
+  } catch (e: unknown) {
+        const error = e as Error;
     errors.push({
       type: 'validation',
       field: 'prompt',
@@ -286,7 +288,7 @@ export async function importFromJsonText(
 
   // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
   const sanitizeJsonString = (jsonStr: string): string => {
-    let cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
     const firstBrace = cleaned.indexOf('{');
     const firstBracket = cleaned.indexOf('[');
     let startIndex = -1;
@@ -380,7 +382,8 @@ export async function importFromJsonText(
       warnings,
       processingTime: Date.now() - startTime,
     };
-  } catch (error: any) {
+  } catch (e: unknown) {
+        const error = e as Error;
     return {
       success: false,
       count: 0,

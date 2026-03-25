@@ -46,6 +46,7 @@ export default function CloudSyncItem() {
         });
 
         return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Verificar periodicamente se há atualizações
@@ -138,7 +139,8 @@ export default function CloudSyncItem() {
             const message = `Sync inteligente concluído! Recebidos: ${result.pulled}, Enviados: ${result.pushed}, Conflitos: ${result.conflicts}`;
             showToast(message, 'success');
             setHasUpdates(false);
-        } catch (err: any) {
+        } catch (e: unknown) {
+        const err = e as Error;
             showToast('Erro no sync inteligente: ' + err.message, 'error');
         } finally {
             setLoading(false);
@@ -154,7 +156,8 @@ export default function CloudSyncItem() {
             await downloadFromCloud();
             showToast('Dados restaurados da nuvem!', 'success');
             window.location.reload();
-        } catch (err: any) {
+        } catch (e: unknown) {
+        const err = e as Error;
             showToast('Erro ao restaurar: ' + err.message, 'error');
         } finally {
             setLoading(false);

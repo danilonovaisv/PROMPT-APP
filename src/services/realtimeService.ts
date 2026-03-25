@@ -8,6 +8,7 @@ import type {
   Category,
   ContextMenu,
   Prompt,
+  FewShotExample,
 } from "@/models/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { saveLocalBackup } from "@/utils/backupManager";
@@ -17,6 +18,7 @@ import {
   parsePromptPayload,
   parseUserSelection,
 } from "@/models/promptSchema";
+import type { LegacyContextMenuSelection } from "@/models/promptSchema";
 
 // Canais de realtime para cada tabela
 let categoriesChannel: RealtimeChannel | null = null;
@@ -114,6 +116,14 @@ export async function setupRealtimeListeners() {
   console.log("✅ Listeners de realtime ativados");
 }
 
+interface RealtimeCategoryPayload {
+  id: number;
+  name: string;
+  icon?: string;
+  color?: string;
+  created_at: string;
+}
+
 /**
  * Trata mudanças em categorias vindas do realtime
  */
@@ -127,12 +137,12 @@ async function handleCategoryChange(payload: {
 
   if (!remoteData) return;
 
-  const rd = remoteData as Record<string, any>;
+  const rd = remoteData as unknown as RealtimeCategoryPayload;
 
   try {
     switch (eventType) {
       case "INSERT":
-      case "UPDATE":
+      case "UPDATE": {
         // Verificar se já existe localmente
         const existingLocal = await db.categories
           .where("remoteId")
@@ -158,8 +168,9 @@ async function handleCategoryChange(payload: {
           console.log(`➕ Categoria adicionada localmente: ${rd.name}`);
         }
         break;
+      }
 
-      case "DELETE":
+      case "DELETE": {
         const toDelete = await db.categories
           .where("remoteId")
           .equals(rd.id)
@@ -170,10 +181,35 @@ async function handleCategoryChange(payload: {
           console.log(`🗑️ Categoria removida localmente: ${toDelete.name}`);
         }
         break;
+      }
     }
   } catch (error) {
     console.error("❌ Erro ao processar mudança de categoria:", error);
   }
+}
+
+interface RealtimePromptPayload {
+  id: number;
+  category_id: number;
+  title: string;
+  prompt_payload_jsonb: unknown;
+  system_role?: string;
+  task?: string;
+  context?: string;
+  context_menus?: Record<string, LegacyContextMenuSelection>;
+  enabled_menu_ids?: string[];
+  constraints?: string[];
+  negative_prompt?: string[];
+  output_schema?: { formato?: string; estrutura?: string };
+  reference_url?: string;
+  language?: string;
+  schema_version?: string;
+  selection_payload_jsonb?: unknown;
+  compiled_payload_jsonb?: unknown;
+  output_format?: "markdown" | "json";
+  few_shot_examples?: unknown[];
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -189,13 +225,12 @@ async function handlePromptChange(payload: {
 
   if (!remoteData) return;
 
-  // Type assertions for Supabase realtime data
-  const rd = remoteData as Record<string, any>;
+  const rd = remoteData as unknown as RealtimePromptPayload;
 
   try {
     switch (eventType) {
       case "INSERT":
-      case "UPDATE":
+      case "UPDATE": {
         const existingLocal = await db.prompts
           .where("remoteId")
           .equals(rd.id)
@@ -232,14 +267,13 @@ async function handlePromptChange(payload: {
           },
         );
 
-        // Converter dados do Supabase para formato local
         const promptData: Partial<Prompt> = {
           remoteId: rd.id,
           categoryId: localCategoryId,
           title: rd.title,
           promptPayload,
           selectionPayload: parseUserSelection(
-            rd.selection_payload_jsonb,
+            rd.selection_payload_jsonb as Record<string, unknown>,
             promptPayload.meta.template_id,
             {
               title: rd.title,
@@ -249,12 +283,12 @@ async function handlePromptChange(payload: {
               enabledMenuIds: rd.enabled_menu_ids,
             },
           ),
-          compiledPayload: rd.compiled_payload_jsonb || undefined,
+          compiledPayload: (rd.compiled_payload_jsonb as unknown as Prompt["compiledPayload"]) || undefined,
           schemaVersion: rd.schema_version || "1.0.0",
           language: rd.language || "pt-BR",
           outputFormat: rd.output_format || "markdown",
           referenceUrl: rd.reference_url || undefined,
-          fewShotExamples: rd.few_shot_examples || [],
+          fewShotExamples: (rd.few_shot_examples as unknown as FewShotExample[]) || [],
           createdAt: new Date(rd.created_at),
           updatedAt: new Date(rd.updated_at),
           syncStatus: "synced",
@@ -286,8 +320,9 @@ async function handlePromptChange(payload: {
           console.log(`➕ Prompt adicionado localmente: ${rd.title}`);
         }
         break;
+      }
 
-      case "DELETE":
+      case "DELETE": {
         const toDelete = await db.prompts
           .where("remoteId")
           .equals(rd.id)
@@ -298,10 +333,22 @@ async function handlePromptChange(payload: {
           console.log(`🗑️ Prompt removido localmente: ${toDelete.title}`);
         }
         break;
+      }
     }
   } catch (error) {
     console.error("❌ Erro ao processar mudança de prompt:", error);
   }
+}
+
+interface RealtimeMenuPayload {
+  id: number;
+  menu_id: string;
+  menu_name: string;
+  description?: string;
+  selection_mode?: "single" | "multiple";
+  options?: unknown;
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -317,45 +364,43 @@ async function handleMenuChange(payload: {
 
   if (!remoteData) return;
 
+  const rd = remoteData as unknown as RealtimeMenuPayload;
+
   try {
     switch (eventType) {
       case "INSERT":
-      case "UPDATE":
+      case "UPDATE": {
         const existingLocal = await db.contextMenus
           .where("remoteId")
-          .equals(remoteData.id as number)
+          .equals(rd.id)
           .first();
 
         const menuData: Partial<ContextMenu> = {
-          remoteId: remoteData.id as number,
-          menuId: remoteData.menu_id as string,
-          menuName: remoteData.menu_name as string,
-          description: remoteData.description as string,
-          selectionMode: (remoteData.selection_mode as "single" | "multiple") ||
-            "single",
-          options: normalizeContextMenuOptions(remoteData.options),
-          createdAt: new Date(remoteData.created_at as string),
-          updatedAt: new Date(remoteData.updated_at as string),
+          remoteId: rd.id,
+          menuId: rd.menu_id,
+          menuName: rd.menu_name,
+          description: rd.description || "",
+          selectionMode: rd.selection_mode || "single",
+          options: normalizeContextMenuOptions(rd.options as Record<string, unknown>),
+          createdAt: new Date(rd.created_at),
+          updatedAt: new Date(rd.updated_at),
           syncStatus: "synced",
         };
 
         if (existingLocal) {
           await db.contextMenus.update(existingLocal.id!, menuData);
-          console.log(
-            `🔄 Menu atualizado localmente: ${remoteData.menu_name as string}`,
-          );
+          console.log(`🔄 Menu atualizado localmente: ${rd.menu_name}`);
         } else {
           await db.contextMenus.add(menuData as ContextMenu);
-          console.log(
-            `➕ Menu adicionado localmente: ${remoteData.menu_name as string}`,
-          );
+          console.log(`➕ Menu adicionado localmente: ${rd.menu_name}`);
         }
         break;
+      }
 
-      case "DELETE":
+      case "DELETE": {
         const toDelete = await db.contextMenus
           .where("remoteId")
-          .equals(remoteData.id as number)
+          .equals(rd.id)
           .first();
 
         if (toDelete) {
@@ -363,6 +408,7 @@ async function handleMenuChange(payload: {
           console.log(`🗑️ Menu removido localmente: ${toDelete.menuName}`);
         }
         break;
+      }
     }
   } catch (error) {
     console.error("❌ Erro ao processar mudança de menu:", error);
