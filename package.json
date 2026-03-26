@@ -2,7 +2,7 @@
   "name": "prompt-app",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,20 +23,20 @@
   "dependencies": {
     "@netlify/neon": "^0.1.2",
     "@netlify/vite-plugin": "^2.11.2",
-    "@sentry/browser": "^10.45.0",
-    "@sentry/react": "^10.45.0",
+    "@sentry/browser": "^10.46.0",
+    "@sentry/react": "^10.46.0",
     "@sentry/vite-plugin": "^5.1.1",
     "@supabase/ssr": "^0.9.0",
-    "@supabase/supabase-js": "^2.99.3",
+    "@supabase/supabase-js": "^2.100.0",
     "agentic-flow": "^2.0.7",
     "dexie": "^4.3.0",
     "dexie-react-hooks": "^4.2.0",
     "drizzle-orm": "^0.45.1",
-    "lucide-react": "^0.577.0",
+    "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.13.1",
+    "react-router-dom": "^7.13.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -55,13 +55,13 @@
     "jest-environment-jsdom": "^30.3.0",
     "jsdom": "^29.0.1",
     "ts-jest": "^29.4.6",
-    "typescript": "~5.9.3",
-    "vite": "^8.0.1",
-    "eslint": "^9.16.0",
-    "globals": "^15.13.0",
-    "typescript-eslint": "^8.18.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.16",
-    "@eslint/js": "^9.16.0"
+    "typescript": "~6.0.2",
+    "vite": "^8.0.2",
+    "eslint": "^10.1.0",
+    "globals": "^17.4.0",
+    "typescript-eslint": "^8.57.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "@eslint/js": "^10.0.1"
   }
 }
