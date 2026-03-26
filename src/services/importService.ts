@@ -183,7 +183,7 @@ async function importMenuDefinitions(
       existingMenuIds.add(contextMenu.menuId);
       count++;
     } catch (e: unknown) {
-        const error = e as Error;
+      const error = e as Error;
       errors.push({
         type: 'processing',
         field: 'menu_definition',
@@ -264,8 +264,8 @@ async function processPromptImport(
 
     return true;
   } catch (e: unknown) {
-        const error = e as Error;
-    errors.push({
+      const error = e as Error;
+      errors.push({
       type: 'validation',
       field: 'prompt',
       message: error.message || 'Formato de prompt inválido',
@@ -290,7 +290,7 @@ export async function importFromJsonText(
 
   // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
   const sanitizeJsonString = (jsonStr: string): string => {
-    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    let cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
     const firstBrace = cleaned.indexOf('{');
     const firstBracket = cleaned.indexOf('[');
     let startIndex = -1;
@@ -385,7 +385,7 @@ export async function importFromJsonText(
       processingTime: Date.now() - startTime,
     };
   } catch (e: unknown) {
-        const error = e as Error;
+    const error = e as Error;
     return {
       success: false,
       count: 0,
