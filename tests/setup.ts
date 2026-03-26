@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import { TextDecoder, TextEncoder } from "util";
@@ -19,14 +19,19 @@ if (typeof global.TextDecoder === "undefined") {
 // Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
   Blob.prototype.text = function () {
-    return this.arrayBuffer().then(buffer => global.TextDecoder ? new global.TextDecoder().decode(buffer) : "");
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsText(this);
+    });
   };
 }
 
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query) => ({
+  value: jest.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,

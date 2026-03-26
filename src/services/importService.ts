@@ -290,7 +290,7 @@ export async function importFromJsonText(
 
   // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
   const sanitizeJsonString = (jsonStr: string): string => {
-    let cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
     const firstBrace = cleaned.indexOf('{');
     const firstBracket = cleaned.indexOf('[');
     let startIndex = -1;
