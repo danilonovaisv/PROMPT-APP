@@ -34,8 +34,14 @@ import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
 import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
 import { EditorPlayground } from '@/components/editor/EditorPlayground';
 import { EditorPreviewModal } from '@/components/editor/EditorPreviewModal';
+import { z } from 'zod';
 
 type FreeInputEntry = { key: string; value: string };
+
+const FreeInputEntrySchema = z.object({
+  key: z.string(),
+  value: z.string(),
+});
 
 type TemplateFormState = {
   categoryId: number;
@@ -44,6 +50,14 @@ type TemplateFormState = {
   freeInputs: FreeInputEntry[];
   selectedMenuIds: number[];
 };
+
+const TemplateFormStatePartialSchema = z.object({
+  categoryId: z.number().optional(),
+  template: TemplatePayloadSchema.optional(),
+  selection: UserSelectionSchema.optional(),
+  freeInputs: z.array(FreeInputEntrySchema).optional(),
+  selectedMenuIds: z.array(z.number()).optional(),
+}).passthrough();
 
 function splitLines(value: string): string[] {
   return value.split('\n').map((item) => item.trim()).filter(Boolean);
@@ -273,10 +287,18 @@ export default function EditorPage() {
     const savedDraft = localStorage.getItem(draftKey);
     if (!savedDraft) return;
     try {
-      const draftData = JSON.parse(savedDraft) as Partial<TemplateFormState>;
-      if (draftData.template?.meta?.template_name) {
-        setForm((current) => ({ ...current, ...draftData }));
-        showToast('Rascunho recuperado automaticamente!', 'info');
+      const rawDraftData = JSON.parse(savedDraft);
+      const parsedDraftResult = TemplateFormStatePartialSchema.safeParse(rawDraftData);
+
+      if (parsedDraftResult.success) {
+        const draftData = parsedDraftResult.data as Partial<TemplateFormState>;
+        if (draftData.template?.meta?.template_name) {
+          setForm((current) => ({ ...current, ...draftData }));
+          showToast('Rascunho recuperado automaticamente!', 'info');
+        }
+      } else {
+        console.error('Rascunho inválido detectado:', parsedDraftResult.error);
+        localStorage.removeItem(draftKey);
       }
     } catch (error) {
       console.error('Erro ao recuperar rascunho:', error);
