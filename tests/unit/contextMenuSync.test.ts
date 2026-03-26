@@ -10,7 +10,6 @@ function buildPayload(overrides: Partial<ContextMenuCloudPayload> = {}): Context
     menu_id: 'tom',
     menu_name: 'Tom',
     description: 'Define o tom',
-    selection_mode: 'single',
     options: [{ label: 'Formal', value: 'formal' }],
     ...overrides,
   };

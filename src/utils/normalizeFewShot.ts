@@ -80,8 +80,10 @@ export function normalizeFewShotExamples(
         }
       }
 
-      // Log de warning em dev para tipos inválidos (rate-limited via console)
-      if (import.meta.env.DEV) {
+      // Log de warning em dev — works in both Vite (browser) and Jest (Node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isDev = (globalThis as any)?.process?.env?.['NODE_ENV'] === 'development';
+      if (isDev) {
         if (d?.input != null && typeof d.input !== "string" && !coerce) {
           console.warn("[normalizeFewShot] input non-string detected:", d.input);
         }
