@@ -66,7 +66,7 @@ export default function CategoryManagerPage() {
         }
 
         const now = new Date();
-        let localId: number | null = null;
+        let localId: number | null;
 
         try {
             if (isEditing) {

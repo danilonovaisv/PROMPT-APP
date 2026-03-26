@@ -90,7 +90,7 @@ export default function MenuManagerPage() {
     }
 
     const now = new Date();
-    let localId: number | null = null;
+    let localId: number | null;
 
     try {
       const data: Partial<ContextMenu> = {
