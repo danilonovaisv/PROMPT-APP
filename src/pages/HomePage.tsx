@@ -13,23 +13,31 @@ import { useMemo } from 'react';
 export default function HomePage() {
     const navigate = useNavigate();
 
-    const EMPTY_ARRAY: never[] = [];
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? EMPTY_ARRAY;
-    const prompts = useLiveQuery(() => db.prompts.toArray()) ?? EMPTY_ARRAY;
+    // ⚡ Bolt Optimization:
+    // Avoid fetching all full prompt objects (which can be very large due to JSON payloads)
+    // into memory just to count them. Instead, fetch only the categories and use Dexie's
+    // optimized .count() to compute totals directly via IndexedDB indexes.
+    const { categories, countsMap, totalPrompts } = useLiveQuery(async () => {
+        const cats = await db.categories.toArray();
+        const map: Record<number, number> = {};
+
+        await Promise.all(
+            cats.map(async (cat) => {
+                if (cat.id) {
+                    map[cat.id] = await db.prompts.where('categoryId').equals(cat.id).count();
+                }
+            })
+        );
+
+        const total = await db.prompts.count();
+
+        return { categories: cats, countsMap: map, totalPrompts: total };
+    }, []) ?? { categories: [], countsMap: {}, totalPrompts: 0 };
 
     const stats = useMemo(() => [
         { label: 'Categorias', value: categories.length, color: '#0048ff' },
-        { label: 'Templates', value: prompts.length, color: '#7b2ff7' },
-    ], [categories.length, prompts.length]);
-
-    const countsMap = useMemo(() => {
-        const map: Record<number, number> = {};
-        categories.forEach(cat => map[cat.id!] = 0);
-        prompts.forEach(p => {
-            if (p.categoryId in map) map[p.categoryId]++;
-        });
-        return map;
-    }, [categories, prompts]);
+        { label: 'Templates', value: totalPrompts, color: '#7b2ff7' },
+    ], [categories.length, totalPrompts]);
 
     const handleCategoryClick = (id: number) => navigate(`/categoria/${id}`);
 
