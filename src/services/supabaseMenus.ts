@@ -9,12 +9,13 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
+    // NOTA: selection_mode foi removida do schema remoto em 20260317213609_remote_schema.sql
+    // Mantida apenas no modelo local (Dexie). Não enviar ao Supabase.
     const payload: Record<string, unknown> = {
         user_id: user.id,
         menu_id: input.menuId,
         menu_name: input.menuName,
         description: input.description,
-        selection_mode: input.selectionMode || 'single',
         options: normalizeContextMenuOptions(input.options),
         updated_at: new Date().toISOString(),
     };

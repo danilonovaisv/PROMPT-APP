@@ -58,7 +58,9 @@ const contextMenuRepository: ContextMenuSyncRepository = {
     async updateById(id, payload) {
         const { data, error } = await supabase
             .from('context_menus')
-            .upsert({ id, ...payload })
+            // onConflict: 'id' garante que o upsert atualiza pelo PK
+            // sem risco de violar a constraint UNIQUE (user_id, menu_id)
+            .upsert({ id, ...payload }, { onConflict: 'id' })
             .select()
             .single();
 
@@ -103,9 +105,21 @@ export const syncToCloud = async () => {
 
         let result;
         if (remoteId) {
-            // Last write wins: checar se o remoto é mais novo
-            const { data: remoteData } = await withRetry(() => supabase.from('categories').select('updated_at').eq('id', remoteId).single());
-            if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(cat.updatedAt?.getTime() || 0) / 1000) {
+            // NOTA: categories.updated_at foi removida na migration 20260317213609_remote_schema.sql
+            // O campo foi restaurado na migration 20260326000003.
+            // Se a migration ainda não foi aplicada, remoteData.updated_at será undefined
+            // e a comparação retorna NaN > NaN = false (sempre atualiza, sem loop)
+            const { data: remoteData } = await withRetry(() => supabase
+                .from('categories')
+                .select('updated_at')
+                .eq('id', remoteId)
+                .single()
+            );
+            const remoteTs = remoteData?.updated_at
+                ? Math.floor(new Date(remoteData.updated_at).getTime() / 1000)
+                : 0;
+            const localTs = Math.floor(cat.updatedAt?.getTime() || 0) / 1000;
+            if (remoteTs > localTs) {
                console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.name}`);
                continue;
             }
@@ -152,7 +166,8 @@ export const syncToCloud = async () => {
             menu_id: data.menuId,      // map camelCase -> snake_case
             menu_name: data.menuName,
             description: data.description,
-            selection_mode: data.selectionMode,
+            // selection_mode REMOVIDA: coluna não existe mais no schema remoto
+            // (dropada em 20260317213609_remote_schema.sql)
             options: normalizeContextMenuOptions(data.options)
         };
 
