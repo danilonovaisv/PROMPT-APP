@@ -98,13 +98,28 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$repo_root"
 
+if ! command -v node >/dev/null 2>&1 || ! command -v npm >/dev/null 2>&1; then
+  echo "Node.js/npm não encontrados."
+  echo "No macOS, instale via Homebrew (brew install node) ou nvm antes de iniciar o Codex."
+  exit 1
+fi
+
 command -v corepack >/dev/null 2>&1 && corepack enable >/dev/null 2>&1 || true
 
 if ! command -v pnpm >/dev/null 2>&1; then
-  npm install -g pnpm
+  corepack prepare pnpm@latest --activate >/dev/null 2>&1 || npm install -g pnpm
 fi
 
-pnpm install --frozen-lockfile || pnpm install
+if [ -f pnpm-lock.yaml ]; then
+  pnpm install --frozen-lockfile || pnpm install
+elif [ -f package-lock.json ]; then
+  npm ci || npm install
+elif [ -f yarn.lock ]; then
+  corepack prepare yarn@stable --activate >/dev/null 2>&1 || true
+  yarn install --immutable || yarn install
+else
+  npm install
+fi
 
 if [ ! -f .env.local ] && [ -f .env.example ]; then
   cp .env.example .env.local
@@ -112,6 +127,6 @@ fi
 
 mkdir -p .codex/tmp
 
-echo "PROMPT-APP ready."
-echo "Configure .env.local with Supabase credentials."
+echo "PROMPT-APP (macOS) pronto."
+echo "Configure .env.local com as credenciais antes de rodar."
 '''
