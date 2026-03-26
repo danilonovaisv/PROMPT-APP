@@ -22,51 +22,39 @@ GRANT USAGE ON SCHEMA extensions TO service_role;
 
 
 -- -------------------------------------------------------
--- STEP 2: Move `http` extension from public → extensions
+-- STEP 2: http extension — cannot be relocated (non-relocatable)
 --
--- IMPORTANT: Cannot use DROP + CREATE because the http extension
--- provides the type `content_type` which is referenced by the column
--- `context_menus.modo_de_selecao` (content_type[]). Dropping the
--- extension would destroy the type and break the column.
+-- The pgsql-http extension does NOT set `relocatable = true`
+-- in its .control file, so `ALTER EXTENSION http SET SCHEMA`
+-- raises: ERROR 0A000 "extension does not support SET SCHEMA".
 --
--- CORRECT APPROACH: ALTER EXTENSION ... SET SCHEMA
--- This moves the extension's namespace atomically without destroying
--- any types, functions, or objects it provides. All dependent columns
--- (content_type[], http_request, etc.) remain fully intact.
+-- Dropping and re-creating is also blocked because the extension
+-- provides the type `content_type` referenced by existing columns.
 --
--- NOTE: supabase_functions.http_request (used by Netfly trigger)
---       is a SEPARATE function in a different schema — NOT affected.
+-- Resolution: http stays in `public`. We add a COMMENT to mark
+-- the exception explicitly and silence downstream tooling.
+-- The Supabase Advisor warning (0014_extension_in_public) for
+-- this specific extension is an accepted known limitation.
 -- -------------------------------------------------------
 DO $$
 BEGIN
-  -- Only act if http is currently installed in public schema
   IF EXISTS (
-    SELECT 1 FROM pg_extension e
-    JOIN pg_namespace n ON n.oid = e.extnamespace
-    WHERE e.extname = 'http' AND n.nspname = 'public'
-  ) THEN
-    -- ALTER EXTENSION SET SCHEMA moves the extension and all its objects
-    -- (types, functions, operators) to the target schema WITHOUT dropping
-    -- anything. Columns using content_type[] remain valid.
-    ALTER EXTENSION http SET SCHEMA extensions;
-    RAISE NOTICE 'Moved http extension from public → extensions schema (ALTER EXTENSION SET SCHEMA)';
-  ELSIF EXISTS (
     SELECT 1 FROM pg_extension WHERE extname = 'http'
   ) THEN
-    RAISE NOTICE 'http extension already exists (not in public schema) — no action needed';
+    RAISE NOTICE 'http extension is non-relocatable — remains in its current schema (expected).';
   ELSE
-    -- Extension not installed at all — install in extensions schema
-    CREATE EXTENSION http WITH SCHEMA extensions;
-    RAISE NOTICE 'http extension installed in extensions schema';
+    -- Extension not present at all: install in public (only available schema for http)
+    CREATE EXTENSION IF NOT EXISTS http WITH SCHEMA public;
+    RAISE NOTICE 'http extension installed in public schema (non-relocatable extension).';
   END IF;
 END;
 $$;
 
 COMMENT ON EXTENSION http IS
-  'HTTP client extension. Moved from public to extensions schema for security
-   (Supabase Advisor lint 0014_extension_in_public).
-   Types: content_type, http_request, http_response, http_header.
-   Column context_menus.modo_de_selecao (content_type[]) remains valid after move.';
+  'HTTP client extension (pgsql-http). Non-relocatable: cannot be moved out of public schema
+   because the extension does not support SET SCHEMA (pg_extension.relocatable = false).
+   Advisor warning 0014_extension_in_public is an accepted known limitation for this extension.
+   Types: content_type, http_request, http_response, http_header.';
 
 
 -- -------------------------------------------------------
