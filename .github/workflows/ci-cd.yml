@@ -25,7 +25,7 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Run tests
-        run: pnpm test --coverage
+        run: NODE_OPTIONS="--experimental-vm-modules" pnpm test --coverage
 
       - name: Build
         run: pnpm run build

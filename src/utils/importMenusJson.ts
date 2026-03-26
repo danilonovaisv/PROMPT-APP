@@ -183,14 +183,11 @@ export function validateMenuImportFile(raw: unknown): ValidationResult {
 
 /** Verifica conflitos com menus existentes no banco */
 export async function checkMenuIdConflicts(menuIds: string[]): Promise<string[]> {
-    const conflicts: string[] = [];
-    for (const menuId of menuIds) {
-        const existing = await db.contextMenus.where('menuId').equals(menuId).first();
-        if (existing) {
-            conflicts.push(menuId);
-        }
-    }
-    return conflicts;
+    // ⚡ Bolt: Used .anyOf().toArray() to batch query for existing records
+    // instead of querying one by one (.first()) inside a loop.
+    // This avoids an N+1 query problem, significantly reducing database roundtrips.
+    const existingMenus = await db.contextMenus.where('menuId').anyOf(menuIds).toArray();
+    return existingMenus.map(m => m.menuId);
 }
 
 /* -------------------------------------------------------
