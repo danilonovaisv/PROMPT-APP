@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import { TextDecoder, TextEncoder } from "util";
@@ -18,7 +19,7 @@ if (typeof global.TextDecoder === "undefined") {
 // Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
   Blob.prototype.text = function () {
-    return Promise.resolve(global.TextDecoder ? new global.TextDecoder().decode(this) : "");
+    return this.arrayBuffer().then(buffer => global.TextDecoder ? new global.TextDecoder().decode(buffer) : "");
   };
 }
 

@@ -271,22 +271,33 @@ export const downloadFromCloud = async () => {
     console.log('☁️ Iniciando Smart Merge (Nuvem -> Local)...');
 
     await db.transaction('rw', [db.categories, db.prompts, db.contextMenus], async () => {
+        // Pre-fetch all local data to avoid N+1 queries during merge
+        const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise.all([
+            db.categories.toArray(),
+            db.contextMenus.toArray(),
+            db.prompts.toArray(),
+        ]);
+
+        const categoriesByRemoteId = new Map(
+            allLocalCategories.filter(c => c.remoteId).map(c => [c.remoteId, c])
+        );
+        const menusByRemoteId = new Map(
+            allLocalMenus.filter(m => m.remoteId).map(m => [m.remoteId, m])
+        );
+        const menusByMenuId = new Map(
+            allLocalMenus.map(m => [m.menuId, m])
+        );
+        const promptsByRemoteId = new Map(
+            allLocalPrompts.filter(p => p.remoteId).map(p => [p.remoteId, p])
+        );
+
         // --- A. Sincronizar Categorias ---
         const remoteToLocalCatMap = new Map<number, number>();
 
         if (catRes.data) {
-            // Load all local categories once to prevent N+1 queries
-            const allLocalCategories = await db.categories.toArray();
-const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
-    if (cat.remoteId != null) {
-        map.set(cat.remoteId, cat);
-    }
-    return map;
-}, new Map<number, Category>());
-
             for (const c of catRes.data) {
                 // Tenta encontrar categoria local pelo remoteId
-                const existing = localCategoryByRemoteId.get(c.id);
+                const existing = categoriesByRemoteId.get(c.id);
 
                 const catData = {
                     remoteId: c.id,
@@ -318,26 +329,12 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
 
         // --- B. Sincronizar Menus ---
         if (menuRes.data) {
-            // Load all local context menus once to prevent N+1 queries
-            const allLocalMenus = await db.contextMenus.toArray();
-            const localMenuByRemoteId = new Map<number, typeof allLocalMenus[0]>();
-            const localMenuByMenuId = new Map<string, typeof allLocalMenus[0]>();
-
-            for (const m of allLocalMenus) {
-                if (m.remoteId != null) {
-                    localMenuByRemoteId.set(m.remoteId, m);
-                }
-                if (m.menuId != null) {
-                    localMenuByMenuId.set(m.menuId, m);
-                }
-            }
-
             for (const m of menuRes.data) {
-                const existing = localMenuByRemoteId.get(m.id);
+                const existing = menusByRemoteId.get(m.id);
                 // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
                 // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
                 const existingBySlug = !existing
-                    ? localMenuByMenuId.get(m.menu_id)
+                    ? menusByMenuId.get(m.menu_id)
                     : null;
 
                 const targetId = existing?.id || existingBySlug?.id;
@@ -364,17 +361,8 @@ const localCategoryByRemoteId = allLocalCategories.reduce((map, cat) => {
 
         // --- C. Sincronizar Prompts ---
         if (promptRes.data) {
-            // Load all local prompts once to prevent N+1 queries
-            const allLocalPrompts = await db.prompts.toArray();
-            const localPromptByRemoteId = new Map<number, typeof allLocalPrompts[0]>();
-            for (const p of allLocalPrompts) {
-                if (p.remoteId != null) {
-                    localPromptByRemoteId.set(p.remoteId, p);
-                }
-            }
-
             for (const p of promptRes.data) {
-                const existing = localPromptByRemoteId.get(p.id);
+                const existing = promptsByRemoteId.get(p.id);
 
                 // Resolver Categoria Local
                 // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente

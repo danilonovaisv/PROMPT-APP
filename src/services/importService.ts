@@ -153,24 +153,25 @@ async function importMenuDefinitions(
 ): Promise<number> {
   let count = 0;
 
+  const existingMenus = await db.contextMenus.toArray();
+  const existingMenuIds = new Set(existingMenus.map((m) => m.menuId));
+
   for (const definition of menuDefinitions) {
     try {
       const contextMenu = definitionToContextMenu(definition);
-      const existing = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
-      if (existing) {
+      if (existingMenuIds.has(contextMenu.menuId)) {
         continue;
       }
 
-      await db.contextMenus.add({
+      const localId = (await db.contextMenus.add({
         ...contextMenu,
         syncStatus: 'pending',
-      } as ContextMenu);
+      } as ContextMenu)) as number;
 
       try {
         const savedRemote = await saveMenuToSupabase(contextMenu);
-        const localMenu = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
-        if (localMenu?.id) {
-          await db.contextMenus.update(localMenu.id, {
+        if (localId) {
+          await db.contextMenus.update(localId, {
             remoteId: savedRemote.id,
             syncStatus: 'synced',
           });
@@ -179,9 +180,10 @@ async function importMenuDefinitions(
         warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
       }
 
+      existingMenuIds.add(contextMenu.menuId);
       count++;
     } catch (e: unknown) {
-        const error = e as Error;
+      const error = e as Error;
       errors.push({
         type: 'processing',
         field: 'menu_definition',
@@ -262,8 +264,8 @@ async function processPromptImport(
 
     return true;
   } catch (e: unknown) {
-        const error = e as Error;
-    errors.push({
+      const error = e as Error;
+      errors.push({
       type: 'validation',
       field: 'prompt',
       message: error.message || 'Formato de prompt inválido',
@@ -288,7 +290,7 @@ export async function importFromJsonText(
 
   // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
   const sanitizeJsonString = (jsonStr: string): string => {
-    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    let cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
     const firstBrace = cleaned.indexOf('{');
     const firstBracket = cleaned.indexOf('[');
     let startIndex = -1;
@@ -383,7 +385,7 @@ export async function importFromJsonText(
       processingTime: Date.now() - startTime,
     };
   } catch (e: unknown) {
-        const error = e as Error;
+    const error = e as Error;
     return {
       success: false,
       count: 0,
