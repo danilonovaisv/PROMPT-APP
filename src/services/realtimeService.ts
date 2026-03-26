@@ -41,6 +41,9 @@ const debouncedSaveLocalBackup = () => {
  * Inicializa os listeners de realtime do Supabase
  */
 export async function setupRealtimeListeners() {
+  // Evita canais duplicados em cenários de re-init (mount + auth change + reconnect)
+  cleanupRealtimeListeners();
+
   if (!isSupabaseConfigured) {
     console.log("⏭️ Supabase não configurado - realtime desativado");
     return;
