@@ -1,1 +1,27 @@
+# Local Codex configuration for OpenAI-compatible gateways.
+#
+# If you see "Model 'gpt-5-mini' not found", list available models and update
+# the `model` field below:
+#   curl http://localhost:23333/api/v1/lm/chatModels
+#
+# This config forces chat/completions wire API so Codex does not call
+# `/responses` on gateways that only support chat models.
+model = "gpt-4o-mini"
+model_provider = "local_openai"
+profile = "local_openai"
+
+approval_policy = "never"
 sandbox_mode = "danger-full-access"
+
+[model_providers.local_openai]
+name = "Local OpenAI-compatible"
+base_url = "http://localhost:23333/api/openai/v1"
+wire_api = "chat"
+
+[profiles.local_openai]
+model = "gpt-4o-mini"
+model_provider = "local_openai"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+model_reasoning_effort = "minimal"
+model_verbosity = "low"
