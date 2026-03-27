@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "transporte",
+      "menu_name": "TIPOS DE TRANSPORTE",
+      "description": "Selecione o tipo de transporte e suas configurações",
+      "selection_mode": "single",
+      "options": [
+        {
+          "label": "Ônibus",
+          "value": "onibus",
+          "sub_options": [
+            {
+              "label": "Hora da saída",
+              "value": "hora_saida",
+              "sub_options": [
+                {"label": "Manhã (06h00 - 11h59)",     "value": "manha"    },
+                {"label": "Tarde (12h00 - 17h59)",     "value": "tarde"    },
+                {"label": "Noite (18h00 - 23h59)",     "value": "noite"    },
+                {"label": "Madrugada (00h00 - 05h59)", "value": "madrugada"}
+              ]
+            },
+            {
+              "label": "Tipo de assento",
+              "value": "tipo_assento",
+              "sub_options": [
+                {"label": "Executivo",  "value": "executivo" },
+                {"label": "Semi-leito", "value": "semi_leito"},
+                {"label": "Leito",      "value": "leito"     },
+                {"label": "Cama",       "value": "cama"      }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Avião",
+          "value": "aviao",
+          "sub_options": [
+            {
+              "label": "Hora da saída",
+              "value": "hora_saida",
+              "sub_options": [
+                {"label": "Manhã (06h00 - 11h59)",     "value": "manha"    },
+                {"label": "Tarde (12h00 - 17h59)",     "value": "tarde"    },
+                {"label": "Noite (18h00 - 23h59)",     "value": "noite"    },
+                {"label": "Madrugada (00h00 - 05h59)", "value": "madrugada"}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
