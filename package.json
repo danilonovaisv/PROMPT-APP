@@ -18,7 +18,8 @@
     "db:migrate": "netlify dev:exec drizzle-kit migrate",
     "db:studio": "netlify dev:exec drizzle-kit studio",
     "lint": "eslint .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "setup:cloud-env": "bash scripts/setup-cloud-env.sh"
   },
   "dependencies": {
     "@netlify/neon": "^0.1.2",
