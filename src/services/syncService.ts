@@ -167,8 +167,7 @@ export const syncToCloud = async () => {
             menu_id: data.menuId,      // map camelCase -> snake_case
             menu_name: data.menuName,
             description: data.description,
-            // selection_mode REMOVIDA: coluna não existe mais no schema remoto
-            // (dropada em 20260317213609_remote_schema.sql)
+            selection_mode: data.selectionMode || 'single',
             options: normalizeContextMenuOptions(data.options)
         };
 

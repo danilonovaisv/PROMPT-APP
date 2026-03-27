@@ -431,9 +431,7 @@ async function handleMenuChange(payload: {
           menuId: rd.menu_id,
           menuName: rd.menu_name,
           description: rd.description || "",
-          // selection_mode foi removida do schema remoto (20260317213609_remote_schema.sql)
-          // O campo não virá no payload do realtime. Default local = 'single'.
-          selectionMode: "single",
+          selectionMode: (rd.selection_mode as "single" | "multiple") || "single",
           options: normalizeContextMenuOptions(rd.options as Record<string, unknown>),
           createdAt: new Date(rd.created_at),
           updatedAt: new Date(rd.updated_at),
