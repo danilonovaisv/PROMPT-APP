@@ -9,6 +9,7 @@ import {
 } from '@/services/contextMenuSync';
 import {
     compilePromptPayload,
+    createEmptyUserSelection,
     getLegacyPromptColumns,
     getPrimaryReferenceUrl,
     getPromptSummaryFields,
@@ -218,8 +219,11 @@ export const syncToCloud = async () => {
             output_format: summary.outputFormat,
             language: summary.language,
             reference_url: getPrimaryReferenceUrl(data.promptPayload),
-            few_shot_examples: data.fewShotExamples
-            ,
+            // few_shot_examples: campo novo (migration 20260327000001)
+            few_shot_examples: data.fewShotExamples || [],
+            // Garantir que sync nunca recrie itens marcados como excluídos
+            is_deleted: false,
+            // legacyColumns já inclui selection_payload_jsonb e compiled_payload_jsonb
             ...legacyColumns,
         };
 
@@ -267,10 +271,12 @@ export const downloadFromCloud = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('Usuário não autenticado');
 
+    // Filtrar is_deleted=false para garantir que itens excluídos (soft delete)
+    // nunca retornem ao webapp via downloadFromCloud
     const [catRes, menuRes, promptRes] = await Promise.all([
-        supabase.from('categories').select('*'),
-        supabase.from('context_menus').select('*'),
-        supabase.from('prompts').select('*'),
+        supabase.from('categories').select('*').eq('is_deleted', false),
+        supabase.from('context_menus').select('*').eq('is_deleted', false),
+        supabase.from('prompts').select('*').eq('is_deleted', false),
     ]);
 
     if (catRes.error || menuRes.error || promptRes.error) {
@@ -413,27 +419,36 @@ export const downloadFromCloud = async () => {
                     language: p.language || 'pt-BR',
                     outputFormat: p.output_format || 'markdown',
                     referenceUrl: p.reference_url || undefined,
-                    fewShotExamples: p.few_shot_examples,
+                    // Colunas adicionadas em 20260327000001_soft_delete_and_missing_columns
+                    fewShotExamples: p.few_shot_examples || [],
                     createdAt: new Date(p.created_at),
                     updatedAt: new Date(p.updated_at),
                     syncStatus: 'synced' as const,
                 };
 
-                promptData.selectionPayload = parseUserSelection(
-                    p.selection_payload_jsonb,
-                    promptData.promptPayload.meta.template_id,
-                    {
-                        title: p.title,
-                        schemaVersion: p.schema_version,
-                        language: p.language,
-                        contextMenus: p.context_menus,
-                        enabledMenuIds: p.enabled_menu_ids,
-                    }
-                );
+                // Preferir dados já persistidos na nuvem; fallback para computar localmente
+                promptData.selectionPayload = p.selection_payload_jsonb
+                    ? (p.selection_payload_jsonb as Prompt['selectionPayload'])
+                    : parseUserSelection(
+                        p.selection_payload_jsonb,
+                        promptData.promptPayload.meta.template_id,
+                        {
+                            title: p.title,
+                            schemaVersion: p.schema_version,
+                            language: p.language,
+                            contextMenus: p.context_menus,
+                            enabledMenuIds: p.enabled_menu_ids,
+                        }
+                    );
 
                 promptData.compiledPayload =
-                    p.compiled_payload_jsonb ||
-                    compilePromptPayload(promptData.promptPayload, promptData.selectionPayload);
+                    p.compiled_payload_jsonb
+                        ? (p.compiled_payload_jsonb as Prompt['compiledPayload'])
+                        : compilePromptPayload(
+                            promptData.promptPayload,
+                            promptData.selectionPayload ??
+                                createEmptyUserSelection(promptData.promptPayload.meta.template_id)
+                          );
 
                 if (existing && existing.id) {
                     if (existing.updatedAt && Math.floor(new Date(p.updated_at).getTime() / 1000) < Math.floor(existing.updatedAt.getTime() / 1000)) {

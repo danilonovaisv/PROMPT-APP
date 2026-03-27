@@ -125,6 +125,8 @@ interface RealtimeCategoryPayload {
   icon?: string;
   color?: string;
   created_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -146,6 +148,20 @@ async function handleCategoryChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.categories
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.categories.delete(toSoftDelete.id!);
+            console.log(`🗑️ Categoria soft-deleted localmente: ${toSoftDelete.name}`);
+          }
+          break;
+        }
+
         // Verificar se já existe localmente
         const existingLocal = await db.categories
           .where("remoteId")
@@ -213,6 +229,8 @@ interface RealtimePromptPayload {
   few_shot_examples?: unknown[];
   created_at: string;
   updated_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -234,6 +252,20 @@ async function handlePromptChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.prompts
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.prompts.delete(toSoftDelete.id!);
+            console.log(`🗑️ Prompt soft-deleted localmente: ${toSoftDelete.title}`);
+          }
+          break;
+        }
+
         const existingLocal = await db.prompts
           .where("remoteId")
           .equals(rd.id)
@@ -352,6 +384,8 @@ interface RealtimeMenuPayload {
   options?: unknown;
   created_at: string;
   updated_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -373,6 +407,20 @@ async function handleMenuChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.contextMenus
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.contextMenus.delete(toSoftDelete.id!);
+            console.log(`🗑️ Menu soft-deleted localmente: ${toSoftDelete.menuName}`);
+          }
+          break;
+        }
+
         const existingLocal = await db.contextMenus
           .where("remoteId")
           .equals(rd.id)
