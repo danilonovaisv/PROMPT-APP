@@ -133,11 +133,17 @@ A aplicação estará disponível em **<http://localhost:5173/>**
 
 ### 🔐 Variáveis de ambiente (Supabase)
 
-Para usar autenticação e sincronização em nuvem, configure um arquivo `.env` com:
+Para usar autenticação e sincronização em nuvem (incluindo envio de tarefas/prompts para a nuvem), gere o arquivo de ambiente local e preencha as chaves do Supabase:
+
+```bash
+pnpm run setup:cloud-env
+```
+
+Isso cria `.env.local` com o template:
 
 ```env
-VITE_SUPABASE_URL=https://seu-projeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua_chave_anon
+VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 ```
 
 > Sem essas variáveis, o app continua funcionando localmente (IndexedDB), mas recursos de nuvem ficam desativados e exibem mensagem de configuração ausente.

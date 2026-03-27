@@ -6,7 +6,13 @@ Este guia fornece os passos e os códigos SQL necessários para configurar sua n
 
 1. Crie um novo projeto no [Supabase](https://supabase.com).
 2. No menu **Project Settings > API**, copie a `Project URL` e a `anon key`.
-3. Crie um arquivo `.env` na raiz do seu projeto (ou adicione ao sistema) com estas chaves:
+3. Gere um arquivo local de ambiente com:
+
+```bash
+pnpm run setup:cloud-env
+```
+
+Depois preencha as chaves no `.env.local`:
 
 ```env
 VITE_SUPABASE_URL=sua_url_aqui
