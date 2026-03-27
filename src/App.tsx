@@ -1,9 +1,11 @@
 import { useState, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from '@/context/ToastContext';
+import { ConfirmProvider } from '@/context/ConfirmProvider';
 import Layout from '@/components/Layout';
 import ImportExportModal from '@/components/ImportExportModal';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SkeletonEditor } from '@/components/SkeletonLoader';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
 import { setupAutoSync } from '@/services/autoSync';
@@ -21,13 +23,10 @@ const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 
+// Fix #10: Suspense fallback contextual usando SkeletonEditor ao invés de spinner genérico
+// Páginas individuais usam SkeletonCategoryGrid/SkeletonPromptList diretamente
 function LoadingFallback() {
-  return (
-    <div className="loading-fallback">
-      <div className="loading-spinner" />
-      <p>Carregando...</p>
-    </div>
-  );
+  return <SkeletonEditor />;
 }
 
 export default function App() {
@@ -82,7 +81,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
-        <ErrorBoundary>
+        <ConfirmProvider>
+          <ErrorBoundary>
           <Layout onOpenImportExport={() => setShowImportExport(true)}>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
@@ -101,7 +101,8 @@ export default function App() {
             isOpen={showImportExport}
             onClose={() => setShowImportExport(false)}
           />
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </ConfirmProvider>
       </ToastProvider>
     </BrowserRouter>
   );

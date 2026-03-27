@@ -39,8 +39,6 @@ export function EditorPlayground({
         )
       : [];
 
-  console.log('[PLAYGROUND] output received:', renderedPrompt);
-
   return (
     <div className="form-section">
       <div className="page-header">

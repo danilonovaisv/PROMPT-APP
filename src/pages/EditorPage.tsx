@@ -34,6 +34,7 @@ import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
 import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
 import { EditorPlayground } from '@/components/editor/EditorPlayground';
 import { EditorPreviewModal } from '@/components/editor/EditorPreviewModal';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import { z } from 'zod';
 
 type FreeInputEntry = { key: string; value: string };
@@ -585,6 +586,16 @@ export default function EditorPage() {
         <div className={`editor-main-scrollable ${isSidebarOpen ? 'editor-main-scrollable--with-sidebar' : ''}`}>
           <div className="app-content">
             <div className="editor-form--constrained">
+              {/* A11y Audit Fix #09: Breadcrumbs */}
+              <Breadcrumb
+                items={[
+                  { label: 'Início', href: '/' },
+                  ...(form.categoryId
+                    ? [{ label: categories.find((c) => c.id === form.categoryId)?.name ?? 'Categoria', href: `/categoria/${form.categoryId}` }]
+                    : []),
+                  { label: isNew ? 'Novo Template' : (form.template.meta.template_name || 'Editar Template') },
+                ]}
+              />
               <EditorMetaForm
                 template={form.template}
                 categoryId={form.categoryId}
