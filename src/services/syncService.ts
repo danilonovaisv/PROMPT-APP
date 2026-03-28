@@ -348,27 +348,34 @@ export const downloadFromCloud = async () => {
     "rw",
     [db.categories, db.prompts, db.contextMenus],
     async () => {
-      // Pre-fetch all local data to avoid N+1 queries during merge
-      const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise
-        .all([
-          db.categories.toArray(),
-          db.contextMenus.toArray(),
-          db.prompts.toArray(),
-        ]);
+      // ⚡ Bolt: Use specific queries to avoid fetching huge JSON payloads from dexie
+      // Fetch only matching remoteIds (from cloud payload) to save memory instead of fetching all table contents
+      const remoteCatIds = (catRes.data || []).map(c => c.id);
+      const remoteMenuIds = (menuRes.data || []).map(m => m.id);
+      const remotePromptIds = (promptRes.data || []).map(p => p.id);
+
+      const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise.all([
+        remoteCatIds.length > 0 ? db.categories.where('remoteId').anyOf(remoteCatIds).toArray() : Promise.resolve([]),
+        remoteMenuIds.length > 0 ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : Promise.resolve([]),
+        remotePromptIds.length > 0 ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : Promise.resolve([]),
+      ]);
 
       const categoriesByRemoteId = new Map(
-        allLocalCategories.filter((c) => c.remoteId).map(
-          (c) => [c.remoteId, c]
-        ),
+        allLocalCategories.map((c) => [c.remoteId, c]),
       );
       const menusByRemoteId = new Map(
-        allLocalMenus.filter((m) => m.remoteId).map((m) => [m.remoteId, m]),
+        allLocalMenus.map((m) => [m.remoteId, m]),
       );
+
+      // Fallback local menu resolution by menuId if remoteId is missing locally
+      // Fetch specifically those matching menuIds
+      const remoteMenuSlugs = (menuRes.data || []).map(m => m.menu_id);
+      const fallbackLocalMenus = remoteMenuSlugs.length > 0 ? await db.contextMenus.where('menuId').anyOf(remoteMenuSlugs).toArray() : [];
       const menusByMenuId = new Map(
-        allLocalMenus.map((m) => [m.menuId, m]),
+        fallbackLocalMenus.map((m) => [m.menuId, m]),
       );
       const promptsByRemoteId = new Map(
-        allLocalPrompts.filter((p) => p.remoteId).map((p) => [p.remoteId, p]),
+        allLocalPrompts.map((p) => [p.remoteId, p]),
       );
 
       // --- A. Sincronizar Categorias ---

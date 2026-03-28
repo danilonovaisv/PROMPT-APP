@@ -51,9 +51,11 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar categorias
     const remoteCategories = catRes.data || [];
-    const localCategories = await db.categories.toArray();
-
-    const localCategoriesMap = new Map(localCategories.filter(c => c.remoteId != null).map(c => [c.remoteId!, c]));
+    const remoteCategoryIds = remoteCategories.map(r => r.id);
+    const localCategories = remoteCategoryIds.length > 0
+      ? await db.categories.where('remoteId').anyOf(remoteCategoryIds).toArray()
+      : [];
+    const localCategoriesMap = new Map(localCategories.map(c => [c.remoteId!, c]));
 
     for (const remote of remoteCategories) {
       const local = localCategoriesMap.get(remote.id);
@@ -78,9 +80,11 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar prompts (similar para menus)
     const remotePrompts = promptRes.data || [];
-    const localPrompts = await db.prompts.toArray();
-
-    const localPromptsMap = new Map(localPrompts.filter(p => p.remoteId != null).map(p => [p.remoteId!, p]));
+    const remotePromptIds = remotePrompts.map(r => r.id);
+    const localPrompts = remotePromptIds.length > 0
+      ? await db.prompts.where('remoteId').anyOf(remotePromptIds).toArray()
+      : [];
+    const localPromptsMap = new Map(localPrompts.map(p => [p.remoteId!, p]));
 
     for (const remote of remotePrompts) {
       const local = localPromptsMap.get(remote.id);
@@ -470,9 +474,12 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     localTable: any,
     type: AssetUpdate["type"],
   ) => {
-    if (!remoteItems) return;
+    if (!remoteItems || remoteItems.length === 0) return;
 
-    const allLocalItems = await localTable.toArray();
+    // ⚡ Bolt: Used .anyOf() to fetch only the needed remote IDs instead of loading the entire table.
+    const remoteIdsToFetch = remoteItems.map(r => r.id);
+    const allLocalItems = await localTable.where('remoteId').anyOf(remoteIdsToFetch).toArray();
+
     const existingRemoteIds = new Set<number>();
     for (const item of allLocalItems) {
       if (item.remoteId != null) {
