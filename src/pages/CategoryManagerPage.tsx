@@ -10,6 +10,7 @@ import { useToast } from '@/context/ToastContext';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
+import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     ArrowLeft,
     Plus,
@@ -124,7 +125,17 @@ export default function CategoryManagerPage() {
         const promptCount = await db.prompts.where('categoryId').equals(id).count();
         if (promptCount > 0) {
             if (!confirm(`Esta categoria tem ${promptCount} prompt(s). Excluir tudo?`)) return;
+            const promptsToDelete = await db.prompts.where('categoryId').equals(id).toArray();
             await db.prompts.where('categoryId').equals(id).delete();
+            for (const p of promptsToDelete) {
+                if (p.remoteId) {
+                    try {
+                        await deletePromptFromSupabase(p.remoteId);
+                    } catch (e) {
+                        console.error('Falha ao soft-delete prompt:', p.title, e);
+                    }
+                }
+            }
         }
 
         try {
