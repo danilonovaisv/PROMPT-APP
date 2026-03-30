@@ -1,0 +1,168 @@
+import { promises as fs, existsSync } from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import commonPathPrefix from 'common-path-prefix';
+import * as tar from 'tar';
+import tmp from 'tmp-promise';
+import { BundleFormat } from '../bundle.js';
+import { listRecursively } from '../utils/fs.js';
+import { getFileHash } from '../utils/sha256.js';
+import { rewriteSourceImportAssertions } from '../utils/import_attributes.js';
+const TARBALL_EXTENSION = '.tar.gz';
+const getUnixPath = (input) => input.split(path.sep).join('/');
+export const bundle = async ({ buildID, deno, distDirectory, functions, importMap, vendorDirectory, }) => {
+    const bundleDir = await tmp.dir({ unsafeCleanup: true });
+    const cleanup = [bundleDir.cleanup];
+    const manifest = {
+        functions: {},
+        version: 1,
+    };
+    const entryPoints = functions.map((func) => func.path);
+    // Use deno info to get the module graph and identify which local files are actually needed.
+    // This avoids copying unnecessary files (like node_modules) that happen to be under commonPath.
+    const sourceFilesSet = await getRequiredSourceFiles(deno, entryPoints, importMap);
+    // Build prefix mappings to transform file:// URLs to relative paths
+    const npmVendorDir = '.netlify-npm-vendor';
+    const prefixes = {};
+    // Copy pre-bundled npm modules from vendorDirectory if present.
+    // This supports the legacy approach where npm packages are pre-bundled and mapped
+    // via import map. Modern code could use npm: specifiers instead, which Deno handles
+    // natively via `deno install --vendor`.
+    if (vendorDirectory) {
+        prefixes[pathToFileURL(vendorDirectory + path.sep).href] = `./${npmVendorDir}/`;
+        // Copy files from vendor directory
+        const vendorFiles = await listRecursively(vendorDirectory);
+        for (const vendorFile of vendorFiles) {
+            const relativePath = path.relative(vendorDirectory, vendorFile);
+            const destPath = path.join(bundleDir.path, npmVendorDir, relativePath);
+            await fs.mkdir(path.dirname(destPath), { recursive: true });
+            // Rewrite import assertions in npm vendor directory
+            await rewriteImportAssertions(vendorFile, destPath);
+            // Remove original bundled npm from source files,
+            // rewritten ones will be included in tarball because they will be under bundleDir
+            sourceFilesSet.delete(vendorFile);
+        }
+    }
+    // Find the common path prefix for all source files (entry points + their local imports).
+    // This ensures imports to sibling directories (e.g., ../internal/) are included.
+    // When using a single file, `commonPathPrefix` returns an empty string, so we use
+    // the path of the first entry point's directory.
+    const commonPath = commonPathPrefix(Array.from(sourceFilesSet).sort()) || path.dirname(entryPoints[0]);
+    // Build the manifest mapping function names to their relative paths
+    for (const func of functions) {
+        const relativePath = path.relative(commonPath, func.path);
+        manifest.functions[func.name] = getUnixPath(relativePath);
+    }
+    for (const sourceFile of sourceFilesSet) {
+        const relativePath = path.relative(commonPath, sourceFile);
+        const destPath = path.join(bundleDir.path, relativePath);
+        await fs.mkdir(path.dirname(destPath), { recursive: true });
+        // Rewrite import assertions in user files
+        await rewriteImportAssertions(sourceFile, destPath);
+    }
+    // Map common path to relative paths
+    prefixes[pathToFileURL(commonPath + path.sep).href] = './';
+    // Get import map contents with file:// URLs transformed to relative paths
+    const importMapContents = importMap.getContents(prefixes);
+    // Create deno.json with import map contents for runtime resolution
+    const denoConfigPath = path.join(bundleDir.path, 'deno.json');
+    const denoConfigContents = JSON.stringify(importMapContents, null, 2);
+    await fs.writeFile(denoConfigPath, denoConfigContents);
+    // Vendor all dependencies in the bundle directory
+    await deno.run([
+        'install',
+        '--import-map',
+        denoConfigPath,
+        '--quiet',
+        '--allow-import',
+        '--node-modules-dir=manual',
+        '--vendor',
+        '--entrypoint',
+        ...Object.values(manifest.functions),
+    ], {
+        cwd: bundleDir.path,
+    });
+    // Rewrite import assertions in files outputted by deno vendor
+    const denoVendorOutput = path.join(bundleDir.path, 'vendor');
+    if (existsSync(denoVendorOutput)) {
+        const denoVendorFiles = await listRecursively(denoVendorOutput);
+        for (const denoVendorFile of denoVendorFiles) {
+            await rewriteImportAssertions(denoVendorFile, denoVendorFile);
+        }
+    }
+    const manifestPath = path.join(bundleDir.path, '___netlify-edge-functions.json');
+    const manifestContents = JSON.stringify(manifest);
+    await fs.writeFile(manifestPath, manifestContents);
+    const tarballPath = path.join(distDirectory, buildID + TARBALL_EXTENSION);
+    await fs.mkdir(path.dirname(tarballPath), { recursive: true });
+    // List files to include in the tarball as paths relative to the bundle dir.
+    // Using absolute paths here leads to platform-specific quirks (notably on Windows),
+    // where entries can include drive letters and break extraction/imports.
+    const files = (await listRecursively(bundleDir.path))
+        .map((p) => path.relative(bundleDir.path, p))
+        .map((p) => getUnixPath(p))
+        .sort();
+    await tar.create({
+        cwd: bundleDir.path,
+        file: tarballPath,
+        gzip: true,
+        noDirRecurse: true,
+        // Ensure forward slashes inside the tarball for cross-platform consistency.
+        onWriteEntry(entry) {
+            entry.path = getUnixPath(entry.path);
+        },
+    }, files);
+    const hash = await getFileHash(tarballPath);
+    await Promise.allSettled(cleanup);
+    return {
+        extension: TARBALL_EXTENSION,
+        format: BundleFormat.TARBALL,
+        hash,
+    };
+};
+// Source file extensions that may contain import statements.
+const REWRITABLE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.mts']);
+/**
+ * Uses deno info to get the module graph and extract only the local source files
+ * that are actually needed by the entry points. This avoids copying unnecessary
+ * files (like node_modules, .next, etc.) that may be under the common path.
+ */
+async function getRequiredSourceFiles(deno, entryPoints, importMap) {
+    const localFiles = new Set();
+    const importMapDataUrl = importMap.withNodeBuiltins().toDataURL();
+    // Run deno info for each entry point and combine the results
+    for (const entryPoint of entryPoints) {
+        const { stdout } = await deno.run([
+            'info',
+            '--json',
+            '--no-config',
+            '--import-map',
+            importMapDataUrl,
+            pathToFileURL(entryPoint).href,
+        ]);
+        const graph = JSON.parse(stdout);
+        // Extract all local files from the module graph
+        for (const module of graph.modules) {
+            if (module.specifier.startsWith('file://')) {
+                const filePath = fileURLToPath(module.specifier);
+                localFiles.add(filePath);
+            }
+        }
+    }
+    return localFiles;
+}
+/**
+ * Rewrites import assert into import with in the bundle directory
+ * Defaults to copying the file in its current form
+ */
+export async function rewriteImportAssertions(sourceFile, destPath) {
+    if (!REWRITABLE_EXTENSIONS.has(path.extname(sourceFile))) {
+        if (sourceFile !== destPath) {
+            await fs.copyFile(sourceFile, destPath);
+        }
+        return;
+    }
+    const source = await fs.readFile(sourceFile, 'utf-8');
+    const modified = rewriteSourceImportAssertions(source);
+    await fs.writeFile(destPath, modified);
+}
