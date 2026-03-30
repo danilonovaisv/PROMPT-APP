@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/hooks/useConfirm';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
@@ -36,7 +37,11 @@ const DEFAULT_FORM: CategoryFormData = {
 export default function CategoryManagerPage() {
     const navigate = useNavigate();
     const { showToast } = useToast();
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
+    const confirm = useConfirm();
+    // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
+    const categories = useLiveQuery(
+        () => db.categories.filter(c => !c.isDeleted).toArray()
+    ) ?? [];
 
     const [isEditing, setIsEditing] = useState<number | null>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -124,7 +129,13 @@ export default function CategoryManagerPage() {
     const handleDelete = async (id: number, remoteId?: number) => {
         const promptCount = await db.prompts.where('categoryId').equals(id).count();
         if (promptCount > 0) {
-            if (!confirm(`Esta categoria tem ${promptCount} prompt(s). Excluir tudo?`)) return;
+            // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
+            const ok = await confirm({
+                message: `Esta categoria tem ${promptCount} prompt(s). Excluir tudo?`,
+                title: 'Excluir categoria',
+                variant: 'danger',
+            });
+            if (!ok) return;
             const promptsToDelete = await db.prompts.where('categoryId').equals(id).toArray();
             await db.prompts.where('categoryId').equals(id).delete();
             for (const p of promptsToDelete) {
@@ -142,7 +153,11 @@ export default function CategoryManagerPage() {
             if (remoteId) {
                 await deleteCategoryFromSupabase(remoteId);
             }
-            await db.categories.delete(id);
+            // Fix P0 (V1+V2): Soft-delete local em vez de hard-delete.
+            // Preserva o histórico de nomes excluídos para que seedDatabase()
+            // não recrie a categoria no próximo boot, e para que syncToCloud()
+            // não faça upsert dentro da janela de debounce do autoSync.
+            await db.categories.update(id, { isDeleted: true, syncStatus: 'synced' });
             await saveLocalBackup();
             showToast('Categoria excluída do servidor!');
         } catch (e: unknown) {
@@ -183,8 +198,11 @@ export default function CategoryManagerPage() {
                         </h3>
 
                         <div className="form-group">
-                            <label className="form-label">Nome</label>
+                            {/* Fix A11y: htmlFor conecta label ao input via id */}
+                            <label className="form-label" htmlFor="cat-name-input">Nome</label>
                             <input
+                                id="cat-name-input"
+                                aria-required="true"
                                 value={form.name}
                                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 placeholder="Ex: Copywriting, Código, Marketing..."
