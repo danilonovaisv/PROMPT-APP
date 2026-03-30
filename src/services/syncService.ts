@@ -97,8 +97,9 @@ export const syncToCloud = async () => {
       localToRemoteCategoryMap.set(cat.id, cat.remoteId);
     }
   }
+  // Filtrar categorias marcadas como excluídas localmente — não sincronizar
   const categoriesToSync = allCategories.filter((c) =>
-    c.syncStatus !== "synced"
+    c.syncStatus !== "synced" && c.isDeleted !== true
   );
   for (const cat of categoriesToSync) {
     const { id, remoteId, ...data } = cat as Category;
@@ -178,8 +179,9 @@ export const syncToCloud = async () => {
 
   // 2. Sincronizar Menus de Contexto
   console.log("☁️ Sincronizando Menus...");
+  // Filtrar menus marcados como excluídos localmente — não sincronizar
   const menusToSync = snapshot.data.contextMenus.filter((m) =>
-    m.syncStatus !== "synced"
+    m.syncStatus !== "synced" && m.isDeleted !== true
   );
   for (const menu of menusToSync) {
     const { id, remoteId, ...data } = menu as ContextMenu;
@@ -220,8 +222,9 @@ export const syncToCloud = async () => {
 
   // 3. Sincronizar Prompts
   console.log("☁️ Sincronizando Prompts...");
+  // Filtrar prompts marcados como excluídos localmente — não sincronizar
   const promptsToSync = snapshot.data.prompts.filter((p) =>
-    p.syncStatus !== "synced"
+    p.syncStatus !== "synced" && p.isDeleted !== true
   );
   for (const prompt of promptsToSync) {
     const { id, remoteId, ...data } = prompt as Prompt;
@@ -378,6 +381,17 @@ export const downloadFromCloud = async () => {
 
       if (catRes.data) {
         for (const c of catRes.data) {
+          // Ignorar categorias marcadas como excluídas (defesa em profundidade)
+          if (c.is_deleted === true) {
+            // Remover do cache local se existir
+            const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
+            if (existing && existing.id) {
+              await db.categories.delete(existing.id);
+              console.log(`🗑️ Categoria excluída localmente (is_deleted=true): ${c.name}`);
+            }
+            continue;
+          }
+
           // Tenta encontrar categoria local pelo remoteId
           const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
 
@@ -416,6 +430,20 @@ export const downloadFromCloud = async () => {
       // --- B. Sincronizar Menus ---
       if (menuRes.data) {
         for (const m of menuRes.data) {
+          // Ignorar menus marcados como excluídos (defesa em profundidade)
+          if (m.is_deleted === true) {
+            const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
+            const existingBySlug = (!existing
+              ? menusByMenuId.get(m.menu_id)
+              : null) as ContextMenu | undefined;
+            const targetId = existing?.id || existingBySlug?.id;
+            if (targetId) {
+              await db.contextMenus.delete(targetId);
+              console.log(`🗑️ Menu excluído localmente (is_deleted=true): ${m.menu_name}`);
+            }
+            continue;
+          }
+
           const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
           // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
           // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
@@ -448,6 +476,16 @@ export const downloadFromCloud = async () => {
       // --- C. Sincronizar Prompts ---
       if (promptRes.data) {
         for (const p of promptRes.data) {
+          // Ignorar prompts marcados como excluídos (defesa em profundidade)
+          if (p.is_deleted === true) {
+            const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
+            if (existing && existing.id) {
+              await db.prompts.delete(existing.id);
+              console.log(`🗑️ Prompt excluído localmente (is_deleted=true): ${p.title}`);
+            }
+            continue;
+          }
+
           const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
 
           // Resolver Categoria Local
