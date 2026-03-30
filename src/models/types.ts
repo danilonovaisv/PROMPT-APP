@@ -11,6 +11,7 @@ export interface Category {
   id?: number;
   remoteId?: number;
   syncStatus?: SyncStatus;
+  isDeleted?: boolean;
   name: string;
   icon: string;
   color: string;

@@ -449,6 +449,17 @@ export default function EditorPage() {
       return;
     }
 
+    // Validar que a categoria ainda existe e não foi excluída
+    const selectedCategory = await db.categories.get(form.categoryId);
+    if (!selectedCategory) {
+      showToast('Categoria selecionada não existe mais', 'error');
+      return;
+    }
+    if (selectedCategory.isDeleted === true) {
+      showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
+      return;
+    }
+
     let template: TemplatePayload;
     let selection: UserSelection;
     let compiledPayload: CompiledPromptPayload;
