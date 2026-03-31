@@ -16,11 +16,15 @@ if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
-// Polyfill Blob.prototype.text for JSDOM (Node.js Buffer-based — avoids TS2345 com FileReader)
+// Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
   Blob.prototype.text = async function (): Promise<string> {
-    const arrayBuffer = await this.arrayBuffer();
-    return Buffer.from(arrayBuffer).toString("utf-8");
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(this);
+    });
   };
 }
 
