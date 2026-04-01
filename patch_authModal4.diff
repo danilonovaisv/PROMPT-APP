@@ -1,0 +1,19 @@
+--- src/components/AuthModal.tsx
++++ src/components/AuthModal.tsx
+@@ -7,7 +7,7 @@
+ interface AuthModalProps {
+     isOpen: boolean;
+     onClose: () => void;
+-    initialMode?: 'login' | 'register' | 'forgot' | 'change_password';
++    initialMode?: 'login' | 'register' | 'forgot' | 'update-password';
+ }
+
+ function getAuthErrorMessage(error: unknown): string {
+@@ -34,7 +34,7 @@
+ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
+     const { showToast } = useToast();
+-    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'change_password'>(initialMode);
++    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'update-password'>(initialMode);
+     const [email, setEmail] = useState('');
+     const [password, setPassword] = useState('');
+     const [loading, setLoading] = useState(false);

@@ -398,21 +398,21 @@ export const downloadFromCloud = async () => {
 
       const categoriesByRemoteId = new Map<number, Category>(
         allLocalCategories
-          .filter((c): c is Category & { remoteId: number } => typeof c.remoteId === 'number')
-          .map((c) => [c.remoteId as number, c]),
+          .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
+          .map((c) => [c.remoteId, c]),
       );
       const menusByRemoteId = new Map<number, ContextMenu>(
         allLocalMenus
-          .filter((m): m is ContextMenu & { remoteId: number } => typeof m.remoteId === 'number')
-          .map((m) => [m.remoteId as number, m]),
+          .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
+          .map((m) => [m.remoteId, m]),
       );
       const menusByMenuId = new Map<string, ContextMenu>(
         allLocalMenus.map((m) => [m.menuId, m]),
       );
       const promptsByRemoteId = new Map<number, Prompt>(
         allLocalPrompts
-          .filter((p): p is Prompt & { remoteId: number } => typeof p.remoteId === 'number')
-          .map((p) => [p.remoteId as number, p]),
+          .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
+          .map((p) => [p.remoteId, p]),
       );
 
       // --- A. Sincronizar Categorias ---

@@ -1,0 +1,11 @@
+--- src/components/AuthModal.tsx
++++ src/components/AuthModal.tsx
+@@ -40,7 +40,7 @@
+     const { showToast } = useToast();
+     const modalRef = useRef<HTMLDivElement>(null);
+     const closeButtonRef = useRef<HTMLButtonElement>(null);
+-    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'change_password'>(initialMode);
++    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'update-password'>(initialMode);
+     const [email, setEmail] = useState('');
+     const [password, setPassword] = useState('');
+     const [loading, setLoading] = useState(false);

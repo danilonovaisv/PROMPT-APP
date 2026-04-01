@@ -1,0 +1,11 @@
+--- src/components/AuthModal.tsx
++++ src/components/AuthModal.tsx
+@@ -147,7 +147,7 @@
+                         {mode !== 'forgot' && (
+                             <div className="form-group">
+                                 <label>
+-                                    {mode === 'change_password' ? 'Nova Senha' : 'Senha'}
++                                    {mode === 'update-password' ? 'Nova Senha' : 'Senha'}
+                                 </label>
+                                 <div className="input-with-icon">
+                                     <Lock size={16} />

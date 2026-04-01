@@ -1,0 +1,24 @@
+--- src/services/syncService.ts
++++ src/services/syncService.ts
+@@ -403,19 +403,19 @@
+
+         const localCategoriesMap = new Map<number, Category>(
+         allLocalCategories
+-          .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
++          .filter((c): c is Category & { remoteId: number } => typeof c.remoteId === 'number')
+           .map((c) => [c.remoteId, c]),
+         );
+
+         const localMenusMap = new Map<number, ContextMenu>(
+         allLocalMenus
+-          .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
++          .filter((m): m is ContextMenu & { remoteId: number } => typeof m.remoteId === 'number')
+           .map((m) => [m.remoteId, m]),
+         );
+
+         const localPromptsMap = new Map<number, Prompt>(
+         allLocalPrompts
+-          .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
++          .filter((p): p is Prompt & { remoteId: number } => typeof p.remoteId === 'number')
+           .map((p) => [p.remoteId, p]),
+         );

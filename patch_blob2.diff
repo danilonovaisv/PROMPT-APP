@@ -1,0 +1,25 @@
+--- tests/setup.ts
++++ tests/setup.ts
+@@ -21,11 +21,18 @@
+ }
+
+ // Polyfill Blob.prototype.text for JSDOM (Node.js Buffer-based — avoids TS2345 com FileReader)
+ if (typeof Blob.prototype.text === "undefined") {
+   Blob.prototype.text = async function (): Promise<string> {
+-    if (typeof this.arrayBuffer === "function") {
+-      const arrayBuffer = await this.arrayBuffer();
+-      return Buffer.from(arrayBuffer).toString("utf-8");
+-    }
+-    return new Promise((resolve) => resolve(""));
++    return new Promise((resolve, reject) => {
++      if (typeof this.arrayBuffer === "function") {
++        this.arrayBuffer().then((buffer) => resolve(Buffer.from(buffer).toString("utf-8"))).catch(reject);
++      } else {
++        const reader = new FileReader();
++        reader.onload = () => resolve(reader.result as string);
++        reader.onerror = reject;
++        reader.readAsText(this);
++      }
++    });
+   };
+ }
