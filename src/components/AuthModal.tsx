@@ -147,7 +147,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                         {mode !== 'forgot' && (
                             <div className="form-group">
                                 <label>
-                                    {mode === 'change_password' ? 'Nova Senha' : 'Senha'}
+                                    {mode === 'update-password' ? 'Nova Senha' : 'Senha'}
                                 </label>
                                 <div className="input-with-icon">
                                     <Lock size={16} />

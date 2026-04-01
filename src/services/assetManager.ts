@@ -6,7 +6,6 @@ import { type Table } from "dexie";
 import { db } from "@/db/database";
 import { supabase } from "@/lib/supabase";
 import { saveLocalBackup } from "@/utils/backupManager";
-import type { Category, ContextMenu, Prompt } from "@/models/types";
 import {
   compilePromptPayload,
   getLegacyPromptColumns,
@@ -514,9 +513,12 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     }
   };
 
-  await pullItems(catRes.data, db.categories, "category");
-  await pullItems(promptRes.data, db.prompts, "prompt");
-  await pullItems(menuRes.data, db.contextMenus, "menu");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(catRes.data, db.categories as any, "category");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(promptRes.data, db.prompts as any, "prompt");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(menuRes.data, db.contextMenus as any, "menu");
 
   return { pulled: pulledCount };
 }
@@ -549,9 +551,12 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
     }
   };
 
-  await findPending(db.categories, "category");
-  await findPending(db.prompts, "prompt");
-  await findPending(db.contextMenus, "menu");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.categories as any, "category");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.prompts as any, "prompt");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.contextMenus as any, "menu");
 
   return { pushed: pushedCount };
 }

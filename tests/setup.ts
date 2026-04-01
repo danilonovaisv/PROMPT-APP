@@ -17,17 +17,23 @@ if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
-// Polyfill Blob.prototype.text for JSDOM (Node.js Buffer-based — avoids TS2345 com FileReader)
+// Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
-  Blob.prototype.text = async function (): Promise<string> {
-    const arrayBuffer = await this.arrayBuffer();
-    return Buffer.from(arrayBuffer).toString("utf-8");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Blob.prototype.text = function (this: any): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(this);
+    });
   };
 }
 
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {
   writable: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: jest.fn().mockImplementation((query: any) => ({
     matches: false,
     media: query,
