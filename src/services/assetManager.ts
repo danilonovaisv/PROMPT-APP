@@ -2,9 +2,11 @@
    Gerenciador de Assets e Atualizações
    ====================================================== */
 
+import { type Table } from "dexie";
 import { db } from "@/db/database";
 import { supabase } from "@/lib/supabase";
 import { saveLocalBackup } from "@/utils/backupManager";
+import type { Category, ContextMenu, Prompt } from "@/models/types";
 import {
   compilePromptPayload,
   getLegacyPromptColumns,
@@ -29,6 +31,8 @@ export interface ConflictResolution {
   timestamp: Date;
   resolved: boolean;
 }
+
+type SyncableEntity = Category | Prompt | ContextMenu;
 
 /**
  * Detecta conflitos entre dados locais e remotos
@@ -420,14 +424,14 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     supabase.from("context_menus").select("*").eq("user_id", session.user.id),
   ]);
 
-  const pullItems = async (
+  const pullItems = async <T extends SyncableEntity>(
     remoteItems: any[] | null,
-    localTable: any,
+    localTable: Table<T, number>,
     type: AssetUpdate["type"],
   ) => {
     if (!remoteItems) return;
     for (const remote of remoteItems) {
-      const exists = await localTable.where("remoteId").equals(remote.id)
+      const exists = await (localTable as any).where("remoteId").equals(remote.id)
         .first();
       if (!exists) {
         await applyRemoteChanges({
@@ -459,8 +463,12 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   console.log("📤 Enviando mudanças locais pendentes...");
   let pushedCount = 0;
 
-  const findPending = async (table: any, type: AssetUpdate["type"]) => {
-    const pending = await table.where("syncStatus").equals("pending").toArray();
+  const findPending = async <T extends SyncableEntity>(
+    table: Table<T, number>,
+    type: AssetUpdate["type"],
+  ) => {
+    const pending = await (table as any).where("syncStatus").equals("pending")
+      .toArray();
     for (const item of pending) {
       await pushLocalChanges({
         type,
