@@ -71,7 +71,6 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Categoria alterada:", payload);
         await handleCategoryChange(payload);
         debouncedSaveLocalBackup();
       },
@@ -90,7 +89,6 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Prompt alterado:", payload);
         await handlePromptChange(payload);
         debouncedSaveLocalBackup();
       },
@@ -109,7 +107,6 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Menu alterado:", payload);
         await handleMenuChange(payload);
         debouncedSaveLocalBackup();
       },
