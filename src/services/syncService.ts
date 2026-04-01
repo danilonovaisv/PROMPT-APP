@@ -388,12 +388,18 @@ export const downloadFromCloud = async () => {
     "rw",
     [db.categories, db.prompts, db.contextMenus],
     async () => {
-      // Pre-fetch all local data to avoid N+1 queries during merge
-      const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise
+      // ⚡ Bolt: Fetch only relevant local data to avoid memory bloat and N+1 queries during merge
+      const remoteCategoryIds = catRes.data?.map(c => c.id) || [];
+      const remoteMenuIds = menuRes.data?.map(m => m.id) || [];
+      const remoteMenuSlugs = menuRes.data?.map(m => m.menu_id) || [];
+      const remotePromptIds = promptRes.data?.map(p => p.id) || [];
+
+      const [allLocalCategories, allLocalMenus, allLocalMenusBySlug, allLocalPrompts] = await Promise
         .all([
-          db.categories.toArray(),
-          db.contextMenus.toArray(),
-          db.prompts.toArray(),
+          remoteCategoryIds.length ? db.categories.where('remoteId').anyOf(remoteCategoryIds).toArray() : [],
+          remoteMenuIds.length ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : [],
+          remoteMenuSlugs.length ? db.contextMenus.where('menuId').anyOf(remoteMenuSlugs).toArray() : [],
+          remotePromptIds.length ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : [],
         ]);
 
       const categoriesByRemoteId = new Map<number, Category>(
@@ -406,8 +412,8 @@ export const downloadFromCloud = async () => {
           .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
           .map((m) => [m.remoteId, m]),
       );
-      const menusByMenuId = new Map<string, ContextMenu>(
-        allLocalMenus.map((m) => [m.menuId, m]),
+      const menusByMenuId = new Map(
+        allLocalMenusBySlug.map((m) => [m.menuId, m]),
       );
       const promptsByRemoteId = new Map<number, Prompt>(
         allLocalPrompts
