@@ -3,7 +3,7 @@ version = 1
 name = "PROMPT-APP"
 
 [setup]
-script = '''
+script = """
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -142,4 +142,4 @@ mkdir -p .codex/tmp
 
 echo "PROMPT-APP (macOS) pronto."
 echo "Configure .env.local com as credenciais antes de rodar."
-'''
+"""

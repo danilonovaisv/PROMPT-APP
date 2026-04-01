@@ -338,13 +338,19 @@ export async function importFromJsonText(
         await importMenuDefinitions(menuDefinitions, errors, warnings);
       }
 
+      // ⚡ Bolt Optimization:
+      // Prevent N+1 queries by fetching all categories into memory once,
+      // avoiding a Dexie .where().equals().first() call for every prompt.
+      const allCategories = await db.categories.toArray();
+      const categoryMap = new Map(allCategories.map(c => [c.name, c.id!]));
+
       for (const item of parsed.prompts) {
         let categoryId = importCategoryId;
 
         if (item.category) {
-          const existingCategory = await db.categories.where('name').equals(item.category).first();
-          if (existingCategory?.id) {
-            categoryId = existingCategory.id;
+          const existingCategoryId = categoryMap.get(item.category);
+          if (existingCategoryId) {
+            categoryId = existingCategoryId;
           }
         }
 
