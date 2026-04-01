@@ -8,16 +8,24 @@ import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     Plus,
     ArrowLeft,
+    Search,
+    X,
 } from 'lucide-react';
 import SEO from '@/components/SEO';
 import PromptCard from '@/components/PromptCard';
-import { useCallback } from 'react';
+import { Breadcrumb } from '@/components/Breadcrumb';
+import { useCallback, useState } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useSearchFilter } from '@/hooks/useSearchFilter';
 
 export default function CategoryPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { showToast } = useToast();
     const categoryId = Number(id);
+
+    const [rawSearch, setRawSearch] = useState('');
+    const searchTerm = useDebounce(rawSearch, 300);
 
     const category = useLiveQuery(
         () => db.categories.get(categoryId),
@@ -28,6 +36,8 @@ export default function CategoryPage() {
         () => db.prompts.where('categoryId').equals(categoryId).toArray(),
         [categoryId]
     ) ?? [];
+
+    const filteredPrompts = useSearchFilter(prompts, searchTerm);
 
     const handleCopy = useCallback(async (promptId: number) => {
         const prompt = await db.prompts.get(promptId);
@@ -50,7 +60,8 @@ export default function CategoryPage() {
         if (prompt?.remoteId) {
             try {
                 await deletePromptFromSupabase(prompt.remoteId);
-            } catch (error: any) {
+            } catch (e: unknown) {
+        const error = e as Error;
                 console.error("Erro ao deletar no Supabase:", error);
                 showToast(error.message || 'Erro ao deletar o prompt no servidor.', 'error');
                 return;
@@ -82,6 +93,13 @@ export default function CategoryPage() {
                     </button>
                 </header>
                 <div className="app-content">
+                    {/* A11y Audit Fix #09: Breadcrumbs */}
+                    <Breadcrumb
+                        items={[
+                            { label: 'Início', href: '/' },
+                            { label: 'Categoria não encontrada' },
+                        ]}
+                    />
                     <div className="empty-state">
                         <div className="empty-state__icon">🔍</div>
                         <h1 className="empty-state__title">Categoria não encontrada</h1>
@@ -126,7 +144,55 @@ export default function CategoryPage() {
             </header>
 
             <div className="app-content">
-                {prompts.length === 0 ? (
+                {/* A11y Audit Fix #09: Breadcrumbs */}
+                <Breadcrumb
+                    items={[
+                        { label: 'Início', href: '/' },
+                        { label: category.name },
+                    ]}
+                />
+
+                {/* A11y Audit Fix #10: Search filter */}
+                {prompts.length > 0 && (
+                    <div className="category-search">
+                        <label htmlFor="category-search-input" className="sr-only">
+                            Buscar templates
+                        </label>
+                        <div className="category-search__input-wrapper">
+                            <Search
+                                size={16}
+                                className="category-search__icon"
+                                aria-hidden="true"
+                            />
+                            <input
+                                id="category-search-input"
+                                type="search"
+                                className="category-search__input"
+                                placeholder="Buscar por título ou descrição..."
+                                value={rawSearch}
+                                onChange={(e) => setRawSearch(e.target.value)}
+                                aria-label="Buscar templates nesta categoria"
+                            />
+                            {rawSearch && (
+                                <button
+                                    className="category-search__clear"
+                                    onClick={() => setRawSearch('')}
+                                    aria-label="Limpar busca"
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+                        {searchTerm && (
+                            <p className="category-search__count" aria-live="polite">
+                                {filteredPrompts.length} de {prompts.length}{' '}
+                                {prompts.length === 1 ? 'resultado' : 'resultados'}
+                            </p>
+                        )}
+                    </div>
+                )}
+
+                {filteredPrompts.length === 0 && prompts.length === 0 ? (
                     <div className="empty-state">
                         <div className="empty-state__icon">{category.icon}</div>
                         <h3 className="empty-state__title">Nenhum template nesta categoria</h3>
@@ -141,9 +207,23 @@ export default function CategoryPage() {
                             Criar Template
                         </button>
                     </div>
+                ) : filteredPrompts.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-state__icon">🔍</div>
+                        <h3 className="empty-state__title">Nenhum resultado encontrado</h3>
+                        <p className="empty-state__description">
+                            Nenhum template corresponde a "{searchTerm}". Tente outro termo.
+                        </p>
+                        <button
+                            className="btn btn--secondary"
+                            onClick={() => setRawSearch('')}
+                        >
+                            Limpar busca
+                        </button>
+                    </div>
                 ) : (
                     <div className="prompt-list">
-                        {prompts.map((prompt) => (
+                        {filteredPrompts.map((prompt) => (
                             <PromptCard
                                 key={prompt.id}
                                 prompt={prompt}

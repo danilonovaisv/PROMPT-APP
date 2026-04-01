@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "menus": [
+{
+  "menu_id": "transporte",
+  "menu_name": "TIPOS DE TRANSPORTE",
+  "description": "Selecione o tipo de transporte e suas configurações",
+  "selection_mode": "multiple",
+  "options": [
+    {
+      "label": "Ônibus",
+      "value": "onibus",
+      "sub_options": [
+        {"label": "Manhã (06h00 - 11h59)", "value": "manha_06h00_11h59"},
+        {"label": "Tarde (12h00 - 17h59)", "value": "tarde_12h00_17h59"},
+        {"label": "Noite (18h00 - 23h59)", "value": "noite_18h00_23h59"},
+        {"label": "Madrugada (00h00 - 05h59)", "value": "madrugada_00h00_05h59"}
+      ]
+    },
+    {
+      "label": "Avião",
+      "value": "aviao",
+      "sub_options": [
+        {"label": "Manhã (06h00 - 11h59)", "value": "manha_06h00_11h59"},
+        {"label": "Tarde (12h00 - 17h59)", "value": "tarde_12h00_17h59"},
+        {"label": "Noite (18h00 - 23h59)", "value": "noite_18h00_23h59"},
+        {"label": "Madrugada (00h00 - 05h59)", "value": "madrugada_00h00_05h59"}
+      ]
+    },
+    {
+      "label": "Tipo de assento",
+      "value": "tipo_de_assento",
+      "sub_options": [
+        {"label": "Executivo",  "value": "executivo" },
+        {"label": "Semi-leito", "value": "semi_leito"},
+        {"label": "Leito",      "value": "leito"     },
+        {"label": "Cama",       "value": "cama"      }
+      ]
+    }
+  ]
+}]}

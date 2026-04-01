@@ -8,19 +8,22 @@ import {
   MenuDefinitionSchema,
   TemplatePayloadSchema,
 } from '@/models/promptSchema';
+import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 
 function uniqueStrings(values: string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 export function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
+  const options = normalizeContextMenuOptions(menu.options);
+
   return MenuDefinitionSchema.parse({
     menu_id: menu.menuId,
     menu_name: menu.menuName,
     description: menu.description,
     selection_mode: menu.selectionMode,
     required: false,
-    options: (menu.options || []).map((option) => ({
+    options: options.map((option) => ({
       label: option.label,
       value: option.value,
       description: '',
@@ -100,37 +103,48 @@ export function renderFinalPromptText(
   const outputContract = template.output_contract;
 
   if (promptDefinition.system_role.trim()) {
-    sections.push(`System role:\n${promptDefinition.system_role.trim()}`);
+    sections.push(`# ROLE: ${promptDefinition.system_role.trim()}`);
   }
 
+  const contextParts: string[] = [];
   if (promptDefinition.task.trim()) {
-    sections.push(`Task:\n${promptDefinition.task.trim()}`);
+    contextParts.push(`Task:\n${promptDefinition.task.trim()}`);
   }
-
   if (promptDefinition.context.trim()) {
-    sections.push(`Contexto base:\n${promptDefinition.context.trim()}`);
+    contextParts.push(`Contexto base:\n${promptDefinition.context.trim()}`);
   }
 
   const menuLines = buildMenuLines(template, compiledPayload);
   if (menuLines.length > 0) {
-    sections.push(['Menus selecionados:', ...menuLines].join('\n'));
+    contextParts.push(['Menus selecionados:', ...menuLines].join('\n'));
   }
 
   const freeInputs = Object.entries(compiledPayload.compiled_context.free_inputs || {}).map(
     ([key, value]) => `${key}: ${value}`
   );
   if (freeInputs.length > 0) {
-    sections.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
+    contextParts.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
   }
 
+  if (contextParts.length > 0) {
+    sections.push(`## CONTEXT\n${contextParts.join('\n\n')}`);
+  }
+
+  const constraintsAndRules: string[] = [];
   const constraintBlock = buildListBlock('Restrições:', promptDefinition.constraints);
   if (constraintBlock.length > 0) {
-    sections.push(constraintBlock.join('\n'));
+    constraintsAndRules.push(constraintBlock.join('\n'));
   }
-
   const negativeBlock = buildListBlock('Evitar:', promptDefinition.negative_prompt);
   if (negativeBlock.length > 0) {
-    sections.push(negativeBlock.join('\n'));
+    constraintsAndRules.push(negativeBlock.join('\n'));
+  }
+  if (outputContract.response_rules.length > 0) {
+    const rulesBlock = buildListBlock('Regras de Resposta:', outputContract.response_rules);
+    constraintsAndRules.push(rulesBlock.join('\n'));
+  }
+  if (constraintsAndRules.length > 0) {
+    sections.push(`## CONSTRAINTS\n${constraintsAndRules.join('\n\n')}`);
   }
 
   const outputLines = [
@@ -138,16 +152,10 @@ export function renderFinalPromptText(
     `Idioma: ${outputContract.language}`,
     `Modo estrito: ${outputContract.strict_mode ? 'sim' : 'não'}`,
   ];
-
   if (outputContract.required_fields.length > 0) {
     outputLines.push(`Campos obrigatórios: ${outputContract.required_fields.join(', ')}`);
   }
-
-  if (outputContract.response_rules.length > 0) {
-    outputLines.push(...outputContract.response_rules.map((rule) => `Regra: ${rule}`));
-  }
-
-  sections.push(['Contrato de saída:', ...outputLines.map((line) => `- ${line}`)].join('\n'));
+  sections.push(`## OUTPUT FORMAT\n${outputLines.map((line) => `- ${line}`).join('\n')}`);
 
   return sections.filter(Boolean).join('\n\n').trim();
 }

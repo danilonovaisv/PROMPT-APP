@@ -8,11 +8,13 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
-    const payload: any = {
+    const payload: Record<string, unknown> = {
         user_id: user.id,
         name: input.name,
         icon: input.icon,
         color: input.color,
+        // Garantir que itens salvos nunca sejam marcados como excluídos
+        is_deleted: false,
     };
 
     if (input.remoteId) {
@@ -40,6 +42,13 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
     }
 }
 
+/**
+ * Soft Delete — marca a categoria como excluída no Supabase.
+ * Em vez de um DELETE real, executa UPDATE SET is_deleted = true.
+ * O Supabase Realtime propaga o evento UPDATE para todos os clientes;
+ * o listener em realtimeService.ts detecta is_deleted=true e remove
+ * o item do estado local imediatamente.
+ */
 export async function deleteCategoryFromSupabase(remoteId: number) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;
@@ -49,7 +58,7 @@ export async function deleteCategoryFromSupabase(remoteId: number) {
 
     const { error } = await supabase
         .from('categories')
-        .delete()
+        .update({ is_deleted: true, updated_at: new Date().toISOString() })
         .eq('id', remoteId)
         .eq('user_id', user.id);
 

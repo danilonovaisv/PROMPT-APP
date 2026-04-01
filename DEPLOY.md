@@ -1,7 +1,7 @@
 # 🚀 Guia de Deploy — Prompt App
 
 > **Stack:** Vite 7 + React 19 + TypeScript + Dexie.js (IndexedDB)
-> **Output:** SPA estática (`dist/`) — Sem backend, sem variáveis de ambiente
+> **Output:** SPA estática (`dist/`) — Com variáveis de ambiente para recursos de nuvem (Supabase)
 
 ---
 
@@ -12,6 +12,11 @@
 | Node.js |      18+      |
 | pnpm    |      9+       |
 | Git     |     2.20+     |
+
+---
+
+> [!WARNING]
+> **CRÍTICO:** No Netlify, você **DEVE** adicionar `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` em **Site Configuration > Environment variables** para que a sincronização funcione.
 
 ---
 
@@ -87,7 +92,11 @@ O projeto **já possui** `netlify.toml` configurado. É a opção mais simples.
 4. As configurações são auto-detectadas do `netlify.toml`:
    - **Build command:** `pnpm run build`
    - **Publish directory:** `dist`
-5. Clique em **"Deploy site"**
+5. Em **Site configuration → Environment variables**, configure:
+   - `VITE_SUPABASE_URL` (obrigatória para nuvem)
+   - `VITE_SUPABASE_ANON_KEY` (obrigatória para nuvem)
+   - Sem essas duas variáveis a autenticação e a sincronização com Supabase ficam desativadas no app publicado
+6. Clique em **"Deploy site"**
 
 #### Via CLI
 

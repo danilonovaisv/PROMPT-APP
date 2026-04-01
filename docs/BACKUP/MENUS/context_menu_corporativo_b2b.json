@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "cenas_corporativo_b2b",
+      "menu_name": "TIPOS DE CENA — Corporativo / B2B",
+      "description": "Qual tipo de cena/ambientação você quer gerar para aplicar a peça publicitária?",
+      "options": [
+        {
+          "label": "Corporativo / B2B",
+          "value": "corporativo_b2b",
+          "sub_options": [
+            {
+              "label": "Apresentação em sala de reunião (TV/projetor ao fundo)",
+              "value": "apresentacao_sala_reuniao_tv_projetor"
+            },
+            {
+              "label": "Reunião híbrida em videoconferência (tela compartilhada)",
+              "value": "reuniao_hibrida_videoconferencia_tela_compartilhada"
+            },
+            {
+              "label": "Sala de treinamento corporativo (telão + participantes)",
+              "value": "treinamento_corporativo_tela_participantes"
+            },
+            {
+              "label": "Auditório corporativo com telão (keynote)",
+              "value": "auditorio_corporativo_tela_keynote"
+            },
+            {
+              "label": "Recepção de empresa com videowall institucional",
+              "value": "recepcao_empresa_videowall"
+            },
+            {
+              "label": "Corredor de escritório com display digital",
+              "value": "corredor_escritorio_display_digital"
+            },
+            {
+              "label": "Sala de conselho (boardroom) com apresentação na parede",
+              "value": "boardroom_apresentacao_parede"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

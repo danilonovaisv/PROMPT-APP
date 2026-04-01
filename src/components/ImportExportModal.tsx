@@ -52,6 +52,12 @@ export default function ImportExportModal({
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (file.type !== 'application/json' && !file.name.toLowerCase().endsWith('.json')) {
+            showToast('Por favor, selecione um arquivo .json válido.', 'error');
+            if (fileRef.current) fileRef.current.value = '';
+            return;
+        }
+
         setImporting(true);
         setResult(null);
 
@@ -63,7 +69,8 @@ export default function ImportExportModal({
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             showToast(error.message || 'Erro ao importar', 'error');
         } finally {
             setImporting(false);
@@ -72,8 +79,14 @@ export default function ImportExportModal({
     };
 
     const handleImportFromText = async () => {
-        if (!jsonInput.trim()) {
+        const trimmedInput = jsonInput.trim();
+        if (!trimmedInput) {
             showToast('Cole um JSON válido para importar.', 'error');
+            return;
+        }
+
+        if (!trimmedInput.startsWith('{') && !trimmedInput.startsWith('[')) {
+            showToast('O texto não parece iniciar com formato JSON válido ({ ou [).', 'error');
             return;
         }
 
@@ -89,7 +102,8 @@ export default function ImportExportModal({
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
-        } catch (error: any) {
+        } catch (e: unknown) {
+        const error = e as Error;
             showToast(error.message || 'Erro ao importar JSON colado', 'error');
         } finally {
             setImporting(false);

@@ -1,0 +1,79 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "environment_background",
+      "menu_name": "Environment & Background",
+      "description": "Define the environment, background, and scene context for the generated CGI product image.",
+      "options": [
+        {
+          "label": "Pure Studio",
+          "value": "pure_studio",
+          "sub_options": [
+            { "label": "White Infinity Cyclorama", "value": "white_infinity_cyc" },
+            { "label": "Black Void — Deep Dark", "value": "black_void_dark" },
+            { "label": "Grey Gradient — Neutral", "value": "grey_gradient_neutral" },
+            { "label": "Colored Gradient — Brand Tone", "value": "colored_gradient_brand" }
+          ]
+        },
+        {
+          "label": "Surface / Plinth",
+          "value": "surface_plinth",
+          "sub_options": [
+            { "label": "Marble Slab — White Veined", "value": "marble_white_veined" },
+            { "label": "Marble Slab — Black / Dark", "value": "marble_black_dark" },
+            { "label": "Reflective Black Acrylic", "value": "reflective_black_acrylic" },
+            { "label": "Frosted Glass Platform", "value": "frosted_glass_platform" },
+            { "label": "Brushed Metal Surface", "value": "brushed_metal_surface" },
+            { "label": "Raw Concrete", "value": "raw_concrete" },
+            { "label": "Wood / Warm Organic Surface", "value": "wood_warm_organic" },
+            { "label": "Sand / Soil / Earth", "value": "sand_soil_earth" }
+          ]
+        },
+        {
+          "label": "Nature / Outdoor",
+          "value": "nature_outdoor",
+          "sub_options": [
+            { "label": "Forest Floor — Moss, Leaves, Roots", "value": "forest_floor_moss" },
+            { "label": "Rocky Surface — Stone, Mineral", "value": "rocky_stone_mineral" },
+            { "label": "Desert Sand — Warm, Textured", "value": "desert_sand_warm" },
+            { "label": "Water Surface — Reflective, Ripple", "value": "water_surface_reflective" },
+            { "label": "Ice / Snow — Cold, Clean", "value": "ice_snow_cold" },
+            { "label": "Petals / Botanicals", "value": "petals_botanicals" }
+          ]
+        },
+        {
+          "label": "Architectural Interior",
+          "value": "architectural_interior",
+          "sub_options": [
+            { "label": "Minimalist Room — White Walls", "value": "minimalist_white_room" },
+            { "label": "Luxury Bathroom Counter", "value": "luxury_bathroom_counter" },
+            { "label": "Dressing Table / Vanity", "value": "dressing_table_vanity" },
+            { "label": "Brutalist Space — Concrete", "value": "brutalist_concrete_space" },
+            { "label": "Warm Interior — Wood, Soft Light", "value": "warm_interior_wood" }
+          ]
+        },
+        {
+          "label": "Abstract / Graphic",
+          "value": "abstract_graphic",
+          "sub_options": [
+            { "label": "Color Field — Flat Solid Color", "value": "color_field_flat" },
+            { "label": "Gradient Mesh — Blended Colors", "value": "gradient_mesh_blended" },
+            { "label": "Geometric Pattern — Grid, Lines", "value": "geometric_pattern" },
+            { "label": "Fog / Mist — Diffused Volume", "value": "fog_mist_volume" }
+          ]
+        },
+        {
+          "label": "Liquid / Fluid Environment",
+          "value": "liquid_fluid_environment",
+          "sub_options": [
+            { "label": "Underwater — Submerged, Caustics", "value": "underwater_submerged" },
+            { "label": "Liquid Splash Around Product", "value": "liquid_splash_around" },
+            { "label": "Oil / Serum Drip Surface", "value": "oil_serum_drip" },
+            { "label": "Smoke / Steam — Atmospheric", "value": "smoke_steam_atmospheric" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,12 +6,28 @@ Este guia fornece os passos e os códigos SQL necessários para configurar sua n
 
 1. Crie um novo projeto no [Supabase](https://supabase.com).
 2. No menu **Project Settings > API**, copie a `Project URL` e a `anon key`.
-3. Crie um arquivo `.env` na raiz do seu projeto (ou adicione ao sistema) com estas chaves:
+3. Gere um arquivo local de ambiente com:
+
+```bash
+pnpm run setup:cloud-env
+```
+
+Depois preencha as chaves no `.env.local`:
 
 ```env
 VITE_SUPABASE_URL=sua_url_aqui
 VITE_SUPABASE_ANON_KEY=sua_chave_anon_aqui
 ```
+
+> URL já conhecida do projeto em produção: `https://dpejskjpghoozbpfxkpf.supabase.co`.
+> A `VITE_SUPABASE_ANON_KEY` deve ser obtida no painel Supabase em **Project Settings > API > anon public key** e configurada no ambiente (não commitar em código).
+
+### Netlify (produção)
+
+No Netlify, configure as mesmas variáveis em **Site configuration → Environment variables**:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
 ## 2. Tabelas do Banco de Dados (SQL)
 

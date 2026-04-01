@@ -11,10 +11,12 @@ export interface Category {
   id?: number;
   remoteId?: number;
   syncStatus?: SyncStatus;
+  isDeleted?: boolean;
   name: string;
   icon: string;
   color: string;
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface ContextMenuSubOption {
@@ -32,6 +34,7 @@ export interface ContextMenu {
   id?: number;
   remoteId?: number;
   syncStatus?: SyncStatus;
+  isDeleted?: boolean;
   menuId: string;
   menuName: string;
   description: string;
@@ -85,8 +88,10 @@ export interface Prompt {
   id?: number;
   remoteId?: number;
   syncStatus?: SyncStatus;
+  isDeleted?: boolean;
   categoryId: number;
   title: string;
+  selectedMenuIds?: number[];
   promptPayload: TemplatePayload;
   selectionPayload?: UserSelection;
   compiledPayload?: CompiledPromptPayload;

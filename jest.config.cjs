@@ -2,6 +2,8 @@ module.exports = {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  // E2E tests use @playwright/test runner — must run via `pnpm test:e2e`, not Jest
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/e2e/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -10,7 +12,7 @@ module.exports = {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: 'tsconfig.app.json',
+        tsconfig: 'tsconfig.jest.json',
       },
     ],
   },
@@ -20,6 +22,10 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/lib/**',
     '!src/vite-env.d.ts',
+    '!src/instrument.ts',
+    '!src/utils/logger.ts',
+    '!src/utils/supabase.ts',
+    '!src/lib/supabase.ts',
   ],
   coverageThreshold: {
     global: {

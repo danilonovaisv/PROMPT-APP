@@ -153,24 +153,25 @@ async function importMenuDefinitions(
 ): Promise<number> {
   let count = 0;
 
+  const existingMenus = await db.contextMenus.toArray();
+  const existingMenuIds = new Set(existingMenus.map((m) => m.menuId));
+
   for (const definition of menuDefinitions) {
     try {
       const contextMenu = definitionToContextMenu(definition);
-      const existing = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
-      if (existing) {
+      if (existingMenuIds.has(contextMenu.menuId)) {
         continue;
       }
 
-      await db.contextMenus.add({
+      const localId = (await db.contextMenus.add({
         ...contextMenu,
         syncStatus: 'pending',
-      } as ContextMenu);
+      } as ContextMenu)) as number;
 
       try {
         const savedRemote = await saveMenuToSupabase(contextMenu);
-        const localMenu = await db.contextMenus.where('menuId').equals(contextMenu.menuId).first();
-        if (localMenu?.id) {
-          await db.contextMenus.update(localMenu.id, {
+        if (localId) {
+          await db.contextMenus.update(localId, {
             remoteId: savedRemote.id,
             syncStatus: 'synced',
           });
@@ -179,8 +180,10 @@ async function importMenuDefinitions(
         warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
       }
 
+      existingMenuIds.add(contextMenu.menuId);
       count++;
-    } catch (error: any) {
+    } catch (e: unknown) {
+      const error = e as Error;
       errors.push({
         type: 'processing',
         field: 'menu_definition',
@@ -260,8 +263,9 @@ async function processPromptImport(
     }
 
     return true;
-  } catch (error: any) {
-    errors.push({
+  } catch (e: unknown) {
+      const error = e as Error;
+      errors.push({
       type: 'validation',
       field: 'prompt',
       message: error.message || 'Formato de prompt inválido',
@@ -284,12 +288,38 @@ export async function importFromJsonText(
   const warnings: string[] = [];
   let count = 0;
 
+  // Função interna para sanitizar o JSON removendo artefatos e lixo no início/fim
+  const sanitizeJsonString = (jsonStr: string): string => {
+    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const firstBrace = cleaned.indexOf('{');
+    const firstBracket = cleaned.indexOf('[');
+    let startIndex = -1;
+    if (firstBrace !== -1 && firstBracket !== -1) {
+        startIndex = Math.min(firstBrace, firstBracket);
+    } else if (firstBrace !== -1) {
+        startIndex = firstBrace;
+    } else if (firstBracket !== -1) {
+        startIndex = firstBracket;
+    }
+    
+    if (startIndex !== -1) {
+        const isObject = cleaned[startIndex] === '{';
+        const closingChar = isObject ? '}' : ']';
+        const lastIndex = cleaned.lastIndexOf(closingChar);
+        if (lastIndex !== -1 && lastIndex >= startIndex) {
+            return cleaned.substring(startIndex, lastIndex + 1);
+        }
+    }
+    return cleaned;
+  };
+
   try {
     if (!sourceName.endsWith('.json')) {
       throw new Error('Apenas arquivos .json são aceitos');
     }
 
-    const parsed = JSON.parse(rawJson) as unknown;
+    const sanitizedStr = sanitizeJsonString(rawJson);
+    const parsed = JSON.parse(sanitizedStr) as unknown;
     const importCategoryId = await ensureImportCategory(warnings);
 
     if (isBulkExport(parsed)) {
@@ -308,13 +338,35 @@ export async function importFromJsonText(
         await importMenuDefinitions(menuDefinitions, errors, warnings);
       }
 
+      // ⚡ Bolt Optimization:
+      // Pre-fetch categories used in this bulk import to eliminate N+1 query problem.
+      // Instead of querying `db.categories.where('name').equals(item.category).first()` in a loop,
+      // we do a single batch query using `.anyOf()` and cache the category IDs in a Map.
+      const categoryNames = Array.from(
+        new Set(
+          parsed.prompts
+            .map((item) => item.category)
+            .filter((cat): cat is string => typeof cat === 'string' && cat.trim() !== '')
+        )
+      );
+
+      const categoryCache = new Map<string, number>();
+      if (categoryNames.length > 0) {
+        const existingCategories = await db.categories.where('name').anyOf(categoryNames).toArray();
+        for (const cat of existingCategories) {
+          if (cat.id) {
+            categoryCache.set(cat.name, cat.id);
+          }
+        }
+      }
+
       for (const item of parsed.prompts) {
         let categoryId = importCategoryId;
 
         if (item.category) {
-          const existingCategory = await db.categories.where('name').equals(item.category).first();
-          if (existingCategory?.id) {
-            categoryId = existingCategory.id;
+          const cachedId = categoryCache.get(item.category);
+          if (cachedId) {
+            categoryId = cachedId;
           }
         }
 
@@ -354,7 +406,8 @@ export async function importFromJsonText(
       warnings,
       processingTime: Date.now() - startTime,
     };
-  } catch (error: any) {
+  } catch (e: unknown) {
+    const error = e as Error;
     return {
       success: false,
       count: 0,

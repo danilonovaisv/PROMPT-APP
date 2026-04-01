@@ -1,19 +1,44 @@
 import { useRef, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { X, Mail, Lock, LogIn, UserPlus, KeyRound } from 'lucide-react';
 
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
+    initialMode?: 'login' | 'register' | 'forgot' | 'update-password';
 }
 
-export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
+function getAuthErrorMessage(error: unknown): string {
+    if (error && typeof error === 'object') {
+        const err = error as { message?: string; status?: number; name?: string };
+        if (err.message) {
+            return err.message;
+        }
+
+        if (typeof err.status === 'number') {
+            if (err.status === 400 || err.status === 401) {
+                return 'Credenciais inválidas. Verifique email e senha.';
+            }
+            if (err.status >= 500) {
+                return 'Serviço de autenticação indisponível. Tente novamente em instantes.';
+            }
+        }
+
+        if (err.name === 'TypeError') {
+            return 'Falha de rede ao autenticar. Verifique sua conexão.';
+        }
+    }
+
+    return 'Não foi possível concluir a autenticação. Tente novamente.';
+}
+
+export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
     const { showToast } = useToast();
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
-    const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
+    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'update-password'>(initialMode);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -30,6 +55,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+
+        if (!isSupabaseConfigured) {
+            showToast(supabaseConfigErrorMessage, 'info');
+            setLoading(false);
+            return;
+        }
 
         try {
             if (mode === 'login') {
@@ -55,9 +86,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 if (error) throw error;
                 showToast('Link de recuperação enviado para o email!', 'success');
                 onClose();
+            } else if (mode === 'update-password') {
+                const { error } = await supabase.auth.updateUser({ password });
+                if (error) throw error;
+                showToast('Senha atualizada com sucesso!', 'success');
+                onClose();
             }
-        } catch (err: any) {
-            showToast(err.message, 'error');
+        } catch (err: unknown) {
+            showToast(getAuthErrorMessage(err), 'error');
         } finally {
             setLoading(false);
         }
@@ -77,7 +113,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             >
                 <div className="modal__header">
                     <h2 id="auth-modal-title">
-                        {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : 'Recuperar Senha'}
+                        {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : mode === 'update-password' ? 'Atualizar Senha' : 'Recuperar Senha'}
                     </h2>
                     <button
                         ref={closeButtonRef}
@@ -91,31 +127,35 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
                 <div className="modal__body">
                     <form onSubmit={handleSubmit} className="form-section">
-                        <div className="form-group">
-                            <label>Email</label>
-                            <div className="input-with-icon">
-                                <Mail size={16} />
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="seu@email.com"
-                                    required
-                                    autoComplete="username"
-                                />
+                        {mode !== 'update-password' && (
+                            <div className="form-group">
+                                <label>Email</label>
+                                <div className="input-with-icon">
+                                    <Mail size={16} />
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="seu@email.com"
+                                        required
+                                        autoComplete="username"
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {mode !== 'forgot' && (
                             <div className="form-group">
-                                <label>Senha</label>
+                                <label>
+                                    {mode === 'change_password' ? 'Nova Senha' : 'Senha'}
+                                </label>
                                 <div className="input-with-icon">
                                     <Lock size={16} />
                                     <input
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Sua senha"
+                                        placeholder={mode === 'update-password' ? 'Nova senha' : 'Sua senha'}
                                         required
                                         autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                                         minLength={6}
@@ -135,27 +175,31 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                                 <><LogIn size={18} /> Entrar</>
                             ) : mode === 'register' ? (
                                 <><UserPlus size={18} /> Cadastrar</>
+                            ) : mode === 'update-password' ? (
+                                <><KeyRound size={18} /> Atualizar senha</>
                             ) : (
                                 <><KeyRound size={18} /> Enviar link de recuperação</>
                             )}
                         </button>
 
-                        <div className="flex gap-2 mt-4 justify-center text-sm" style={{flexDirection: 'column', alignItems: 'center'}}>
-                            {mode === 'login' ? (
-                                <>
-                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('register')}>
-                                        Ainda não tem conta? Cadastre-se
+                        {mode !== 'update-password' && (
+                            <div className="flex gap-2 mt-4 justify-center text-sm" style={{flexDirection: 'column', alignItems: 'center'}}>
+                                {mode === 'login' ? (
+                                    <>
+                                        <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('register')}>
+                                            Ainda não tem conta? Cadastre-se
+                                        </button>
+                                        <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('forgot')}>
+                                            Esqueceu a senha?
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('login')}>
+                                        Já tem uma conta? Faça login
                                     </button>
-                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('forgot')}>
-                                        Esqueceu a senha?
-                                    </button>
-                                </>
-                            ) : (
-                                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('login')}>
-                                    Já tem uma conta? Faça login
-                                </button>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>

@@ -1,0 +1,71 @@
+# Local Codex configuration for OpenAI-compatible gateways on macOS / MacBook.
+# Um único arquivo com múltiplos perfis:
+# - seguro
+# - equilibrado
+# - agressivo
+# - deepseek_coder
+#
+# Troque a linha `profile = "..."` para escolher o perfil ativo.
+#
+# Se algum modelo não existir no seu gateway local, liste os disponíveis:
+#   curl http://localhost:23333/api/v1/lm/chatModels
+
+model = "gpt-4o"
+model_provider = "local_openai"
+profile = "equilibrado"
+
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+
+[model_providers.local_openai]
+name = "Local OpenAI-compatible"
+base_url = "http://localhost:23333/api/openai/v1"
+wire_api = "chat"
+
+# =========================================================
+# PERFIL: SEGURO
+# Mais conservador para uso diário
+# =========================================================
+[profiles.seguro]
+model = "gpt-4o-mini"
+model_provider = "local_openai"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+# =========================================================
+# PERFIL: EQUILIBRADO
+# Melhor escolha geral para MacBook
+# =========================================================
+[profiles.equilibrado]
+model = "gpt-4o"
+model_provider = "local_openai"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+# =========================================================
+# PERFIL: AGRESSIVO
+# Mais autonomia, mais risco
+# =========================================================
+[profiles.agressivo]
+model = "gpt-4o"
+model_provider = "local_openai"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"
+
+# =========================================================
+# PERFIL: DEEPSEEK CODER
+# Focado em coding, refactor, análise técnica e geração de código
+# =========================================================
+[profiles.deepseek_coder]
+model = "deepseek-coder"
+model_provider = "local_openai"
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+model_reasoning_effort = "medium"
+model_verbosity = "medium"

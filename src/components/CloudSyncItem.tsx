@@ -3,7 +3,7 @@
    ====================================================== */
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
@@ -17,11 +17,17 @@ export default function CloudSyncItem() {
     const [hasUpdates, setHasUpdates] = useState(false);
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalMode, setAuthModalMode] = useState<'login' | 'update-password'>('login');
     const { showToast } = useToast();
+    const configHintId = 'cloud-sync-config-hint';
 
     useEffect(() => {
+        if (!isSupabaseConfigured) {
+            return;
+        }
+
         // 1. Check session on mount
-        supabase.auth.getSession().then(({ data: { session: currentSession } }: any) => {
+        supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
             setSession(currentSession);
             if (currentSession) {
                 triggerAutoSync();
@@ -41,6 +47,7 @@ export default function CloudSyncItem() {
         });
 
         return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Verificar periodicamente se há atualizações
@@ -53,6 +60,25 @@ export default function CloudSyncItem() {
 
         return () => clearInterval(interval);
     }, [session]);
+
+    if (!isSupabaseConfigured) {
+        return (
+            <div className="cloud-sync-unavailable" aria-live="polite">
+                <button
+                    type="button"
+                    className="app-sidebar__nav-item app-sidebar__nav-item--disabled"
+                    disabled
+                    aria-describedby={configHintId}
+                >
+                    <CloudOff size={18} />
+                    <span>Nuvem indisponível</span>
+                </button>
+                <p id={configHintId} className="app-sidebar__helper-text">
+                    {supabaseConfigErrorMessage}
+                </p>
+            </div>
+        );
+    }
 
     // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
     const triggerAutoSync = async () => {
@@ -83,6 +109,7 @@ export default function CloudSyncItem() {
     };
 
     const handleLogin = () => {
+        setAuthModalMode('login');
         setIsAuthModalOpen(true);
     };
 
@@ -91,19 +118,9 @@ export default function CloudSyncItem() {
         showToast('Logout realizado');
     };
 
-    const handleChangePassword = async () => {
-        const newPassword = window.prompt('Digite a nova senha (mínimo 6 caracteres):');
-        if (!newPassword || newPassword.length < 6) {
-            if (newPassword !== null) showToast('A senha deve ter pelo menos 6 caracteres', 'error');
-            return;
-        }
-
-        const { error } = await supabase.auth.updateUser({ password: newPassword });
-        if (error) {
-            showToast('Erro ao atualizar senha: ' + error.message, 'error');
-        } else {
-            showToast('Senha atualizada com sucesso!', 'success');
-        }
+    const handleChangePassword = () => {
+        setAuthModalMode('update-password');
+        setIsAuthModalOpen(true);
     };
 
     const handleSmartSync = async () => {
@@ -114,7 +131,8 @@ export default function CloudSyncItem() {
             const message = `Sync inteligente concluído! Recebidos: ${result.pulled}, Enviados: ${result.pushed}, Conflitos: ${result.conflicts}`;
             showToast(message, 'success');
             setHasUpdates(false);
-        } catch (err: any) {
+        } catch (e: unknown) {
+        const err = e as Error;
             showToast('Erro no sync inteligente: ' + err.message, 'error');
         } finally {
             setLoading(false);
@@ -130,7 +148,8 @@ export default function CloudSyncItem() {
             await downloadFromCloud();
             showToast('Dados restaurados da nuvem!', 'success');
             window.location.reload();
-        } catch (err: any) {
+        } catch (e: unknown) {
+        const err = e as Error;
             showToast('Erro ao restaurar: ' + err.message, 'error');
         } finally {
             setLoading(false);
@@ -145,16 +164,27 @@ export default function CloudSyncItem() {
                     <span>Nuvem Desconectada</span>
                     <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
                 </button>
-                <AuthModal
-                    isOpen={isAuthModalOpen}
-                    onClose={() => setIsAuthModalOpen(false)}
-                />
+                {isAuthModalOpen && (
+                    <AuthModal
+                        isOpen={isAuthModalOpen}
+                        onClose={() => setIsAuthModalOpen(false)}
+                        initialMode={authModalMode}
+                    />
+                )}
             </>
         );
     }
 
     return (
+        <>
         <div className="cloud-sync-box">
+            {isAuthModalOpen && (
+                <AuthModal
+                    isOpen={isAuthModalOpen}
+                    onClose={() => setIsAuthModalOpen(false)}
+                    initialMode={authModalMode}
+                />
+            )}
             <div className="cloud-sync-box__user">
                 <User size={14} />
                 <span className="truncate">{session.user.email}</span>
@@ -200,5 +230,13 @@ export default function CloudSyncItem() {
                 </button>
             </div>
         </div>
+        {isAuthModalOpen && (
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialMode={authModalMode}
+            />
+        )}
+        </>
     );
 }

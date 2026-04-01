@@ -1,4 +1,5 @@
 import type { ContextMenu } from '@/models/types';
+import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 import { Edit3, Trash2 } from 'lucide-react';
 
 type MenuCardProps = {
@@ -8,6 +9,8 @@ type MenuCardProps = {
 };
 
 export function MenuCard({ menu, onEdit, onDelete }: MenuCardProps) {
+  const options = normalizeContextMenuOptions(menu.options);
+
   return (
     <div className="card ctx-menu-card">
       <div className="ctx-menu-card__header">
@@ -42,15 +45,15 @@ export function MenuCard({ menu, onEdit, onDelete }: MenuCardProps) {
       )}
 
       <div className="ctx-menu-card__tree">
-        {(menu.options || []).map((opt, i) => (
+        {options.map((opt, i) => (
           <div key={i} className="ctx-tree-node">
             <div className="ctx-tree-node__option">
               <span className="ctx-tree-node__dot" />
               {opt.label}
             </div>
-            {(opt.subOptions || []).length > 0 && (
+            {opt.subOptions.length > 0 && (
               <div className="ctx-tree-node__children">
-                {(opt.subOptions || []).map((sub, j) => (
+                {opt.subOptions.map((sub, j) => (
                   <div key={j} className="ctx-tree-node__sub">
                     <span className="ctx-tree-node__line" />
                     {sub.label}

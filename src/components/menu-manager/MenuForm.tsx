@@ -1,4 +1,4 @@
-import type { ContextMenu, ContextMenuOption } from '@/models/types';
+import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import { X, Check, Plus, Layers } from 'lucide-react';
 import { MenuOptionEditor } from './MenuOptionEditor';
 
@@ -18,7 +18,7 @@ type MenuFormProps = {
   onFieldChange: <K extends keyof MenuFormProps['form']>(field: K, value: MenuFormProps['form'][K]) => void;
   onOptionUpdate: (index: number, field: keyof ContextMenuOption, value: string) => void;
   onOptionRemove: (index: number) => void;
-  onSubOptionUpdate: (optIndex: number, subIndex: number, field: any, value: string) => void;
+  onSubOptionUpdate: (optIndex: number, subIndex: number, field: keyof ContextMenuSubOption, value: string) => void;
   onSubOptionRemove: (optIndex: number, subIndex: number) => void;
   onAddOption: () => void;
   onAddSubOption: (optIndex: number) => void;

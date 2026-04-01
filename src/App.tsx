@@ -1,15 +1,17 @@
 import { useState, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastProvider } from '@/context/ToastContext';
+import { ConfirmProvider } from '@/context/ConfirmProvider';
 import Layout from '@/components/Layout';
 import ImportExportModal from '@/components/ImportExportModal';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { SkeletonEditor } from '@/components/SkeletonLoader';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { seedDatabase } from '@/db/database';
 import { setupAutoSync } from '@/services/autoSync';
 import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
 import { syncToCloud } from '@/services/syncService';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 // Lazy-loaded pages for code splitting
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -21,13 +23,10 @@ const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 
+// Fix #10: Suspense fallback contextual usando SkeletonEditor ao invés de spinner genérico
+// Páginas individuais usam SkeletonCategoryGrid/SkeletonPromptList diretamente
 function LoadingFallback() {
-  return (
-    <div className="loading-fallback">
-      <div className="loading-spinner" />
-      <p>Carregando...</p>
-    </div>
-  );
+  return <SkeletonEditor />;
 }
 
 export default function App() {
@@ -40,10 +39,12 @@ export default function App() {
         saveLocalBackup();
       }, 2000);
       setupAutoSync();
-      try {
-        await setupRealtimeListeners();
-      } catch (error) {
-        console.error('❌ Erro ao iniciar realtime:', error);
+      if (isSupabaseConfigured) {
+        try {
+          await setupRealtimeListeners();
+        } catch (error) {
+          console.error('❌ Erro ao iniciar realtime:', error);
+        }
       }
     };
 
@@ -55,6 +56,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔐 Auth state changed:', event);
       
@@ -76,7 +81,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <ToastProvider>
-        <ErrorBoundary>
+        <ConfirmProvider>
+          <ErrorBoundary>
           <Layout onOpenImportExport={() => setShowImportExport(true)}>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
@@ -95,7 +101,8 @@ export default function App() {
             isOpen={showImportExport}
             onClose={() => setShowImportExport(false)}
           />
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </ConfirmProvider>
       </ToastProvider>
     </BrowserRouter>
   );

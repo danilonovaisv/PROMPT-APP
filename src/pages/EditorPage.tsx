@@ -27,23 +27,38 @@ import {
 import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
-import { copyToClipboard, downloadJson } from '@/utils/exportJson';
+import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
 import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
 import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
-import { EditorContextMenuSelector } from '@/components/editor/EditorContextMenuSelector';
 import { EditorPlayground } from '@/components/editor/EditorPlayground';
 import { EditorPreviewModal } from '@/components/editor/EditorPreviewModal';
+import { Breadcrumb } from '@/components/Breadcrumb';
+import { z } from 'zod';
 
 type FreeInputEntry = { key: string; value: string };
+
+const FreeInputEntrySchema = z.object({
+  key: z.string(),
+  value: z.string(),
+});
 
 type TemplateFormState = {
   categoryId: number;
   template: TemplatePayload;
   selection: UserSelection;
   freeInputs: FreeInputEntry[];
+  selectedMenuIds: number[];
 };
+
+const TemplateFormStatePartialSchema = z.object({
+  categoryId: z.number().optional(),
+  template: TemplatePayloadSchema.optional(),
+  selection: UserSelectionSchema.optional(),
+  freeInputs: z.array(FreeInputEntrySchema).optional(),
+  selectedMenuIds: z.array(z.number()).optional(),
+}).passthrough();
 
 function splitLines(value: string): string[] {
   return value.split('\n').map((item) => item.trim()).filter(Boolean);
@@ -71,29 +86,83 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
     template,
     selection: createEmptyUserSelection(template.meta.template_id),
     freeInputs: [{ key: '', value: '' }],
+    selectedMenuIds: [],
   };
 }
 
-function buildFormStateFromPrompt(prompt: Prompt): TemplateFormState {
-  const template = parsePromptPayload(prompt.promptPayload);
-  const linkedMenuIds = [
-    ...new Set([...(template.menu_ids || []), ...template.menu_definitions.map((menu) => menu.menu_id)]),
-  ];
-  const selection = parseUserSelection(prompt.selectionPayload, template.meta.template_id, {
+function getLinkedContextMenusFromSelection(
+  contextMenus: ContextMenu[],
+  selectedMenuIds: number[],
+) {
+  return contextMenus.filter(
+    (menu): menu is ContextMenu & { id: number } =>
+      typeof menu.id === 'number' && selectedMenuIds.includes(menu.id),
+  );
+}
+
+function syncFormMenus(current: TemplateFormState, contextMenus: ContextMenu[]): TemplateFormState {
+  const linkedContextMenus = getLinkedContextMenusFromSelection(
+    contextMenus,
+    current.selectedMenuIds,
+  );
+  const linkedMenuIds = linkedContextMenus.map((menu) => menu.menuId);
+  const template = syncTemplateWithLinkedMenus(
+    TemplatePayloadSchema.parse({ ...current.template, menu_ids: linkedMenuIds }),
+    linkedContextMenus,
+  );
+
+  return {
+    ...current,
+    template,
+    selection: UserSelectionSchema.parse({
+      ...current.selection,
+      template_id: template.meta.template_id,
+      selected_menus: current.selection.selected_menus.filter((item) =>
+        linkedMenuIds.includes(item.menu_id),
+      ),
+    }),
+  };
+}
+
+function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): TemplateFormState {
+  const parsedTemplate = parsePromptPayload(prompt.promptPayload);
+  const persistedMenuIds = prompt.selectedMenuIds || [];
+  const inferredSelectedMenuIds =
+    persistedMenuIds.length > 0
+      ? persistedMenuIds
+      : contextMenus
+          .filter(
+            (menu): menu is ContextMenu & { id: number } =>
+              typeof menu.id === 'number' &&
+              [
+                ...(parsedTemplate.menu_ids || []),
+                ...parsedTemplate.menu_definitions.map((menuDefinition) => menuDefinition.menu_id),
+              ].includes(menu.menuId),
+          )
+          .map((menu) => menu.id);
+  const selection = parseUserSelection(prompt.selectionPayload, parsedTemplate.meta.template_id, {
     title: prompt.title,
     schemaVersion: prompt.schemaVersion,
     language: prompt.language,
   });
 
-  return {
+  const baseState: TemplateFormState = {
     categoryId: prompt.categoryId,
-    template: TemplatePayloadSchema.parse({ ...template, menu_ids: linkedMenuIds }),
+    template: parsedTemplate,
     selection,
     freeInputs: toFreeInputEntries(selection),
+    selectedMenuIds: inferredSelectedMenuIds,
   };
+
+  return contextMenus.length > 0 ? syncFormMenus(baseState, contextMenus) : baseState;
 }
 
 function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextMenu[]) {
+  const linkedContextMenus = getLinkedContextMenusFromSelection(
+    contextMenus,
+    form.selectedMenuIds,
+  );
+  const linkedMenuIds = linkedContextMenus.map((menu) => menu.menuId);
   const normalizedTemplate = TemplatePayloadSchema.parse({
     ...form.template,
     meta: {
@@ -111,10 +180,11 @@ function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextM
       constraints: splitLines(joinLines(form.template.prompt_definition.constraints)),
       negative_prompt: splitLines(joinLines(form.template.prompt_definition.negative_prompt)),
     },
+    menu_ids: linkedMenuIds,
     output_contract: PromptOutputContractSchema.parse(form.template.output_contract),
   });
   const migration = migrateTemplateToCurrentSchema(
-    syncTemplateWithLinkedMenus(normalizedTemplate, contextMenus)
+    syncTemplateWithLinkedMenus(normalizedTemplate, linkedContextMenus)
   );
   const syncedTemplate = migration.template;
 
@@ -138,6 +208,8 @@ function isUnauthenticatedCloudError(error: unknown) {
   );
 }
 
+const EMPTY_MENUS: never[] = [];
+
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -152,7 +224,7 @@ export default function EditorPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
 
-  const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
+  const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? EMPTY_MENUS;
   const debouncedForm = useDebounce(form, 1200);
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
@@ -169,18 +241,48 @@ export default function EditorPage() {
   useEffect(() => {
     if (!loaded && isNew && categories.length > 0) {
       const categoryFromQuery = Number(searchParams.get('categoria') || categories[0]?.id || 0);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm(buildInitialFormState(categoryFromQuery));
       setLoaded(true);
     }
   }, [categories, isNew, loaded, searchParams]);
 
   useEffect(() => {
-    if (isNew) return;
+    if (isNew || loaded) return;
     db.prompts.get(Number(id)).then((prompt) => {
-      if (prompt) setForm(buildFormStateFromPrompt(prompt));
+      if (prompt) setForm(buildFormStateFromPrompt(prompt, availableContextMenus));
       setLoaded(true);
     });
-  }, [id, isNew]);
+  }, [availableContextMenus, id, isNew, loaded]);
+
+  useEffect(() => {
+    if (!loaded || availableContextMenus.length === 0) {
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setForm((current) => {
+      let nextState = current;
+
+      if (current.selectedMenuIds.length === 0 && (current.template.menu_ids || []).length > 0) {
+        const inferredSelectedMenuIds = availableContextMenus
+          .filter(
+            (menu): menu is ContextMenu & { id: number } =>
+              typeof menu.id === 'number' && (current.template.menu_ids || []).includes(menu.menuId),
+          )
+          .map((menu) => menu.id);
+
+        if (inferredSelectedMenuIds.length > 0) {
+          nextState = {
+            ...current,
+            selectedMenuIds: inferredSelectedMenuIds,
+          };
+        }
+      }
+
+      return syncFormMenus(nextState, availableContextMenus);
+    });
+  }, [availableContextMenus, loaded]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -188,10 +290,19 @@ export default function EditorPage() {
     const savedDraft = localStorage.getItem(draftKey);
     if (!savedDraft) return;
     try {
-      const draftData = JSON.parse(savedDraft) as Partial<TemplateFormState>;
-      if (draftData.template?.meta?.template_name) {
-        setForm((current) => ({ ...current, ...draftData }));
-        showToast('Rascunho recuperado automaticamente!', 'info');
+      const rawDraftData = JSON.parse(savedDraft);
+      const parsedDraftResult = TemplateFormStatePartialSchema.safeParse(rawDraftData);
+
+      if (parsedDraftResult.success) {
+        const draftData = parsedDraftResult.data as Partial<TemplateFormState>;
+        if (draftData.template?.meta?.template_name) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setForm((current) => ({ ...current, ...draftData }));
+          showToast('Rascunho recuperado automaticamente!', 'info');
+        }
+      } else {
+        console.error('Rascunho inválido detectado:', parsedDraftResult.error);
+        localStorage.removeItem(draftKey);
       }
     } catch (error) {
       console.error('Erro ao recuperar rascunho:', error);
@@ -213,7 +324,8 @@ export default function EditorPage() {
         renderedPrompt: artifacts.renderedPrompt,
         error: null,
       };
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: error.message || 'Payload inválido' };
     }
   }, [availableContextMenus, form]);
@@ -337,14 +449,26 @@ export default function EditorPage() {
       return;
     }
 
+    // Validar que a categoria ainda existe e não foi excluída
+    const selectedCategory = await db.categories.get(form.categoryId);
+    if (!selectedCategory) {
+      showToast('Categoria selecionada não existe mais', 'error');
+      return;
+    }
+    if (selectedCategory.isDeleted === true) {
+      showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
+      return;
+    }
+
     let template: TemplatePayload;
     let selection: UserSelection;
     let compiledPayload: CompiledPromptPayload;
-    let migrationWarnings: string[] = [];
+    let migrationWarnings: string[];
 
     try {
       ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus));
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       showToast(error.message || 'Template inválido', 'error');
       return;
     }
@@ -354,6 +478,7 @@ export default function EditorPage() {
     const promptRecord: Omit<Prompt, 'id'> = {
       categoryId: form.categoryId,
       title: summary.title,
+      selectedMenuIds: form.selectedMenuIds,
       promptPayload: template,
       selectionPayload: selection,
       compiledPayload,
@@ -365,7 +490,7 @@ export default function EditorPage() {
       updatedAt: now,
     };
 
-    let localId: number | null = null;
+    let localId: number | null;
     try {
       if (isNew) {
         localId = (await db.prompts.add({ ...promptRecord, syncStatus: 'pending' } as Prompt)) ?? null;
@@ -377,7 +502,8 @@ export default function EditorPage() {
       }
       clearDraft();
       await saveLocalBackup();
-    } catch (error: any) {
+    } catch (e: unknown) {
+        const error = e as Error;
       console.error('Erro ao salvar localmente:', error);
       showToast(error.message || 'Erro ao salvar localmente', 'error');
       return;
@@ -401,11 +527,18 @@ export default function EditorPage() {
   };
 
   const handleCopy = async () => {
-    if (!previewState.payload || !previewState.renderedPrompt) {
+    if (!previewState.payload || previewState.error) {
       showToast(previewState.error || 'Payload inválido', 'error');
       return;
     }
-    const ok = await copyToClipboard(previewState.renderedPrompt);
+    
+    // Use structured markdown format
+    const templatePayload = previewState.template as TemplatePayload | null;
+    const markdownPrompt = templatePayload && previewState.payload
+      ? formatPromptAsMarkdown(templatePayload, previewState.payload)
+      : previewState.renderedPrompt;
+    
+    const ok = await copyToClipboard(markdownPrompt);
     showToast(ok ? 'Prompt final copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
   };
 
@@ -419,23 +552,17 @@ export default function EditorPage() {
     showToast('Download iniciado!');
   };
 
-  const handleMenuToggle = (menuId: string, checked: boolean) => {
+  const handleSelectedMenuIdsChange = (menuIds: number[]) => {
     setForm((current) => {
-      const nextMenuIds = checked
-        ? [...(current.template.menu_ids || []), menuId]
-        : (current.template.menu_ids || []).filter((id) => id !== menuId);
-      const uniqueMenuIds = [...new Set(nextMenuIds)];
-      return {
-        ...current,
-        template: syncTemplateWithLinkedMenus(
-          TemplatePayloadSchema.parse({ ...current.template, menu_ids: uniqueMenuIds }),
-          availableContextMenus
-        ),
-        selection: UserSelectionSchema.parse({
-          ...current.selection,
-          selected_menus: current.selection.selected_menus.filter((item) => uniqueMenuIds.includes(item.menu_id)),
-        }),
-      };
+      const uniqueSelectedIds = [...new Set(menuIds)];
+
+      return syncFormMenus(
+        {
+          ...current,
+          selectedMenuIds: uniqueSelectedIds,
+        },
+        availableContextMenus,
+      );
     });
   };
 
@@ -470,6 +597,16 @@ export default function EditorPage() {
         <div className={`editor-main-scrollable ${isSidebarOpen ? 'editor-main-scrollable--with-sidebar' : ''}`}>
           <div className="app-content">
             <div className="editor-form--constrained">
+              {/* A11y Audit Fix #09: Breadcrumbs */}
+              <Breadcrumb
+                items={[
+                  { label: 'Início', href: '/' },
+                  ...(form.categoryId
+                    ? [{ label: categories.find((c) => c.id === form.categoryId)?.name ?? 'Categoria', href: `/categoria/${form.categoryId}` }]
+                    : []),
+                  { label: isNew ? 'Novo Template' : (form.template.meta.template_name || 'Editar Template') },
+                ]}
+              />
               <EditorMetaForm
                 template={form.template}
                 categoryId={form.categoryId}
@@ -482,12 +619,9 @@ export default function EditorPage() {
                 template={form.template}
                 updatePromptDefinitionField={updatePromptDefinitionField}
                 updateOutputContractField={updateOutputContractField}
-              />
-
-              <EditorContextMenuSelector
-                template={form.template}
-                contextMenus={availableContextMenus}
-                onMenuToggle={handleMenuToggle}
+                selectedMenuIds={form.selectedMenuIds}
+                onMenuSelectionChange={handleSelectedMenuIdsChange}
+                availableContextMenus={availableContextMenus}
               />
 
               <div className="editor-footer editor-footer--spaced">
@@ -515,7 +649,11 @@ export default function EditorPage() {
             <EditorPlayground
               template={form.template}
               selection={form.selection}
+              freeInputs={form.freeInputs}
+              renderedPrompt={previewState.renderedPrompt}
+              outputError={previewState.error}
               contextMenus={availableContextMenus}
+              selectedMenuIds={form.selectedMenuIds}
               onAddFreeInput={addFreeInput}
               onRemoveFreeInput={removeFreeInput}
               onUpdateFreeInput={updateFreeInput}

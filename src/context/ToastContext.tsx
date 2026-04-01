@@ -5,6 +5,8 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
+/* eslint-disable react-refresh/only-export-components */
+
 type ToastType = 'success' | 'error' | 'info';
 
 interface Toast {
@@ -45,9 +47,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     return (
         <ToastContext.Provider value={{ showToast }}>
             {children}
-            <div className="toast-container">
+            {/* A11y Audit Fix #15: aria-live region for screen reader announcements */}
+            <div
+                className="toast-container"
+                aria-live="polite"
+                aria-atomic="false"
+                role="status"
+            >
                 {toasts.map((toast) => (
-                    <div key={toast.id} className={`toast toast--${toast.type}`}>
+                    <div
+                        key={toast.id}
+                        className={`toast toast--${toast.type}`}
+                        role={toast.type === 'error' ? 'alert' : undefined}
+                    >
                         {iconMap[toast.type]}
                         <span>{toast.message}</span>
                         <button

@@ -1,4 +1,6 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
+import type { ContextMenu } from '@/models/types';
+import MultiSelect from '@/components/ui/MultiSelect';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -10,11 +12,29 @@ type EditorDefinitionFormProps = {
     field: K,
     value: PromptOutputContract[K]
   ) => void;
+  selectedMenuIds?: number[];
+  onMenuSelectionChange?: (menuIds: number[]) => void;
+  availableContextMenus?: ContextMenu[];
 };
 
-const PROMPT_OUTPUT_FORMATS = ['markdown', 'json', 'xml', 'yaml', 'html', 'text'] as const;
+const PROMPT_OUTPUT_FORMATS = ['text', 'json', 'xml', 'yaml', 'html', 'code'] as const;
 
-export function EditorDefinitionForm({ template, updatePromptDefinitionField, updateOutputContractField }: EditorDefinitionFormProps) {
+export function EditorDefinitionForm({ 
+  template, 
+  updatePromptDefinitionField, 
+  updateOutputContractField,
+  selectedMenuIds = [],
+  onMenuSelectionChange,
+  availableContextMenus = []
+}: EditorDefinitionFormProps) {
+  const menuOptions = availableContextMenus
+    .filter((menu): menu is ContextMenu & { id: number } => typeof menu.id === 'number')
+    .map((menu) => ({
+      id: menu.id,
+      label: menu.menuName || menu.menuId,
+      description: menu.menuId,
+    }));
+
   return (
     <>
       <div className="form-section">
@@ -55,6 +75,7 @@ export function EditorDefinitionForm({ template, updatePromptDefinitionField, up
           />
         </div>
 
+
         <div className="form-group">
           <label className="form-label" htmlFor="constraints">Constraints</label>
           <textarea
@@ -76,6 +97,27 @@ export function EditorDefinitionForm({ template, updatePromptDefinitionField, up
             placeholder="Uma proibição por linha"
           />
         </div>
+
+        {/* Menu Selection Multi-Select */}
+        {availableContextMenus.length > 0 && (
+          <div className="form-group">
+            <label className="form-label">
+              Menus do Template
+            </label>
+            <p className="form-label__hint">
+              Selecione os menus que estarão disponíveis neste template
+            </p>
+            <div id="template-linked-menus">
+              <MultiSelect
+                options={menuOptions}
+                selectedIds={selectedMenuIds}
+                onChange={(ids) => onMenuSelectionChange?.(ids)}
+                placeholder="Escolha os menus vinculados ao template"
+                emptyMessage="Nenhum menu cadastrado no banco local."
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="form-section">

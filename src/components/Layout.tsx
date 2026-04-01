@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { downloadAllPrompts } from '@/utils/exportJson';
 import CloudSyncItem from './CloudSyncItem';
+import { isSupabaseConfigured, supabaseConfigErrorMessage } from '@/lib/supabase';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -123,14 +124,25 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
             {/* Main */}
             <main className="app-main" id="main-content" tabIndex={-1}>
-                {children}
-                <footer className="app-footer">
+                <div className="app-content-wrapper app-shell-container">
+                    {!isSupabaseConfigured && (
+                        <div className="app-shell-notice" role="status" aria-live="polite">
+                            <strong>Supabase não configurado.</strong>
+                            <span>
+                                {' '}
+                                {supabaseConfigErrorMessage} Recursos em nuvem permanecem desativados.
+                            </span>
+                        </div>
+                    )}
+                    {children}
+                </div>
+                <footer className="app-footer app-shell-container">
                     <span>Prompt App • Engenharia de Prompts</span>
                     <nav className="app-footer__links" aria-label="Links informativos">
                         <a href="/sobre">Sobre</a>
                         <a href="/contato">Contato</a>
                         <a href="/privacidade">Privacidade</a>
-                        <a href="https://github.com/danilonovaisv/PROMPT-APP">GitHub</a>
+                        <a href="https://github.com/danilonovaisv/PROMPT-APP" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </nav>
                 </footer>
             </main>

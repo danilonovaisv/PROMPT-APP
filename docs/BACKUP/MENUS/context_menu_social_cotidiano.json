@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "cenas_social_cotidiano",
+      "menu_name": "TIPOS DE CENA — Social Media no Cotidiano",
+      "description": "Qual tipo de cena/ambientação você quer gerar para aplicar a peça publicitária?",
+      "options": [
+        {
+          "label": "Social Media no Cotidiano",
+          "value": "social_cotidiano",
+          "sub_options": [
+            {
+              "label": "Pessoa rolando feed no sofá",
+              "value": "pessoa_rolando_feed_sofa"
+            },
+            {
+              "label": "Selfie com celular mostrando post",
+              "value": "selfie_celular_mostrando_post"
+            },
+            {
+              "label": "Grupo de amigos vendo tela do celular",
+              "value": "grupo_amigos_vendo_celular"
+            },
+            {
+              "label": "Pessoa em café olhando Instagram",
+              "value": "pessoa_cafe_instagram"
+            },
+            {
+              "label": "Pessoa no transporte público olhando post",
+              "value": "pessoa_transporte_publico_post"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
