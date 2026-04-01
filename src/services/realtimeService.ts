@@ -45,19 +45,16 @@ export async function setupRealtimeListeners() {
   cleanupRealtimeListeners();
 
   if (!isSupabaseConfigured) {
-    console.log("⏭️ Supabase não configurado - realtime desativado");
     return;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    console.log("⏭️ Usuário não autenticado - realtime desativado");
     return;
   }
 
   const userId = session.user.id;
 
-  console.log("📡 Iniciando listeners de realtime...");
 
   // Canal para Categorias
   categoriesChannel = supabase
@@ -71,7 +68,6 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Categoria alterada:", payload);
         await handleCategoryChange(payload);
         debouncedSaveLocalBackup();
       },
@@ -90,7 +86,6 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Prompt alterado:", payload);
         await handlePromptChange(payload);
         debouncedSaveLocalBackup();
       },
@@ -109,14 +104,12 @@ export async function setupRealtimeListeners() {
         filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
-        console.log("📡 Menu alterado:", payload);
         await handleMenuChange(payload);
         debouncedSaveLocalBackup();
       },
     )
     .subscribe();
 
-  console.log("✅ Listeners de realtime ativados");
 }
 
 interface RealtimeCategoryPayload {
@@ -125,6 +118,8 @@ interface RealtimeCategoryPayload {
   icon?: string;
   color?: string;
   created_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -146,6 +141,19 @@ async function handleCategoryChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.categories
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.categories.delete(toSoftDelete.id!);
+          }
+          break;
+        }
+
         // Verificar se já existe localmente
         const existingLocal = await db.categories
           .where("remoteId")
@@ -164,11 +172,9 @@ async function handleCategoryChange(payload: {
         if (existingLocal) {
           // Atualizar existente
           await db.categories.update(existingLocal.id!, categoryData);
-          console.log(`🔄 Categoria atualizada localmente: ${rd.name}`);
         } else {
           // Criar novo
           await db.categories.add(categoryData as Category);
-          console.log(`➕ Categoria adicionada localmente: ${rd.name}`);
         }
         break;
       }
@@ -181,7 +187,6 @@ async function handleCategoryChange(payload: {
 
         if (toDelete) {
           await db.categories.delete(toDelete.id!);
-          console.log(`🗑️ Categoria removida localmente: ${toDelete.name}`);
         }
         break;
       }
@@ -213,6 +218,8 @@ interface RealtimePromptPayload {
   few_shot_examples?: unknown[];
   created_at: string;
   updated_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -234,6 +241,19 @@ async function handlePromptChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.prompts
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.prompts.delete(toSoftDelete.id!);
+          }
+          break;
+        }
+
         const existingLocal = await db.prompts
           .where("remoteId")
           .equals(rd.id)
@@ -308,7 +328,6 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.update(existingLocal.id!, promptData);
-          console.log(`🔄 Prompt atualizado localmente: ${rd.title}`);
         } else {
           if (
             !promptData.compiledPayload && promptData.selectionPayload &&
@@ -320,7 +339,6 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.add(promptData as Prompt);
-          console.log(`➕ Prompt adicionado localmente: ${rd.title}`);
         }
         break;
       }
@@ -333,7 +351,6 @@ async function handlePromptChange(payload: {
 
         if (toDelete) {
           await db.prompts.delete(toDelete.id!);
-          console.log(`🗑️ Prompt removido localmente: ${toDelete.title}`);
         }
         break;
       }
@@ -352,6 +369,8 @@ interface RealtimeMenuPayload {
   options?: unknown;
   created_at: string;
   updated_at: string;
+  /** Soft-delete flag — migration 20260327000001 */
+  is_deleted?: boolean;
 }
 
 /**
@@ -373,6 +392,19 @@ async function handleMenuChange(payload: {
     switch (eventType) {
       case "INSERT":
       case "UPDATE": {
+        // Soft-delete: o registro foi marcado como excluído via UPDATE.
+        // Remover do state local em vez de atualizar.
+        if (rd.is_deleted) {
+          const toSoftDelete = await db.contextMenus
+            .where("remoteId")
+            .equals(rd.id)
+            .first();
+          if (toSoftDelete) {
+            await db.contextMenus.delete(toSoftDelete.id!);
+          }
+          break;
+        }
+
         const existingLocal = await db.contextMenus
           .where("remoteId")
           .equals(rd.id)
@@ -383,9 +415,7 @@ async function handleMenuChange(payload: {
           menuId: rd.menu_id,
           menuName: rd.menu_name,
           description: rd.description || "",
-          // selection_mode foi removida do schema remoto (20260317213609_remote_schema.sql)
-          // O campo não virá no payload do realtime. Default local = 'single'.
-          selectionMode: "single",
+          selectionMode: (rd.selection_mode as "single" | "multiple") || "single",
           options: normalizeContextMenuOptions(rd.options as Record<string, unknown>),
           createdAt: new Date(rd.created_at),
           updatedAt: new Date(rd.updated_at),
@@ -394,10 +424,8 @@ async function handleMenuChange(payload: {
 
         if (existingLocal) {
           await db.contextMenus.update(existingLocal.id!, menuData);
-          console.log(`🔄 Menu atualizado localmente: ${rd.menu_name}`);
         } else {
           await db.contextMenus.add(menuData as ContextMenu);
-          console.log(`➕ Menu adicionado localmente: ${rd.menu_name}`);
         }
         break;
       }
@@ -410,7 +438,6 @@ async function handleMenuChange(payload: {
 
         if (toDelete) {
           await db.contextMenus.delete(toDelete.id!);
-          console.log(`🗑️ Menu removido localmente: ${toDelete.menuName}`);
         }
         break;
       }
@@ -439,7 +466,6 @@ export function cleanupRealtimeListeners() {
     menusChannel = null;
   }
 
-  console.log("🧹 Listeners de realtime removidos");
 }
 
 /**
@@ -448,5 +474,4 @@ export function cleanupRealtimeListeners() {
 export async function reconnectRealtime() {
   cleanupRealtimeListeners();
   await setupRealtimeListeners();
-  console.log("🔄 Realtime reconectado");
 }

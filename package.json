@@ -19,7 +19,13 @@
     "db:studio": "netlify dev:exec drizzle-kit studio",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "setup:cloud-env": "bash scripts/setup-cloud-env.sh"
+    "setup:cloud-env": "bash scripts/setup-cloud-env.sh",
+    "clean": "pnpm clean:build && pnpm clean:cache && pnpm clean:reports",
+    "clean:build": "rm -rf dist",
+    "clean:cache": "rm -rf node_modules/.cache node_modules/.vite .eslintcache pnpm-lock.yaml",
+    "clean:reports": "rm -rf coverage playwright-report test-results",
+    "clean:modules": "rm -rf node_modules",
+    "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
   "dependencies": {
     "@netlify/neon": "^0.1.2",
@@ -32,7 +38,7 @@
     "agentic-flow": "^2.0.7",
     "dexie": "^4.4.1",
     "dexie-react-hooks": "^4.4.0",
-    "drizzle-orm": "^0.45.1",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -42,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@jest/globals": "^30.3.0",
     "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
