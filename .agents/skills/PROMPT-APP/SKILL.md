@@ -5,139 +5,185 @@
 
 ## Overview
 
-This skill teaches the core development patterns and workflows used in the PROMPT-APP repository, a Python-based application with no detected framework. It covers coding conventions, file organization, commit practices, and step-by-step guides for common development tasks such as database migrations, feature implementation, build/deploy processes, dependency updates, and realtime/sync service adjustments. This guide is designed to help contributors quickly understand and follow the established practices in the codebase.
+This skill teaches you the core development patterns, coding conventions, and operational workflows of the PROMPT-APP codebase. PROMPT-APP is a Python project (with TypeScript/JS frontend components) focused on prompt management, real-time data synchronization, and cloud deployment. The repository emphasizes clear commit practices, consistent file organization, and robust workflows for database migrations, soft-delete logic, dependency management, real-time sync, and cloud configuration.
 
 ## Coding Conventions
 
-**File Naming**
-- Use PascalCase for file names.
-  - Example: `CategoryManagerPage.tsx`, `EditorPage.tsx`
+- **File Naming:**  
+  Use PascalCase for files, e.g., `CategoryManagerPage.tsx`, `EditorPage.tsx`.
 
-**Import Style**
-- Prefer relative imports.
-  - Example:
-    ```python
-    from .models import Category
-    from ..services.syncService import SyncService
+- **Import Style:**  
+  Use relative imports for internal modules.
+  ```python
+  from .models import Category
+  ```
+
+- **Export Style:**  
+  Use named exports in TypeScript/JavaScript.
+  ```typescript
+  export function syncCategories() { ... }
+  export type Category = { ... }
+  ```
+
+- **Commit Patterns:**  
+  - Prefixes: `feat`, `chore`, `fix`, `build`
+  - Example:  
     ```
-
-**Export Style**
-- Use named exports (in TypeScript/JavaScript files).
-  - Example:
-    ```typescript
-    export function syncData() { ... }
-    export const CATEGORY_TYPE = 'main';
+    feat: add soft-delete support for categories
+    fix: correct syncService bug on deleted items
     ```
-
-**Commit Patterns**
-- Mixed commit types, using prefixes: `feat`, `chore`, `fix`, `build`
-- Commit messages average 75 characters.
-  - Example: `feat: add category manager page and sync service integration`
 
 ## Workflows
 
-### Database Schema Migration
-**Trigger:** When you need to add, remove, or change a table/column in the database.  
+### Database Migration and Application Update
+**Trigger:** When adding/modifying database schema (tables, columns, policies) and updating application code to match.  
 **Command:** `/new-table`
 
-1. Create or update a migration SQL file in `supabase/migrations/`.
-2. Update related model/types files (e.g., `src/models/types.ts`).
-3. Update backend service files that interact with the changed table (e.g., `src/services/syncService.ts`, `src/services/supabaseMenus.ts`).
-4. Optionally update `.max/project-context.json` for project context.
-5. Update UI or page files if the schema change affects the frontend.
+1. Create or modify a migration SQL file in `supabase/migrations/`.
+2. Update related TypeScript types (e.g., `src/models/types.ts`).
+3. Update relevant service files (e.g., `src/services/syncService.ts`, `src/services/contextMenuSync.ts`, `src/services/supabaseMenus.ts`).
+4. Update UI or page files if needed (e.g., `src/pages/CategoryManagerPage.tsx`, `src/pages/EditorPage.tsx`).
+5. Update `.gitignore` or `docs/PLAN.md` if relevant.
+6. Commit migration and code changes together.
 
-**Example:**
+**Example:**  
+_Adding a new column to the `categories` table:_
 ```sql
--- supabase/migrations/20240401_add_category_table.sql
-CREATE TABLE category (
-  id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL
-);
+-- supabase/migrations/20240101_add_category_color.sql
+ALTER TABLE categories ADD COLUMN color VARCHAR(20);
 ```
 ```typescript
 // src/models/types.ts
 export type Category = {
-  id: number;
+  id: string;
   name: string;
+  color?: string;
 };
 ```
 
 ---
 
-### Feature Implementation with UI and Service Update
-**Trigger:** When adding a new feature or major capability to the app.  
-**Command:** `/new-feature`
+### Soft-Delete Feature Implementation
+**Trigger:** When adding soft-delete support for a resource and ensuring it is respected across sync, UI, and DB.  
+**Command:** `/add-soft-delete`
 
-1. Update or create UI page/component files (e.g., `src/pages/CategoryManagerPage.tsx`).
-2. Update or create service files (e.g., `src/services/syncService.ts`).
-3. Update types or models if new data is introduced (e.g., `src/models/types.ts`).
-4. Update migration files if persistent data is involved.
-5. Optionally update documentation (e.g., `docs/PLAN.md`).
+1. Add `is_deleted` or `isDeleted` flag to TypeScript types (`src/models/types.ts`).
+2. Update sync logic to handle soft-deleted items (`src/services/syncService.ts` and related files).
+3. Update UI to filter or display soft-deleted items appropriately (`src/pages/CategoryManagerPage.tsx`, `src/pages/EditorPage.tsx`).
+4. Add or update migration to add soft-delete column or related policy (`supabase/migrations/*.sql`).
+5. Update `docs/PLAN.md` or `.max/project-context.json` if needed.
 
-**Example:**
-```typescript
-// src/pages/CategoryManagerPage.tsx
-import { Category } from '../models/types';
-
-export function CategoryManagerPage() {
-  // UI logic here
-}
+**Example:**  
+```sql
+-- supabase/migrations/20240102_add_is_deleted_to_categories.sql
+ALTER TABLE categories ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
 ```
-
----
-
-### Build and Deploy Assets Update
-**Trigger:** When building the project for deployment or after significant code/config changes.  
-**Command:** `/build-deploy`
-
-1. Regenerate frontend assets (`dist/index.html`, `node_modules/.bin/*`).
-2. Update Netlify edge function bundles (`.netlify/edge-functions-dist/*`, `.netlify/edge-functions-dist/manifest.json`).
-3. Update dependency lockfiles (`pnpm-lock.yaml`, `package-lock.json`).
-4. Commit all updated build and deployment files.
-
----
-
-### Dependency Update
-**Trigger:** When updating dependencies for security, bugfixes, or new features.  
-**Command:** `/update-deps`
-
-1. Update `pnpm-lock.yaml` and/or `package-lock.json`.
-2. Optionally update `package.json`.
-3. Regenerate build assets if necessary.
-4. Commit updated lockfiles and related files.
-
----
-
-### Realtime or Sync Service Adjustment
-**Trigger:** When fixing bugs or improving the data sync/realtime features.  
-**Command:** `/sync-fix`
-
-1. Update `src/services/realtimeService.ts` and/or `src/services/syncService.ts`.
-2. Optionally update diagnostics SQL or documentation (`supabase/diagnostics/*.sql`, `docs/audits/*.md`).
-3. Update related UI files if needed.
-
-**Example:**
+```typescript
+// src/models/types.ts
+export type Category = {
+  id: string;
+  name: string;
+  isDeleted?: boolean;
+};
+```
 ```typescript
 // src/services/syncService.ts
-export function syncCategories() {
-  // Improved sync logic here
+function filterActiveCategories(categories: Category[]) {
+  return categories.filter(cat => !cat.isDeleted);
 }
 ```
+
+---
+
+### Dependency and Build Artifact Update
+**Trigger:** When updating dependencies or refreshing build outputs for deployment.  
+**Command:** `/update-deps`
+
+1. Update `pnpm-lock.yaml` or `package.json`.
+2. Rebuild frontend assets (`dist/index.html`, `node_modules/.bin/*`, `.netlify/edge-functions-dist/*`, `.netlify/edge-functions-dist/manifest.json`).
+3. Commit lockfile and build artifacts together.
+
+**Example:**  
+```bash
+pnpm install some-new-package
+pnpm build
+git add pnpm-lock.yaml dist/index.html .netlify/edge-functions-dist/
+git commit -m "build: update deps and rebuild assets"
+```
+
+---
+
+### Realtime or Sync Service Enhancement
+**Trigger:** When fixing or enhancing real-time sync/subscription logic due to schema changes or bugs.  
+**Command:** `/fix-sync`
+
+1. Update `src/services/realtimeService.ts` or `src/services/syncService.ts`.
+2. Update related migration or diagnostic SQL if needed.
+3. Update UI or types if relevant.
+4. Commit service and migration/diagnostic changes together.
+
+**Example:**  
+```typescript
+// src/services/realtimeService.ts
+export function subscribeToCategoryChanges() {
+  // ...subscription logic
+}
+```
+```sql
+-- supabase/diagnostics/20240103_check_category_sync.sql
+SELECT * FROM categories WHERE updated_at > NOW() - INTERVAL '1 day';
+```
+
+---
+
+### Cloud Environment or Config Update
+**Trigger:** When changing cloud environment settings or Codex config for deployment/testing.  
+**Command:** `/update-config`
+
+1. Edit `.codex/config.toml` or `.codex/environments/environment.toml`.
+2. Update `.env.example` or `scripts/setup-cloud-env.sh` if needed.
+3. Commit config and environment changes together.
+
+**Example:**  
+```toml
+# .codex/config.toml
+[project]
+name = "prompt-app"
+region = "us-east-1"
+```
+```bash
+cp .env.example .env
+./scripts/setup-cloud-env.sh
+```
+
+---
 
 ## Testing Patterns
 
-- Test files follow the `*.test.*` pattern.
-- The specific testing framework is unknown.
-- Place tests alongside the code or in a dedicated test directory.
-- Example test file: `CategoryManagerPage.test.tsx`
+- **Test File Pattern:**  
+  Test files use the `*.test.*` naming convention (e.g., `CategoryManagerPage.test.tsx`).
+- **Framework:**  
+  The specific testing framework is not detected, but standard JS/TS test runners (like Jest or Vitest) are likely.
+
+**Example:**  
+```typescript
+// CategoryManagerPage.test.tsx
+import { render } from '@testing-library/react';
+import CategoryManagerPage from './CategoryManagerPage';
+
+test('renders category manager', () => {
+  render(<CategoryManagerPage />);
+  // assertions...
+});
+```
 
 ## Commands
 
-| Command        | Purpose                                                      |
-|----------------|--------------------------------------------------------------|
-| /new-table     | Start a database schema migration workflow                   |
-| /new-feature   | Implement a new feature with UI and service updates          |
-| /build-deploy  | Update build artifacts and deployment bundles                |
-| /update-deps   | Update project dependencies and lockfiles                    |
-| /sync-fix      | Fix or enhance realtime subscriptions and sync logic         |
+| Command         | Purpose                                                      |
+|-----------------|--------------------------------------------------------------|
+| /new-table      | Start a database migration and update application code        |
+| /add-soft-delete| Implement or update soft-delete logic for a resource         |
+| /update-deps    | Update dependencies and rebuild build artifacts              |
+| /fix-sync       | Enhance or fix real-time sync/subscription logic             |
+| /update-config  | Update cloud environment or Codex configuration              |
 ```
