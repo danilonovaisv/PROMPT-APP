@@ -388,31 +388,45 @@ export const downloadFromCloud = async () => {
     "rw",
     [db.categories, db.prompts, db.contextMenus],
     async () => {
-      // Pre-fetch all local data to avoid N+1 queries during merge
-      const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise
-        .all([
-          db.categories.toArray(),
-          db.contextMenus.toArray(),
-          db.prompts.toArray(),
-        ]);
+      // ⚡ Bolt Optimization: Avoid fetching all local data to avoid memory bloat.
+      // Pre-fetch only the subset of local data that corresponds to the remote data being merged.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteCatIds = catRes.data?.map((c: any) => c.id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteMenuIds = menuRes.data?.map((m: any) => m.id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteMenuMenuIds = menuRes.data?.map((m: any) => m.menu_id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remotePromptIds = promptRes.data?.map((p: any) => p.id) || [];
+
+      const [localCategories, localMenusByRemoteId, localMenusByMenuId, localPrompts] = await Promise.all([
+        remoteCatIds.length > 0 ? db.categories.where('remoteId').anyOf(remoteCatIds).toArray() : Promise.resolve([]),
+        remoteMenuIds.length > 0 ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : Promise.resolve([]),
+        remoteMenuMenuIds.length > 0 ? db.contextMenus.where('menuId').anyOf(remoteMenuMenuIds).toArray() : Promise.resolve([]),
+        remotePromptIds.length > 0 ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : Promise.resolve([]),
+      ]);
+
+      const allLocalMenus = [...localMenusByRemoteId, ...localMenusByMenuId];
+      // Deduplicate menus
+      const uniqueLocalMenus = Array.from(new Map(allLocalMenus.map((m) => [m.id, m])).values());
 
       const categoriesByRemoteId = new Map<number, Category>(
-        allLocalCategories
+        localCategories
           .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
-          .map((c) => [c.remoteId, c]),
+          .map((c) => [c.remoteId as number, c]),
       );
       const menusByRemoteId = new Map<number, ContextMenu>(
-        allLocalMenus
+        uniqueLocalMenus
           .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
-          .map((m) => [m.remoteId, m]),
+          .map((m) => [m.remoteId as number, m]),
       );
       const menusByMenuId = new Map<string, ContextMenu>(
-        allLocalMenus.map((m) => [m.menuId, m]),
+        uniqueLocalMenus.map((m) => [m.menuId, m]),
       );
       const promptsByRemoteId = new Map<number, Prompt>(
-        allLocalPrompts
+        localPrompts
           .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
-          .map((p) => [p.remoteId, p]),
+          .map((p) => [p.remoteId as number, p]),
       );
 
       // --- A. Sincronizar Categorias ---
