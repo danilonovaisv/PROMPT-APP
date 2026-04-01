@@ -2,6 +2,17 @@ import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import { createSnapshot } from "@/utils/backupManager";
 import { Category, ContextMenu, Prompt } from "@/models/types";
+
+/** Shape returned by Supabase when selecting only the timestamp column. */
+interface SupabaseTimestamp {
+  updated_at: string;
+}
+
+/** Minimal shape of a Supabase operation result used for category/prompt writes. */
+interface SupabaseResult<T> {
+  data: T | null;
+  error: { message: string } | null;
+}
 import {
   type ContextMenuCloudPayload,
   type ContextMenuSyncRepository,
@@ -97,6 +108,30 @@ export const syncToCloud = async () => {
       localToRemoteCategoryMap.set(cat.id, cat.remoteId);
     }
   }
+
+  // Fix P0 (V2): Propagar soft-deletes pendentes ANTES de sincronizar categorias ativas.
+  // Isso fecha a janela de race condition onde o autoSync (debounce 10s) poderia
+  // re-upsertear no Supabase uma categoria que o usuário acabou de excluir localmente.
+  const categoriesToDeleteRemotely = allCategories.filter(
+    (c) => c.isDeleted === true && c.remoteId && c.syncStatus !== 'synced'
+  );
+  for (const cat of categoriesToDeleteRemotely) {
+    try {
+      await withRetry(() =>
+        supabase.from('categories')
+          .update({ is_deleted: true, updated_at: new Date().toISOString() })
+          .eq('id', cat.remoteId!)
+          .eq('user_id', userId)
+      );
+      // Limpeza física local apenas após a confirmação remota do delete
+      if (cat.id) await db.categories.delete(cat.id);
+      console.log(`✅ Categoria soft-delete sincronizada e removida: ${cat.name}`);
+    } catch (e) {
+      console.error('Falha ao sincronizar delete de categoria:', cat.name, e);
+      if (cat.id) await db.categories.update(cat.id, { syncStatus: 'error' });
+    }
+  }
+
   // Filtrar categorias marcadas como excluídas localmente — não sincronizar
   const categoriesToSync = allCategories.filter((c) =>
     c.syncStatus !== "synced" && c.isDeleted !== true
@@ -112,13 +147,13 @@ export const syncToCloud = async () => {
       is_deleted: false,
     };
 
-    let result: any;
+    let result: SupabaseResult<{ id: number }>;
     if (remoteId) {
       // NOTA: categories.updated_at foi removida na migration 20260317213609_remote_schema.sql
       // O campo foi restaurado na migration 20260326000003.
       // Se a migration ainda não foi aplicada, remoteData.updated_at será undefined
       // e a comparação retorna NaN > NaN = false (sempre atualiza, sem loop)
-      const { data: remoteData } = await withRetry<any>(() =>
+      const { data: remoteData } = await withRetry<SupabaseResult<SupabaseTimestamp>>(() =>
         supabase
           .from("categories")
           .select("updated_at")
@@ -261,9 +296,9 @@ export const syncToCloud = async () => {
       ...legacyColumns,
     };
 
-    let result: any;
+    let result: SupabaseResult<{ id: number }>;
     if (remoteId) {
-      const { data: remoteData } = await withRetry<any>(() =>
+      const { data: remoteData } = await withRetry<SupabaseResult<SupabaseTimestamp>>(() =>
         supabase.from("prompts").select("updated_at").eq("id", remoteId)
           .single()
       );
@@ -367,19 +402,23 @@ export const downloadFromCloud = async () => {
           remotePromptIds.length ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : [],
         ]);
 
-      const categoriesByRemoteId = new Map(
-        allLocalCategories.filter((c: any) => c.remoteId).map(
-          (c: any) => [c.remoteId, c]
-        ),
+      const categoriesByRemoteId = new Map<number, Category>(
+        allLocalCategories
+          .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
+          .map((c) => [c.remoteId, c]),
       );
-      const menusByRemoteId = new Map(
-        allLocalMenus.filter((m: any) => m.remoteId).map((m: any) => [m.remoteId, m]),
+      const menusByRemoteId = new Map<number, ContextMenu>(
+        allLocalMenus
+          .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
+          .map((m) => [m.remoteId, m]),
       );
       const menusByMenuId = new Map(
         allLocalMenusBySlug.map((m) => [m.menuId, m]),
       );
-      const promptsByRemoteId = new Map(
-        allLocalPrompts.filter((p: any) => p.remoteId).map((p: any) => [p.remoteId, p]),
+      const promptsByRemoteId = new Map<number, Prompt>(
+        allLocalPrompts
+          .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
+          .map((p) => [p.remoteId, p]),
       );
 
       // --- A. Sincronizar Categorias ---

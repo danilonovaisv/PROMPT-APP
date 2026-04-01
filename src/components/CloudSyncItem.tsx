@@ -17,6 +17,7 @@ export default function CloudSyncItem() {
     const [hasUpdates, setHasUpdates] = useState(false);
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot' | 'change_password'>('login');
     const { showToast } = useToast();
     const configHintId = 'cloud-sync-config-hint';
 
@@ -108,6 +109,7 @@ export default function CloudSyncItem() {
     };
 
     const handleLogin = () => {
+        setAuthModalMode('login');
         setIsAuthModalOpen(true);
     };
 
@@ -116,19 +118,9 @@ export default function CloudSyncItem() {
         showToast('Logout realizado');
     };
 
-    const handleChangePassword = async () => {
-        const newPassword = window.prompt('Digite a nova senha (mínimo 6 caracteres):');
-        if (!newPassword || newPassword.length < 6) {
-            if (newPassword !== null) showToast('A senha deve ter pelo menos 6 caracteres', 'error');
-            return;
-        }
-
-        const { error } = await supabase.auth.updateUser({ password: newPassword });
-        if (error) {
-            showToast('Erro ao atualizar senha: ' + error.message, 'error');
-        } else {
-            showToast('Senha atualizada com sucesso!', 'success');
-        }
+    const handleChangePassword = () => {
+        setAuthModalMode('change_password');
+        setIsAuthModalOpen(true);
     };
 
     const handleSmartSync = async () => {
@@ -172,15 +164,19 @@ export default function CloudSyncItem() {
                     <span>Nuvem Desconectada</span>
                     <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
                 </button>
-                <AuthModal
-                    isOpen={isAuthModalOpen}
-                    onClose={() => setIsAuthModalOpen(false)}
-                />
+                {isAuthModalOpen && (
+                    <AuthModal
+                        isOpen={isAuthModalOpen}
+                        onClose={() => setIsAuthModalOpen(false)}
+                        initialMode={authModalMode}
+                    />
+                )}
             </>
         );
     }
 
     return (
+        <>
         <div className="cloud-sync-box">
             <div className="cloud-sync-box__user">
                 <User size={14} />
@@ -227,5 +223,13 @@ export default function CloudSyncItem() {
                 </button>
             </div>
         </div>
+        {isAuthModalOpen && (
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialMode={authModalMode}
+            />
+        )}
+        </>
     );
 }
