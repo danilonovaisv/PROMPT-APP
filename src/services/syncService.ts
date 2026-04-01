@@ -411,20 +411,20 @@ export const downloadFromCloud = async () => {
       const uniqueLocalMenus = Array.from(new Map(allLocalMenus.map((m) => [m.id, m])).values());
 
       const categoriesByRemoteId = new Map<number, Category>(
-        localCategories
+        (allLocalCategories as Category[])
           .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
           .map((c) => [c.remoteId as number, c]),
       );
       const menusByRemoteId = new Map<number, ContextMenu>(
-        uniqueLocalMenus
+        (allLocalMenus as ContextMenu[])
           .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
           .map((m) => [m.remoteId as number, m]),
       );
       const menusByMenuId = new Map<string, ContextMenu>(
-        uniqueLocalMenus.map((m) => [m.menuId, m]),
+        (allLocalMenus as ContextMenu[]).map((m) => [m.menuId, m]),
       );
       const promptsByRemoteId = new Map<number, Prompt>(
-        localPrompts
+        (allLocalPrompts as Prompt[])
           .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
           .map((p) => [p.remoteId as number, p]),
       );
