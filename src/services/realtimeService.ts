@@ -45,19 +45,16 @@ export async function setupRealtimeListeners() {
   cleanupRealtimeListeners();
 
   if (!isSupabaseConfigured) {
-    console.log("⏭️ Supabase não configurado - realtime desativado");
     return;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    console.log("⏭️ Usuário não autenticado - realtime desativado");
     return;
   }
 
   const userId = session.user.id;
 
-  console.log("📡 Iniciando listeners de realtime...");
 
   // Canal para Categorias
   categoriesChannel = supabase
@@ -113,7 +110,6 @@ export async function setupRealtimeListeners() {
     )
     .subscribe();
 
-  console.log("✅ Listeners de realtime ativados");
 }
 
 interface RealtimeCategoryPayload {
@@ -154,7 +150,6 @@ async function handleCategoryChange(payload: {
             .first();
           if (toSoftDelete) {
             await db.categories.delete(toSoftDelete.id!);
-            console.log(`🗑️ Categoria soft-deleted localmente: ${toSoftDelete.name}`);
           }
           break;
         }
@@ -177,11 +172,9 @@ async function handleCategoryChange(payload: {
         if (existingLocal) {
           // Atualizar existente
           await db.categories.update(existingLocal.id!, categoryData);
-          console.log(`🔄 Categoria atualizada localmente: ${rd.name}`);
         } else {
           // Criar novo
           await db.categories.add(categoryData as Category);
-          console.log(`➕ Categoria adicionada localmente: ${rd.name}`);
         }
         break;
       }
@@ -194,7 +187,6 @@ async function handleCategoryChange(payload: {
 
         if (toDelete) {
           await db.categories.delete(toDelete.id!);
-          console.log(`🗑️ Categoria removida localmente: ${toDelete.name}`);
         }
         break;
       }
@@ -258,7 +250,6 @@ async function handlePromptChange(payload: {
             .first();
           if (toSoftDelete) {
             await db.prompts.delete(toSoftDelete.id!);
-            console.log(`🗑️ Prompt soft-deleted localmente: ${toSoftDelete.title}`);
           }
           break;
         }
@@ -337,7 +328,6 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.update(existingLocal.id!, promptData);
-          console.log(`🔄 Prompt atualizado localmente: ${rd.title}`);
         } else {
           if (
             !promptData.compiledPayload && promptData.selectionPayload &&
@@ -349,7 +339,6 @@ async function handlePromptChange(payload: {
             );
           }
           await db.prompts.add(promptData as Prompt);
-          console.log(`➕ Prompt adicionado localmente: ${rd.title}`);
         }
         break;
       }
@@ -362,7 +351,6 @@ async function handlePromptChange(payload: {
 
         if (toDelete) {
           await db.prompts.delete(toDelete.id!);
-          console.log(`🗑️ Prompt removido localmente: ${toDelete.title}`);
         }
         break;
       }
@@ -413,7 +401,6 @@ async function handleMenuChange(payload: {
             .first();
           if (toSoftDelete) {
             await db.contextMenus.delete(toSoftDelete.id!);
-            console.log(`🗑️ Menu soft-deleted localmente: ${toSoftDelete.menuName}`);
           }
           break;
         }
@@ -437,10 +424,8 @@ async function handleMenuChange(payload: {
 
         if (existingLocal) {
           await db.contextMenus.update(existingLocal.id!, menuData);
-          console.log(`🔄 Menu atualizado localmente: ${rd.menu_name}`);
         } else {
           await db.contextMenus.add(menuData as ContextMenu);
-          console.log(`➕ Menu adicionado localmente: ${rd.menu_name}`);
         }
         break;
       }
@@ -453,7 +438,6 @@ async function handleMenuChange(payload: {
 
         if (toDelete) {
           await db.contextMenus.delete(toDelete.id!);
-          console.log(`🗑️ Menu removido localmente: ${toDelete.menuName}`);
         }
         break;
       }
@@ -482,7 +466,6 @@ export function cleanupRealtimeListeners() {
     menusChannel = null;
   }
 
-  console.log("🧹 Listeners de realtime removidos");
 }
 
 /**
@@ -491,5 +474,4 @@ export function cleanupRealtimeListeners() {
 export async function reconnectRealtime() {
   cleanupRealtimeListeners();
   await setupRealtimeListeners();
-  console.log("🔄 Realtime reconectado");
 }
