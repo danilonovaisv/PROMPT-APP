@@ -176,6 +176,7 @@ export default function CloudSyncItem() {
     }
 
     return (
+        <>
         <div className="cloud-sync-box">
             {isAuthModalOpen && (
                 <AuthModal
@@ -229,5 +230,13 @@ export default function CloudSyncItem() {
                 </button>
             </div>
         </div>
+        {isAuthModalOpen && (
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                initialMode={authModalMode}
+            />
+        )}
+        </>
     );
 }
