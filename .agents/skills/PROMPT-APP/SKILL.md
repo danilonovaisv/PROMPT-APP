@@ -5,185 +5,161 @@
 
 ## Overview
 
-This skill teaches you the core development patterns, coding conventions, and operational workflows of the PROMPT-APP codebase. PROMPT-APP is a Python project (with TypeScript/JS frontend components) focused on prompt management, real-time data synchronization, and cloud deployment. The repository emphasizes clear commit practices, consistent file organization, and robust workflows for database migrations, soft-delete logic, dependency management, real-time sync, and cloud configuration.
+This skill provides a comprehensive guide to the development patterns, coding conventions, and core workflows used in the PROMPT-APP Python codebase. It covers file organization, commit practices, code style, and the main processes for integrating ECC bundles, updating dependencies, optimizing cloud sync services, and maintaining the test suite. This guide is intended for contributors and maintainers seeking consistency and efficiency in PROMPT-APP development.
 
 ## Coding Conventions
 
-- **File Naming:**  
-  Use PascalCase for files, e.g., `CategoryManagerPage.tsx`, `EditorPage.tsx`.
+- **Language:** Python
+- **Framework:** None detected
 
-- **Import Style:**  
-  Use relative imports for internal modules.
+### File Naming
+
+- Use **PascalCase** for file names.
+  - Example: `PromptEngine.py`, `CloudSyncService.py`
+
+### Import Style
+
+- Use **relative imports** within the package.
   ```python
-  from .models import Category
+  from .utils import DatabaseManager
+  from ..models import UserProfile
   ```
 
-- **Export Style:**  
-  Use named exports in TypeScript/JavaScript.
-  ```typescript
-  export function syncCategories() { ... }
-  export type Category = { ... }
+### Export Style
+
+- Use **named exports** (explicitly define what is exported in `__all__`).
+  ```python
+  __all__ = ["PromptEngine", "DatabaseManager"]
   ```
 
-- **Commit Patterns:**  
-  - Prefixes: `feat`, `chore`, `fix`, `build`
-  - Example:  
-    ```
-    feat: add soft-delete support for categories
-    fix: correct syncService bug on deleted items
-    ```
+### Commit Patterns
+
+- **Prefixes:** `feat`, `chore`, `fix`, `build`, `perf`
+- **Message Example:**
+  ```
+  feat: add support for multi-agent prompt orchestration
+  fix: resolve memory leak in cloud sync service
+  perf: optimize database query for sync performance
+  ```
 
 ## Workflows
 
-### Database Migration and Application Update
-**Trigger:** When adding/modifying database schema (tables, columns, policies) and updating application code to match.  
-**Command:** `/new-table`
+### ECC Bundle Integration
 
-1. Create or modify a migration SQL file in `supabase/migrations/`.
-2. Update related TypeScript types (e.g., `src/models/types.ts`).
-3. Update relevant service files (e.g., `src/services/syncService.ts`, `src/services/contextMenuSync.ts`, `src/services/supabaseMenus.ts`).
-4. Update UI or page files if needed (e.g., `src/pages/CategoryManagerPage.tsx`, `src/pages/EditorPage.tsx`).
-5. Update `.gitignore` or `docs/PLAN.md` if relevant.
-6. Commit migration and code changes together.
+**Trigger:** When adding or updating an ECC (External Cognitive Component) bundle (e.g., new commands, skills, agent configs) for PROMPT-APP  
+**Command:** `/ecc-bundle`
 
-**Example:**  
-_Adding a new column to the `categories` table:_
-```sql
--- supabase/migrations/20240101_add_category_color.sql
-ALTER TABLE categories ADD COLUMN color VARCHAR(20);
+1. Add or update files in `.claude/commands/` (e.g., `database-migration-and-application-update.md`, `feature-development.md`).
+2. Add or update `.claude/skills/PROMPT-APP/SKILL.md`.
+3. Add or update `.claude/ecc-tools.json`.
+4. Add or update `.claude/identity.json`.
+5. Add or update `.claude/homunculus/instincts/inherited/PROMPT-APP-instincts.yaml`.
+6. Add or update agent configuration files in `.codex/agents/*.toml` and `.codex/AGENTS.md`.
+7. Add or update `.agents/skills/PROMPT-APP/SKILL.md` and `.agents/skills/PROMPT-APP/agents/openai.yaml`.
+8. Commit changes with an appropriate message (e.g., `feat: integrate new ECC bundle for agent X`).
+
+**Example Directory Structure:**
 ```
-```typescript
-// src/models/types.ts
-export type Category = {
-  id: string;
-  name: string;
-  color?: string;
-};
-```
-
----
-
-### Soft-Delete Feature Implementation
-**Trigger:** When adding soft-delete support for a resource and ensuring it is respected across sync, UI, and DB.  
-**Command:** `/add-soft-delete`
-
-1. Add `is_deleted` or `isDeleted` flag to TypeScript types (`src/models/types.ts`).
-2. Update sync logic to handle soft-deleted items (`src/services/syncService.ts` and related files).
-3. Update UI to filter or display soft-deleted items appropriately (`src/pages/CategoryManagerPage.tsx`, `src/pages/EditorPage.tsx`).
-4. Add or update migration to add soft-delete column or related policy (`supabase/migrations/*.sql`).
-5. Update `docs/PLAN.md` or `.max/project-context.json` if needed.
-
-**Example:**  
-```sql
--- supabase/migrations/20240102_add_is_deleted_to_categories.sql
-ALTER TABLE categories ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;
-```
-```typescript
-// src/models/types.ts
-export type Category = {
-  id: string;
-  name: string;
-  isDeleted?: boolean;
-};
-```
-```typescript
-// src/services/syncService.ts
-function filterActiveCategories(categories: Category[]) {
-  return categories.filter(cat => !cat.isDeleted);
-}
+.claude/
+  commands/
+    feature-development.md
+  skills/
+    PROMPT-APP/
+      SKILL.md
+  ecc-tools.json
+  identity.json
+  homunculus/
+    instincts/
+      inherited/
+        PROMPT-APP-instincts.yaml
+.codex/
+  agents/
+    agent1.toml
+  AGENTS.md
+.agents/
+  skills/
+    PROMPT-APP/
+      SKILL.md
+      agents/
+        openai.yaml
 ```
 
 ---
 
-### Dependency and Build Artifact Update
-**Trigger:** When updating dependencies or refreshing build outputs for deployment.  
+### Dependency Update via Dependabot
+
+**Trigger:** When updating project dependencies for security or maintenance, often via automated PRs  
 **Command:** `/update-deps`
 
-1. Update `pnpm-lock.yaml` or `package.json`.
-2. Rebuild frontend assets (`dist/index.html`, `node_modules/.bin/*`, `.netlify/edge-functions-dist/*`, `.netlify/edge-functions-dist/manifest.json`).
-3. Commit lockfile and build artifacts together.
+1. Update `.netlify/plugins/package-lock.json` and/or `pnpm-lock.yaml` as needed.
+2. Review and merge the pull request.
+3. Ensure application builds and tests pass after dependency updates.
 
-**Example:**  
-```bash
-pnpm install some-new-package
-pnpm build
-git add pnpm-lock.yaml dist/index.html .netlify/edge-functions-dist/
-git commit -m "build: update deps and rebuild assets"
+**Example Commit Message:**
+```
+chore: update dependencies via dependabot
 ```
 
 ---
 
-### Realtime or Sync Service Enhancement
-**Trigger:** When fixing or enhancing real-time sync/subscription logic due to schema changes or bugs.  
-**Command:** `/fix-sync`
+### Cloud Sync Service Optimization
 
-1. Update `src/services/realtimeService.ts` or `src/services/syncService.ts`.
-2. Update related migration or diagnostic SQL if needed.
-3. Update UI or types if relevant.
-4. Commit service and migration/diagnostic changes together.
+**Trigger:** When optimizing or fixing cloud synchronization services for performance or bug fixes  
+**Command:** `/optimize-sync`
 
-**Example:**  
-```typescript
-// src/services/realtimeService.ts
-export function subscribeToCategoryChanges() {
-  // ...subscription logic
-}
+1. Edit `src/services/syncService.ts` (and, if needed, `assetManager.ts` or `importService.ts`).
+2. Update related documentation in `.jules/bolt.md` if applicable.
+3. Commit changes with a `perf`, `fix`, or `optimize` prefix.
+4. Merge changes after review.
+
+**Example Commit Message:**
 ```
-```sql
--- supabase/diagnostics/20240103_check_category_sync.sql
-SELECT * FROM categories WHERE updated_at > NOW() - INTERVAL '1 day';
+perf: improve memory usage in syncService
 ```
 
 ---
 
-### Cloud Environment or Config Update
-**Trigger:** When changing cloud environment settings or Codex config for deployment/testing.  
-**Command:** `/update-config`
+### Test Suite Update or Fix
 
-1. Edit `.codex/config.toml` or `.codex/environments/environment.toml`.
-2. Update `.env.example` or `scripts/setup-cloud-env.sh` if needed.
-3. Commit config and environment changes together.
+**Trigger:** When adding new tests or fixing broken tests due to environment or dependency changes  
+**Command:** `/test-fix`
 
-**Example:**  
-```toml
-# .codex/config.toml
-[project]
-name = "prompt-app"
-region = "us-east-1"
+1. Edit or add files in `tests/unit/` (e.g., `exportJson.test.ts`, `autoSync.test.ts`).
+2. Update `tests/setup.ts` or related test configuration if necessary.
+3. Update `pnpm-lock.yaml` or patch files if related to test environment setup.
+4. Commit and merge changes.
+
+**Example Commit Message:**
 ```
-```bash
-cp .env.example .env
-./scripts/setup-cloud-env.sh
+fix: update unit tests for new sync logic
 ```
-
----
 
 ## Testing Patterns
 
-- **Test File Pattern:**  
-  Test files use the `*.test.*` naming convention (e.g., `CategoryManagerPage.test.tsx`).
-- **Framework:**  
-  The specific testing framework is not detected, but standard JS/TS test runners (like Jest or Vitest) are likely.
+- **Test File Pattern:** `*.test.*` (e.g., `exportJson.test.ts`)
+- **Testing Framework:** Unknown (ensure to check project documentation or `requirements.txt` for specifics)
+- **Test Location:** `tests/unit/`
+- **Setup Files:** `tests/setup.ts` (for test environment configuration)
+- **Best Practice:** Keep tests close to the code they cover and update them with each feature or bug fix.
 
-**Example:**  
-```typescript
-// CategoryManagerPage.test.tsx
-import { render } from '@testing-library/react';
-import CategoryManagerPage from './CategoryManagerPage';
+**Example Test File:**
+```python
+# tests/unit/PromptEngine.test.py
 
-test('renders category manager', () => {
-  render(<CategoryManagerPage />);
-  // assertions...
-});
+from ..PromptEngine import PromptEngine
+
+def test_prompt_generation():
+    engine = PromptEngine()
+    result = engine.generate("Hello, world!")
+    assert result is not None
 ```
 
 ## Commands
 
-| Command         | Purpose                                                      |
-|-----------------|--------------------------------------------------------------|
-| /new-table      | Start a database migration and update application code        |
-| /add-soft-delete| Implement or update soft-delete logic for a resource         |
-| /update-deps    | Update dependencies and rebuild build artifacts              |
-| /fix-sync       | Enhance or fix real-time sync/subscription logic             |
-| /update-config  | Update cloud environment or Codex configuration              |
+| Command         | Purpose                                                        |
+|-----------------|----------------------------------------------------------------|
+| /ecc-bundle     | Integrate or update an ECC bundle for PROMPT-APP               |
+| /update-deps    | Update project dependencies (e.g., via Dependabot)             |
+| /optimize-sync  | Optimize or fix cloud synchronization services                 |
+| /test-fix       | Add or fix unit tests and resolve test environment issues      |
 ```
