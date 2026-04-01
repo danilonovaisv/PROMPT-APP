@@ -7,7 +7,7 @@ import { X, Mail, Lock, LogIn, UserPlus, KeyRound } from 'lucide-react';
 interface AuthModalProps {
     isOpen: boolean;
     onClose: () => void;
-    initialMode?: 'login' | 'register' | 'forgot' | 'change_password';
+    initialMode?: 'login' | 'register' | 'forgot' | 'update-password';
 }
 
 function getAuthErrorMessage(error: unknown): string {
@@ -38,7 +38,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     const { showToast } = useToast();
     const modalRef = useRef<HTMLDivElement>(null);
     const closeButtonRef = useRef<HTMLButtonElement>(null);
-    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'change_password'>(initialMode);
+    const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'update-password'>(initialMode);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -86,11 +86,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 if (error) throw error;
                 showToast('Link de recuperação enviado para o email!', 'success');
                 onClose();
-            } else if (mode === 'change_password') {
+            } else if (mode === 'update-password') {
                 const { error } = await supabase.auth.updateUser({ password });
                 if (error) throw error;
                 showToast('Senha atualizada com sucesso!', 'success');
-                setPassword('');
                 onClose();
             }
         } catch (err: unknown) {
@@ -114,7 +113,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             >
                 <div className="modal__header">
                     <h2 id="auth-modal-title">
-                        {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : mode === 'change_password' ? 'Alterar Senha' : 'Recuperar Senha'}
+                        {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : mode === 'update-password' ? 'Atualizar Senha' : 'Recuperar Senha'}
                     </h2>
                     <button
                         ref={closeButtonRef}
@@ -128,7 +127,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                 <div className="modal__body">
                     <form onSubmit={handleSubmit} className="form-section">
-                        {mode !== 'change_password' && (
+                        {mode !== 'update-password' && (
                             <div className="form-group">
                                 <label>Email</label>
                                 <div className="input-with-icon">
@@ -156,7 +155,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Sua senha"
+                                        placeholder={mode === 'update-password' ? 'Nova senha' : 'Sua senha'}
                                         required
                                         autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                                         minLength={6}
@@ -176,29 +175,31 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                                 <><LogIn size={18} /> Entrar</>
                             ) : mode === 'register' ? (
                                 <><UserPlus size={18} /> Cadastrar</>
-                            ) : mode === 'change_password' ? (
-                                <><KeyRound size={18} /> Alterar Senha</>
+                            ) : mode === 'update-password' ? (
+                                <><KeyRound size={18} /> Atualizar senha</>
                             ) : (
                                 <><KeyRound size={18} /> Enviar link de recuperação</>
                             )}
                         </button>
 
-                        <div className="flex gap-2 mt-4 justify-center text-sm" style={{flexDirection: 'column', alignItems: 'center'}}>
-                            {mode === 'change_password' ? null : mode === 'login' ? (
-                                <>
-                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('register')}>
-                                        Ainda não tem conta? Cadastre-se
+                        {mode !== 'update-password' && (
+                            <div className="flex gap-2 mt-4 justify-center text-sm" style={{flexDirection: 'column', alignItems: 'center'}}>
+                                {mode === 'login' ? (
+                                    <>
+                                        <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('register')}>
+                                            Ainda não tem conta? Cadastre-se
+                                        </button>
+                                        <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('forgot')}>
+                                            Esqueceu a senha?
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('login')}>
+                                        Já tem uma conta? Faça login
                                     </button>
-                                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('forgot')}>
-                                        Esqueceu a senha?
-                                    </button>
-                                </>
-                            ) : (
-                                <button type="button" className="btn btn--ghost btn--sm" onClick={() => setMode('login')}>
-                                    Já tem uma conta? Faça login
-                                </button>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>

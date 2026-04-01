@@ -1,0 +1,610 @@
+# Instincts generated from https://github.com/danilonovaisv/PROMPT-APP
+# Generated: 2026-04-01T05:02:19.462Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: PROMPT-APP-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Commit Length
+
+## Action
+
+Write moderate-length commit messages (~75 characters)
+
+## Evidence
+
+- Average commit message length: 75 chars
+- Based on 200 commits
+
+---
+id: PROMPT-APP-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Naming Files
+
+## Action
+
+Use PascalCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: PascalCase
+
+---
+id: PROMPT-APP-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: PROMPT-APP-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: PROMPT-APP-test-separate
+trigger: "when writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Test Separate
+
+## Action
+
+Place tests in the tests/ or __tests__/ directory, mirroring src structure
+
+## Evidence
+
+- Separate test directory pattern detected
+- Tests live in dedicated test folders
+
+---
+id: PROMPT-APP-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~7x per month
+- Files: src/services/*, src/*, src/components/*
+
+---
+id: PROMPT-APP-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/**/*
+
+---
+id: PROMPT-APP-workflow-database-schema-migration
+trigger: "when doing database schema migration"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Database Schema Migration
+
+## Action
+
+Follow the database-schema-migration workflow:
+1. Create or update a migration SQL file in supabase/migrations/
+2. Update related model/types files (e.g., src/models/types.ts)
+3. Update backend service files that interact with the changed table (e.g., src/services/syncService.ts, src/services/supabaseMenus.ts)
+4. Optionally update .max/project-context.json for project context
+5. Update UI or page files if the schema change affects the frontend
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: supabase/migrations/*.sql, src/models/types.ts, src/services/*.ts
+
+---
+id: PROMPT-APP-workflow-feature-implementation-with-ui-and-service-update
+trigger: "when doing feature implementation with ui and service update"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Feature Implementation With Ui And Service Update
+
+## Action
+
+Follow the feature-implementation-with-ui-and-service-update workflow:
+1. Update or create UI page/component files (e.g., src/pages/CategoryManagerPage.tsx, src/pages/EditorPage.tsx)
+2. Update or create service files (e.g., src/services/syncService.ts, src/services/contextMenuSync.ts)
+3. Update types or models if new data is introduced (e.g., src/models/types.ts)
+4. Update migration files if persistent data is involved
+5. Optionally update documentation (e.g., docs/PLAN.md)
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/pages/*.tsx, src/services/*.ts, src/models/types.ts
+
+---
+id: PROMPT-APP-workflow-build-and-deploy-assets-update
+trigger: "when doing build and deploy assets update"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Build And Deploy Assets Update
+
+## Action
+
+Follow the build-and-deploy-assets-update workflow:
+1. Regenerate frontend assets (dist/index.html, node_modules/.bin/*)
+2. Update Netlify edge function bundles (.netlify/edge-functions-dist/*, .netlify/edge-functions-dist/manifest.json)
+3. Update dependency lockfiles (pnpm-lock.yaml, package-lock.json)
+4. Commit all updated build and deployment files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: dist/index.html, node_modules/.bin/*, .netlify/edge-functions-dist/*
+
+---
+id: PROMPT-APP-workflow-dependency-update
+trigger: "when doing dependency update"
+confidence: 0.65
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Dependency Update
+
+## Action
+
+Follow the dependency-update workflow:
+1. Update pnpm-lock.yaml and/or package-lock.json
+2. Optionally update package.json
+3. Regenerate build assets if necessary
+4. Commit updated lockfiles and related files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~3x per month
+- Files: pnpm-lock.yaml, package.json, .netlify/plugins/package-lock.json
+
+---
+id: PROMPT-APP-workflow-realtime-or-sync-service-adjustment
+trigger: "when doing realtime or sync service adjustment"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/danilonovaisv/PROMPT-APP
+---
+
+# PROMPT APP Workflow Realtime Or Sync Service Adjustment
+
+## Action
+
+Follow the realtime-or-sync-service-adjustment workflow:
+1. Update src/services/realtimeService.ts and/or src/services/syncService.ts
+2. Optionally update diagnostics SQL or documentation (supabase/diagnostics/*.sql, docs/audits/*.md)
+3. Update related UI files if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: src/services/realtimeService.ts, src/services/syncService.ts, supabase/diagnostics/*.sql
+
+---
+id: prompt-app-instinct-file-naming
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct File Naming
+
+## Action
+
+Name the file using PascalCase (e.g., CategoryManagerPage.tsx)
+
+## Evidence
+
+- Naming conventions specified in analysis
+- Pattern in src/pages/CategoryManagerPage.tsx
+
+---
+id: prompt-app-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Naming conventions specified in analysis
+
+---
+id: prompt-app-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Naming conventions specified in analysis
+
+---
+id: prompt-app-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Naming conventions specified in analysis
+
+---
+id: prompt-app-instinct-import-style
+trigger: "When importing modules"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Import Style
+
+## Action
+
+Use relative import paths
+
+## Evidence
+
+- Import style specified in analysis
+
+---
+id: prompt-app-instinct-export-style
+trigger: "When exporting modules or functions"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Export style specified in analysis
+
+---
+id: prompt-app-instinct-try-catch-error-handling
+trigger: "When handling errors in code"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Try Catch Error Handling
+
+## Action
+
+Use try-catch blocks for error handling
+
+## Evidence
+
+- Error handling style specified in analysis
+
+---
+id: prompt-app-instinct-test-location
+trigger: "When adding tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Test Location
+
+## Action
+
+Place test files in a separate test directory
+
+## Evidence
+
+- Architecture: testLocation is 'separate'
+
+---
+id: prompt-app-instinct-test-commit-sequence
+trigger: "When implementing a new feature or refactoring"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Test Commit Sequence
+
+## Action
+
+Add or update tests before or after the main implementation, ensuring tests pass
+
+## Evidence
+
+- Workflows: feature-development and refactoring commit sequences include test steps
+
+---
+id: prompt-app-instinct-git-commit-prefix
+trigger: "When writing a commit message"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Git Commit Prefix
+
+## Action
+
+Start the commit message with a conventional prefix (feat, fix, chore, build, docs, refactor)
+
+## Evidence
+
+- Pattern in commit examples: 'fix: ...', 'feat: ...', 'chore: ...', 'build: ...', 'docs: ...', 'refactor: ...'
+
+---
+id: prompt-app-instinct-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 75 characters on average
+
+## Evidence
+
+- Average commit length specified as 75
+- Pattern in commit examples
+
+---
+id: prompt-app-instinct-git-merge-pr
+trigger: "When merging a pull request"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Git Merge Pr
+
+## Action
+
+Use the format 'Merge pull request #[number] from [branch]' in the commit message
+
+## Evidence
+
+- Pattern in commit examples: 'Merge pull request #55 from ...'
+
+---
+id: prompt-app-instinct-database-schema-migration
+trigger: "When adding, removing, or changing a table/column in the database"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Database Schema Migration
+
+## Action
+
+Create or update a migration SQL file in supabase/migrations/, update related model/types files, update backend services, optionally update project context, and update UI if needed
+
+## Evidence
+
+- Workflow: database-schema-migration
+- Commit and file patterns in workflow example
+
+---
+id: prompt-app-instinct-feature-implementation-ui-service
+trigger: "When adding a new feature or major capability"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Feature Implementation Ui Service
+
+## Action
+
+Update or create UI page/component files, update or create service files, update types/models if needed, update migration files if persistent data is involved, optionally update documentation
+
+## Evidence
+
+- Workflow: feature-implementation-with-ui-and-service-update
+- Commit and file patterns in workflow example
+
+---
+id: prompt-app-instinct-build-deploy-assets
+trigger: "When building the project for deployment or after significant code/config changes"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Build Deploy Assets
+
+## Action
+
+Regenerate frontend assets, update Netlify edge function bundles, update dependency lockfiles, and commit all updated build and deployment files
+
+## Evidence
+
+- Workflow: build-and-deploy-assets-update
+- Commit and file patterns in workflow example
+
+---
+id: prompt-app-instinct-dependency-update
+trigger: "When updating project dependencies for security, bugfixes, or new features"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Dependency Update
+
+## Action
+
+Update pnpm-lock.yaml and/or package-lock.json, optionally update package.json, regenerate build assets if necessary, and commit updated lockfiles and related files
+
+## Evidence
+
+- Workflow: dependency-update
+- Commit and file patterns in workflow example
+
+---
+id: prompt-app-instinct-realtime-sync-fix
+trigger: "When fixing or enhancing realtime subscriptions or sync logic"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: danilonovaisv/PROMPT-APP
+---
+
+# Prompt App Instinct Realtime Sync Fix
+
+## Action
+
+Update src/services/realtimeService.ts and/or src/services/syncService.ts, optionally update diagnostics SQL or documentation, and update related UI files if needed
+
+## Evidence
+
+- Workflow: realtime-or-sync-service-adjustment
+- Commit and file patterns in workflow example
+
