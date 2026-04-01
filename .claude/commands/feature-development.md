@@ -14,8 +14,8 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `src/services/*`
-- `src/*`
+- `src/pages/*`
+- `tests/*`
 - `src/components/*`
 - `**/*.test.*`
 
