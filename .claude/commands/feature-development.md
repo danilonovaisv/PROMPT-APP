@@ -14,9 +14,9 @@ Standard feature implementation workflow
 
 ## Common Files
 
-- `src/pages/*`
-- `tests/*`
 - `src/components/*`
+- `src/pages/*`
+- `tests/unit/*`
 - `**/*.test.*`
 
 ## Suggested Sequence

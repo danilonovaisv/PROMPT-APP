@@ -5,161 +5,161 @@
 
 ## Overview
 
-This skill teaches the core development patterns, workflows, and coding conventions used in the PROMPT-APP repository. PROMPT-APP is a Python-based application (no framework detected) with a strong focus on modularity, service optimization, robust testing, and maintainable UI components. The repository uses a variety of workflows for service optimization, unit testing, dependency management, UI enhancements, and agent/ECC bundle configuration.
+This skill provides a comprehensive guide to the development patterns, coding conventions, and core workflows used in the PROMPT-APP Python codebase. It covers file organization, commit practices, code style, and the main processes for integrating ECC bundles, updating dependencies, optimizing cloud sync services, and maintaining the test suite. This guide is intended for contributors and maintainers seeking consistency and efficiency in PROMPT-APP development.
 
 ## Coding Conventions
 
-- **File Naming:**  
-  Use PascalCase for file names.  
-  _Example:_  
-  ```
-  CategoryPage.tsx
-  AuthModal.tsx
-  CloudSyncItem.tsx
-  ```
+- **Language:** Python
+- **Framework:** None detected
 
-- **Import Style:**  
-  Use relative imports.  
-  _Example:_  
+### File Naming
+
+- Use **PascalCase** for file names.
+  - Example: `PromptEngine.py`, `CloudSyncService.py`
+
+### Import Style
+
+- Use **relative imports** within the package.
   ```python
-  from .utils import parse_config
-  from ..services.syncService import SyncService
+  from .utils import DatabaseManager
+  from ..models import UserProfile
   ```
 
-- **Export Style:**  
-  Use named exports.  
-  _Example:_  
+### Export Style
+
+- Use **named exports** (explicitly define what is exported in `__all__`).
   ```python
-  def export_json(data):
-      ...
+  __all__ = ["PromptEngine", "DatabaseManager"]
   ```
 
-- **Commit Messages:**  
-  Use descriptive prefixes such as `feat`, `chore`, `fix`, `build`, `perf`.  
-  _Example:_  
+### Commit Patterns
+
+- **Prefixes:** `feat`, `chore`, `fix`, `build`, `perf`
+- **Message Example:**
   ```
-  feat: add batch processing to syncService
-  fix: resolve n+1 query issue in importService
+  feat: add support for multi-agent prompt orchestration
+  fix: resolve memory leak in cloud sync service
+  perf: optimize database query for sync performance
   ```
 
 ## Workflows
 
-### Service Optimization Workflow
-**Trigger:** When you want to optimize performance or memory usage of service modules (e.g., database queries, memory leaks, n+1 queries).  
-**Command:** `/optimize-service`
+### ECC Bundle Integration
 
-1. Edit one or more files in `src/services/` (commonly `syncService.ts`, `importService.ts`, or `realtimeService.ts`).
-2. Update related documentation in `.jules/bolt.md` if applicable.
-3. Commit with a message referencing optimization (e.g., "Optimize", "Batch", "Fix memory usage").
-4. Open a pull request for review.
+**Trigger:** When adding or updating an ECC (External Cognitive Component) bundle (e.g., new commands, skills, agent configs) for PROMPT-APP  
+**Command:** `/ecc-bundle`
 
-_Example commit message:_  
+1. Add or update files in `.claude/commands/` (e.g., `database-migration-and-application-update.md`, `feature-development.md`).
+2. Add or update `.claude/skills/PROMPT-APP/SKILL.md`.
+3. Add or update `.claude/ecc-tools.json`.
+4. Add or update `.claude/identity.json`.
+5. Add or update `.claude/homunculus/instincts/inherited/PROMPT-APP-instincts.yaml`.
+6. Add or update agent configuration files in `.codex/agents/*.toml` and `.codex/AGENTS.md`.
+7. Add or update `.agents/skills/PROMPT-APP/SKILL.md` and `.agents/skills/PROMPT-APP/agents/openai.yaml`.
+8. Commit changes with an appropriate message (e.g., `feat: integrate new ECC bundle for agent X`).
+
+**Example Directory Structure:**
 ```
-perf: batch database writes in syncService to reduce load
+.claude/
+  commands/
+    feature-development.md
+  skills/
+    PROMPT-APP/
+      SKILL.md
+  ecc-tools.json
+  identity.json
+  homunculus/
+    instincts/
+      inherited/
+        PROMPT-APP-instincts.yaml
+.codex/
+  agents/
+    agent1.toml
+  AGENTS.md
+.agents/
+  skills/
+    PROMPT-APP/
+      SKILL.md
+      agents/
+        openai.yaml
 ```
 
 ---
 
-### Unit Test Addition or Fix Workflow
-**Trigger:** When you want to add new unit tests or fix existing ones, especially for new features or CI issues.  
-**Command:** `/add-unit-test`
+### Dependency Update via Dependabot
 
-1. Edit or add files in `tests/unit/` (e.g., `exportJson.test.ts`, `autoSync.test.ts`).
-2. Edit `tests/setup.ts` for environment setup or fixes.
-3. Update `package.json` or `pnpm-lock.yaml` if dependencies are involved.
-4. Commit with a message referencing test addition or fix.
-5. Open a pull request.
-
-_Example test file:_  
-```python
-# tests/unit/exportJson.test.ts
-
-def test_export_json_valid_data():
-    result = export_json({"foo": "bar"})
-    assert result == '{"foo": "bar"}'
-```
-
----
-
-### Dependency Update Workflow
-**Trigger:** When you or an automated tool (like dependabot) want to update npm/yarn dependencies.  
+**Trigger:** When updating project dependencies for security or maintenance, often via automated PRs  
 **Command:** `/update-deps`
 
-1. Update `.netlify/plugins/package-lock.json` and/or `pnpm-lock.yaml`.
-2. Optionally update `package.json`.
-3. Commit with a message referencing dependency update or dependabot.
-4. Open a pull request.
+1. Update `.netlify/plugins/package-lock.json` and/or `pnpm-lock.yaml` as needed.
+2. Review and merge the pull request.
+3. Ensure application builds and tests pass after dependency updates.
 
-_Example commit message:_  
+**Example Commit Message:**
 ```
 chore: update dependencies via dependabot
 ```
 
 ---
 
-### UI Component or Page Fix Workflow
-**Trigger:** When you want to fix a UI bug, improve accessibility, or add a small feature to a component or page.  
-**Command:** `/fix-ui`
+### Cloud Sync Service Optimization
 
-1. Edit files in `src/components/` or `src/pages/` (e.g., `Layout.tsx`, `CategoryPage.tsx`).
-2. Optionally update related tests or documentation.
-3. Commit with a message referencing UI fix, a11y, or enhancement.
-4. Open a pull request.
+**Trigger:** When optimizing or fixing cloud synchronization services for performance or bug fixes  
+**Command:** `/optimize-sync`
 
-_Example commit message:_  
+1. Edit `src/services/syncService.ts` (and, if needed, `assetManager.ts` or `importService.ts`).
+2. Update related documentation in `.jules/bolt.md` if applicable.
+3. Commit changes with a `perf`, `fix`, or `optimize` prefix.
+4. Merge changes after review.
+
+**Example Commit Message:**
 ```
-fix: improve keyboard navigation in AuthModal for a11y
+perf: improve memory usage in syncService
 ```
 
 ---
 
-### ECC Bundle or Agent Config Workflow
-**Trigger:** When you want to add or update agent skills, ECC tools, or related configuration for PROMPT-APP.  
-**Command:** `/update-ecc-bundle`
+### Test Suite Update or Fix
 
-1. Edit or add files in `.agents/skills/PROMPT-APP/`, `.claude/`, or `.codex/` directories (e.g., `SKILL.md`, `openai.yaml`, `ecc-tools.json`).
-2. Commit with a message referencing ECC bundle or agent config.
-3. Open a pull request.
+**Trigger:** When adding new tests or fixing broken tests due to environment or dependency changes  
+**Command:** `/test-fix`
 
-_Example commit message:_  
+1. Edit or add files in `tests/unit/` (e.g., `exportJson.test.ts`, `autoSync.test.ts`).
+2. Update `tests/setup.ts` or related test configuration if necessary.
+3. Update `pnpm-lock.yaml` or patch files if related to test environment setup.
+4. Commit and merge changes.
+
+**Example Commit Message:**
 ```
-chore: update ECC tools and add new agent config for prompt optimization
+fix: update unit tests for new sync logic
 ```
 
 ## Testing Patterns
 
-- **Test File Naming:**  
-  Test files use the `*.test.*` pattern and are located under `tests/unit/`.
-  _Example:_  
-  ```
-  tests/unit/backupManager.test.ts
-  tests/unit/contextMenuSync.test.ts
-  ```
+- **Test File Pattern:** `*.test.*` (e.g., `exportJson.test.ts`)
+- **Testing Framework:** Unknown (ensure to check project documentation or `requirements.txt` for specifics)
+- **Test Location:** `tests/unit/`
+- **Setup Files:** `tests/setup.ts` (for test environment configuration)
+- **Best Practice:** Keep tests close to the code they cover and update them with each feature or bug fix.
 
-- **Test Structure:**  
-  Tests are written as functions, typically asserting expected outcomes.
-  _Example:_  
-  ```python
-  def test_auto_sync_triggers_on_save():
-      # setup
-      # action
-      # assert
-      assert sync_triggered is True
-  ```
+**Example Test File:**
+```python
+# tests/unit/PromptEngine.test.py
 
-- **Test Setup:**  
-  Shared setup logic is placed in `tests/setup.ts`.
+from ..PromptEngine import PromptEngine
 
-- **Framework:**  
-  No specific testing framework detected, but structure is compatible with common Python or TypeScript test runners.
+def test_prompt_generation():
+    engine = PromptEngine()
+    result = engine.generate("Hello, world!")
+    assert result is not None
+```
 
 ## Commands
 
-| Command             | Purpose                                                      |
-|---------------------|--------------------------------------------------------------|
-| /optimize-service   | Optimize performance or memory usage in service modules       |
-| /add-unit-test      | Add or fix unit tests                                        |
-| /update-deps        | Update project dependencies                                  |
-| /fix-ui             | Fix or enhance UI components or pages                        |
-| /update-ecc-bundle  | Add or update ECC bundles or agent configuration             |
+| Command         | Purpose                                                        |
+|-----------------|----------------------------------------------------------------|
+| /ecc-bundle     | Integrate or update an ECC bundle for PROMPT-APP               |
+| /update-deps    | Update project dependencies (e.g., via Dependabot)             |
+| /optimize-sync  | Optimize or fix cloud synchronization services                 |
+| /test-fix       | Add or fix unit tests and resolve test environment issues      |
 ```
