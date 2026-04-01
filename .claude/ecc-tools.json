@@ -2,7 +2,7 @@
   "version": "1.3",
   "schemaVersion": "1.0",
   "generatedBy": "ecc-tools",
-  "generatedAt": "2026-04-01T07:01:41.793Z",
+  "generatedAt": "2026-04-01T07:03:39.866Z",
   "repo": "https://github.com/danilonovaisv/PROMPT-APP",
   "profiles": {
     "requested": "full",
@@ -120,8 +120,8 @@
     ".codex/agents/docs-researcher.toml",
     ".claude/homunculus/instincts/inherited/PROMPT-APP-instincts.yaml",
     ".claude/commands/feature-development.md",
-    ".claude/commands/refactoring.md",
-    ".claude/commands/database-migration-and-application-update.md"
+    ".claude/commands/ecc-bundle-integration.md",
+    ".claude/commands/dependency-update-via-dependabot.md"
   ],
   "packageFiles": {
     "runtime-core": [
@@ -138,8 +138,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/refactoring.md",
-      ".claude/commands/database-migration-and-application-update.md"
+      ".claude/commands/ecc-bundle-integration.md",
+      ".claude/commands/dependency-update-via-dependabot.md"
     ]
   },
   "moduleFiles": {
@@ -157,8 +157,8 @@
     ],
     "workflow-pack": [
       ".claude/commands/feature-development.md",
-      ".claude/commands/refactoring.md",
-      ".claude/commands/database-migration-and-application-update.md"
+      ".claude/commands/ecc-bundle-integration.md",
+      ".claude/commands/dependency-update-via-dependabot.md"
     ]
   },
   "files": [
@@ -219,13 +219,13 @@
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/refactoring.md",
-      "description": "Workflow command scaffold for refactoring."
+      "path": ".claude/commands/ecc-bundle-integration.md",
+      "description": "Workflow command scaffold for ecc-bundle-integration."
     },
     {
       "moduleId": "workflow-pack",
-      "path": ".claude/commands/database-migration-and-application-update.md",
-      "description": "Workflow command scaffold for database-migration-and-application-update."
+      "path": ".claude/commands/dependency-update-via-dependabot.md",
+      "description": "Workflow command scaffold for dependency-update-via-dependabot."
     }
   ],
   "workflows": [
@@ -234,12 +234,12 @@
       "path": ".claude/commands/feature-development.md"
     },
     {
-      "command": "refactoring",
-      "path": ".claude/commands/refactoring.md"
+      "command": "ecc-bundle-integration",
+      "path": ".claude/commands/ecc-bundle-integration.md"
     },
     {
-      "command": "database-migration-and-application-update",
-      "path": ".claude/commands/database-migration-and-application-update.md"
+      "command": "dependency-update-via-dependabot",
+      "path": ".claude/commands/dependency-update-via-dependabot.md"
     }
   ],
   "adapters": {
@@ -248,8 +248,8 @@
       "identityPath": ".claude/identity.json",
       "commandPaths": [
         ".claude/commands/feature-development.md",
-        ".claude/commands/refactoring.md",
-        ".claude/commands/database-migration-and-application-update.md"
+        ".claude/commands/ecc-bundle-integration.md",
+        ".claude/commands/dependency-update-via-dependabot.md"
       ]
     },
     "codex": {
