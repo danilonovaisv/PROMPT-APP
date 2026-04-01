@@ -339,18 +339,34 @@ export async function importFromJsonText(
       }
 
       // ⚡ Bolt Optimization:
-      // Prevent N+1 queries by fetching all categories into memory once,
-      // avoiding a Dexie .where().equals().first() call for every prompt.
-      const allCategories = await db.categories.toArray();
-      const categoryMap = new Map(allCategories.map(c => [c.name, c.id!]));
+      // Pre-fetch categories used in this bulk import to eliminate N+1 query problem.
+      // Instead of querying `db.categories.where('name').equals(item.category).first()` in a loop,
+      // we do a single batch query using `.anyOf()` and cache the category IDs in a Map.
+      const categoryNames = Array.from(
+        new Set(
+          parsed.prompts
+            .map((item) => item.category)
+            .filter((cat): cat is string => typeof cat === 'string' && cat.trim() !== '')
+        )
+      );
+
+      const categoryCache = new Map<string, number>();
+      if (categoryNames.length > 0) {
+        const existingCategories = await db.categories.where('name').anyOf(categoryNames).toArray();
+        for (const cat of existingCategories) {
+          if (cat.id) {
+            categoryCache.set(cat.name, cat.id);
+          }
+        }
+      }
 
       for (const item of parsed.prompts) {
         let categoryId = importCategoryId;
 
         if (item.category) {
-          const existingCategoryId = categoryMap.get(item.category);
-          if (existingCategoryId) {
-            categoryId = existingCategoryId;
+          const cachedId = categoryCache.get(item.category);
+          if (cachedId) {
+            categoryId = cachedId;
           }
         }
 
