@@ -17,7 +17,7 @@ export default function CloudSyncItem() {
     const [hasUpdates, setHasUpdates] = useState(false);
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-    const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'forgot' | 'change_password'>('login');
+    const [authModalMode, setAuthModalMode] = useState<'login' | 'update-password'>('login');
     const { showToast } = useToast();
     const configHintId = 'cloud-sync-config-hint';
 
@@ -119,7 +119,7 @@ export default function CloudSyncItem() {
     };
 
     const handleChangePassword = () => {
-        setAuthModalMode('change_password');
+        setAuthModalMode('update-password');
         setIsAuthModalOpen(true);
     };
 
@@ -178,6 +178,13 @@ export default function CloudSyncItem() {
     return (
         <>
         <div className="cloud-sync-box">
+            {isAuthModalOpen && (
+                <AuthModal
+                    isOpen={isAuthModalOpen}
+                    onClose={() => setIsAuthModalOpen(false)}
+                    initialMode={authModalMode}
+                />
+            )}
             <div className="cloud-sync-box__user">
                 <User size={14} />
                 <span className="truncate">{session.user.email}</span>
