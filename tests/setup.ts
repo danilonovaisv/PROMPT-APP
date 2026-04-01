@@ -1,6 +1,7 @@
 
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
+import { jest } from "@jest/globals";
 import { TextDecoder, TextEncoder } from "util";
 
 // Polyfill structuredClone for older Node.js versions and test environments
@@ -16,22 +17,18 @@ if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
-// Polyfill Blob.prototype.text for JSDOM
+// Polyfill Blob.prototype.text for JSDOM (Node.js Buffer-based — avoids TS2345 com FileReader)
 if (typeof Blob.prototype.text === "undefined") {
-  Blob.prototype.text = function () {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsText(this);
-    });
+  Blob.prototype.text = async function (): Promise<string> {
+    const arrayBuffer = await this.arrayBuffer();
+    return Buffer.from(arrayBuffer).toString("utf-8");
   };
 }
 
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query: string) => ({
+  value: jest.fn().mockImplementation((query: any) => ({
     matches: false,
     media: query,
     onchange: null,
