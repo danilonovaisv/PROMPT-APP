@@ -28,7 +28,7 @@ if (typeof Blob.prototype.text === "undefined") {
 // Mock matchMedia for components that use it
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation((query: unknown) => ({
+  value: jest.fn().mockImplementation((query: any) => ({
     matches: false,
     media: query,
     onchange: null,
