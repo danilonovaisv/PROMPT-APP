@@ -498,8 +498,7 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     }
 
     for (const remote of remoteItems) {
-      const exists = await (localTable as any).where("remoteId").equals(remote.id)
-        .first();
+      const exists = existingRemoteIds.has(remote.id);
       if (!exists) {
         await applyRemoteChanges({
           type,
