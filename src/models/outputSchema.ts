@@ -51,7 +51,9 @@ export function sanitizeUrlField(raw: unknown): { value?: string; error?: string
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return { error: 'Use apenas http ou https' };
     }
-    return { value: trimmed };
+    // Return normalized href instead of original string to prevent bypassing protocol checks
+    // due to parsing inconsistencies
+    return { value: parsed.href };
   } catch {
     return { error: 'URL inválida' };
   }
