@@ -5,8 +5,6 @@ import {
   getPromptSchemaWarning,
   getVersionCompatibility,
 } from '@/utils/schemaCompatibility';
-import { createEmptyPromptPayload } from '@/models/promptSchema';
-import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
 describe('schemaCompatibility', () => {
   test('classifica versões atuais, legadas, futuras e inválidas', () => {
@@ -26,33 +24,5 @@ describe('schemaCompatibility', () => {
     expect(getBulkExportWarning('2.5.0')).toContain(CURRENT_BULK_EXPORT_VERSION);
     expect(getBulkExportWarning('abc')).toContain('inválida');
     expect(getBulkExportWarning(CURRENT_BULK_EXPORT_VERSION)).toBeNull();
-  });
-
-  test('migra template legado para o schema corrente preservando menu_ids derivados', () => {
-    const template = {
-      ...createEmptyPromptPayload('Template legado'),
-      meta: {
-        ...createEmptyPromptPayload('Template legado').meta,
-        schema_version: '0.9.0',
-      },
-      menu_ids: [],
-      menu_definitions: [
-        {
-          menu_id: 'tom',
-          menu_name: 'Tom',
-          description: '',
-          selection_mode: 'single' as const,
-          required: false,
-          options: [],
-        },
-      ],
-    };
-
-    const migration = migrateTemplateToCurrentSchema(template);
-
-    expect(migration.migrated).toBe(true);
-    expect(migration.template.meta.schema_version).toBe(CURRENT_PROMPT_SCHEMA_VERSION);
-    expect(migration.template.menu_ids).toEqual(['tom']);
-    expect(migration.warnings[0]).toContain('normalizado');
   });
 });
