@@ -22,9 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      # Segredos vindos do GitHub Secrets
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       NODE_VERSION: "20"
 
     steps:
@@ -40,9 +37,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
+      - name: Validar segredos obrigatórios
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.NETLIFY_AUTH_TOKEN }}" ] || [ -z "${{ secrets.NETLIFY_SITE_ID }}" ]; then
+            echo "NETLIFY_AUTH_TOKEN e/ou NETLIFY_SITE_ID não configurados nos secrets." >&2
+            exit 1
+          fi
+
       - name: Pré-build otimizado
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile --prefer-offline
           pnpm run build
 
       - name: Deploy produção (primário)

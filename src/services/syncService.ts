@@ -470,7 +470,10 @@ export const downloadFromCloud = async () => {
             allKeys: true,
           });
           ids.forEach((id, index) => {
-            remoteToLocalCatMap.set(remoteIdsForPut[index], id);
+            const remoteId = remoteIdsForPut[index];
+            if (remoteId !== undefined && typeof id === "number") {
+              remoteToLocalCatMap.set(remoteId, id);
+            }
           });
         }
       }
