@@ -48,10 +48,11 @@ DROP POLICY IF EXISTS "categories_delete"                      ON public.categor
 
 -- Canonical policies — one per action, role = authenticated
 -- Uses (select auth.uid()) to avoid auth_rls_initplan overhead
+-- IMPORTANTE: Filtra is_deleted = false para SELECT para evitar retorno de dados excluídos
 CREATE POLICY "categories_select" ON public.categories
   AS PERMISSIVE FOR SELECT
   TO authenticated
-  USING (user_id = (SELECT auth.uid()));
+  USING (user_id = (SELECT auth.uid()) AND (is_deleted = FALSE));
 
 CREATE POLICY "categories_insert" ON public.categories
   AS PERMISSIVE FOR INSERT
@@ -97,7 +98,7 @@ DROP POLICY IF EXISTS "context_menus_delete"                     ON public.conte
 CREATE POLICY "context_menus_select" ON public.context_menus
   AS PERMISSIVE FOR SELECT
   TO authenticated
-  USING (user_id = (SELECT auth.uid()));
+  USING (user_id = (SELECT auth.uid()) AND (is_deleted = FALSE));
 
 CREATE POLICY "context_menus_insert" ON public.context_menus
   AS PERMISSIVE FOR INSERT
@@ -147,7 +148,7 @@ DROP POLICY IF EXISTS "prompts_delete"                          ON public.prompt
 CREATE POLICY "prompts_select" ON public.prompts
   AS PERMISSIVE FOR SELECT
   TO authenticated
-  USING (user_id = (SELECT auth.uid()));
+  USING (user_id = (SELECT auth.uid()) AND (is_deleted = FALSE));
 
 CREATE POLICY "prompts_insert" ON public.prompts
   AS PERMISSIVE FOR INSERT

@@ -1,0 +1,18 @@
+--- setup.ts
++++ setup.ts
+@@ -1,5 +1,6 @@
+ import "@testing-library/jest-dom";
+ import "fake-indexeddb/auto";
++import { jest } from "@jest/globals";
+ import { TextDecoder, TextEncoder } from "util";
+
+ // Polyfill structuredClone for older Node.js versions and test environments
+@@ -28,7 +29,7 @@
+ // Mock matchMedia for components that use it
+ Object.defineProperty(window, "matchMedia", {
+   writable: true,
+-  value: jest.fn().mockImplementation((query: string) => ({
++  value: jest.fn().mockImplementation((query: unknown) => ({
+     matches: false,
+     media: query,
+     onchange: null,

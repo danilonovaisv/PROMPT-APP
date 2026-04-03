@@ -225,7 +225,7 @@ export default function EditorPage() {
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
 
   const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? EMPTY_MENUS;
-  const debouncedForm = useDebounce(form, 1200);
+  const debouncedForm = useDebounce(form, 300);
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
@@ -316,7 +316,7 @@ export default function EditorPage() {
 
   const previewState = useMemo(() => {
     try {
-      const artifacts = buildPersistedArtifacts(form, availableContextMenus);
+      const artifacts = buildPersistedArtifacts(debouncedForm, availableContextMenus);
       return {
         payload: artifacts.compiledPayload,
         template: artifacts.template,
@@ -328,7 +328,7 @@ export default function EditorPage() {
         const error = e as Error;
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: error.message || 'Payload inválido' };
     }
-  }, [availableContextMenus, form]);
+  }, [availableContextMenus, debouncedForm]);
 
   useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false), containerRef: previewModalRef });
 
@@ -446,6 +446,17 @@ export default function EditorPage() {
     }
     if (!form.categoryId) {
       showToast('Selecione uma categoria', 'error');
+      return;
+    }
+
+    // Validar que a categoria ainda existe e não foi excluída
+    const selectedCategory = await db.categories.get(form.categoryId);
+    if (!selectedCategory) {
+      showToast('Categoria selecionada não existe mais', 'error');
+      return;
+    }
+    if (selectedCategory.isDeleted === true) {
+      showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
       return;
     }
 
