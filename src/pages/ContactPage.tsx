@@ -34,7 +34,7 @@ export default function ContactPage() {
                     <ul className="info-page__list">
                         <li>
                             Perfil do autor:{' '}
-                            <a href="https://github.com/danilonovaisv" target="_blank" rel="noopener noreferrer">github.com/danilonovaisv</a>
+                            <a href="https://github.com/danilonovaisv">github.com/danilonovaisv</a>
                         </li>
                     </ul>
                 </section>

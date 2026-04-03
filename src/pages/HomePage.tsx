@@ -8,7 +8,7 @@ import { db } from '@/db/database';
 import { Plus, Sparkles, FolderPlus } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CategoryCard from '@/components/CategoryCard';
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function HomePage() {
         { label: 'Templates', value: totalPrompts, color: '#7b2ff7' },
     ], [categories.length, totalPrompts]);
 
-    const handleCategoryClick = useCallback((id: number) => navigate(`/categoria/${id}`), [navigate]);
+    const handleCategoryClick = (id: number) => navigate(`/categoria/${id}`);
 
     return (
         <>

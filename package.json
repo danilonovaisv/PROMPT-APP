@@ -30,13 +30,13 @@
   "dependencies": {
     "@netlify/neon": "^0.1.2",
     "@netlify/vite-plugin": "^2.11.2",
-    "@sentry/browser": "^10.47.0",
-    "@sentry/react": "^10.47.0",
+    "@sentry/browser": "^10.46.0",
+    "@sentry/react": "^10.46.0",
     "@sentry/vite-plugin": "^5.1.1",
-    "@supabase/ssr": "^0.10.0",
-    "@supabase/supabase-js": "^2.101.1",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.100.1",
     "agentic-flow": "^2.0.7",
-    "dexie": "^4.4.2",
+    "dexie": "^4.4.1",
     "dexie-react-hooks": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.7.0",
@@ -48,8 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@jest/globals": "^30.3.0",
-    "@playwright/test": "^1.59.0",
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -70,7 +69,7 @@
     "rollup-plugin-visualizer": "^7.0.1",
     "ts-jest": "^29.4.6",
     "typescript": "~6.0.2",
-    "typescript-eslint": "^8.58.0",
+    "typescript-eslint": "^8.57.2",
     "vite": "^8.0.3"
   }
 }

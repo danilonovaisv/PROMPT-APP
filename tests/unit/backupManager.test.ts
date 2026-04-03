@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import { getLocalBackupInfo } from '@/utils/backupManager';
 
 describe('backupManager', () => {

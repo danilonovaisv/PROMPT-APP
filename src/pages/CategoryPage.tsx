@@ -93,13 +93,6 @@ export default function CategoryPage() {
                     </button>
                 </header>
                 <div className="app-content">
-                    {/* A11y Audit Fix #09: Breadcrumbs */}
-                    <Breadcrumb
-                        items={[
-                            { label: 'Início', href: '/' },
-                            { label: 'Categoria não encontrada' },
-                        ]}
-                    />
                     <div className="empty-state">
                         <div className="empty-state__icon">🔍</div>
                         <h1 className="empty-state__title">Categoria não encontrada</h1>
