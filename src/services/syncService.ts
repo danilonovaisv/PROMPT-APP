@@ -433,55 +433,55 @@ export const downloadFromCloud = async () => {
       const remoteToLocalCatMap = new Map<number, number>();
 
       if (catRes.data) {
+        const categoriesToPut: Category[] = [];
+        const remoteIdsForPut: number[] = [];
+
         for (const c of catRes.data) {
-          // Ignorar categorias marcadas como excluídas (defesa em profundidade)
-          if (c.is_deleted === true) {
-            // Remover do cache local se existir
-            const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
-            if (existing && existing.id) {
-              await db.categories.delete(existing.id);
-              console.log(`🗑️ Categoria excluída localmente (is_deleted=true): ${c.name}`);
-            }
+          const existing = categoriesByRemoteId.get(c.id);
+
+          if (
+            existing?.id &&
+            existing.updatedAt &&
+            Math.floor(new Date(c.updated_at).getTime() / 1000) <
+              Math.floor(existing.updatedAt.getTime() / 1000)
+          ) {
+            // Local é mais novo, pula atualização mas mantém mapeamento
+            remoteToLocalCatMap.set(c.id, existing.id);
             continue;
           }
 
-          // Tenta encontrar categoria local pelo remoteId
-          const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
-
-          const catData = {
+          const catData: Category = {
+            id: existing?.id,
             remoteId: c.id,
             name: c.name,
             icon: c.icon,
             color: c.color,
-            createdAt: new Date(c.created_at), // Supabase retorna string ISO
-            syncStatus: "synced" as const,
+            createdAt: new Date(c.created_at),
+            updatedAt: new Date(c.updated_at),
+            syncStatus: "synced",
           };
 
-          let localId: number;
+          categoriesToPut.push(catData);
+          remoteIdsForPut.push(c.id);
+        }
 
-          if (existing && existing.id) {
-            if (
-              existing.updatedAt &&
-              Math.floor(new Date(c.updated_at).getTime() / 1000) <
-                Math.floor(existing.updatedAt.getTime() / 1000)
-            ) {
-              // Local é mais novo, pula
-              localId = existing.id;
-            } else {
-              await db.categories.update(existing.id, catData);
-              localId = existing.id;
+        if (categoriesToPut.length > 0) {
+          const ids = await db.categories.bulkPut(categoriesToPut, {
+            allKeys: true,
+          });
+          ids.forEach((id, index) => {
+            const remoteId = remoteIdsForPut[index];
+            if (remoteId !== undefined && typeof id === "number") {
+              remoteToLocalCatMap.set(remoteId, id);
             }
-          } else {
-            // Cria nova
-            localId = await db.categories.add(catData) as number;
-          }
-
-          remoteToLocalCatMap.set(c.id, localId);
+          });
         }
       }
 
       // --- B. Sincronizar Menus ---
       if (menuRes.data) {
+        const menusToPut: ContextMenu[] = [];
+
         for (const m of menuRes.data) {
           // Ignorar menus marcados como excluídos (defesa em profundidade)
           if (m.is_deleted === true) {
@@ -506,7 +506,8 @@ export const downloadFromCloud = async () => {
 
           const targetId = existing?.id || existingBySlug?.id;
 
-          const menuData = {
+          const menuData: ContextMenu = {
+            id: targetId,
             remoteId: m.id,
             menuId: m.menu_id,
             menuName: m.menu_name,
@@ -515,19 +516,21 @@ export const downloadFromCloud = async () => {
             options: normalizeContextMenuOptions(m.options),
             createdAt: new Date(m.created_at),
             updatedAt: new Date(m.updated_at),
-            syncStatus: "synced" as const,
+            syncStatus: "synced",
           };
 
-          if (targetId) {
-            await db.contextMenus.update(targetId, menuData);
-          } else {
-            await db.contextMenus.add(menuData);
-          }
+          menusToPut.push(menuData);
+        }
+
+        if (menusToPut.length > 0) {
+          await db.contextMenus.bulkPut(menusToPut);
         }
       }
 
       // --- C. Sincronizar Prompts ---
       if (promptRes.data) {
+        const promptsToPut: Prompt[] = [];
+
         for (const p of promptRes.data) {
           // Ignorar prompts marcados como excluídos (defesa em profundidade)
           if (p.is_deleted === true) {
@@ -541,16 +544,24 @@ export const downloadFromCloud = async () => {
 
           const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
 
+          if (
+            existing?.id &&
+            existing.updatedAt &&
+            Math.floor(new Date(p.updated_at).getTime() / 1000) <
+              Math.floor(existing.updatedAt.getTime() / 1000)
+          ) {
+            // Local is newer, don't overwrite
+            continue;
+          }
+
           // Resolver Categoria Local
-          // Se o prompt remoto tem categoria, precisamos achar o ID local correspondente
-          // Se não acharmos (ex: categoria deletada localmente mas existe na nuvem),
-          // o mapa remoteToLocalCatMap deve resolver se acabamos de sincronizar as categorias.
           let localCategoryId = 0;
           if (p.category_id && remoteToLocalCatMap.has(p.category_id)) {
             localCategoryId = remoteToLocalCatMap.get(p.category_id)!;
           }
 
-          const promptData = {
+          const promptData: Prompt = {
+            id: existing?.id,
             promptPayload: parsePromptPayload(p.prompt_payload_jsonb, {
               title: p.title,
               systemRole: p.system_role,
@@ -565,8 +576,8 @@ export const downloadFromCloud = async () => {
               language: p.language,
               schemaVersion: p.schema_version,
             }),
-            selectionPayload: undefined as Prompt["selectionPayload"],
-            compiledPayload: undefined as Prompt["compiledPayload"],
+            selectionPayload: undefined,
+            compiledPayload: undefined,
             remoteId: p.id,
             categoryId: localCategoryId,
             title: p.title,
@@ -575,11 +586,10 @@ export const downloadFromCloud = async () => {
             language: p.language || "pt-BR",
             outputFormat: p.output_format || "markdown",
             referenceUrl: p.reference_url || undefined,
-            // Colunas adicionadas em 20260327000001_soft_delete_and_missing_columns
             fewShotExamples: p.few_shot_examples || [],
             createdAt: new Date(p.created_at),
             updatedAt: new Date(p.updated_at),
-            syncStatus: "synced" as const,
+            syncStatus: "synced",
           };
 
           // Preferir dados já persistidos na nuvem; fallback para computar localmente
@@ -607,19 +617,11 @@ export const downloadFromCloud = async () => {
                 ),
             );
 
-          if (existing && existing.id) {
-            if (
-              existing.updatedAt &&
-              Math.floor(new Date(p.updated_at).getTime() / 1000) <
-                Math.floor(existing.updatedAt.getTime() / 1000)
-            ) {
-              // Local is newer, don't overwrite
-            } else {
-              await db.prompts.update(existing.id, promptData);
-            }
-          } else {
-            await db.prompts.add(promptData);
-          }
+          promptsToPut.push(promptData);
+        }
+
+        if (promptsToPut.length > 0) {
+          await db.prompts.bulkPut(promptsToPut);
         }
       }
     },

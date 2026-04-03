@@ -6,6 +6,6 @@
 **Learning:** Loading entire Dexie.js tables into memory (e.g. `db.prompts.toArray()`) just to count items per category or total items is extremely inefficient, especially since prompt records can have large JSON payloads. IndexedDB counts are fast.
 **Action:** Use Dexie's `.count()` and indexed queries (like `.where('categoryId').equals(id).count()`) instead of `.toArray()` followed by array traversal whenever calculating statistics.
 
-## 2024-05-20 - Sync Memory Bloat via Full Table Scans
-**Learning:** During cloud synchronization (`downloadFromCloud`), using `.toArray()` to pre-fetch entire Dexie tables (like `prompts`) into memory Maps to avoid N+1 queries creates a severe memory bottleneck, as large records (e.g. JSON payloads) bloat the RAM and can crash the app or slow it down significantly.
-**Action:** Extract the relevant IDs from the remote sync payload and query only the required subset from the local database using `.where('remoteId').anyOf(remoteIds).toArray()`. This eliminates both N+1 query problems and full-table scan memory issues safely.
+## 2026-03-28 - N+1 Database Writes in Synchronization
+**Learning:** Individual `add` and `update` calls within a loop during large data synchronization (e.g., downloading from cloud) cause significant performance degradation due to multiple IPC calls and transactions.
+**Action:** Use Dexie's `bulkPut` to batch all additions and updates into a single operation. For cases where internal ID mapping is required (like Category IDs for Prompts), use `bulkPut(data, { allKeys: true })` to capture the resulting local IDs in a single pass.
