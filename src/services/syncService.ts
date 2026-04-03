@@ -2,6 +2,17 @@ import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import { createSnapshot } from "@/utils/backupManager";
 import { Category, ContextMenu, Prompt } from "@/models/types";
+
+/** Shape returned by Supabase when selecting only the timestamp column. */
+interface SupabaseTimestamp {
+  updated_at: string;
+}
+
+/** Minimal shape of a Supabase operation result used for category/prompt writes. */
+interface SupabaseResult<T> {
+  data: T | null;
+  error: { message: string } | null;
+}
 import {
   type ContextMenuCloudPayload,
   type ContextMenuSyncRepository,
@@ -97,8 +108,33 @@ export const syncToCloud = async () => {
       localToRemoteCategoryMap.set(cat.id, cat.remoteId);
     }
   }
+
+  // Fix P0 (V2): Propagar soft-deletes pendentes ANTES de sincronizar categorias ativas.
+  // Isso fecha a janela de race condition onde o autoSync (debounce 10s) poderia
+  // re-upsertear no Supabase uma categoria que o usuário acabou de excluir localmente.
+  const categoriesToDeleteRemotely = allCategories.filter(
+    (c) => c.isDeleted === true && c.remoteId && c.syncStatus !== 'synced'
+  );
+  for (const cat of categoriesToDeleteRemotely) {
+    try {
+      await withRetry(() =>
+        supabase.from('categories')
+          .update({ is_deleted: true, updated_at: new Date().toISOString() })
+          .eq('id', cat.remoteId!)
+          .eq('user_id', userId)
+      );
+      // Limpeza física local apenas após a confirmação remota do delete
+      if (cat.id) await db.categories.delete(cat.id);
+      console.log(`✅ Categoria soft-delete sincronizada e removida: ${cat.name}`);
+    } catch (e) {
+      console.error('Falha ao sincronizar delete de categoria:', cat.name, e);
+      if (cat.id) await db.categories.update(cat.id, { syncStatus: 'error' });
+    }
+  }
+
+  // Filtrar categorias marcadas como excluídas localmente — não sincronizar
   const categoriesToSync = allCategories.filter((c) =>
-    c.syncStatus !== "synced"
+    c.syncStatus !== "synced" && c.isDeleted !== true
   );
   for (const cat of categoriesToSync) {
     const { id, remoteId, ...data } = cat as Category;
@@ -108,15 +144,16 @@ export const syncToCloud = async () => {
       name: data.name,
       icon: data.icon,
       color: data.color,
+      is_deleted: false,
     };
 
-    let result;
+    let result: SupabaseResult<{ id: number }>;
     if (remoteId) {
       // NOTA: categories.updated_at foi removida na migration 20260317213609_remote_schema.sql
       // O campo foi restaurado na migration 20260326000003.
       // Se a migration ainda não foi aplicada, remoteData.updated_at será undefined
       // e a comparação retorna NaN > NaN = false (sempre atualiza, sem loop)
-      const { data: remoteData } = await withRetry(() =>
+      const { data: remoteData } = await withRetry<SupabaseResult<SupabaseTimestamp>>(() =>
         supabase
           .from("categories")
           .select("updated_at")
@@ -177,19 +214,21 @@ export const syncToCloud = async () => {
 
   // 2. Sincronizar Menus de Contexto
   console.log("☁️ Sincronizando Menus...");
+  // Filtrar menus marcados como excluídos localmente — não sincronizar
   const menusToSync = snapshot.data.contextMenus.filter((m) =>
-    m.syncStatus !== "synced"
+    m.syncStatus !== "synced" && m.isDeleted !== true
   );
   for (const menu of menusToSync) {
     const { id, remoteId, ...data } = menu as ContextMenu;
 
-    const payload: ContextMenuCloudPayload = {
+    const payload: ContextMenuCloudPayload & { is_deleted?: boolean } = {
       user_id: userId,
       menu_id: data.menuId, // map camelCase -> snake_case
       menu_name: data.menuName,
       description: data.description,
       selection_mode: data.selectionMode || "single",
       options: normalizeContextMenuOptions(data.options),
+      is_deleted: false,
     };
 
     try {
@@ -218,8 +257,9 @@ export const syncToCloud = async () => {
 
   // 3. Sincronizar Prompts
   console.log("☁️ Sincronizando Prompts...");
+  // Filtrar prompts marcados como excluídos localmente — não sincronizar
   const promptsToSync = snapshot.data.prompts.filter((p) =>
-    p.syncStatus !== "synced"
+    p.syncStatus !== "synced" && p.isDeleted !== true
   );
   for (const prompt of promptsToSync) {
     const { id, remoteId, ...data } = prompt as Prompt;
@@ -256,9 +296,9 @@ export const syncToCloud = async () => {
       ...legacyColumns,
     };
 
-    let result;
+    let result: SupabaseResult<{ id: number }>;
     if (remoteId) {
-      const { data: remoteData } = await withRetry(() =>
+      const { data: remoteData } = await withRetry<SupabaseResult<SupabaseTimestamp>>(() =>
         supabase.from("prompts").select("updated_at").eq("id", remoteId)
           .single()
       );
@@ -348,27 +388,45 @@ export const downloadFromCloud = async () => {
     "rw",
     [db.categories, db.prompts, db.contextMenus],
     async () => {
-      // Pre-fetch all local data to avoid N+1 queries during merge
-      const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise
-        .all([
-          db.categories.toArray(),
-          db.contextMenus.toArray(),
-          db.prompts.toArray(),
-        ]);
+      // ⚡ Bolt Optimization: Avoid fetching all local data to avoid memory bloat.
+      // Pre-fetch only the subset of local data that corresponds to the remote data being merged.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteCatIds = catRes.data?.map((c: any) => c.id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteMenuIds = menuRes.data?.map((m: any) => m.id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remoteMenuMenuIds = menuRes.data?.map((m: any) => m.menu_id) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const remotePromptIds = promptRes.data?.map((p: any) => p.id) || [];
 
-      const categoriesByRemoteId = new Map(
-        allLocalCategories.filter((c) => c.remoteId).map(
-          (c) => [c.remoteId, c]
-        ),
+      const [localCategories, localMenusByRemoteId, localMenusByMenuId, localPrompts] = await Promise.all([
+        remoteCatIds.length > 0 ? db.categories.where('remoteId').anyOf(remoteCatIds).toArray() : Promise.resolve([]),
+        remoteMenuIds.length > 0 ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : Promise.resolve([]),
+        remoteMenuMenuIds.length > 0 ? db.contextMenus.where('menuId').anyOf(remoteMenuMenuIds).toArray() : Promise.resolve([]),
+        remotePromptIds.length > 0 ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : Promise.resolve([]),
+      ]);
+
+      const allLocalMenus = [...localMenusByRemoteId, ...localMenusByMenuId];
+      // Deduplicate menus
+      const uniqueLocalMenus = Array.from(new Map(allLocalMenus.map((m) => [m.id, m])).values());
+
+      const categoriesByRemoteId = new Map<number, Category>(
+        (localCategories as Category[])
+          .filter((c): c is Category & { remoteId: number } => c.remoteId !== undefined)
+          .map((c) => [c.remoteId as number, c]),
       );
-      const menusByRemoteId = new Map(
-        allLocalMenus.filter((m) => m.remoteId).map((m) => [m.remoteId, m]),
+      const menusByRemoteId = new Map<number, ContextMenu>(
+        (uniqueLocalMenus as ContextMenu[])
+          .filter((m): m is ContextMenu & { remoteId: number } => m.remoteId !== undefined)
+          .map((m) => [m.remoteId as number, m]),
       );
-      const menusByMenuId = new Map(
-        allLocalMenus.map((m) => [m.menuId, m]),
+      const menusByMenuId = new Map<string, ContextMenu>(
+        (uniqueLocalMenus as ContextMenu[]).map((m) => [m.menuId, m]),
       );
-      const promptsByRemoteId = new Map(
-        allLocalPrompts.filter((p) => p.remoteId).map((p) => [p.remoteId, p]),
+      const promptsByRemoteId = new Map<number, Prompt>(
+        (localPrompts as Prompt[])
+          .filter((p): p is Prompt & { remoteId: number } => p.remoteId !== undefined)
+          .map((p) => [p.remoteId as number, p]),
       );
 
       // --- A. Sincronizar Categorias ---
@@ -422,12 +480,26 @@ export const downloadFromCloud = async () => {
         const menusToPut: ContextMenu[] = [];
 
         for (const m of menuRes.data) {
-          const existing = menusByRemoteId.get(m.id);
+          // Ignorar menus marcados como excluídos (defesa em profundidade)
+          if (m.is_deleted === true) {
+            const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
+            const existingBySlug = (!existing
+              ? menusByMenuId.get(m.menu_id)
+              : null) as ContextMenu | undefined;
+            const targetId = existing?.id || existingBySlug?.id;
+            if (targetId) {
+              await db.contextMenus.delete(targetId);
+              console.log(`🗑️ Menu excluído localmente (is_deleted=true): ${m.menu_name}`);
+            }
+            continue;
+          }
+
+          const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
           // Fallback: Tentar match por menuId (slug) se não tiver remoteId gravado
           // Isso evita duplicar menus padrão (tom, publico, etc) se o usuário reinstalou o app
-          const existingBySlug = !existing
+          const existingBySlug = (!existing
             ? menusByMenuId.get(m.menu_id)
-            : null;
+            : null) as ContextMenu | undefined;
 
           const targetId = existing?.id || existingBySlug?.id;
 
@@ -457,7 +529,17 @@ export const downloadFromCloud = async () => {
         const promptsToPut: Prompt[] = [];
 
         for (const p of promptRes.data) {
-          const existing = promptsByRemoteId.get(p.id);
+          // Ignorar prompts marcados como excluídos (defesa em profundidade)
+          if (p.is_deleted === true) {
+            const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
+            if (existing && existing.id) {
+              await db.prompts.delete(existing.id);
+              console.log(`🗑️ Prompt excluído localmente (is_deleted=true): ${p.title}`);
+            }
+            continue;
+          }
+
+          const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
 
           if (
             existing?.id &&

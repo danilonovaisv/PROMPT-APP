@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 
 jest.mock('@/db/database', () => ({
   db: {
@@ -12,13 +13,15 @@ jest.mock('@/lib/supabase', () => ({
   assertSupabaseConfigured: jest.fn(),
   supabase: {
     auth: {
-      getSession: jest.fn().mockResolvedValue({ data: { session: null } })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getSession: (jest.fn() as any).mockResolvedValue({ data: { session: null } })
     }
   }
 }));
 
 jest.mock('@/services/syncService', () => ({
-  syncToCloud: jest.fn().mockResolvedValue(undefined)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  syncToCloud: (jest.fn() as any).mockResolvedValue(undefined)
 }));
 
 describe('setupAutoSync', () => {
@@ -78,7 +81,8 @@ describe('setupAutoSync', () => {
     const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
     expect(createHookCall).toBeDefined();
 
-    const hookFn = createHookCall[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hookFn = createHookCall![1] as any;
 
     // Simulate being online
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
@@ -109,7 +113,8 @@ describe('setupAutoSync', () => {
     setupAutoSync();
 
     const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
-    const hookFn = createHookCall[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hookFn = createHookCall![1] as any;
 
     // Simulate being offline
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
@@ -128,12 +133,14 @@ describe('setupAutoSync', () => {
     const { syncToCloud } = await import('@/services/syncService');
 
     // Mock authenticated user
-    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({ data: { session: { user: { id: '123' } } } });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase.auth.getSession as unknown as jest.Mock<any>).mockResolvedValue({ data: { session: { user: { id: '123' } } } });
 
     setupAutoSync();
 
     const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
-    const hookFn = createHookCall[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hookFn = createHookCall![1] as any;
 
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
 
@@ -158,7 +165,8 @@ describe('setupAutoSync', () => {
     setupAutoSync();
 
     const createHookCall = (db.prompts.hook as unknown as jest.Mock).mock.calls.find(call => call[0] === 'creating');
-    const hookFn = createHookCall[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hookFn = createHookCall![1] as any;
 
     const navigatorSpy = jest.spyOn(navigator, 'onLine', 'get').mockReturnValue(true);
 

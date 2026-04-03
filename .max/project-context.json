@@ -1,5 +1,5 @@
 {
-  "scanned_at": "2026-03-27T22:37:39.145Z",
+  "scanned_at": "2026-04-01T12:57:03.080Z",
   "project_name": "PROMPT-APP",
   "project_path": "/Users/PROJETOS DEV/PROMPT-APP",
   "type": [
@@ -71,6 +71,7 @@
     "react-router-dom",
     "zod",
     "@eslint/js",
+    "@jest/globals",
     "@playwright/test",
     "@testing-library/jest-dom",
     "@testing-library/react",
@@ -81,8 +82,7 @@
     "@types/react-dom",
     "@vitejs/plugin-react",
     "drizzle-kit",
-    "eslint",
-    "eslint-plugin-react-hooks"
+    "eslint"
   ],
   "description": "> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo."
 }
