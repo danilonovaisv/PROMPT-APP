@@ -18,6 +18,8 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         description: input.description,
         options: normalizeContextMenuOptions(input.options),
         updated_at: new Date().toISOString(),
+        is_deleted: false,
+        deleted_at: null,
     };
 
     if (input.remoteId) {
@@ -53,7 +55,11 @@ export async function deleteMenuFromSupabase(remoteId: number) {
 
     const { error } = await supabase
         .from('context_menus')
-        .delete()
+        .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        })
         .eq('id', remoteId)
         .eq('user_id', user.id);
 

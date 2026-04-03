@@ -6,6 +6,8 @@ export interface ContextMenuCloudPayload {
   // selection_mode REMOVIDA: coluna não existe mais no schema remoto
   // (dropada em 20260317213609_remote_schema.sql). Mantida apenas no modelo local.
   options: unknown[];
+  is_deleted?: boolean;
+  deleted_at?: string | null;
 }
 
 export interface ContextMenuSyncResult {

@@ -55,6 +55,8 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         reference_url: getPrimaryReferenceUrl(promptPayload),
         few_shot_examples: input.fewShotExamples || [],
         updated_at: new Date().toISOString(),
+        is_deleted: false,
+        deleted_at: null,
         ...legacyColumns,
     };
 
@@ -91,7 +93,11 @@ export async function deletePromptFromSupabase(remoteId: number) {
 
     const { error } = await supabase
         .from('prompts')
-        .delete()
+        .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        })
         .eq('id', remoteId)
         .eq('user_id', user.id);
 

@@ -34,6 +34,7 @@ const contextMenuRepository: ContextMenuSyncRepository = {
             .select('id')
             .eq('user_id', userId)
             .eq('menu_id', menuId)
+            .eq('is_deleted', false)
             .maybeSingle();
 
         if (error) {
@@ -100,7 +101,9 @@ export const syncToCloud = async () => {
             user_id: userId,
             name: data.name,
             icon: data.icon,
-            color: data.color
+            color: data.color,
+            is_deleted: false,
+            deleted_at: null,
         };
 
         let result;
@@ -113,7 +116,8 @@ export const syncToCloud = async () => {
                 .from('categories')
                 .select('updated_at')
                 .eq('id', remoteId)
-                .single()
+                .eq('is_deleted', false)
+                .maybeSingle()
             );
             const remoteTs = remoteData?.updated_at
                 ? Math.floor(new Date(remoteData.updated_at).getTime() / 1000)
@@ -168,7 +172,9 @@ export const syncToCloud = async () => {
             description: data.description,
             // selection_mode REMOVIDA: coluna não existe mais no schema remoto
             // (dropada em 20260317213609_remote_schema.sql)
-            options: normalizeContextMenuOptions(data.options)
+            options: normalizeContextMenuOptions(data.options),
+            is_deleted: false,
+            deleted_at: null,
         };
 
         try {
@@ -220,13 +226,20 @@ export const syncToCloud = async () => {
             reference_url: getPrimaryReferenceUrl(data.promptPayload),
             few_shot_examples: data.fewShotExamples
             ,
+            is_deleted: false,
+            deleted_at: null,
             ...legacyColumns,
         };
 
         let result;
         if (remoteId) {
-            const { data: remoteData } = await withRetry(() => supabase.from('prompts').select('updated_at').eq('id', remoteId).single());
-            if (remoteData && Math.floor(new Date(remoteData.updated_at).getTime() / 1000) > Math.floor(prompt.updatedAt?.getTime() || 0) / 1000) {
+            const { data: activeRemoteData } = await withRetry(() => supabase
+                .from('prompts')
+                .select('updated_at')
+                .eq('id', remoteId)
+                .eq('is_deleted', false)
+                .maybeSingle());
+            if (activeRemoteData && Math.floor(new Date(activeRemoteData.updated_at).getTime() / 1000) > Math.floor(prompt.updatedAt?.getTime() || 0) / 1000) {
                console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.title}`);
                continue;
             }
@@ -268,9 +281,9 @@ export const downloadFromCloud = async () => {
     if (!session) throw new Error('Usuário não autenticado');
 
     const [catRes, menuRes, promptRes] = await Promise.all([
-        supabase.from('categories').select('*'),
-        supabase.from('context_menus').select('*'),
-        supabase.from('prompts').select('*'),
+        supabase.from('categories').select('*').eq('is_deleted', false),
+        supabase.from('context_menus').select('*').eq('is_deleted', false),
+        supabase.from('prompts').select('*').eq('is_deleted', false),
     ]);
 
     if (catRes.error || menuRes.error || promptRes.error) {
