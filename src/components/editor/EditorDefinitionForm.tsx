@@ -1,6 +1,7 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 import MultiSelect from '@/components/ui/MultiSelect';
+import { Plus, Trash2 } from 'lucide-react';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -118,6 +119,63 @@ export function EditorDefinitionForm({
             </div>
           </div>
         )}
+
+        <div className="form-group">
+          <label className="form-label">Exemplos de Resposta (Few-shot)</label>
+          <div className="dynamic-list">
+            {template.prompt_definition.few_shot_examples.map((example, index) => (
+              <div key={`few-shot-${index}`} className="few-shot-item card">
+                <div className="form-group">
+                  <label className="form-label">Input do usuário</label>
+                  <textarea
+                    value={example.input}
+                    onChange={(e) => {
+                      const next = [...template.prompt_definition.few_shot_examples];
+                      next[index] = { ...next[index], input: e.target.value };
+                      updatePromptDefinitionField('few_shot_examples', next);
+                    }}
+                    rows={2}
+                    placeholder="Ex: Como faço para..."
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Resposta esperada</label>
+                  <textarea
+                    value={example.output}
+                    onChange={(e) => {
+                      const next = [...template.prompt_definition.few_shot_examples];
+                      next[index] = { ...next[index], output: e.target.value };
+                      updatePromptDefinitionField('few_shot_examples', next);
+                    }}
+                    rows={2}
+                    placeholder="Ex: Para fazer isso, você deve..."
+                  />
+                </div>
+                <button
+                  className="btn btn--ghost btn--icon few-shot-delete"
+                  onClick={() => {
+                    const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
+                    updatePromptDefinitionField('few_shot_examples', next);
+                  }}
+                  title="Remover exemplo"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+            <button
+              className="btn btn--ghost btn--sm dynamic-list__add"
+              onClick={() => {
+                updatePromptDefinitionField('few_shot_examples', [
+                  ...template.prompt_definition.few_shot_examples,
+                  { input: '', output: '' },
+                ]);
+              }}
+            >
+              <Plus size={14} /> Novo exemplo
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="form-section">

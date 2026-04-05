@@ -924,6 +924,26 @@ select option {
   margin-top: var(--space-2);
 }
 
+.few-shot-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-8) !important; /* Espaço para o botão de deletar */
+}
+
+.few-shot-delete {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  color: var(--color-error);
+}
+
+.few-shot-delete:hover {
+  background-color: rgba(255, 68, 102, 0.1);
+}
+
 /* --- Modal / Overlay --- */
 .modal-overlay {
   position: fixed;
