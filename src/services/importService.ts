@@ -155,6 +155,7 @@ async function importMenuDefinitions(
 
   const existingMenus = await db.contextMenus.toArray();
   const existingMenuIds = new Set(existingMenus.map((m) => m.menuId));
+  const menusToPut: ContextMenu[] = [];
 
   for (const definition of menuDefinitions) {
     try {
@@ -163,10 +164,30 @@ async function importMenuDefinitions(
         continue;
       }
 
-      const localId = (await db.contextMenus.add({
+      menusToPut.push({
         ...contextMenu,
         syncStatus: 'pending',
-      } as ContextMenu)) as number;
+      } as ContextMenu);
+      existingMenuIds.add(contextMenu.menuId);
+    } catch (e: unknown) {
+      const error = e as Error;
+      errors.push({
+        type: 'processing',
+        field: 'menu_definition',
+        message: error.message || 'Falha ao importar definição de menu',
+        data: definition,
+      });
+    }
+  }
+
+  // ⚡ Bolt Optimization: Use bulkPut to avoid N+1 database writes in Dexie.js
+  if (menusToPut.length > 0) {
+    const localIds = await db.contextMenus.bulkPut(menusToPut, { allKeys: true });
+
+    // Maintain immediate Supabase synchronization
+    for (let i = 0; i < menusToPut.length; i++) {
+      const contextMenu = menusToPut[i];
+      const localId = localIds[i] as number | undefined;
 
       try {
         const savedRemote = await saveMenuToSupabase(contextMenu);
@@ -179,17 +200,7 @@ async function importMenuDefinitions(
       } catch {
         warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
       }
-
-      existingMenuIds.add(contextMenu.menuId);
       count++;
-    } catch (e: unknown) {
-      const error = e as Error;
-      errors.push({
-        type: 'processing',
-        field: 'menu_definition',
-        message: error.message || 'Falha ao importar definição de menu',
-        data: definition,
-      });
     }
   }
 
@@ -229,13 +240,13 @@ async function ensureImportCategory(warnings: string[]): Promise<number> {
   }
 }
 
-async function processPromptImport(
+function processPromptImportRecord(
   rawPrompt: unknown,
   categoryId: number,
   errors: ImportError[],
   warnings: string[],
   importedMenuDefinitions: PromptContract['menu_definitions'] = []
-): Promise<boolean> {
+): Prompt | null {
   try {
     const migration = migrateTemplateToCurrentSchema(
       syncTemplateWithMenuDefinitions(
@@ -247,22 +258,13 @@ async function processPromptImport(
     migration.warnings.forEach((warning) => pushUniqueWarning(warnings, warning));
     pushUniqueWarning(warnings, getPromptSchemaWarning(promptPayload.meta.schema_version));
     const promptRecord = buildPromptRecord(promptPayload, categoryId);
-    const localId = await db.prompts.add({
+
+    warnings.push(`Prompt "${promptRecord.title}" importado localmente. Sincronize ao fazer login.`);
+
+    return {
       ...promptRecord,
       syncStatus: 'pending',
-    } as Prompt);
-
-    try {
-      const savedRemote = await savePromptToSupabase(promptRecord);
-      await db.prompts.update(localId, {
-        remoteId: savedRemote.id,
-        syncStatus: 'synced',
-      });
-    } catch {
-      warnings.push(`Prompt "${promptRecord.title}" salvo localmente. Sincronize ao fazer login.`);
-    }
-
-    return true;
+    } as Prompt;
   } catch (e: unknown) {
       const error = e as Error;
       errors.push({
@@ -271,7 +273,7 @@ async function processPromptImport(
       message: error.message || 'Formato de prompt inválido',
       data: rawPrompt,
     });
-    return false;
+    return null;
   }
 }
 
@@ -360,6 +362,8 @@ export async function importFromJsonText(
         }
       }
 
+      // ⚡ Bolt Optimization: Batch Dexie writes using bulkPut to avoid N+1 IPC calls
+      const promptsToPut: Prompt[] = [];
       for (const item of parsed.prompts) {
         let categoryId = importCategoryId;
 
@@ -370,27 +374,79 @@ export async function importFromJsonText(
           }
         }
 
-        const success = await processPromptImport(
+        const promptRecord = processPromptImportRecord(
           item.prompt,
           categoryId,
           errors,
           warnings,
           parsedMenuDefinitions
         );
-        if (success) {
+        if (promptRecord) {
+          promptsToPut.push(promptRecord);
+        }
+      }
+
+      if (promptsToPut.length > 0) {
+        const localIds = await db.prompts.bulkPut(promptsToPut, { allKeys: true });
+        for (let i = 0; i < promptsToPut.length; i++) {
+          const prompt = promptsToPut[i];
+          const localId = localIds[i] as number | undefined;
+          try {
+            const savedRemote = await savePromptToSupabase(prompt);
+            if (localId) {
+              await db.prompts.update(localId, {
+                remoteId: savedRemote.id,
+                syncStatus: 'synced',
+              });
+            }
+          } catch {
+            // Already added warning in processPromptImportRecord
+          }
           count++;
         }
       }
     } else if (Array.isArray(parsed)) {
+      const promptsToPut: Prompt[] = [];
       for (const item of parsed) {
-        const success = await processPromptImport(item, importCategoryId, errors, warnings);
-        if (success) {
+        const promptRecord = processPromptImportRecord(item, importCategoryId, errors, warnings);
+        if (promptRecord) {
+          promptsToPut.push(promptRecord);
+        }
+      }
+      if (promptsToPut.length > 0) {
+        const localIds = await db.prompts.bulkPut(promptsToPut, { allKeys: true });
+        for (let i = 0; i < promptsToPut.length; i++) {
+          const prompt = promptsToPut[i];
+          const localId = localIds[i] as number | undefined;
+          try {
+            const savedRemote = await savePromptToSupabase(prompt);
+            if (localId) {
+              await db.prompts.update(localId, {
+                remoteId: savedRemote.id,
+                syncStatus: 'synced',
+              });
+            }
+          } catch {
+            // Already added warning in processPromptImportRecord
+          }
           count++;
         }
       }
     } else {
-      const success = await processPromptImport(parsed, importCategoryId, errors, warnings);
-      if (success) {
+      const promptRecord = processPromptImportRecord(parsed, importCategoryId, errors, warnings);
+      if (promptRecord) {
+        const localId = await db.prompts.add(promptRecord) as number | undefined;
+        try {
+          const savedRemote = await savePromptToSupabase(promptRecord);
+          if (localId) {
+            await db.prompts.update(localId, {
+              remoteId: savedRemote.id,
+              syncStatus: 'synced',
+            });
+          }
+        } catch {
+          // Already added warning in processPromptImportRecord
+        }
         count = 1;
       }
     }
