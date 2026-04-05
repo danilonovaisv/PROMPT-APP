@@ -195,7 +195,7 @@ export function formatPromptAsMarkdown(
   }
   
   const outputContract = template.output_contract;
-  if (outputContract.response_rules && outputContract.response_rules.length > 0) {
+  if (outputContract?.response_rules && outputContract.response_rules.length > 0) {
     outputContract.response_rules.forEach((rule) => {
       lines.push(`- ${rule}`);
     });
@@ -214,11 +214,13 @@ export function formatPromptAsMarkdown(
   }
 
   // ## 5. OUTPUT FORMAT
-  lines.push("## 5. OUTPUT FORMAT");
-  lines.push(`- **Format**: ${outputContract.format}`);
-  lines.push(`- **Language**: ${outputContract.language}`);
-  if (outputContract.required_fields && outputContract.required_fields.length > 0) {
-    lines.push(`- **Required fields**: ${outputContract.required_fields.join(", ")}`);
+  if (outputContract) {
+    lines.push("## 5. OUTPUT FORMAT");
+    lines.push(`- **Format**: ${outputContract.format}`);
+    lines.push(`- **Language**: ${outputContract.language}`);
+    if (outputContract.required_fields && outputContract.required_fields.length > 0) {
+      lines.push(`- **Required fields**: ${outputContract.required_fields.join(", ")}`);
+    }
   }
   lines.push("");
 

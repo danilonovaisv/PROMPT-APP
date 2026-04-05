@@ -140,7 +140,7 @@ export function renderFinalPromptText(
     constraintsAndRules.push(negativeBlock.join('\n'));
   }
   if (outputContract.response_rules.length > 0) {
-    const rulesBlock = buildListBlock('Response rules:', outputContract.response_rules);
+    const rulesBlock = buildListBlock('Regras de resposta:', outputContract.response_rules);
     constraintsAndRules.push(rulesBlock.join('\n'));
   }
   if (constraintsAndRules.length > 0) {
@@ -149,18 +149,18 @@ export function renderFinalPromptText(
 
   if (promptDefinition.few_shot_examples && promptDefinition.few_shot_examples.length > 0) {
     const exampleLines = promptDefinition.few_shot_examples.map((example, index) => 
-      `### Example ${index + 1}:\nINPUT: ${example.input}\nOUTPUT: ${example.output}`
+      `### Exemplo ${index + 1}:\nENTRADA: ${example.input}\nSAÍDA: ${example.output}`
     );
     sections.push(`## FEW-SHOT EXAMPLES\n${exampleLines.join('\n\n')}`);
   }
 
   const outputLines = [
-    `Format: ${outputContract.format}`,
-    `Language: ${outputContract.language}`,
-    `Strict mode: ${outputContract.strict_mode ? 'yes' : 'no'}`,
+    `Formato: ${outputContract.format}`,
+    `Idioma: ${outputContract.language}`,
+    `Modo estrito: ${outputContract.strict_mode ? 'sim' : 'não'}`,
   ];
   if (outputContract.required_fields.length > 0) {
-    outputLines.push(`Required fields: ${outputContract.required_fields.join(', ')}`);
+    outputLines.push(`Campos obrigatórios: ${outputContract.required_fields.join(', ')}`);
   }
   sections.push(`## OUTPUT FORMAT\n${outputLines.map((line) => `- ${line}`).join('\n')}`);
 

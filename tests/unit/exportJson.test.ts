@@ -47,6 +47,13 @@ describe('formatPromptAsMarkdown', () => {
         few_shot_examples: [],
       },
       menu_definitions: [],
+      output_contract: {
+        format: 'markdown',
+        language: 'pt-BR',
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
     };
 
     const compiledPayload: Partial<CompiledPromptPayload> = {
@@ -88,6 +95,13 @@ describe('formatPromptAsMarkdown', () => {
           description: '',
         },
       ],
+      output_contract: {
+        format: 'markdown',
+        language: 'en-US',
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
     };
 
     const compiledPayload: Partial<CompiledPromptPayload> = {
@@ -154,6 +168,13 @@ describe('formatPromptAsMarkdown', () => {
           description: '',
         },
       ],
+      output_contract: {
+        format: 'markdown',
+        language: 'en-US',
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
     };
 
     const compiledPayload: Partial<CompiledPromptPayload> = {
