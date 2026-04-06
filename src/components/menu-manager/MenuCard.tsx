@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { ContextMenu } from '@/models/types';
 import { normalizeContextMenuOptions } from '@/utils/contextMenuOptions';
 import { Edit3, Trash2 } from 'lucide-react';
@@ -8,7 +9,12 @@ type MenuCardProps = {
   onDelete: () => void;
 };
 
-export function MenuCard({ menu, onEdit, onDelete }: MenuCardProps) {
+// ⚡ Bolt Optimization:
+// What: Wrapped MenuCard in React.memo()
+// Why: Prevents re-rendering the entire list of menu cards on every keystroke when editing a menu form.
+// Impact: Significantly reduces React render cycle time and CPU usage on the MenuManagerPage by
+// skipping render for unchanged cards.
+export const MenuCard = memo(function MenuCard({ menu, onEdit, onDelete }: MenuCardProps) {
   const options = normalizeContextMenuOptions(menu.options);
 
   return (
@@ -66,4 +72,4 @@ export function MenuCard({ menu, onEdit, onDelete }: MenuCardProps) {
       </div>
     </div>
   );
-}
+});

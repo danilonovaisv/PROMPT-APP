@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { render, screen } from '@testing-library/react';
 import { MenuCard } from '@/components/menu-manager/MenuCard';
 
