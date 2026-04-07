@@ -10,7 +10,6 @@ import {
 import type { ContextMenu, Prompt } from '@/models/types';
 import { saveCategoryToSupabase } from '@/services/supabaseCategories';
 import { saveMenuToSupabase } from '@/services/supabaseMenus';
-import { savePromptToSupabase } from '@/services/supabasePrompts';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { syncTemplateWithMenuDefinitions } from '@/utils/promptArtifacts';
 import { getBulkExportWarning, getPromptSchemaWarning } from '@/utils/schemaCompatibility';
@@ -240,13 +239,13 @@ async function ensureImportCategory(warnings: string[]): Promise<number> {
   }
 }
 
-function processPromptImportRecord(
+function buildPromptRecordFromRaw(
   rawPrompt: unknown,
   categoryId: number,
   errors: ImportError[],
   warnings: string[],
   importedMenuDefinitions: PromptContract['menu_definitions'] = []
-): Prompt | null {
+): Omit<Prompt, 'id'> | null {
   try {
     const migration = migrateTemplateToCurrentSchema(
       syncTemplateWithMenuDefinitions(
@@ -257,17 +256,13 @@ function processPromptImportRecord(
     const promptPayload = migration.template;
     migration.warnings.forEach((warning) => pushUniqueWarning(warnings, warning));
     pushUniqueWarning(warnings, getPromptSchemaWarning(promptPayload.meta.schema_version));
-    const promptRecord = buildPromptRecord(promptPayload, categoryId);
-
-    warnings.push(`Prompt "${promptRecord.title}" importado localmente. Sincronize ao fazer login.`);
-
     return {
-      ...promptRecord,
+      ...buildPromptRecord(promptPayload, categoryId),
       syncStatus: 'pending',
-    } as Prompt;
+    };
   } catch (e: unknown) {
-      const error = e as Error;
-      errors.push({
+    const error = e as Error;
+    errors.push({
       type: 'validation',
       field: 'prompt',
       message: error.message || 'Formato de prompt inválido',
@@ -362,8 +357,7 @@ export async function importFromJsonText(
         }
       }
 
-      // ⚡ Bolt Optimization: Batch Dexie writes using bulkPut to avoid N+1 IPC calls
-      const promptsToPut: Prompt[] = [];
+      const promptsToInsert: Omit<Prompt, 'id'>[] = [];
       for (const item of parsed.prompts) {
         let categoryId = importCategoryId;
 
@@ -374,7 +368,7 @@ export async function importFromJsonText(
           }
         }
 
-        const promptRecord = processPromptImportRecord(
+        const promptRecord = buildPromptRecordFromRaw(
           item.prompt,
           categoryId,
           errors,
@@ -382,72 +376,38 @@ export async function importFromJsonText(
           parsedMenuDefinitions
         );
         if (promptRecord) {
-          promptsToPut.push(promptRecord);
+          promptsToInsert.push(promptRecord);
         }
       }
 
-      if (promptsToPut.length > 0) {
-        const localIds = await db.prompts.bulkPut(promptsToPut, { allKeys: true });
-        for (let i = 0; i < promptsToPut.length; i++) {
-          const prompt = promptsToPut[i];
-          const localId = localIds[i] as number | undefined;
-          try {
-            const savedRemote = await savePromptToSupabase(prompt);
-            if (localId) {
-              await db.prompts.update(localId, {
-                remoteId: savedRemote.id,
-                syncStatus: 'synced',
-              });
-            }
-          } catch {
-            // Already added warning in processPromptImportRecord
-          }
-          count++;
-        }
+      if (promptsToInsert.length > 0) {
+        // ⚡ Bolt Optimization:
+        // Replaced N+1 individual db.prompts.add() calls with a single bulkAdd() operation.
+        // Cloud synchronization is deferred to the background syncService by setting syncStatus to 'pending',
+        // preventing blocking network requests and rate limits during bulk import.
+        await db.prompts.bulkAdd(promptsToInsert as any);
+        count += promptsToInsert.length;
+        warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
     } else if (Array.isArray(parsed)) {
-      const promptsToPut: Prompt[] = [];
+      const promptsToInsert: Omit<Prompt, 'id'>[] = [];
       for (const item of parsed) {
-        const promptRecord = processPromptImportRecord(item, importCategoryId, errors, warnings);
+        const promptRecord = buildPromptRecordFromRaw(item, importCategoryId, errors, warnings);
         if (promptRecord) {
-          promptsToPut.push(promptRecord);
+          promptsToInsert.push(promptRecord);
         }
       }
-      if (promptsToPut.length > 0) {
-        const localIds = await db.prompts.bulkPut(promptsToPut, { allKeys: true });
-        for (let i = 0; i < promptsToPut.length; i++) {
-          const prompt = promptsToPut[i];
-          const localId = localIds[i] as number | undefined;
-          try {
-            const savedRemote = await savePromptToSupabase(prompt);
-            if (localId) {
-              await db.prompts.update(localId, {
-                remoteId: savedRemote.id,
-                syncStatus: 'synced',
-              });
-            }
-          } catch {
-            // Already added warning in processPromptImportRecord
-          }
-          count++;
-        }
+      if (promptsToInsert.length > 0) {
+        await db.prompts.bulkAdd(promptsToInsert as Prompt[]);
+        count += promptsToInsert.length;
+        warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
     } else {
-      const promptRecord = processPromptImportRecord(parsed, importCategoryId, errors, warnings);
+       const promptRecord = buildPromptRecordFromRaw(parsed, importCategoryId, errors, warnings);
       if (promptRecord) {
-        const localId = await db.prompts.add(promptRecord) as number | undefined;
-        try {
-          const savedRemote = await savePromptToSupabase(promptRecord);
-          if (localId) {
-            await db.prompts.update(localId, {
-              remoteId: savedRemote.id,
-              syncStatus: 'synced',
-            });
-          }
-        } catch {
-          // Already added warning in processPromptImportRecord
-        }
+        await db.prompts.add(promptRecord as Prompt);
         count = 1;
+        warnings.push('Prompt importado localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
     }
 
