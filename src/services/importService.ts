@@ -374,7 +374,7 @@ export async function importFromJsonText(
         // Replaced N+1 individual db.prompts.add() calls with a single bulkAdd() operation.
         // Cloud synchronization is deferred to the background syncService by setting syncStatus to 'pending',
         // preventing blocking network requests and rate limits during bulk import.
-        await db.prompts.bulkAdd(promptsToInsert as Prompt[]);
+        await db.prompts.bulkAdd(promptsToInsert as any);
         count += promptsToInsert.length;
         warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
