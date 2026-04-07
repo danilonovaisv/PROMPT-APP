@@ -13,3 +13,6 @@
 ## 2026-10-27 - N+1 Network & DB Writes in Bulk Imports
 **Learning:** Individual `.add()` calls combined with inline remote synchronization (`savePromptToSupabase`) within a bulk JSON import loop causes catastrophic N+1 performance degradation. It blocks the main thread, delays the import process proportionally to network latency, and can trigger API rate limits.
 **Action:** Extract database insertions from the loop and use `bulkAdd()` for batch processing. Defer cloud synchronization to the background `syncService` by initially marking records with `syncStatus: 'pending'`.
+## 2025-04-07 - React List Rendering and Parent State
+**Learning:** Rendering list items inline (using map and direct JSX) inside a component with rapidly updating state (like a text input `form`) causes the entire list to re-render on every keystroke. This significantly degrades performance, especially on long lists.
+**Action:** Always extract list items into separate components wrapped with `React.memo()`, and wrap any handlers passed to them using `useCallback()`, ensuring that list items only re-render when their specific props change.

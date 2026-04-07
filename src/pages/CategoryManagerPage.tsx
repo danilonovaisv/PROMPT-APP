@@ -8,6 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
+import { useCallback } from 'react';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
@@ -15,11 +16,10 @@ import { deletePromptFromSupabase } from '@/services/supabasePrompts';
 import {
     ArrowLeft,
     Plus,
-    Trash2,
-    Edit3,
     Check,
     X,
 } from 'lucide-react';
+import { CategoryListItem } from '@/components/CategoryListItem';
 
 interface CategoryFormData {
     name: string;
@@ -53,11 +53,12 @@ export default function CategoryManagerPage() {
         setIsCreating(true);
     };
 
-    const startEdit = (cat: { id?: number; remoteId?: number; name: string; icon: string; color: string }) => {
+    // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
+    const startEdit = useCallback((cat: { id?: number; remoteId?: number; name: string; icon: string; color: string }) => {
         setIsCreating(false);
         setIsEditing(cat.id!);
         setForm({ name: cat.name, icon: cat.icon, color: cat.color, remoteId: cat.remoteId });
-    };
+    }, []);
 
     const cancel = () => {
         setIsEditing(null);
@@ -126,7 +127,8 @@ export default function CategoryManagerPage() {
         }
     };
 
-    const handleDelete = async (id: number, remoteId?: number) => {
+    // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
+    const handleDelete = useCallback(async (id: number, remoteId?: number) => {
         const promptCount = await db.prompts.where('categoryId').equals(id).count();
         if (promptCount > 0) {
             // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
@@ -165,7 +167,12 @@ export default function CategoryManagerPage() {
             console.error('Erro ao excluir no Supabase:', error);
             showToast(error.message || 'Erro ao deletar categoria no servidor.', 'error');
         }
-    };
+    }, [confirm, showToast]);
+
+    // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
+    const handleCategoryClick = useCallback((id: number) => {
+        navigate(`/categoria/${id}`);
+    }, [navigate]);
 
     return (
         <>
@@ -274,49 +281,13 @@ export default function CategoryManagerPage() {
                 ) : (
                     <div className="prompt-list">
                         {categories.map((cat) => (
-                            <div key={cat.id} className="prompt-item">
-                                <div
-                                    className="cat-list-item"
-                                    onClick={() => navigate(`/categoria/${cat.id}`)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === 'Enter' || event.key === ' ') {
-                                            event.preventDefault();
-                                            navigate(`/categoria/${cat.id}`);
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex={0}
-                                >
-                                    <span
-                                        className={`cat-list-item__icon util-cat-color-${cat.color.replace('#', '')}`}
-                                    >
-                                        {cat.icon}
-                                    </span>
-                                    <div>
-                                        <div className={`prompt-item__title cat-list-item__title util-cat-color-${cat.color.replace('#', '')}`}>
-                                            {cat.name}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="prompt-item__actions prompt-item__actions--visible">
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => startEdit(cat)}
-                                        aria-label="Editar categoria"
-                                        title="Editar"
-                                    >
-                                        <Edit3 size={16} />
-                                    </button>
-                                    <button
-                                        className="btn btn--ghost btn--icon"
-                                        onClick={() => handleDelete(cat.id!, cat.remoteId)}
-                                        aria-label="Excluir categoria"
-                                        title="Excluir"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            </div>
+                            <CategoryListItem
+                                key={cat.id}
+                                category={cat}
+                                onEdit={startEdit}
+                                onDelete={handleDelete}
+                                onClick={handleCategoryClick}
+                            />
                         ))}
                     </div>
                 )}
