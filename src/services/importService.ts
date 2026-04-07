@@ -154,6 +154,7 @@ async function importMenuDefinitions(
 
   const existingMenus = await db.contextMenus.toArray();
   const existingMenuIds = new Set(existingMenus.map((m) => m.menuId));
+  const menusToPut: ContextMenu[] = [];
 
   for (const definition of menuDefinitions) {
     try {
@@ -162,10 +163,30 @@ async function importMenuDefinitions(
         continue;
       }
 
-      const localId = (await db.contextMenus.add({
+      menusToPut.push({
         ...contextMenu,
         syncStatus: 'pending',
-      } as ContextMenu)) as number;
+      } as ContextMenu);
+      existingMenuIds.add(contextMenu.menuId);
+    } catch (e: unknown) {
+      const error = e as Error;
+      errors.push({
+        type: 'processing',
+        field: 'menu_definition',
+        message: error.message || 'Falha ao importar definição de menu',
+        data: definition,
+      });
+    }
+  }
+
+  // ⚡ Bolt Optimization: Use bulkPut to avoid N+1 database writes in Dexie.js
+  if (menusToPut.length > 0) {
+    const localIds = await db.contextMenus.bulkPut(menusToPut, { allKeys: true });
+
+    // Maintain immediate Supabase synchronization
+    for (let i = 0; i < menusToPut.length; i++) {
+      const contextMenu = menusToPut[i];
+      const localId = localIds[i] as number | undefined;
 
       try {
         const savedRemote = await saveMenuToSupabase(contextMenu);
@@ -178,17 +199,7 @@ async function importMenuDefinitions(
       } catch {
         warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
       }
-
-      existingMenuIds.add(contextMenu.menuId);
       count++;
-    } catch (e: unknown) {
-      const error = e as Error;
-      errors.push({
-        type: 'processing',
-        field: 'menu_definition',
-        message: error.message || 'Falha ao importar definição de menu',
-        data: definition,
-      });
     }
   }
 
@@ -392,7 +403,7 @@ export async function importFromJsonText(
         warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
     } else {
-      const promptRecord = buildPromptRecordFromRaw(parsed, importCategoryId, errors, warnings);
+       const promptRecord = buildPromptRecordFromRaw(parsed, importCategoryId, errors, warnings);
       if (promptRecord) {
         await db.prompts.add(promptRecord as Prompt);
         count = 1;

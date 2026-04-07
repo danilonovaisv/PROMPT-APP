@@ -193,6 +193,35 @@ export function formatPromptAsMarkdown(
       lines.push(`- ${item}`);
     });
   }
+  
+  const outputContract = template.output_contract;
+  if (outputContract?.response_rules && outputContract.response_rules.length > 0) {
+    outputContract.response_rules.forEach((rule) => {
+      lines.push(`- ${rule}`);
+    });
+  }
+  lines.push("");
+
+  // ## 4. FEW-SHOT EXAMPLES
+  if (template.prompt_definition.few_shot_examples && template.prompt_definition.few_shot_examples.length > 0) {
+    lines.push("## 4. FEW-SHOT EXAMPLES");
+    template.prompt_definition.few_shot_examples.forEach((example, index) => {
+      lines.push(`### Example ${index + 1}:`);
+      lines.push(`INPUT: ${example.input}`);
+      lines.push(`OUTPUT: ${example.output}`);
+      lines.push("");
+    });
+  }
+
+  // ## 5. OUTPUT FORMAT
+  if (outputContract) {
+    lines.push("## 5. OUTPUT FORMAT");
+    lines.push(`- **Format**: ${outputContract.format}`);
+    lines.push(`- **Language**: ${outputContract.language}`);
+    if (outputContract.required_fields && outputContract.required_fields.length > 0) {
+      lines.push(`- **Required fields**: ${outputContract.required_fields.join(", ")}`);
+    }
+  }
   lines.push("");
 
   return lines.join("\n");

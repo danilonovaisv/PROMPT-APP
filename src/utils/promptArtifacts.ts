@@ -140,11 +140,18 @@ export function renderFinalPromptText(
     constraintsAndRules.push(negativeBlock.join('\n'));
   }
   if (outputContract.response_rules.length > 0) {
-    const rulesBlock = buildListBlock('Regras de Resposta:', outputContract.response_rules);
+    const rulesBlock = buildListBlock('Regras de resposta:', outputContract.response_rules);
     constraintsAndRules.push(rulesBlock.join('\n'));
   }
   if (constraintsAndRules.length > 0) {
     sections.push(`## CONSTRAINTS\n${constraintsAndRules.join('\n\n')}`);
+  }
+
+  if (promptDefinition.few_shot_examples && promptDefinition.few_shot_examples.length > 0) {
+    const exampleLines = promptDefinition.few_shot_examples.map((example, index) => 
+      `### Exemplo ${index + 1}:\nENTRADA: ${example.input}\nSAÍDA: ${example.output}`
+    );
+    sections.push(`## FEW-SHOT EXAMPLES\n${exampleLines.join('\n\n')}`);
   }
 
   const outputLines = [
