@@ -5,6 +5,8 @@ export interface ContextMenuCloudPayload {
   description?: string;
   selection_mode?: string;
   options: unknown[];
+  is_deleted?: boolean;
+  deleted_at?: string | null;
 }
 
 export interface ContextMenuSyncResult {

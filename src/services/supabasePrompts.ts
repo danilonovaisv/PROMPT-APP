@@ -58,7 +58,8 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         // Garantir que itens salvos nunca sejam marcados como excluídos
         is_deleted: false,
         updated_at: new Date().toISOString(),
-        // legacyColumns já inclui selection_payload_jsonb e compiled_payload_jsonb
+        is_deleted: false,
+        deleted_at: null,
         ...legacyColumns,
     };
 
@@ -102,7 +103,11 @@ export async function deletePromptFromSupabase(remoteId: number) {
 
     const { error } = await supabase
         .from('prompts')
-        .update({ is_deleted: true, updated_at: new Date().toISOString() })
+        .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        })
         .eq('id', remoteId)
         .eq('user_id', user.id);
 

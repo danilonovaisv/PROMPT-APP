@@ -13,8 +13,8 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
         name: input.name,
         icon: input.icon,
         color: input.color,
-        // Garantir que itens salvos nunca sejam marcados como excluídos
         is_deleted: false,
+        deleted_at: null,
     };
 
     if (input.remoteId) {
@@ -58,7 +58,11 @@ export async function deleteCategoryFromSupabase(remoteId: number) {
 
     const { error } = await supabase
         .from('categories')
-        .update({ is_deleted: true, updated_at: new Date().toISOString() })
+        .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        })
         .eq('id', remoteId)
         .eq('user_id', user.id);
 
