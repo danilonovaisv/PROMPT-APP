@@ -58,7 +58,6 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         // Garantir que itens salvos nunca sejam marcados como excluídos
         is_deleted: false,
         updated_at: new Date().toISOString(),
-        is_deleted: false,
         deleted_at: null,
         ...legacyColumns,
     };
