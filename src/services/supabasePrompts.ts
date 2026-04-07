@@ -53,7 +53,10 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         output_format: summary.outputFormat,
         language: summary.language,
         reference_url: getPrimaryReferenceUrl(promptPayload),
+        // few_shot_examples: campo novo (migration 20260327000001)
         few_shot_examples: input.fewShotExamples || [],
+        // Garantir que itens salvos nunca sejam marcados como excluídos
+        is_deleted: false,
         updated_at: new Date().toISOString(),
         is_deleted: false,
         deleted_at: null,
@@ -84,6 +87,13 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     return data;
 }
 
+/**
+ * Soft Delete — marca o prompt como excluído no Supabase.
+ * Em vez de um DELETE real, executa UPDATE SET is_deleted = true.
+ * O Supabase Realtime propaga o evento UPDATE para todos os clientes;
+ * o listener em realtimeService.ts detecta is_deleted=true e remove
+ * o item do estado local imediatamente, sem necessidade de reload.
+ */
 export async function deletePromptFromSupabase(remoteId: number) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;

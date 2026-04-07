@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
@@ -52,7 +52,8 @@ export default function MenuManagerPage() {
     setExpandedOption(null);
   };
 
-  const startEdit = (menu: ContextMenu) => {
+  // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
+  const startEdit = useCallback((menu: ContextMenu) => {
     setIsCreating(false);
     setIsEditing(menu.id!);
     setForm({
@@ -64,7 +65,7 @@ export default function MenuManagerPage() {
       remoteId: menu.remoteId,
     });
     setExpandedOption(null);
-  };
+  }, []);
 
   const cancel = () => {
     setIsEditing(null);
@@ -144,7 +145,8 @@ export default function MenuManagerPage() {
     }
   };
 
-  const handleDelete = async (id: number, remoteId?: number) => {
+  // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
+  const handleDelete = useCallback(async (id: number, remoteId?: number) => {
     if (!confirm('Deseja realmente excluir este menu?')) return;
     try {
       if (remoteId) {
@@ -158,7 +160,7 @@ export default function MenuManagerPage() {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao deletar menu no servidor.';
       showToast(errorMessage, 'error');
     }
-  };
+  }, [showToast]);
 
   const addOption = () => {
     setForm((prev) => ({

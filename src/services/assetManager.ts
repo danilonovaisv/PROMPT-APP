@@ -2,6 +2,7 @@
    Gerenciador de Assets e Atualizações
    ====================================================== */
 
+import { type Table } from "dexie";
 import { db } from "@/db/database";
 import { supabase } from "@/lib/supabase";
 import { saveLocalBackup } from "@/utils/backupManager";
@@ -32,6 +33,8 @@ export interface ConflictResolution {
   resolved: boolean;
 }
 
+type SyncableEntity = Category | Prompt | ContextMenu;
+
 /**
  * Detecta conflitos entre dados locais e remotos
  */
@@ -51,9 +54,15 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar categorias
     const remoteCategories = catRes.data || [];
-    const localCategories = await db.categories.toArray();
+    // ⚡ Bolt Optimization: Avoid fetching the entire table into memory (O(n) where n = all rows).
+    // Instead, extract remote IDs from the payload and fetch only the relevant local records using .anyOf()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const remoteCatIds = remoteCategories.map((c: any) => c.id);
+    const localCategories = remoteCatIds.length > 0
+      ? await db.categories.where('remoteId').anyOf(remoteCatIds).toArray()
+      : [];
 
-    const localCategoriesMap = new Map(localCategories.filter(c => c.remoteId != null).map(c => [c.remoteId!, c]));
+    const localCategoriesMap = new Map(localCategories.filter((c) => c.remoteId != null).map((c) => [c.remoteId!, c]));
 
     for (const remote of remoteCategories) {
       const local = localCategoriesMap.get(remote.id);
@@ -78,9 +87,14 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar prompts (similar para menus)
     const remotePrompts = promptRes.data || [];
-    const localPrompts = await db.prompts.toArray();
+    // ⚡ Bolt Optimization: Avoid fetching the entire prompts table (large JSON payloads) into memory.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const remotePromptIds = remotePrompts.map((p: any) => p.id);
+    const localPrompts = remotePromptIds.length > 0
+      ? await db.prompts.where('remoteId').anyOf(remotePromptIds).toArray()
+      : [];
 
-    const localPromptsMap = new Map(localPrompts.filter(p => p.remoteId != null).map(p => [p.remoteId!, p]));
+    const localPromptsMap = new Map(localPrompts.filter((p) => p.remoteId != null).map((p) => [p.remoteId!, p]));
 
     for (const remote of remotePrompts) {
       const local = localPromptsMap.get(remote.id);
@@ -464,24 +478,28 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     supabase.from("context_menus").select("*").eq("user_id", session.user.id),
   ]);
 
-  const pullItems = async (
-    remoteItems: { id: number; created_at?: string; [key: string]: unknown }[] | null,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    localTable: any,
+  const pullItems = async <T extends SyncableEntity>(
+    remoteItems: any[] | null,
+    localTable: Table<T, number>,
     type: AssetUpdate["type"],
   ) => {
-    if (!remoteItems) return;
+    if (!remoteItems || remoteItems.length === 0) return;
 
-    const allLocalItems = await localTable.toArray();
+    // ⚡ Bolt Optimization: Fetch only the specific subset of local records needed to check existence
+    // using .anyOf() with an array of remote IDs instead of loading the entire table.
+    const remoteIdsToCheck = remoteItems.map((r) => r.id);
+    const matchingLocalItems = await localTable.where('remoteId').anyOf(remoteIdsToCheck).toArray();
+
     const existingRemoteIds = new Set<number>();
-    for (const item of allLocalItems) {
+    for (const item of matchingLocalItems) {
       if (item.remoteId != null) {
         existingRemoteIds.add(item.remoteId);
       }
     }
 
     for (const remote of remoteItems) {
-      if (!existingRemoteIds.has(remote.id)) {
+      const exists = existingRemoteIds.has(remote.id);
+      if (!exists) {
         await applyRemoteChanges({
           type,
           id: 0, // Novo item
@@ -494,9 +512,12 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     }
   };
 
-  await pullItems(catRes.data, db.categories, "category");
-  await pullItems(promptRes.data, db.prompts, "prompt");
-  await pullItems(menuRes.data, db.contextMenus, "menu");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(catRes.data, db.categories as any, "category");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(promptRes.data, db.prompts as any, "prompt");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pullItems(menuRes.data, db.contextMenus as any, "menu");
 
   return { pulled: pulledCount };
 }
@@ -511,9 +532,12 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   console.log("📤 Enviando mudanças locais pendentes...");
   let pushedCount = 0;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const findPending = async (table: any, type: AssetUpdate["type"]) => {
-    const pending = await table.where("syncStatus").equals("pending").toArray();
+  const findPending = async <T extends SyncableEntity>(
+    table: Table<T, number>,
+    type: AssetUpdate["type"],
+  ) => {
+    const pending = await (table as any).where("syncStatus").equals("pending")
+      .toArray();
     for (const item of pending) {
       await pushLocalChanges({
         type,
@@ -526,9 +550,12 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
     }
   };
 
-  await findPending(db.categories, "category");
-  await findPending(db.prompts, "prompt");
-  await findPending(db.contextMenus, "menu");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.categories as any, "category");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.prompts as any, "prompt");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await findPending(db.contextMenus as any, "menu");
 
   return { pushed: pushedCount };
 }

@@ -1,11 +1,12 @@
-functionsDirectory = "/Users/PROJETOS DEV/PROMPT-APP/.netlify/functions-internal"
-functionsDirectoryOrigin = "ui"
+functionsDirectory = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
+functionsDirectoryOrigin = "config"
 headersOrigin = "config"
 redirectsOrigin = "config"
 
 [functions]
 
 [functions."*"]
+node_bundler = "esbuild"
 
 [[plugins]]
 origin = "ui"
@@ -18,21 +19,29 @@ pinned_version = "6"
 publish = "/Users/PROJETOS DEV/PROMPT-APP/dist"
 publishOrigin = "config"
 commandOrigin = "config"
-command = "pnpm run build"
-functions = "/Users/PROJETOS DEV/PROMPT-APP/.netlify/functions-internal"
+command = "pnpm install --frozen-lockfile && pnpm run build"
+ignore = "bash -c 'if [ -z \"$CACHED_COMMIT_REF\" ]; then exit 1; fi; CHANGED=\"$(git diff --name-only \"$CACHED_COMMIT_REF\" \"$COMMIT_REF\")\"; echo \"$CHANGED\" | grep -qvE \"^(docs/|\\.github/|tests/|.*\\.md$|.*\\.lock$)\"' "
+functions = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
 
 [build.environment]
 NODE_VERSION = "20"
+CI = "true"
 
 [build.processing]
+skip_processing = true
 
 [build.processing.css]
+bundle = false
+minify = false
 
 [build.processing.html]
 
 [build.processing.images]
+compress = false
 
 [build.processing.js]
+bundle = false
+minify = false
 
 [build.services]
 
@@ -58,8 +67,8 @@ Cache-Control = "no-store"
 for = "/*"
 
 [headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
 X-Frame-Options = "DENY"
-X-XSS-Protection = "1; mode=block"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
 

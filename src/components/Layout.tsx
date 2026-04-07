@@ -142,7 +142,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         <a href="/sobre">Sobre</a>
                         <a href="/contato">Contato</a>
                         <a href="/privacidade">Privacidade</a>
-                        <a href="https://github.com/danilonovaisv/PROMPT-APP">GitHub</a>
+                        <a href="https://github.com/danilonovaisv/PROMPT-APP" target="_blank" rel="noopener noreferrer">GitHub</a>
                     </nav>
                 </footer>
             </main>

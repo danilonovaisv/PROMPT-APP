@@ -42,6 +42,13 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
     }
 }
 
+/**
+ * Soft Delete — marca a categoria como excluída no Supabase.
+ * Em vez de um DELETE real, executa UPDATE SET is_deleted = true.
+ * O Supabase Realtime propaga o evento UPDATE para todos os clientes;
+ * o listener em realtimeService.ts detecta is_deleted=true e remove
+ * o item do estado local imediatamente.
+ */
 export async function deleteCategoryFromSupabase(remoteId: number) {
     const { data: auth, error: authError } = await supabase.auth.getUser();
     if (authError) throw authError;
