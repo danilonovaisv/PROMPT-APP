@@ -72,7 +72,7 @@ describe("Legacy JSON to Database Schema Mapping", () => {
   it("migrates contextMenus to new menu_definitions format", () => {
     const legacyWithMenus = {
       title: "Menu Test",
-      system_role: "test role",  // Add this to trigger legacy detection
+      system_role: "test role", // Add this to trigger legacy detection
       contextMenus: {
         tom: { option: "formal", subOptions: ["corporativo"] },
       },

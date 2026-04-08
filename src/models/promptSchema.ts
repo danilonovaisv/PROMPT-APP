@@ -538,7 +538,8 @@ export function createTemplatePayloadFromLegacyRecord(
       few_shot_examples: [],
     },
     menu_definitions: menuDefinitions,
-    menu_ids: legacyPrompt.enabledMenuIds || Object.keys(legacyPrompt.contextMenus || {}),
+    menu_ids: legacyPrompt.enabledMenuIds ||
+      Object.keys(legacyPrompt.contextMenus || {}),
     output_contract: {
       format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
       language: legacyPrompt.language || DEFAULT_LANGUAGE,
@@ -598,11 +599,10 @@ export function parseTemplatePayload(
       "constraints" in legacyPromptContract ||
       "input_data" in legacyPromptContract
     ) {
-      const inputData =
-        legacyPromptContract.input_data &&
+      const inputData = legacyPromptContract.input_data &&
           typeof legacyPromptContract.input_data === "object"
-          ? (legacyPromptContract.input_data as Record<string, unknown>)
-          : undefined;
+        ? (legacyPromptContract.input_data as Record<string, unknown>)
+        : undefined;
 
       const legacyRecord: LegacyPromptRecord & {
         user_scene_description?: string;
@@ -630,20 +630,19 @@ export function parseTemplatePayload(
         negativePrompt: Array.isArray(legacyPromptContract.negative_prompt)
           ? uniqueStrings(legacyPromptContract.negative_prompt as string[])
           : fallback?.negativePrompt,
-        outputSchema:
-          typeof legacyPromptContract.output_schema === "object" &&
+        outputSchema: typeof legacyPromptContract.output_schema === "object" &&
             legacyPromptContract.output_schema
-            ? {
-              formato: String(
-                (legacyPromptContract.output_schema as Record<string, unknown>)
-                  .formato || "markdown",
-              ),
-              estrutura: String(
-                (legacyPromptContract.output_schema as Record<string, unknown>)
-                  .estrutura || "",
-              ),
-            }
-            : fallback?.outputSchema,
+          ? {
+            formato: String(
+              (legacyPromptContract.output_schema as Record<string, unknown>)
+                .formato || "markdown",
+            ),
+            estrutura: String(
+              (legacyPromptContract.output_schema as Record<string, unknown>)
+                .estrutura || "",
+            ),
+          }
+          : fallback?.outputSchema,
         schemaVersion: typeof legacyPromptContract.schema_version === "string"
           ? legacyPromptContract.schema_version
           : fallback?.schemaVersion,
@@ -674,14 +673,13 @@ export function parseTemplatePayload(
       "meta" in legacyPromptContract && "role" in legacyPromptContract &&
       "objective" in legacyPromptContract
     ) {
-      const legacySelectionMap =
-        legacyPromptContract.context_menus &&
+      const legacySelectionMap = legacyPromptContract.context_menus &&
           typeof legacyPromptContract.context_menus === "object"
-          ? (legacyPromptContract.context_menus as Record<
-            string,
-            LegacyContextMenuSelection
-          >)
-          : {};
+        ? (legacyPromptContract.context_menus as Record<
+          string,
+          LegacyContextMenuSelection
+        >)
+        : {};
 
       return createTemplatePayloadFromLegacyRecord(
         {
