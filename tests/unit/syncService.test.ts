@@ -400,6 +400,7 @@ describe('syncToCloud', () => {
       prompt_payload_jsonb: promptPayload,
       selection_payload_jsonb: selectionPayload,
       compiled_payload_jsonb: compiledPayload,
+      selected_menu_ids: ['tone'],
       enabled_menu_ids: ['tone'],
       constraints: [],
       negative_prompt: [],

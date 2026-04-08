@@ -111,7 +111,76 @@ squirrel audit https://prompt-app-dan.netlify.app --coverage surface --max-pages
 
 ---
 
-## 4) Audit Matrix For Follow-up
+## 4) State Boundary Map
+
+| Boundary | Writes Dexie | Writes Supabase | Listens to Supabase realtime | Writes backups | Reacts to auth changes |
+| --- | --- | --- | --- | --- | --- |
+| `setupAutoSync` | No direct write; installs Dexie hooks on `prompts`, `categories`, and `contextMenus` | Indirectly via `syncToCloud` | No | No | Yes, via `supabase.auth.getSession()` gate inside the timer |
+| `syncToCloud` | Yes, updates `remoteId` and `syncStatus` after cloud writes | Yes, inserts/updates categories, menus, and prompts | No | No | Yes, requires authenticated session |
+| `setupRealtimeListeners` | Yes, merges remote category/prompt/menu payloads into Dexie | No | Yes, subscribes to `categories_changes`, `prompts_changes`, and `context_menus_changes` | Yes, schedules `saveLocalBackup()` after realtime writes | Yes, only installs listeners when a session exists |
+| `cleanupRealtimeListeners` | No | No | Yes, unsubscribes active channels | No | Yes, used on logout and app teardown |
+| `EditorPage` save flow | Yes, writes the prompt locally first and clears the local draft | Yes, `savePromptToSupabase()` persists the prompt remotely | No | Yes, calls `saveLocalBackup()` after local save | No direct auth handling |
+| App boot in `App.tsx` | Yes, seeds the local database | No direct write | Yes, starts realtime listeners when configured | Yes, schedules `saveLocalBackup()` on boot | Yes, auth change listener restarts realtime or cleans it up |
+| `downloadFromCloud` | Yes, bulk-merges remote state into Dexie | No direct write | No | No | Yes, requires authenticated session |
+
+---
+
+## 5) Task 2 Verification Runs
+
+### Commands run
+
+```bash
+npm test -- --runInBand tests/unit/App.test.tsx tests/unit/syncService.test.ts tests/unit/realtimeService.test.ts tests/integration/editor-state-consistency.test.tsx tests/unit/autoSync.test.ts
+```
+
+### Outcomes
+
+- `5` suites passed.
+- `19` tests passed.
+- No new failures were introduced in the targeted consistency coverage.
+
+### Confirmed non-reproductions
+
+- `tests/unit/syncService.test.ts` confirmed that `syncToCloud()` skips a stale local prompt when the remote `updated_at` is newer.
+- `tests/unit/syncService.test.ts` confirmed that `downloadFromCloud()` preserves `selectedMenuIds`, `selectionPayload`, and `compiledPayload` when hydrating a remote prompt into local state.
+- `tests/unit/App.test.tsx` confirmed that the `App.tsx` auth callback re-invokes `setupRealtimeListeners()` on sign-in and calls `syncToCloud()` from the reinstallation path.
+- `tests/unit/realtimeService.test.ts` confirmed that repeated `setupRealtimeListeners()` calls do not stack live subscriptions and that cleanup unsubscribes the active channels once.
+- `tests/integration/editor-state-consistency.test.tsx` confirmed that a saved draft survives async menu hydration without losing the selected menu state.
+- `tests/unit/autoSync.test.ts` remained green and continues to characterize debounce and single-install behavior for auto-sync hooks, but there is no teardown API in `src/services/autoSync.ts`, so teardown behavior could not be asserted without inventing source behavior.
+
+### Confirmed inconsistencies
+
+- `src/services/autoSync.ts` has no teardown path. The module-scoped hooks and timer can be installed once, but there is no exported cleanup or unhook logic to verify.
+
+---
+
+## 6) Browser Reproduction
+
+### Commands run
+
+```bash
+pnpm dev -- --host 127.0.0.1 --port 4173
+npx playwright install chromium
+node --input-type=module
+```
+
+### What was exercised
+
+- Opened `/editor/novo` in a real Chromium session against the local Vite app.
+- Created a draft by typing into the editor and reloaded the page.
+- Confirmed the draft restored after reload with the same title value.
+- Opened the cloud login modal, submitted a mocked Supabase password login, and confirmed the `SIGNED_IN` auth path fired.
+- Observed real browser network calls to `/auth/v1/token` and `/rest/v1/*` during the auth-triggered sync path.
+- Confirmed the auth-triggered sync path produced the expected runtime logs for `SIGNED_IN`, auto-sync, and smart-merge requests.
+
+### What was not fully reproduced
+
+- A second-tab overwrite simulation was started, but the final run was interrupted before a conclusive freshness result could be captured.
+- Because the project has no local teardown API for `autoSync`, no browser-level teardown verification was attempted.
+
+---
+
+## 7) Audit Matrix For Follow-up
 
 The next tasks will exercise these flows:
 
@@ -124,7 +193,7 @@ The next tasks will exercise these flows:
 
 ---
 
-## 5) Baseline Summary
+## 8) Baseline Summary
 
 - Local verification is green except for the pre-existing `any` warnings.
 - The live site is reachable and returns a `200`, but the surface audit shows real hygiene issues in metadata, sitemap validation, security headers, and production source maps.
