@@ -13,3 +13,6 @@
 ## 2026-10-27 - N+1 Network & DB Writes in Bulk Imports
 **Learning:** Individual `.add()` calls combined with inline remote synchronization (`savePromptToSupabase`) within a bulk JSON import loop causes catastrophic N+1 performance degradation. It blocks the main thread, delays the import process proportionally to network latency, and can trigger API rate limits.
 **Action:** Extract database insertions from the loop and use `bulkAdd()` for batch processing. Defer cloud synchronization to the background `syncService` by initially marking records with `syncStatus: 'pending'`.
+## 2026-10-28 - N+1 Network & DB Writes in Menu Bulk Imports
+**Learning:** Similar to prompt imports, iterating over context menus during bulk JSON import to perform individual `.add()` and inline remote synchronization (`saveMenuToSupabase`) causes a severe N+1 performance degradation, blocking the UI and generating unnecessary network overhead.
+**Action:** Extract database insertions and use `bulkPut()` to batch insert context menus locally. Defer cloud synchronization to the background `syncService` by initially marking new menu records with `syncStatus: 'pending'`.

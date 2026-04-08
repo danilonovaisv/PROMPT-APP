@@ -4,7 +4,6 @@
    ====================================================== */
 
 import { db } from '@/db/database';
-import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import type { ContextMenu } from '@/models/types';
 
 /* -------------------------------------------------------
@@ -311,23 +310,17 @@ export async function importMenusFromFile(
     }
 
     try {
-        const enrichedMenus: Partial<ContextMenu>[] = [];
-        for (const menu of menusToImport) {
-            const contextMenu = toContextMenu(menu) as Partial<ContextMenu>;
-            try {
-                const savedRemote = await saveMenuToSupabase(contextMenu);
-                contextMenu.remoteId = savedRemote.id;
-            } catch (err) {
-                console.error("Erro importando menu no Supabase", err);
-            }
-            enrichedMenus.push(contextMenu);
-        }
-
-        await db.transaction('rw', db.contextMenus, async () => {
-            for (const menu of enrichedMenus) {
-                await db.contextMenus.add(menu as ContextMenu);
-            }
+        const enrichedMenus: ContextMenu[] = menusToImport.map((menu) => {
+            const contextMenu = toContextMenu(menu) as ContextMenu;
+            // ⚡ Bolt Optimization: Defer cloud sync to the background syncService
+            // by marking records as 'pending' to prevent blocking the main thread
+            // with N+1 network requests during bulk import.
+            contextMenu.syncStatus = 'pending';
+            return contextMenu;
         });
+
+        // ⚡ Bolt Optimization: Use bulkPut to avoid N+1 database writes in Dexie.js
+        await db.contextMenus.bulkPut(enrichedMenus);
 
         log.push(`[${timestamp}] SUCESSO: ${menusToImport.length} menu(s) importado(s)`);
         for (const menu of menusToImport) {
