@@ -19,7 +19,12 @@ jest.mock('@/lib/supabase', () => ({
 
 jest.mock('@/db/database', () => ({
   db: {
-    categories: { update: jest.fn() },
+    categories: {
+      update: jest.fn(),
+      toArray: jest.fn(),
+      bulkPut: jest.fn(),
+      delete: jest.fn(),
+    },
     contextMenus: {
       update: jest.fn(),
       toArray: jest.fn(),
@@ -426,6 +431,7 @@ describe('syncToCloud', () => {
     (db.categories.toArray as unknown as jest.Mock).mockResolvedValue([]);
     (db.contextMenus.toArray as unknown as jest.Mock).mockResolvedValue([]);
     (db.prompts.toArray as unknown as jest.Mock).mockResolvedValue([]);
+    (db.categories.bulkPut as unknown as jest.Mock).mockResolvedValue([1]);
     (db.prompts.bulkPut as unknown as jest.Mock).mockResolvedValue([1]);
     (db.contextMenus.bulkPut as unknown as jest.Mock).mockResolvedValue([]);
 
