@@ -1,9 +1,18 @@
+const workspaceIgnorePatterns = [
+  '<rootDir>/.agent/',
+  '<rootDir>/.agents/',
+  '<rootDir>/backup-superpower/',
+];
+
 module.exports = {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
   // E2E tests use @playwright/test runner — must run via `pnpm test:e2e`, not Jest
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/e2e/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/e2e/', ...workspaceIgnorePatterns],
+  modulePathIgnorePatterns: workspaceIgnorePatterns,
+  watchPathIgnorePatterns: workspaceIgnorePatterns,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

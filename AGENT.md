@@ -79,12 +79,15 @@ If the user invokes `/prompt-agent`, you must adapt this structure to:
 
 When generating prompts for LLM execution, you must model cognition explicitly:
 
-* Persona / Role → `system_role`
-* Directive → `task`
-* Context → `input_data.context`
-* Constraints → `constraints`
-* Output Definition → `output_schema`
-* Examples → `few_shot_examples`
+- prompt_definition:
+- * system_role:
+- * task:
+- * context:
+- * constraints:
+- * negative_prompt:
+- * required_fields:
+- * response_rules:
+- * user_input:
 
 No prompt output is valid without a **clearly defined output schema**.
 

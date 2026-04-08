@@ -6,12 +6,18 @@ import react from "@vitejs/plugin-react";
 // Ativa com: ANALYZE=true pnpm build
 // Requer: pnpm add -D rollup-plugin-visualizer
 const shouldAnalyze = process.env.ANALYZE === 'true';
+const shouldEnableSentryBuild = process.env.CI === 'true' || process.env.SENTRY_BUILD_PLUGIN === 'true';
 
 // Lazy-load do visualizer para não quebrar builds sem o pacote instalado
 async function getPlugins() {
   const base = [
     react(),
-    sentryVitePlugin({ org: "dannovaisv", project: "javascript-react" }),
+    sentryVitePlugin({
+      org: "dannovaisv",
+      project: "javascript-react",
+      disable: !shouldEnableSentryBuild,
+      telemetry: false,
+    }),
   ];
 
   if (shouldAnalyze) {
