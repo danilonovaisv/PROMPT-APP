@@ -538,6 +538,7 @@ export function createTemplatePayloadFromLegacyRecord(
       few_shot_examples: [],
     },
     menu_definitions: menuDefinitions,
+    menu_ids: legacyPrompt.enabledMenuIds || Object.keys(legacyPrompt.contextMenus || {}),
     output_contract: {
       format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
       language: legacyPrompt.language || DEFAULT_LANGUAGE,
@@ -605,6 +606,7 @@ export function parseTemplatePayload(
 
       const legacyRecord: LegacyPromptRecord & {
         user_scene_description?: string;
+        required_fields?: string[];
       } = {
         title: typeof legacyPromptContract.title === "string"
           ? legacyPromptContract.title
@@ -652,6 +654,14 @@ export function parseTemplatePayload(
           typeof legacyPromptContract.user_scene_description === "string"
             ? legacyPromptContract.user_scene_description
             : (fallback as any)?.user_scene_description,
+        required_fields: Array.isArray(legacyPromptContract.required_fields)
+          ? uniqueStrings(legacyPromptContract.required_fields as string[])
+          : (fallback as any)?.required_fields,
+        enabledMenuIds: Array.isArray(legacyPromptContract.enabled_menu_ids)
+          ? (legacyPromptContract.enabled_menu_ids as string[])
+          : Array.isArray(legacyPromptContract.enabledMenuIds)
+          ? (legacyPromptContract.enabledMenuIds as string[])
+          : fallback?.enabledMenuIds,
       };
 
       return createTemplatePayloadFromLegacyRecord(
