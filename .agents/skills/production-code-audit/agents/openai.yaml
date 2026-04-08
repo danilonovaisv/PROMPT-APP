@@ -1,7 +1,0 @@
-interface:
-  display_name: "Production Code Audit"
-  short_description: "Deep audit for quality, security, performance"
-  icon_small: "./assets/icon-small.svg"
-  icon_large: "./assets/icon-large.svg"
-  brand_color: "#E11D48"
-  default_prompt: "Use $production-code-audit to audit this codebase."

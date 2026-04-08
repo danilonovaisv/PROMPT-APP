@@ -1,7 +1,0 @@
-interface:
-  display_name: "Supabase Auth+Storage+Realtime"
-  short_description: "Implement Supabase auth, storage, realtime"
-  icon_small: "./assets/icon-small.svg"
-  icon_large: "./assets/icon-large.svg"
-  brand_color: "#3ECF8E"
-  default_prompt: "Use $supabase-auth-storage-realtime-core to implement auth, storage, and realtime."

@@ -1,7 +1,0 @@
-interface:
-  display_name: "Frontend Code Review"
-  short_description: "Review TSX/TS/HTML/CSS for issues"
-  icon_small: "./assets/icon-small.svg"
-  icon_large: "./assets/icon-large.svg"
-  brand_color: "#2563EB"
-  default_prompt: "Use $frontend-code-review to review these frontend changes."

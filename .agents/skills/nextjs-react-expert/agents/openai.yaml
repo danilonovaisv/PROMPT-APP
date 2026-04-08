@@ -1,7 +1,0 @@
-interface:
-  display_name: "Next.js React Expert"
-  short_description: "Performance optimization for React and Next.js"
-  icon_small: "./assets/icon-small.svg"
-  icon_large: "./assets/icon-large.svg"
-  brand_color: "#111827"
-  default_prompt: "Use $nextjs-react-expert to optimize this Next.js app."
