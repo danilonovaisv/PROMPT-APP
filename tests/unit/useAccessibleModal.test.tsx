@@ -89,6 +89,8 @@ describe('useAccessibleModal', () => {
 
   it('restores previous active element and overflow on unmount', () => {
     jest.useFakeTimers();
+    const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+    const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
     const outerButton = document.createElement('button');
     document.body.appendChild(outerButton);
@@ -104,10 +106,14 @@ describe('useAccessibleModal', () => {
     expect(document.activeElement).toBe(button1);
     expect(document.body.style.overflow).toBe('hidden');
 
+    const keydownHandler = addEventListenerSpy.mock.calls.find(([type]) => type === 'keydown')?.[1];
+    expect(keydownHandler).toEqual(expect.any(Function));
+
     unmount();
 
     expect(document.activeElement).toBe(outerButton);
     expect(document.body.style.overflow).toBe('');
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', keydownHandler);
   });
 
   it('traps focus to container when no focusable elements are present', () => {

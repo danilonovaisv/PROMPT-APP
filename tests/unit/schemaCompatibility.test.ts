@@ -25,4 +25,9 @@ describe('schemaCompatibility', () => {
     expect(getBulkExportWarning('abc')).toContain('inválida');
     expect(getBulkExportWarning(CURRENT_BULK_EXPORT_VERSION)).toBeNull();
   });
+
+  test('trata versões com espaços laterais como entradas válidas após normalização', () => {
+    expect(getVersionCompatibility(` ${CURRENT_PROMPT_SCHEMA_VERSION} `, CURRENT_PROMPT_SCHEMA_VERSION)).toBe('current');
+    expect(getBulkExportWarning(` ${CURRENT_BULK_EXPORT_VERSION} `)).toBeNull();
+  });
 });
