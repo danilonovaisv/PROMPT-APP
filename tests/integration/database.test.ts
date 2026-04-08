@@ -3,7 +3,7 @@
  */
 
 import { db } from "@/db/database";
-import type { Category, Prompt, ContextMenu } from "@/models/types";
+import type { Category, ContextMenu, Prompt } from "@/models/types";
 
 describe("Database Integration Tests", () => {
   it("should expose Dexie schema version 10", () => {
@@ -109,6 +109,7 @@ describe("Database Integration Tests", () => {
             system_role: "You are a helpful assistant",
             task: "Help the user",
             context: "",
+            user_scene_description: "",
             constraints: [],
             negative_prompt: [],
             few_shot_examples: [],
@@ -172,6 +173,7 @@ describe("Database Integration Tests", () => {
             system_role: "You are a helpful assistant",
             task: "Help the user",
             context: "",
+            user_scene_description: "",
             constraints: [],
             negative_prompt: [],
             few_shot_examples: [],
@@ -333,6 +335,7 @@ describe("Database Integration Tests", () => {
               system_role: "",
               task: "",
               context: "",
+              user_scene_description: "",
               constraints: [],
               negative_prompt: [],
               few_shot_examples: [],
@@ -377,6 +380,7 @@ describe("Database Integration Tests", () => {
               system_role: "",
               task: "",
               context: "",
+              user_scene_description: "",
               constraints: [],
               negative_prompt: [],
               few_shot_examples: [],
