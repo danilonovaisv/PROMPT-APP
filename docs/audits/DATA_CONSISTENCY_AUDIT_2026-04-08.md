@@ -51,15 +51,26 @@
 - Add UI input in `EditorDefinitionForm`
 - Update legacy conversion
 
-### 3. `input_data.menus_selecionados` RENAMED (LOW PRIORITY - Documentation Only)
-**Status:** Not a bug, just a naming change during v3 migration.
+### 3. `input_data.menus_selecionados` / `contextMenus` MIGRATION ISSUE (HIGH PRIORITY)
+**Problem:** Legacy `contextMenus` object is NOT being converted to new format during parsing.
+
+**Evidence:** Test shows `parsed.menu_ids` returns empty array `[]` instead of `["tom"]`.
+
+**Expected Behavior:**
+- Legacy format: `contextMenus: { tom: { option: "formal", subOptions: [...] } }`
+- Should convert to: `menu_ids: ["tom"]` + proper selectionPayload
 
 **Current State:** 
-- Legacy used `contextMenus` object format
-- v3 uses `menu_definitions` array + `selectionPayload`
-- Conversion functions exist: `convertContextMenuSelectionToSelectedMenus()`
+- Conversion function exists: `convertContextMenuSelectionToSelectedMenus()` (line 270-291)
+- BUT it's only called in `parseUserSelection()`, NOT in `parsePromptPayload()`
+- Menu data is lost during prompt payload parsing
 
-**Action:** Document this in audit, no code changes needed.
+**Impact:** Menu selections from legacy prompts are lost during migration/sync.
+
+**Fix Needed:** 
+- Call `convertContextMenuSelectionToSelectedMenus()` in `createTemplatePayloadFromLegacyRecord()`
+- Set `menu_ids` field in returned TemplatePayload
+- Ensure menu_definitions are passed through
 
 ---
 
