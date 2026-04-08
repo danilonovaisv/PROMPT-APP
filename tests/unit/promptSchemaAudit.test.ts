@@ -82,4 +82,19 @@ describe('Legacy JSON to Database Schema Mapping', () => {
     // Check that menu_definitions exist (may be empty if not provided)
     expect(Array.isArray(parsed.menu_definitions)).toBe(true);
   });
+
+  it('captures user_scene_description field from legacy format', () => {
+    const legacyWithScene = {
+      title: "Test",
+      systemRole: "role",
+      task: "task",
+      context: "context",
+      user_scene_description: "User is a senior developer working on..."
+    };
+
+    const result = parsePromptPayload(legacyWithScene);
+    
+    // Field should be preserved in prompt_definition
+    expect(result.prompt_definition.user_scene_description).toBe("User is a senior developer working on...");
+  });
 });

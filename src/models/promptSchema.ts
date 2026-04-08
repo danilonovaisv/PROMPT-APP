@@ -109,6 +109,7 @@ export const PromptDefinitionSchema = z
     system_role: z.string().trim().default(''),
     task: z.string().trim().default(''),
     context: z.string().trim().default(''),
+    user_scene_description: z.string().trim().default(''),
     constraints: z.array(z.string().trim().min(1)).default([]),
     negative_prompt: z.array(z.string().trim().min(1)).default([]),
     few_shot_examples: z.array(FewShotExampleSchema).default([]),
@@ -493,6 +494,7 @@ export function createTemplatePayloadFromLegacyRecord(
       system_role: legacyPrompt.systemRole?.trim() || '',
       task: legacyPrompt.task?.trim() || '',
       context: legacyPrompt.context?.trim() || '',
+      user_scene_description: (legacyPrompt as any).user_scene_description?.trim() || '',
       constraints: uniqueStrings(legacyPrompt.constraints || []),
       negative_prompt: uniqueStrings(legacyPrompt.negativePrompt || []),
       few_shot_examples: [],
@@ -502,7 +504,7 @@ export function createTemplatePayloadFromLegacyRecord(
       format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
       language: legacyPrompt.language || DEFAULT_LANGUAGE,
       strict_mode: true,
-      required_fields: [],
+      required_fields: (legacyPrompt as any).required_fields || [],
       response_rules: responseRules,
     },
   });
@@ -555,56 +557,59 @@ export function parseTemplatePayload(
           ? (legacyPromptContract.input_data as Record<string, unknown>)
           : undefined;
 
-      return createTemplatePayloadFromLegacyRecord(
-        {
-          title:
-            typeof legacyPromptContract.title === 'string'
-              ? legacyPromptContract.title
-              : typeof legacyPromptContract.name === 'string'
-                ? legacyPromptContract.name
-                : fallback?.title,
-          systemRole:
-            typeof legacyPromptContract.system_role === 'string'
-              ? legacyPromptContract.system_role
-              : fallback?.systemRole,
-          task:
-            typeof legacyPromptContract.task === 'string'
-              ? legacyPromptContract.task
-              : fallback?.task,
-          context:
-            typeof legacyPromptContract.context === 'string'
-              ? legacyPromptContract.context
-              : typeof inputData?.context === 'string'
-                ? inputData.context
-                : fallback?.context,
-          constraints: Array.isArray(legacyPromptContract.constraints)
-            ? uniqueStrings(legacyPromptContract.constraints as string[])
-            : fallback?.constraints,
-          negativePrompt: Array.isArray(legacyPromptContract.negative_prompt)
-            ? uniqueStrings(legacyPromptContract.negative_prompt as string[])
-            : fallback?.negativePrompt,
-          outputSchema:
-            typeof legacyPromptContract.output_schema === 'object' && legacyPromptContract.output_schema
-              ? {
-                  formato: String(
-                    (legacyPromptContract.output_schema as Record<string, unknown>).formato || 'markdown'
-                  ),
-                  estrutura: String(
-                    (legacyPromptContract.output_schema as Record<string, unknown>).estrutura || ''
-                  ),
-                }
-              : fallback?.outputSchema,
-          schemaVersion:
-            typeof legacyPromptContract.schema_version === 'string'
-              ? legacyPromptContract.schema_version
-              : fallback?.schemaVersion,
-          language:
-            typeof legacyPromptContract.language === 'string'
-              ? legacyPromptContract.language
-              : fallback?.language,
-        },
-        menuDefinitions
-      );
+      const legacyRecord: LegacyPromptRecord & { user_scene_description?: string } = {
+        title:
+          typeof legacyPromptContract.title === 'string'
+            ? legacyPromptContract.title
+            : typeof legacyPromptContract.name === 'string'
+              ? legacyPromptContract.name
+              : fallback?.title,
+        systemRole:
+          typeof legacyPromptContract.system_role === 'string'
+            ? legacyPromptContract.system_role
+            : fallback?.systemRole,
+        task:
+          typeof legacyPromptContract.task === 'string'
+            ? legacyPromptContract.task
+            : fallback?.task,
+        context:
+          typeof legacyPromptContract.context === 'string'
+            ? legacyPromptContract.context
+            : typeof inputData?.context === 'string'
+              ? inputData.context
+              : fallback?.context,
+        constraints: Array.isArray(legacyPromptContract.constraints)
+          ? uniqueStrings(legacyPromptContract.constraints as string[])
+          : fallback?.constraints,
+        negativePrompt: Array.isArray(legacyPromptContract.negative_prompt)
+          ? uniqueStrings(legacyPromptContract.negative_prompt as string[])
+          : fallback?.negativePrompt,
+        outputSchema:
+          typeof legacyPromptContract.output_schema === 'object' && legacyPromptContract.output_schema
+            ? {
+                formato: String(
+                  (legacyPromptContract.output_schema as Record<string, unknown>).formato || 'markdown'
+                ),
+                estrutura: String(
+                  (legacyPromptContract.output_schema as Record<string, unknown>).estrutura || ''
+                ),
+              }
+            : fallback?.outputSchema,
+        schemaVersion:
+          typeof legacyPromptContract.schema_version === 'string'
+            ? legacyPromptContract.schema_version
+            : fallback?.schemaVersion,
+        language:
+          typeof legacyPromptContract.language === 'string'
+            ? legacyPromptContract.language
+            : fallback?.language,
+        user_scene_description:
+          typeof legacyPromptContract.user_scene_description === 'string'
+            ? legacyPromptContract.user_scene_description
+            : (fallback as any)?.user_scene_description,
+      };
+
+      return createTemplatePayloadFromLegacyRecord(legacyRecord, menuDefinitions);
     }
 
     if ('meta' in legacyPromptContract && 'role' in legacyPromptContract && 'objective' in legacyPromptContract) {
