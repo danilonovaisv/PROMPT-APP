@@ -1,30 +1,33 @@
-import { parsePromptPayload, getLegacyPromptColumns } from '@/models/promptSchema';
+import {
+  getLegacyPromptColumns,
+  parsePromptPayload,
+} from "@/models/promptSchema";
 
-describe('Legacy JSON to Database Schema Mapping', () => {
-  it('maps all legacy fields to current schema', () => {
+describe("Legacy JSON to Database Schema Mapping", () => {
+  it("maps all legacy fields to current schema", () => {
     const legacyJson = {
       title: "Test Prompt",
       system_role: "test role",
       task: "test task",
       input_data: {
         context: "test context",
-        menus_selecionados: {}
+        menus_selecionados: {},
       },
       user_scene_description: "scene desc",
       constraints: ["rule1"],
       negative_prompt: ["avoid1"],
       output_schema: {
         formato: "texto",
-        estrutura: "rule1, rule2"
+        estrutura: "rule1, rule2",
       },
       required_fields: ["field1"],
       response_rules: ["rule1"],
-      few_shot_examples: []
+      few_shot_examples: [],
     };
 
     // Expected mapping after parsePromptPayload
     const mapped = parsePromptPayload(legacyJson);
-    
+
     expect(mapped.prompt_definition.system_role).toBe("test role");
     expect(mapped.prompt_definition.task).toBe("test task");
     expect(mapped.prompt_definition.context).toBe("test context");
@@ -36,7 +39,7 @@ describe('Legacy JSON to Database Schema Mapping', () => {
     expect(mapped.prompt_definition.few_shot_examples).toEqual([]);
   });
 
-  it('preserves bidirectional mapping through getLegacyPromptColumns', () => {
+  it("preserves bidirectional mapping through getLegacyPromptColumns", () => {
     const legacyJson = {
       title: "Bidirectional Test",
       system_role: "role",
@@ -46,11 +49,11 @@ describe('Legacy JSON to Database Schema Mapping', () => {
       negative_prompt: ["n1"],
       output_schema: {
         formato: "markdown",
-        estrutura: "r1, r2, r3"
+        estrutura: "r1, r2, r3",
       },
       few_shot_examples: [
-        { input: "in", output: "out" }
-      ]
+        { input: "in", output: "out" },
+      ],
     };
 
     const parsed = parsePromptPayload(legacyJson);
@@ -66,35 +69,37 @@ describe('Legacy JSON to Database Schema Mapping', () => {
     expect(legacyColumns.output_schema.estrutura).toBe("r1, r2, r3");
   });
 
-  it('migrates contextMenus to new menu_definitions format', () => {
+  it("migrates contextMenus to new menu_definitions format", () => {
     const legacyWithMenus = {
       title: "Menu Test",
       contextMenus: {
-        tom: { option: "formal", subOptions: ["corporativo"] }
+        tom: { option: "formal", subOptions: ["corporativo"] },
       },
-      enabledMenuIds: ["tom"]
+      enabledMenuIds: ["tom"],
     };
 
     const parsed = parsePromptPayload(legacyWithMenus);
-    
+
     // Menus should be converted to new format
     expect(parsed.menu_ids).toContain("tom");
     // Check that menu_definitions exist (may be empty if not provided)
     expect(Array.isArray(parsed.menu_definitions)).toBe(true);
   });
 
-  it('captures user_scene_description field from legacy format', () => {
+  it("captures user_scene_description field from legacy format", () => {
     const legacyWithScene = {
       title: "Test",
       systemRole: "role",
       task: "task",
       context: "context",
-      user_scene_description: "User is a senior developer working on..."
+      user_scene_description: "User is a senior developer working on...",
     };
 
     const result = parsePromptPayload(legacyWithScene);
-    
+
     // Field should be preserved in prompt_definition
-    expect(result.prompt_definition.user_scene_description).toBe("User is a senior developer working on...");
+    expect(result.prompt_definition.user_scene_description).toBe(
+      "User is a senior developer working on...",
+    );
   });
 });

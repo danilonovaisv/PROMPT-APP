@@ -1,0 +1,20 @@
+[
+  {
+    "system_role": "",
+    "task": "",
+    "input_data": {
+      "context": "",
+      "menus_selecionados": {}
+    },
+    "user_scene_description": "{{user_scene_description}}",
+    "constraints": [],
+    "negative_prompt": [],
+    "output_schema": {
+      "formato": "texto",
+      "estrutura": ""
+    },
+    "required_fields": [],
+    "response_rules": [],
+    "few_shot_examples": []
+  }
+]
