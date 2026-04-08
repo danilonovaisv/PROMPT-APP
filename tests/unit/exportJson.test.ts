@@ -1,17 +1,17 @@
-import { getTemplateFile, formatPromptAsMarkdown } from '@/utils/exportJson';
+import { formatPromptAsMarkdown, getTemplateFile } from "@/utils/exportJson";
 import {
+  type CompiledPromptPayload,
   PromptContractSchema,
   type TemplatePayload,
-  type CompiledPromptPayload,
-} from '@/models/promptSchema';
+} from "@/models/promptSchema";
 
-describe('getTemplateFile', () => {
-  it('returns a Blob with valid JSON content matching PromptContractSchema', async () => {
+describe("getTemplateFile", () => {
+  it("returns a Blob with valid JSON content matching PromptContractSchema", async () => {
     const blob = getTemplateFile();
 
     // Verify it is a Blob
     expect(blob).toBeInstanceOf(Blob);
-    expect(blob.type).toBe('application/json');
+    expect(blob.type).toBe("application/json");
 
     // Extract text from Blob
     const text = await blob.text();
@@ -26,30 +26,31 @@ describe('getTemplateFile', () => {
 
     // Verify specific fields
     if (result.success) {
-      expect(result.data.meta.template_id).toBe('novo_template');
-      expect(result.data.meta.template_name).toBe('Novo Template');
-      expect(result.data.meta.status).toBe('draft');
+      expect(result.data.meta.template_id).toBe("novo_template");
+      expect(result.data.meta.template_name).toBe("Novo Template");
+      expect(result.data.meta.status).toBe("draft");
       expect(result.data.prompt_definition).toBeDefined();
       expect(result.data.output_contract).toBeDefined();
     }
   });
 });
 
-describe('formatPromptAsMarkdown', () => {
-  it('formats a minimal prompt correctly', () => {
+describe("formatPromptAsMarkdown", () => {
+  it("formats a minimal prompt correctly", () => {
     const template: Partial<TemplatePayload> = {
       prompt_definition: {
-        system_role: 'You are a helpful assistant',
-        task: 'Summarize the text',
-        context: '',
+        system_role: "You are a helpful assistant",
+        task: "Summarize the text",
+        context: "",
+        user_scene_description: "",
         constraints: [],
         negative_prompt: [],
         few_shot_examples: [],
       },
       menu_definitions: [],
       output_contract: {
-        format: 'markdown',
-        language: 'pt-BR',
+        format: "markdown",
+        language: "pt-BR",
         strict_mode: true,
         required_fields: [],
         response_rules: [],
@@ -68,36 +69,37 @@ describe('formatPromptAsMarkdown', () => {
       compiledPayload as CompiledPromptPayload,
     );
 
-    expect(result).toContain('# ROLE: You are a helpful assistant');
-    expect(result).toContain('## 1. CONTEXT & TASK');
-    expect(result).toContain('Summarize the text');
-    expect(result).toContain('## 2. DYNAMIC PARAMETERS');
-    expect(result).toContain('## 3. RULES & CONSTRAINTS');
+    expect(result).toContain("# ROLE: You are a helpful assistant");
+    expect(result).toContain("## 1. CONTEXT & TASK");
+    expect(result).toContain("Summarize the text");
+    expect(result).toContain("## 2. DYNAMIC PARAMETERS");
+    expect(result).toContain("## 3. RULES & CONSTRAINTS");
   });
 
-  it('formats a full prompt with selections correctly', () => {
+  it("formats a full prompt with selections correctly", () => {
     const template: Partial<TemplatePayload> = {
       prompt_definition: {
-        system_role: 'Expert coder',
-        task: 'Write a function',
-        context: 'Project Alpha',
-        constraints: ['Use TypeScript'],
-        negative_prompt: ['No classes'],
+        system_role: "Expert coder",
+        task: "Write a function",
+        context: "Project Alpha",
+        user_scene_description: "",
+        constraints: ["Use TypeScript"],
+        negative_prompt: ["No classes"],
         few_shot_examples: [],
       },
       menu_definitions: [
         {
-          menu_id: 'lang',
-          menu_name: 'Language',
+          menu_id: "lang",
+          menu_name: "Language",
           options: [],
-          selection_mode: 'single',
+          selection_mode: "single",
           required: false,
-          description: '',
+          description: "",
         },
       ],
       output_contract: {
-        format: 'markdown',
-        language: 'en-US',
+        format: "markdown",
+        language: "en-US",
         strict_mode: true,
         required_fields: [],
         response_rules: [],
@@ -110,9 +112,9 @@ describe('formatPromptAsMarkdown', () => {
           lang: {
             selections: [
               {
-                option_label: 'TypeScript',
-                selected_sub_options: [{ label: 'Strict', value: 'strict' }],
-                option_value: 'ts',
+                option_label: "TypeScript",
+                selected_sub_options: [{ label: "Strict", value: "strict" }],
+                option_value: "ts",
               },
             ],
             selected_options: [],
@@ -120,7 +122,7 @@ describe('formatPromptAsMarkdown', () => {
           },
         },
         free_inputs: {
-          Username: 'Jules',
+          Username: "Jules",
         },
       },
     };
@@ -130,47 +132,48 @@ describe('formatPromptAsMarkdown', () => {
       compiledPayload as CompiledPromptPayload,
     );
 
-    expect(result).toContain('# ROLE: Expert coder');
-    expect(result).toContain('Project Alpha');
-    expect(result).toContain('Write a function');
-    expect(result).toContain('- **Language**: TypeScript (Strict)');
-    expect(result).toContain('- **Username**: Jules');
-    expect(result).toContain('- Use TypeScript');
-    expect(result).toContain('- No classes');
+    expect(result).toContain("# ROLE: Expert coder");
+    expect(result).toContain("Project Alpha");
+    expect(result).toContain("Write a function");
+    expect(result).toContain("- **Language**: TypeScript (Strict)");
+    expect(result).toContain("- **Username**: Jules");
+    expect(result).toContain("- Use TypeScript");
+    expect(result).toContain("- No classes");
   });
 
-  it('formats a prompt with selected_options fallback correctly', () => {
+  it("formats a prompt with selected_options fallback correctly", () => {
     const template: Partial<TemplatePayload> = {
       prompt_definition: {
-        system_role: 'Expert coder',
-        task: 'Write a function',
-        context: '',
+        system_role: "Expert coder",
+        task: "Write a function",
+        context: "",
+        user_scene_description: "",
         constraints: [],
         negative_prompt: [],
         few_shot_examples: [],
       },
       menu_definitions: [
         {
-          menu_id: 'lang',
-          menu_name: 'Language',
+          menu_id: "lang",
+          menu_name: "Language",
           options: [
             {
-              label: 'TypeScript',
-              value: 'ts',
+              label: "TypeScript",
+              value: "ts",
               sub_options: [
-                { label: 'Strict', value: 'strict', description: '' },
+                { label: "Strict", value: "strict", description: "" },
               ],
-              description: '',
+              description: "",
             },
           ],
-          selection_mode: 'single',
+          selection_mode: "single",
           required: false,
-          description: '',
+          description: "",
         },
       ],
       output_contract: {
-        format: 'markdown',
-        language: 'en-US',
+        format: "markdown",
+        language: "en-US",
         strict_mode: true,
         required_fields: [],
         response_rules: [],
@@ -182,8 +185,8 @@ describe('formatPromptAsMarkdown', () => {
         menu_interpretation: {
           lang: {
             selections: [],
-            selected_options: ['ts'],
-            selected_sub_options: ['strict'],
+            selected_options: ["ts"],
+            selected_sub_options: ["strict"],
           },
         },
         free_inputs: {},
@@ -195,6 +198,6 @@ describe('formatPromptAsMarkdown', () => {
       compiledPayload as CompiledPromptPayload,
     );
 
-    expect(result).toContain('- **Language**: TypeScript (Strict)');
+    expect(result).toContain("- **Language**: TypeScript (Strict)");
   });
 });
