@@ -344,6 +344,7 @@ describe('compilePromptPayload', () => {
         system_role: 'Você é um diretor criativo',
         task: 'Gerar cenas publicitárias',
         context: 'Aplicar a peça em contexto real',
+        user_scene_description: '',
         constraints: ['Não alterar a arte'],
         negative_prompt: ['Não inventar novos textos'],
         few_shot_examples: [],
