@@ -1,0 +1,141 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "auditoria_prompt_app",
+      "menu_name": "AUDITORIA PROMPT APP (EIXOS / CHECKLIST)",
+      "description": "Selecione os eixos para testar funcionalidades específicas do Prompt App. Ordem recomendada: Core (Offline) → Nuvem (Supabase) → Import/Export → UI/UX.",
+      "options": [
+        {
+          "label": "Funcionalidade Core (Editor & CRUD)",
+          "value": "funcionalidade_core",
+          "sub_options": [
+            {
+              "label": "Criação de Prompts estruturados (System, Task, Context)",
+              "value": "core_crud_prompts"
+            },
+            {
+              "label": "Associação e edição de Menus de Contexto Hierárquicos",
+              "value": "core_context_menus"
+            },
+            {
+              "label": "Gerenciamento de Categorias (cores e ícones)",
+              "value": "core_categorias"
+            },
+            {
+              "label": "Filtragem e busca de prompts na listagem",
+              "value": "core_busca_filtros"
+            }
+          ]
+        },
+        {
+          "label": "Persistência Local (Offline-first / Dexie.js)",
+          "value": "persistencia_local",
+          "sub_options": [
+            {
+              "label": "Salvar e ler dados corretamente no IndexedDB",
+              "value": "local_dexie_storage"
+            },
+            {
+              "label": "Garantir funcionamento 100% offline (sem rede)",
+              "value": "local_offline_support"
+            },
+            {
+              "label": "Limpeza segura de dados locais (reset)",
+              "value": "local_data_clear"
+            }
+          ]
+        },
+        {
+          "label": "Sincronização Nuvem (Supabase)",
+          "value": "sincronizacao_supabase",
+          "sub_options": [
+            {
+              "label": "Fluxo de Autenticação (Login/Logout/Sessão)",
+              "value": "supa_auth"
+            },
+            {
+              "label": "Sincronização Bidirecional (Local ↔ Nuvem)",
+              "value": "supa_sync"
+            },
+            {
+              "label": "Verificação das Políticas RLS (apenas dados próprios)",
+              "value": "supa_rls_policies"
+            },
+            {
+              "label": "Tratamento de erros quando a nuvem está indisponível",
+              "value": "supa_error_handling"
+            }
+          ]
+        },
+        {
+          "label": "Exportação, Importação e I/O",
+          "value": "io_llm",
+          "sub_options": [
+            {
+              "label": "Formatação correta do JSON Cognitivo para LLMs",
+              "value": "io_json_cognitivo"
+            },
+            {
+              "label": "Botão de 'Copiar para a área de transferência'",
+              "value": "io_clipboard"
+            },
+            {
+              "label": "Backup em Lote (Exportação completa do DB)",
+              "value": "io_backup_export"
+            },
+            {
+              "label": "Restauração em Lote (Importação sem quebrar relações)",
+              "value": "io_backup_import"
+            }
+          ]
+        },
+        {
+          "label": "UI/UX e Acessibilidade (Tailwind)",
+          "value": "ui_ux_a11y",
+          "sub_options": [
+            {
+              "label": "Responsividade do Layout (Mobile vs Desktop)",
+              "value": "ui_responsividade"
+            },
+            {
+              "label": "Feedbacks visuais (Toasts e Skeleton Loaders)",
+              "value": "ui_feedbacks"
+            },
+            {
+              "label": "Fechamento de Modais (Esc / Click fora)",
+              "value": "ui_modal_behavior"
+            },
+            {
+              "label": "Navegação por teclado acessível",
+              "value": "ui_a11y_teclado"
+            }
+          ]
+        },
+        {
+          "label": "Infraestrutura e Deploy (Netlify/Vite)",
+          "value": "infra_deploy",
+          "sub_options": [
+            {
+              "label": "Redirecionamento SPA configurado (netlify.toml)",
+              "value": "infra_netlify_redirects"
+            },
+            {
+              "label": "Proteção e injeção de Variáveis de Ambiente (VITE_)",
+              "value": "infra_env_vars"
+            },
+            {
+              "label": "Otimização de build (Vite tree-shaking)",
+              "value": "infra_vite_build"
+            }
+          ]
+        },
+        {
+          "label": "Full Auditoria (Todos os Eixos)",
+          "value": "full_auditoria",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

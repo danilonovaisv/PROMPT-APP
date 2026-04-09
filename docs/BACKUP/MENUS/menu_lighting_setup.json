@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "lighting_setup",
+      "menu_name": "Lighting Setup",
+      "description": "Define the lighting configuration to optimize for specific material properties. Lighting temperature and position directly impact caustics, specular highlights, and material BRDF accuracy in AI video models.",
+      "options": [
+        {
+          "label": "Auto (Model-Optimized per Material)",
+          "value": "auto_optimized",
+          "sub_options": []
+        },
+        {
+          "label": "Studio Three-Point",
+          "value": "studio_three_point",
+          "sub_options": [
+            { "label": "5600K Key + 3200K Fill + 6500K Rim", "value": "5600k_key_3200k_fill_6500k_rim" },
+            { "label": "4000K Balanced Neutral", "value": "4000k_balanced_neutral" },
+            { "label": "Warm Tone — 3200K Dominant", "value": "warm_3200k_dominant" },
+            { "label": "Cool Tone — 6500K Dominant", "value": "cool_6500k_dominant" }
+          ]
+        },
+        {
+          "label": "Backlit for Caustics (Glass Focus)",
+          "value": "backlit_caustics",
+          "sub_options": [
+            { "label": "3200K Warm Backlight — Caustic Activation", "value": "3200k_warm_backlight" },
+            { "label": "5600K Daylight Backlight — Clean Caustics", "value": "5600k_daylight_backlight" },
+            { "label": "Split: Warm Back + Cool Front Fill", "value": "split_warm_back_cool_front" }
+          ]
+        },
+        {
+          "label": "Single Overhead Spot (Metal / Dark Studio)",
+          "value": "single_overhead_spot",
+          "sub_options": [
+            { "label": "4000K Spot — Neutral Dramatic", "value": "4000k_spot_neutral" },
+            { "label": "3200K Spot — Warm Tungsten", "value": "3200k_spot_warm" },
+            { "label": "6500K Spot — Cold Clinical", "value": "6500k_spot_cold" }
+          ]
+        },
+        {
+          "label": "Practical / Editorial (Mixed Sources)",
+          "value": "practical_editorial",
+          "sub_options": [
+            { "label": "2800K Warm Right + 6000K Cool Left Bounce", "value": "2800k_right_6000k_left" },
+            { "label": "Window Light — Soft Diffused Daylight", "value": "window_light_diffused" },
+            { "label": "Candlelit — 1800K Flickering Warm", "value": "candlelit_1800k" }
+          ]
+        },
+        {
+          "label": "High-Key — Overexposed White",
+          "value": "high_key_white",
+          "sub_options": [
+            { "label": "Softbox Array — Even Diffusion", "value": "softbox_array_even" },
+            { "label": "Ring Light — Beauty / Symmetry", "value": "ring_light_beauty" }
+          ]
+        },
+        {
+          "label": "Low-Key — Dark Dramatic",
+          "value": "low_key_dark",
+          "sub_options": [
+            { "label": "Noir — Single Source Hard Shadow", "value": "noir_single_hard" },
+            { "label": "Silhouette Rim Only", "value": "silhouette_rim_only" },
+            { "label": "Teal Shadow + Warm Highlight Grade", "value": "teal_shadow_warm_highlight" }
+          ]
+        }
+      ]
+    }
+  ]
+}

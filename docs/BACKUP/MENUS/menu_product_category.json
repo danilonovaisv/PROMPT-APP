@@ -1,0 +1,94 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "product_category",
+      "menu_name": "Product Category",
+      "description": "Select the product category to contextualize the material analysis and adjust rendering expectations for AI video models.",
+      "options": [
+        {
+          "label": "Cosmetics & Fragrance",
+          "value": "cosmetics_fragrance",
+          "sub_options": [
+            { "label": "Perfume Bottle", "value": "perfume_bottle" },
+            { "label": "Serum / Dropper", "value": "serum_dropper" },
+            { "label": "Cream / Jar", "value": "cream_jar" },
+            { "label": "Lipstick / Compact", "value": "lipstick_compact" },
+            { "label": "Spray / Mist Bottle", "value": "spray_mist_bottle" }
+          ]
+        },
+        {
+          "label": "Consumer Electronics",
+          "value": "consumer_electronics",
+          "sub_options": [
+            { "label": "Smartphone / Tablet", "value": "smartphone_tablet" },
+            { "label": "Wearable / Watch", "value": "wearable_watch" },
+            { "label": "Audio Device", "value": "audio_device" },
+            { "label": "Camera / Lens", "value": "camera_lens" },
+            { "label": "Accessory / Cable", "value": "accessory_cable" }
+          ]
+        },
+        {
+          "label": "Pharmaceutical",
+          "value": "pharmaceutical",
+          "sub_options": [
+            { "label": "Vial / Ampoule", "value": "vial_ampoule" },
+            { "label": "Pill Bottle", "value": "pill_bottle" },
+            { "label": "Syringe / Injector", "value": "syringe_injector" },
+            { "label": "Blister Pack", "value": "blister_pack" },
+            { "label": "Medical Device", "value": "medical_device" }
+          ]
+        },
+        {
+          "label": "Food & Beverage",
+          "value": "food_beverage",
+          "sub_options": [
+            { "label": "Glass Bottle", "value": "glass_bottle" },
+            { "label": "Can / Tin", "value": "can_tin" },
+            { "label": "Jar / Preserve", "value": "jar_preserve" },
+            { "label": "Pouch / Sachet", "value": "pouch_sachet" },
+            { "label": "Premium Spirits", "value": "premium_spirits" }
+          ]
+        },
+        {
+          "label": "Luxury Goods",
+          "value": "luxury_goods",
+          "sub_options": [
+            { "label": "Jewelry / Watch", "value": "jewelry_watch" },
+            { "label": "Leather Accessory", "value": "leather_accessory" },
+            { "label": "Crystal Decor", "value": "crystal_decor" },
+            { "label": "Premium Packaging", "value": "premium_packaging" },
+            { "label": "Collectible / Art Object", "value": "collectible_art_object" }
+          ]
+        },
+        {
+          "label": "Industrial Equipment",
+          "value": "industrial_equipment",
+          "sub_options": [
+            { "label": "Valve / Fitting", "value": "valve_fitting" },
+            { "label": "Tool / Instrument", "value": "tool_instrument" },
+            { "label": "Sensor / Probe", "value": "sensor_probe" },
+            { "label": "Mechanical Component", "value": "mechanical_component" },
+            { "label": "Enclosure / Housing", "value": "enclosure_housing" }
+          ]
+        },
+        {
+          "label": "Automotive Parts",
+          "value": "automotive_parts",
+          "sub_options": [
+            { "label": "Interior Trim", "value": "interior_trim" },
+            { "label": "Exterior Component", "value": "exterior_component" },
+            { "label": "Engine / Mechanical Part", "value": "engine_mechanical" },
+            { "label": "Lighting Component", "value": "lighting_component" },
+            { "label": "Wheel / Brake", "value": "wheel_brake" }
+          ]
+        },
+        {
+          "label": "Unknown / Auto-Detect",
+          "value": "unknown",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

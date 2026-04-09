@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "target_video_model",
+      "menu_name": "Target Video Model",
+      "description": "Select the AI video generation model(s) for which the prompts will be optimized. Each model has distinct strengths in material rendering and motion physics.",
+      "options": [
+        {
+          "label": "All Models (Veo 3.1 + Kling 3.0 + Runway Gen-4)",
+          "value": "all_models",
+          "sub_options": []
+        },
+        {
+          "label": "Google Veo 3.1",
+          "value": "veo_3_1",
+          "sub_options": [
+            { "label": "Hero Shot — Luxury Studio Commercial", "value": "veo_hero_luxury" },
+            { "label": "Product Turntable — 360° Orbit", "value": "veo_turntable" },
+            { "label": "Caustic Light Focus — Glass / Crystal", "value": "veo_caustic_glass" },
+            { "label": "Macro Detail — Surface Texture", "value": "veo_macro_texture" }
+          ]
+        },
+        {
+          "label": "Kling 3.0",
+          "value": "kling_3_0",
+          "sub_options": [
+            { "label": "Physics Reveal — Weight & Inertia Focus", "value": "kling_physics_reveal" },
+            { "label": "Liquid Dynamics — Fluid Simulation", "value": "kling_liquid_dynamics" },
+            { "label": "Dark Studio — Dramatic Lighting", "value": "kling_dark_studio" },
+            { "label": "Macro Push-In — Product Emergence", "value": "kling_macro_pushin" }
+          ]
+        },
+        {
+          "label": "Runway Gen-4",
+          "value": "runway_gen4",
+          "sub_options": [
+            { "label": "Editorial Macro Sequence — Three-Act", "value": "runway_editorial_macro" },
+            { "label": "Sensory Tactile — Surface Close-Up", "value": "runway_sensory_tactile" },
+            { "label": "Atmospheric — Volumetric Light", "value": "runway_atmospheric" },
+            { "label": "Lifestyle Context — Environmental", "value": "runway_lifestyle_context" }
+          ]
+        }
+      ]
+    }
+  ]
+}

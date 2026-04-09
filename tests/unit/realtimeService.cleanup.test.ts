@@ -1,0 +1,90 @@
+import { jest } from "@jest/globals";
+
+type MockSubscription = {
+  unsubscribe: jest.Mock;
+};
+
+const channelNames: string[] = [];
+const subscriptions: MockSubscription[] = [];
+
+jest.mock('@/lib/supabase', () => ({
+  isSupabaseConfigured: true,
+  supabase: {
+    auth: {
+      getSession: jest.fn(),
+    },
+    channel: jest.fn(),
+  },
+}));
+
+jest.mock('@/db/database', () => ({
+  db: {
+    categories: {},
+    prompts: {},
+    contextMenus: {},
+  },
+}));
+
+jest.mock('@/utils/backupManager', () => ({
+  saveLocalBackup: jest.fn(),
+}));
+
+describe('realtimeService cleanup cycles', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+    channelNames.length = 0;
+    subscriptions.length = 0;
+
+    const { supabase } = require('@/lib/supabase');
+    supabase.auth.getSession.mockResolvedValue({
+      data: { session: { user: { id: 'user-123' } } },
+    });
+    supabase.channel.mockImplementation((name: string) => {
+      channelNames.push(name);
+      const subscription = { unsubscribe: jest.fn() };
+      subscriptions.push(subscription);
+
+      return {
+        on: jest.fn().mockReturnThis(),
+        subscribe: jest.fn(() => subscription),
+      };
+    });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  const activeSubscriptions = () =>
+    subscriptions.filter((subscription) => subscription.unsubscribe.mock.calls.length === 0).length;
+
+  test('login and logout cycles keep realtime listener counts bounded', async () => {
+    const { setupRealtimeListeners, cleanupRealtimeListeners } = await import('@/services/realtimeService');
+    const { supabase } = await import('@/lib/supabase');
+
+    await setupRealtimeListeners();
+    expect(activeSubscriptions()).toBe(3);
+
+    cleanupRealtimeListeners();
+    expect(activeSubscriptions()).toBe(0);
+
+    await setupRealtimeListeners();
+    expect(activeSubscriptions()).toBe(3);
+
+    cleanupRealtimeListeners();
+    expect(activeSubscriptions()).toBe(0);
+
+    expect(supabase.channel).toHaveBeenCalledTimes(6);
+    expect(channelNames).toEqual([
+      'categories_changes',
+      'prompts_changes',
+      'context_menus_changes',
+      'categories_changes',
+      'prompts_changes',
+      'context_menus_changes',
+    ]);
+    expect(subscriptions).toHaveLength(6);
+    expect(subscriptions.every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
+  });
+});

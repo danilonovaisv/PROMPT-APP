@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "cenas_video_motion_cenas",
+      "menu_name": "TIPOS DE CENA — Vídeo / Motion (Cenas em vídeo)",
+      "description": "Qual tipo de cena/ambientação você quer gerar para aplicar a peça publicitária?",
+      "options": [
+        {
+          "label": "Vídeo / Motion (Cenas em vídeo)",
+          "value": "video_motion_cenas",
+          "sub_options": [
+            {
+              "label": "Vídeo — mão segurando celular com leve movimento de câmera (b-roll)",
+              "value": "video_mao_celular_broll_movimento"
+            },
+            {
+              "label": "Vídeo — notebook em mesa com dolly-in suave na tela",
+              "value": "video_notebook_dollyin_suave"
+            },
+            {
+              "label": "Vídeo — telão de convenção com pan lateral (plateia desfocada)",
+              "value": "video_telao_convencao_pan_lateral"
+            },
+            {
+              "label": "Vídeo — reunião corporativa com corte para tela da apresentação",
+              "value": "video_reuniao_corporativa_corte_tela_apresentacao"
+            },
+            {
+              "label": "Vídeo — OOH digital à noite com motion blur de carros/pessoas",
+              "value": "video_ooh_noite_motion_blur"
+            },
+            {
+              "label": "Vídeo — close-up na peça aplicada (rack focus para o suporte)",
+              "value": "video_closeup_rack_focus_suporte"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "cenas_loja_varejo_pdv",
+      "menu_name": "TIPOS DE CENA — Loja / Varejo / PDV",
+      "description": "Qual tipo de cena/ambientação você quer gerar para aplicar a peça publicitária?",
+      "options": [
+        {
+          "label": "Loja / Varejo / PDV",
+          "value": "loja_varejo_pdv",
+          "sub_options": [
+            {
+              "label": "Prateleira de mercado com embalagem",
+              "value": "prateleira_mercado_embalagem"
+            },
+            {
+              "label": "Balcão de loja com display",
+              "value": "balcao_loja_display"
+            },
+            {
+              "label": "Ilha de produto em supermercado",
+              "value": "ilha_produto_supermercado"
+            },
+            {
+              "label": "Loja de rua com vitrine",
+              "value": "loja_rua_vitrine"
+            },
+            {
+              "label": "Sacola personalizada em uso",
+              "value": "sacola_personalizada_uso"
+            },
+            {
+              "label": "Totem digital interativo",
+              "value": "totem_digital_interativo"
+            },
+            {
+              "label": "Caixa de checkout com branding",
+              "value": "checkout_branding"
+            },
+            {
+              "label": "Provador com comunicação visual",
+              "value": "provador_comunicacao_visual"
+            },
+            {
+              "label": "Tela de autoatendimento com campanha",
+              "value": "tela_autoatendimento_campanha"
+            },
+            {
+              "label": "Ponta de gôndola com campanha",
+              "value": "ponta_gondola_campanha"
+            },
+            {
+              "label": "Display de balcão em cafeteria",
+              "value": "display_balcao_cafeteria"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

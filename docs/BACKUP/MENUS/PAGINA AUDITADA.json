@@ -1,0 +1,31 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "paginas_para_auditar",
+      "menu_name": "PÁGINAS A SEREM AUDITADAS",
+      "description": "Selecione quais rotas/páginas entram na auditoria (público, admin e rotas auxiliares).",
+      "options": [
+        {
+          "label": "Site Público (principais)",
+          "value": "publico_principais",
+          "sub_options": [
+            {"label": "Home", "value": "/"},
+            {"label": "Sobre", "value": "/sobre"},
+            {"label": "Portfólio (listagem)", "value": "/portfolio"},
+            {
+              "label": "Portfólio (detalhe por slug)",
+              "value": "/portfolio/[slug]"
+            },
+            {
+              "label": "Projeto/Landing (por slug)",
+              "value": "/projects/[slug]"
+            },
+            {"label": "Contato", "value": "/contato"},
+            {"label": "Privacidade", "value": "/privacidade"}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,422 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "mode",
+      "menu_name": "MODO",
+      "description": "Você quer criar um app do zero ou refinar um app/tela existente no Stitch?",
+      "options": [
+        {
+          "label": "Criar do zero (create)",
+          "value": "create"
+        },
+        {
+          "label": "Refinar/Iterar (refine)",
+          "value": "refine"
+        }
+      ]
+    },
+    {
+      "menu_id": "platform",
+      "menu_name": "PLATAFORMA",
+      "description": "Onde o design será aplicado?",
+      "options": [
+        {
+          "label": "Mobile (iOS/Android)",
+          "value": "mobile"
+        },
+        {
+          "label": "Web (desktop + responsivo)",
+          "value": "web"
+        }
+      ]
+    },
+    {
+      "menu_id": "app_category",
+      "menu_name": "CATEGORIA DO APP",
+      "description": "Categoria para orientar padrões de UI e conteúdo.",
+      "options": [
+        {
+          "label": "E-commerce",
+          "value": "ecommerce",
+          "sub_options": [
+            {
+              "label": "Moda / Apparel",
+              "value": "ecommerce_fashion"
+            },
+            {
+              "label": "Comida / Bebida",
+              "value": "ecommerce_food"
+            },
+            {
+              "label": "Chás / Cerâmicas (Japandi)",
+              "value": "ecommerce_tea"
+            },
+            {
+              "label": "Eletrônicos",
+              "value": "ecommerce_electronics"
+            },
+            {
+              "label": "Cosméticos",
+              "value": "ecommerce_beauty"
+            }
+          ]
+        },
+        {
+          "label": "Saúde e Fitness",
+          "value": "fitness",
+          "sub_options": [
+            {
+              "label": "Corrida",
+              "value": "fitness_running"
+            },
+            {
+              "label": "Academia",
+              "value": "fitness_gym"
+            },
+            {
+              "label": "Meditação",
+              "value": "fitness_meditation"
+            },
+            {
+              "label": "Nutrição",
+              "value": "fitness_nutrition"
+            }
+          ]
+        },
+        {
+          "label": "Finanças",
+          "value": "finance",
+          "sub_options": [
+            {
+              "label": "Banco digital",
+              "value": "finance_banking"
+            },
+            {
+              "label": "Gestão de gastos",
+              "value": "finance_budgeting"
+            },
+            {
+              "label": "Investimentos",
+              "value": "finance_investing"
+            }
+          ]
+        },
+        {
+          "label": "Produtividade",
+          "value": "productivity",
+          "sub_options": [
+            {
+              "label": "Tarefas / To-do",
+              "value": "productivity_tasks"
+            },
+            {
+              "label": "Notas",
+              "value": "productivity_notes"
+            },
+            {
+              "label": "Calendário",
+              "value": "productivity_calendar"
+            }
+          ]
+        },
+        {
+          "label": "Comunidade / Social",
+          "value": "social",
+          "sub_options": [
+            {
+              "label": "Comunidade de nicho",
+              "value": "social_community"
+            },
+            {
+              "label": "Marketplace",
+              "value": "social_marketplace"
+            }
+          ]
+        },
+        {
+          "label": "Educação",
+          "value": "education",
+          "sub_options": [
+            {
+              "label": "Cursos",
+              "value": "education_courses"
+            },
+            {
+              "label": "Idiomas",
+              "value": "education_languages"
+            }
+          ]
+        },
+        {
+          "label": "Outro (descrever)",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "menu_id": "vibe",
+      "menu_name": "VIBE",
+      "description": "Adjetivos que definem o clima visual (impacta cores, fontes e imagens).",
+      "options": [
+        {
+          "label": "Vibrante e encorajador",
+          "value": "vibrante_encorajador"
+        },
+        {
+          "label": "Minimalista e focado",
+          "value": "minimalista_focado"
+        },
+        {
+          "label": "Minimalista e elegante (Japandi)",
+          "value": "minimalista_elegante"
+        },
+        {
+          "label": "Divertido e jovem",
+          "value": "divertido_jovem"
+        },
+        {
+          "label": "Premium e sofisticado",
+          "value": "premium_sofisticado"
+        },
+        {
+          "label": "Tecnológico e limpo",
+          "value": "tecnologico_limpo"
+        },
+        {
+          "label": "Quente e acolhedor",
+          "value": "quente_acolhedor"
+        }
+      ]
+    },
+    {
+      "menu_id": "color_palette",
+      "menu_name": "PALETA / CORES",
+      "description": "Direcionamento de cores para o tema.",
+      "options": [
+        {
+          "label": "Azul primário (brand blue)",
+          "value": "azul_primario"
+        },
+        {
+          "label": "Verde floresta (forest green)",
+          "value": "verde_floresta"
+        },
+        {
+          "label": "Laranja claro (light orange)",
+          "value": "laranja_claro"
+        },
+        {
+          "label": "Neutros quentes (warm neutrals)",
+          "value": "neutros_quentes"
+        },
+        {
+          "label": "Neutros frios (cool neutrals)",
+          "value": "neutros_frios"
+        },
+        {
+          "label": "Escuro minimal (dark minimal)",
+          "value": "escuro_minimal"
+        },
+        {
+          "label": "Personalizado (descrever)",
+          "value": "custom"
+        }
+      ]
+    },
+    {
+      "menu_id": "typography",
+      "menu_name": "TIPOGRAFIA",
+      "description": "Estilo tipográfico para headings e corpo.",
+      "options": [
+        {
+          "label": "Sans moderno",
+          "value": "sans_moderno"
+        },
+        {
+          "label": "Sans divertido / playful",
+          "value": "sans_playful"
+        },
+        {
+          "label": "Serif editorial (headings)",
+          "value": "serif_editorial"
+        },
+        {
+          "label": "Serif clássico",
+          "value": "serif_classico"
+        },
+        {
+          "label": "Monospace sutil (detalhes)",
+          "value": "mono_sutil"
+        }
+      ]
+    },
+    {
+      "menu_id": "components_style",
+      "menu_name": "ESTILO DE COMPONENTES",
+      "description": "Bordas, botões e campos.",
+      "options": [
+        {
+          "label": "Botões totalmente arredondados",
+          "value": "botoes_arredondados"
+        },
+        {
+          "label": "Cantos levemente arredondados",
+          "value": "cantos_leves"
+        },
+        {
+          "label": "Bordas sutis + sombras suaves",
+          "value": "bordas_sutis"
+        },
+        {
+          "label": "Inputs com borda 2px preta",
+          "value": "inputs_borda_preta_2px"
+        },
+        {
+          "label": "Botões retangulares (sharp)",
+          "value": "botoes_retos"
+        }
+      ]
+    },
+    {
+      "menu_id": "imagery_style",
+      "menu_name": "IMAGENS / ILUSTRAÇÕES",
+      "description": "Como devem ser as imagens dentro das telas.",
+      "options": [
+        {
+          "label": "Fotografia lifestyle (pessoas reais)",
+          "value": "fotografia_lifestyle"
+        },
+        {
+          "label": "Fotos macro de produto",
+          "value": "macro_produto"
+        },
+        {
+          "label": "Ilustração flat minimal",
+          "value": "ilustracao_flat_minimal"
+        },
+        {
+          "label": "Ícones lineares simples",
+          "value": "icones_lineares"
+        },
+        {
+          "label": "Sem imagens (somente UI)",
+          "value": "sem_imagens"
+        }
+      ]
+    },
+    {
+      "menu_id": "target_screen",
+      "menu_name": "TELA ALVO",
+      "description": "Em refino, qual tela ou área deve ser modificada?",
+      "options": [
+        {
+          "label": "Todas / visão geral",
+          "value": "all"
+        },
+        {
+          "label": "Onboarding",
+          "value": "onboarding"
+        },
+        {
+          "label": "Login / Sign-up",
+          "value": "auth"
+        },
+        {
+          "label": "Home",
+          "value": "home"
+        },
+        {
+          "label": "Product detail",
+          "value": "product_detail"
+        },
+        {
+          "label": "Checkout",
+          "value": "checkout"
+        },
+        {
+          "label": "Perfil / Conta",
+          "value": "profile"
+        },
+        {
+          "label": "Settings",
+          "value": "settings"
+        },
+        {
+          "label": "Outra (descrever)",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "menu_id": "change_intent",
+      "menu_name": "INTENÇÃO DE MUDANÇA",
+      "description": "Em refino, qual tipo de ajuste você quer orientar?",
+      "options": [
+        {
+          "label": "Atualizar cor primária",
+          "value": "theme_primary_color"
+        },
+        {
+          "label": "Atualizar paleta (mood)",
+          "value": "theme_palette_mood"
+        },
+        {
+          "label": "Trocar tipografia",
+          "value": "typography_change"
+        },
+        {
+          "label": "Ajustar bordas/botões",
+          "value": "components_change"
+        },
+        {
+          "label": "Trocar/alinhar imagens ao tema",
+          "value": "imagery_alignment"
+        },
+        {
+          "label": "Ajustar CTA principal",
+          "value": "cta_primary"
+        },
+        {
+          "label": "Reorganizar layout (somente esta tela)",
+          "value": "layout_refine"
+        },
+        {
+          "label": "Acessibilidade (contraste, tamanhos)",
+          "value": "accessibility"
+        },
+        {
+          "label": "Trocar idioma do texto da UI",
+          "value": "language_change"
+        }
+      ]
+    },
+    {
+      "menu_id": "ui_language",
+      "menu_name": "IDIOMA DO TEXTO",
+      "description": "Idioma para todo o texto da interface.",
+      "options": [
+        {
+          "label": "Português (Brasil)",
+          "value": "pt_BR"
+        },
+        {
+          "label": "Inglês (EUA)",
+          "value": "en_US"
+        },
+        {
+          "label": "Espanhol",
+          "value": "es_ES"
+        },
+        {
+          "label": "Francês",
+          "value": "fr_FR"
+        },
+        {
+          "label": "Personalizado (BCP-47)",
+          "value": "custom"
+        }
+      ]
+    }
+  ]
+}

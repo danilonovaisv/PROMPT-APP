@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "commercial_style",
+      "menu_name": "Commercial Style",
+      "description": "Define the visual and narrative direction of the generated video prompts. This influences camera movement, lighting mood, pacing, and environmental context.",
+      "options": [
+        {
+          "label": "Luxury Hero Shot",
+          "value": "luxury_hero_shot",
+          "sub_options": [
+            { "label": "White Studio — Clean Minimal", "value": "luxury_white_studio" },
+            { "label": "Dark Studio — Premium Dramatic", "value": "luxury_dark_studio" },
+            { "label": "Gradient Cyclorama — Warm Tone", "value": "luxury_gradient_cyc" },
+            { "label": "Reflective Surface — Mirror Base", "value": "luxury_mirror_base" }
+          ]
+        },
+        {
+          "label": "Dynamic Physics Reveal",
+          "value": "dynamic_physics_reveal",
+          "sub_options": [
+            { "label": "Void Emergence — Black Background", "value": "void_emergence" },
+            { "label": "Slow Motion Drop / Impact", "value": "slow_motion_drop" },
+            { "label": "Liquid Pour / Splash", "value": "liquid_pour_splash" },
+            { "label": "Rotation with Inertia", "value": "rotation_inertia" }
+          ]
+        },
+        {
+          "label": "Editorial / Sensory Macro",
+          "value": "editorial_sensory_macro",
+          "sub_options": [
+            { "label": "Three-Act Texture-to-Context", "value": "three_act_texture_context" },
+            { "label": "Extreme Close-Up Surface Only", "value": "extreme_closeup_surface" },
+            { "label": "Soft Focus Lifestyle Pull-Back", "value": "soft_focus_lifestyle" },
+            { "label": "Material Detail — Lab / Scientific", "value": "material_detail_lab" }
+          ]
+        },
+        {
+          "label": "Atmospheric / Volumetric",
+          "value": "atmospheric_volumetric",
+          "sub_options": [
+            { "label": "Mist / Fog Environment", "value": "mist_fog" },
+            { "label": "Shaft of Light — Dusty Air", "value": "shaft_of_light" },
+            { "label": "Underwater / Submerged", "value": "underwater_submerged" },
+            { "label": "Candlelit / Warm Practical", "value": "candlelit_warm_practical" }
+          ]
+        },
+        {
+          "label": "Lifestyle / Context",
+          "value": "lifestyle_context",
+          "sub_options": [
+            { "label": "Home / Interior Setting", "value": "home_interior" },
+            { "label": "Outdoor / Natural Light", "value": "outdoor_natural" },
+            { "label": "Hands-On Product Interaction", "value": "hands_on_interaction" },
+            { "label": "Flat Lay / Overhead", "value": "flat_lay_overhead" }
+          ]
+        },
+        {
+          "label": "Minimal Studio",
+          "value": "minimal_studio",
+          "sub_options": [
+            { "label": "Pure White Infinity", "value": "pure_white_infinity" },
+            { "label": "Soft Grey Neutral", "value": "soft_grey_neutral" },
+            { "label": "Single Spotlight Isolation", "value": "single_spotlight_isolation" }
+          ]
+        }
+      ]
+    }
+  ]
+}

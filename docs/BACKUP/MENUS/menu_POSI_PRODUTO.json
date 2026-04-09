@@ -1,0 +1,68 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "product_position",
+      "menu_name": "Product Position & Framing",
+      "description": "Define how the product is positioned and framed in the final generated image, based on reference analysis.",
+      "options": [
+        {
+          "label": "Centered / Hero",
+          "value": "centered_hero",
+          "sub_options": [
+            { "label": "Full Product — Centered, All Visible", "value": "full_product_centered" },
+            { "label": "Slightly Off-Center — Rule of Thirds", "value": "off_center_thirds" },
+            { "label": "Centered with Symmetric Composition", "value": "centered_symmetric" }
+          ]
+        },
+        {
+          "label": "Angled / Dynamic",
+          "value": "angled_dynamic",
+          "sub_options": [
+            { "label": "45° Front Angle — Classic Hero", "value": "45_front_angle" },
+            { "label": "Low Angle — Looking Up at Product", "value": "low_angle_up" },
+            { "label": "High Angle — Looking Down", "value": "high_angle_down" },
+            { "label": "3/4 View — Depth and Volume", "value": "three_quarter_view" }
+          ]
+        },
+        {
+          "label": "Macro / Detail Focus",
+          "value": "macro_detail_focus",
+          "sub_options": [
+            { "label": "Extreme Close-Up — Surface Texture", "value": "extreme_closeup_texture" },
+            { "label": "Label / Cap / Key Detail", "value": "label_cap_key_detail" },
+            { "label": "Partial Product — Cropped Composition", "value": "partial_cropped" }
+          ]
+        },
+        {
+          "label": "Flat Lay / Overhead",
+          "value": "flat_lay_overhead",
+          "sub_options": [
+            { "label": "Pure Overhead — 90° Top Down", "value": "pure_overhead_90" },
+            { "label": "Overhead with Props / Context", "value": "overhead_with_props" },
+            { "label": "Isometric — 45° Diagonal", "value": "isometric_diagonal" }
+          ]
+        },
+        {
+          "label": "Environmental / In-Scene",
+          "value": "environmental_in_scene",
+          "sub_options": [
+            { "label": "Product on Surface — Integrated", "value": "product_on_surface" },
+            { "label": "Product Floating / Levitating", "value": "product_floating" },
+            { "label": "Product with Hands / Usage Context", "value": "product_with_hands" },
+            { "label": "Product in Background — Lifestyle", "value": "product_in_background" }
+          ]
+        },
+        {
+          "label": "Multiple Products / Group",
+          "value": "multiple_products_group",
+          "sub_options": [
+            { "label": "Product Family — Aligned Row", "value": "family_aligned_row" },
+            { "label": "Scattered / Editorial Arrangement", "value": "scattered_editorial" },
+            { "label": "Stacked / Layered Composition", "value": "stacked_layered" }
+          ]
+        }
+      ]
+    }
+  ]
+}
