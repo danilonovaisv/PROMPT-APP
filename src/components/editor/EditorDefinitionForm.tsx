@@ -144,7 +144,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Como faço para..."
-                      aria-invalid={inputEmpty}
+                      aria-invalid={inputEmpty ? 'true' : 'false'}
                       aria-describedby={inputEmpty ? `few-shot-input-error-${index}` : undefined}
                     />
                     {inputEmpty && (
@@ -166,7 +166,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
-                      aria-invalid={outputEmpty}
+                      aria-invalid={outputEmpty ? 'true' : 'false'}
                       aria-describedby={outputEmpty ? `few-shot-output-error-${index}` : undefined}
                     />
                     {outputEmpty && (
