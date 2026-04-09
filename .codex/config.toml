@@ -7,7 +7,7 @@ sandbox_mode = "workspace-write"
 [model_providers.local_openai]
 base_url = "http://localhost:23333/api/openai/v1"
 name = "Local OpenAI-compatible"
-wire_api = "chat"
+wire_api = "responses"
 
 [profiles.agressivo]
 approval_policy = "never"
