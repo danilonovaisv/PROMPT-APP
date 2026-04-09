@@ -267,6 +267,7 @@ type LegacyPromptRecord = Partial<{
   referenceUrl: string;
   language: string;
   schemaVersion: string;
+  fewShotExamples: z.infer<typeof FewShotExampleSchema>[];
 }>;
 
 function normalizeOutputFormat(raw: string | undefined): PromptOutputFormat {
@@ -325,6 +326,11 @@ function normalizeLegacyResponseRules(raw: string | undefined): string[] {
       .map((item) => item.trim())
       .filter(Boolean),
   );
+}
+
+function normalizeFewShotExamples(raw: unknown): z.infer<typeof FewShotExampleSchema>[] {
+  const parsedExamples = z.array(FewShotExampleSchema).safeParse(raw);
+  return parsedExamples.success ? parsedExamples.data : [];
 }
 
 export function createDefaultOutputContract(): PromptOutputContract {
@@ -535,7 +541,7 @@ export function createTemplatePayloadFromLegacyRecord(
         (legacyPrompt as any).user_scene_description?.trim() || "",
       constraints: uniqueStrings(legacyPrompt.constraints || []),
       negative_prompt: uniqueStrings(legacyPrompt.negativePrompt || []),
-      few_shot_examples: [],
+      few_shot_examples: normalizeFewShotExamples(legacyPrompt.fewShotExamples),
     },
     menu_definitions: menuDefinitions,
     menu_ids: legacyPrompt.enabledMenuIds ||
@@ -661,6 +667,9 @@ export function parseTemplatePayload(
           : Array.isArray(legacyPromptContract.enabledMenuIds)
           ? (legacyPromptContract.enabledMenuIds as string[])
           : fallback?.enabledMenuIds,
+        fewShotExamples: normalizeFewShotExamples(
+          legacyPromptContract.few_shot_examples,
+        ),
       };
 
       return createTemplatePayloadFromLegacyRecord(

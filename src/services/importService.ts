@@ -117,7 +117,7 @@ function buildPromptRecord(promptPayload: PromptContract, categoryId: number): O
     language: summary.language,
     outputFormat: summary.outputFormat,
     referenceUrl: getPrimaryReferenceUrl(promptPayload),
-    fewShotExamples: [],
+    fewShotExamples: promptPayload.prompt_definition.few_shot_examples,
     createdAt: now,
     updatedAt: now,
   };

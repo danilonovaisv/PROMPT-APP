@@ -143,4 +143,50 @@ describe('importService validation', () => {
       }),
     ]);
   });
+
+  test('preserves few_shot_examples when importing legacy prompt JSON', async () => {
+    const { importFromJsonText } = await import('@/services/importService');
+    const { db } = await import('@/db/database');
+
+    const fewShotExamples = [
+      {
+        input: 'Usuário pede uma variação curta',
+        output: 'Resposta curta e objetiva',
+      },
+    ];
+
+    const result = await importFromJsonText(
+      JSON.stringify({
+        title: 'Prompt com exemplos',
+        system_role: 'Você é útil',
+        task: 'Responder perguntas',
+        input_data: {
+          context: 'Atendimento',
+          menus_selecionados: {},
+        },
+        constraints: ['Seja claro'],
+        negative_prompt: ['Não invente'],
+        output_schema: {
+          formato: 'markdown',
+          estrutura: 'bullet points',
+        },
+        few_shot_examples: fewShotExamples,
+      }),
+      'single.json'
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.count).toBe(1);
+    expect(db.prompts.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Prompt com exemplos',
+        fewShotExamples,
+        promptPayload: expect.objectContaining({
+          prompt_definition: expect.objectContaining({
+            few_shot_examples: fewShotExamples,
+          }),
+        }),
+      })
+    );
+  });
 });

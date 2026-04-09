@@ -5,6 +5,9 @@ import {
 
 describe("Legacy JSON to Database Schema Mapping", () => {
   it("maps all legacy fields to current schema", () => {
+    const fewShotExamples = [
+      { input: "brief 1", output: "result 1" },
+    ];
     const legacyJson = {
       title: "Test Prompt",
       system_role: "test role",
@@ -22,7 +25,7 @@ describe("Legacy JSON to Database Schema Mapping", () => {
       },
       required_fields: ["field1"],
       response_rules: ["rule1"],
-      few_shot_examples: [],
+      few_shot_examples: fewShotExamples,
     };
 
     // Expected mapping after parsePromptPayload
@@ -36,7 +39,7 @@ describe("Legacy JSON to Database Schema Mapping", () => {
     expect(mapped.output_contract.format).toBe("text"); // texto normalized to text
     expect(mapped.output_contract.response_rules).toEqual(["rule1", "rule2"]);
     expect(mapped.output_contract.required_fields).toEqual(["field1"]);
-    expect(mapped.prompt_definition.few_shot_examples).toEqual([]);
+    expect(mapped.prompt_definition.few_shot_examples).toEqual(fewShotExamples);
   });
 
   it("preserves bidirectional mapping through getLegacyPromptColumns", () => {
