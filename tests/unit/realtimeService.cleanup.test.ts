@@ -1,4 +1,5 @@
 import { jest } from "@jest/globals";
+import { supabase } from '@/lib/supabase';
 
 type MockSubscription = {
   unsubscribe: jest.Mock;
@@ -30,17 +31,17 @@ jest.mock('@/utils/backupManager', () => ({
 }));
 
 describe('realtimeService cleanup cycles', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
     channelNames.length = 0;
     subscriptions.length = 0;
 
-    const { supabase } = require('@/lib/supabase');
-    supabase.auth.getSession.mockResolvedValue({
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as any;
+    mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
-    supabase.channel.mockImplementation((name: string) => {
+    mockedSupabase.channel.mockImplementation((name: any) => {
       channelNames.push(name);
       const subscription = { unsubscribe: jest.fn() };
       subscriptions.push(subscription);

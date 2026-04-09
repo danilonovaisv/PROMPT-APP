@@ -3,6 +3,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import EditorPage from '@/pages/EditorPage';
 import { createEmptyPromptPayload, createEmptyUserSelection } from '@/models/promptSchema';
 import type { Category, ContextMenu, Prompt } from '@/models/types';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/db/database';
 
 const showToast = jest.fn();
 let liveQueryRenderCount = 0;
@@ -145,14 +147,14 @@ describe('Editor state consistency', () => {
     liveQueryRenderCount = 0;
     localStorage.clear();
 
-    const { useLiveQuery } = require('dexie-react-hooks');
-    useLiveQuery.mockImplementation(() => {
+    (useLiveQuery as jest.Mock).mockImplementation(() => {
       liveQueryRenderCount += 1;
       return liveQueryRenderCount === 1 ? [] : contextMenus;
     });
 
-    const { db } = require('@/db/database');
-    db.categories.toArray.mockResolvedValue(categories);
+    (db.categories.toArray as jest.Mock).mockResolvedValue(categories);
+    (db.categories.get as jest.Mock).mockResolvedValue(categories[0]);
+    (db.contextMenus.toArray as jest.Mock).mockResolvedValue(contextMenus);
 
     const promptPayload = createEmptyPromptPayload('Old template');
     promptPayload.meta.template_id = 'existing-template';
@@ -192,7 +194,7 @@ describe('Editor state consistency', () => {
       syncStatus: 'synced',
     };
 
-    db.prompts.get.mockResolvedValue(prompt);
+    (db.prompts.get as jest.Mock).mockResolvedValue(prompt);
 
     const draftPayload = createEmptyPromptPayload('Draft wins');
     draftPayload.meta.template_id = 'draft-template';

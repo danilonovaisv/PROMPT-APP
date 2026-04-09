@@ -3102,3 +3102,22 @@ select option {
   opacity: 0.88;
   transform: translateY(-1px);
 }
+
+/* --- Few-shot validation states --- */
+.few-shot-item--invalid {
+  border-color: var(--color-error, #e53e3e);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-error, #e53e3e) 20%, transparent);
+}
+
+.form-field-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--color-error, #e53e3e);
+  font-weight: 500;
+}
+
+.form-label__required {
+  color: var(--color-error, #e53e3e);
+  margin-left: 2px;
+}

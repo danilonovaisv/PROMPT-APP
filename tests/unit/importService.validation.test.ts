@@ -1,4 +1,7 @@
 import { jest } from '@jest/globals';
+import { db } from '@/db/database';
+import { saveCategoryToSupabase } from '@/services/supabaseCategories';
+import { saveMenuToSupabase } from '@/services/supabaseMenus';
 
 jest.mock('@/db/database', () => ({
   db: {
@@ -35,8 +38,7 @@ describe('importService validation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    const { db } = require('@/db/database');
-    db.categories.where.mockReturnValue({
+    (db.categories.where as any).mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => null),
       })),
@@ -44,21 +46,19 @@ describe('importService validation', () => {
         toArray: jest.fn(async () => []),
       })),
     });
-    db.contextMenus.where.mockReturnValue({
+    (db.contextMenus.where as any).mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => null),
       })),
     });
-    db.contextMenus.toArray.mockResolvedValue([]);
-    db.categories.add.mockResolvedValue(101);
-    db.prompts.bulkAdd.mockResolvedValue([201]);
-    db.prompts.add.mockResolvedValue(202);
-    db.contextMenus.bulkPut.mockResolvedValue([301]);
+    (db.contextMenus.toArray as any).mockResolvedValue([]);
+    (db.categories.add as any).mockResolvedValue(101);
+    (db.prompts.bulkAdd as any).mockResolvedValue([201]);
+    (db.prompts.add as any).mockResolvedValue(202);
+    (db.contextMenus.bulkPut as any).mockResolvedValue([301]);
 
-    const { saveCategoryToSupabase } = require('@/services/supabaseCategories');
-    const { saveMenuToSupabase } = require('@/services/supabaseMenus');
-    saveCategoryToSupabase.mockResolvedValue({ id: 101 });
-    saveMenuToSupabase.mockResolvedValue({ id: 301 });
+    (saveCategoryToSupabase as any).mockResolvedValue({ id: 101 });
+    (saveMenuToSupabase as any).mockResolvedValue({ id: 301 });
   });
 
   test('rejects non-json source names before parsing payloads', async () => {
