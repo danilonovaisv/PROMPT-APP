@@ -121,48 +121,73 @@ export function EditorDefinitionForm({
         )}
 
         <div className="form-group">
-          <label className="form-label">Exemplos de Resposta (Few-shot)</label>
+          <label className="form-label">
+            Exemplos de Resposta (Few-shot)
+            <span className="form-label__hint"> — preencha os campos antes de salvar</span>
+          </label>
           <div className="dynamic-list">
-            {template.prompt_definition.few_shot_examples.map((example, index) => (
-              <div key={`few-shot-${index}`} className="few-shot-item card">
-                <div className="form-group">
-                  <label className="form-label">Input do usuário</label>
-                  <textarea
-                    value={example.input}
-                    onChange={(e) => {
-                      const next = [...template.prompt_definition.few_shot_examples];
-                      next[index] = { ...next[index], input: e.target.value };
+            {template.prompt_definition.few_shot_examples.map((example, index) => {
+              const inputEmpty = example.input.trim() === '';
+              const outputEmpty = example.output.trim() === '';
+              return (
+                <div key={`few-shot-${index}`} className={`few-shot-item card${inputEmpty || outputEmpty ? ' few-shot-item--invalid' : ''}`}>
+                  <div className="form-group">
+                    <label className="form-label">
+                      Input do usuário <span className="form-label__required" aria-hidden="true">*</span>
+                    </label>
+                    <textarea
+                      value={example.input}
+                      onChange={(e) => {
+                        const next = [...template.prompt_definition.few_shot_examples];
+                        next[index] = { ...next[index], input: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', next);
+                      }}
+                      rows={2}
+                      placeholder="Ex: Como faço para..."
+                      aria-invalid={inputEmpty}
+                      aria-describedby={inputEmpty ? `few-shot-input-error-${index}` : undefined}
+                    />
+                    {inputEmpty && (
+                      <span id={`few-shot-input-error-${index}`} className="form-field-error" role="alert">
+                        Campo obrigatório — preencha o input do exemplo antes de salvar.
+                      </span>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">
+                      Resposta esperada <span className="form-label__required" aria-hidden="true">*</span>
+                    </label>
+                    <textarea
+                      value={example.output}
+                      onChange={(e) => {
+                        const next = [...template.prompt_definition.few_shot_examples];
+                        next[index] = { ...next[index], output: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', next);
+                      }}
+                      rows={2}
+                      placeholder="Ex: Para fazer isso, você deve..."
+                      aria-invalid={outputEmpty}
+                      aria-describedby={outputEmpty ? `few-shot-output-error-${index}` : undefined}
+                    />
+                    {outputEmpty && (
+                      <span id={`few-shot-output-error-${index}`} className="form-field-error" role="alert">
+                        Campo obrigatório — preencha a resposta esperada antes de salvar.
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    className="btn btn--ghost btn--icon few-shot-delete"
+                    onClick={() => {
+                      const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
                       updatePromptDefinitionField('few_shot_examples', next);
                     }}
-                    rows={2}
-                    placeholder="Ex: Como faço para..."
-                  />
+                    title="Remover exemplo"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Resposta esperada</label>
-                  <textarea
-                    value={example.output}
-                    onChange={(e) => {
-                      const next = [...template.prompt_definition.few_shot_examples];
-                      next[index] = { ...next[index], output: e.target.value };
-                      updatePromptDefinitionField('few_shot_examples', next);
-                    }}
-                    rows={2}
-                    placeholder="Ex: Para fazer isso, você deve..."
-                  />
-                </div>
-                <button
-                  className="btn btn--ghost btn--icon few-shot-delete"
-                  onClick={() => {
-                    const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
-                    updatePromptDefinitionField('few_shot_examples', next);
-                  }}
-                  title="Remover exemplo"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
+              );
+            })}
             <button
               className="btn btn--ghost btn--sm dynamic-list__add"
               onClick={() => {
