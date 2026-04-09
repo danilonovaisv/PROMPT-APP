@@ -179,6 +179,9 @@ function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextM
       ...form.template.prompt_definition,
       constraints: splitLines(joinLines(form.template.prompt_definition.constraints)),
       negative_prompt: splitLines(joinLines(form.template.prompt_definition.negative_prompt)),
+      few_shot_examples: form.template.prompt_definition.few_shot_examples.filter(
+        (example) => example.input.trim().length > 0 && example.output.trim().length > 0
+      ),
     },
     menu_ids: linkedMenuIds,
     output_contract: PromptOutputContractSchema.parse(form.template.output_contract),
@@ -351,9 +354,18 @@ export default function EditorPage() {
     field: K,
     value: TemplatePayload['prompt_definition'][K]
   ) => {
-    updateTemplate((current) =>
-      TemplatePayloadSchema.parse({ ...current, prompt_definition: { ...current.prompt_definition, [field]: value } })
-    );
+    updateTemplate((current) => {
+      const nextDefinition = { ...current.prompt_definition, [field]: value };
+      // Strip incomplete few-shot entries so Zod's min(1) constraint doesn't
+      // fire while the user is actively typing into a newly-added row.
+      const safeFewShot = (nextDefinition.few_shot_examples ?? []).filter(
+        (example) => example.input.trim().length > 0 || example.output.trim().length > 0
+      );
+      return TemplatePayloadSchema.parse({
+        ...current,
+        prompt_definition: { ...nextDefinition, few_shot_examples: safeFewShot },
+      });
+    });
   };
 
   const updateOutputContractField = <K extends keyof PromptOutputContract>(field: K, value: PromptOutputContract[K]) => {

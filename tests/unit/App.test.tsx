@@ -1,5 +1,8 @@
 import { act, render, waitFor } from '@testing-library/react';
 import App from '@/App';
+import { supabase } from '@/lib/supabase';
+import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
+import { syncToCloud } from '@/services/syncService';
 
 jest.mock('@/context/ToastContext', () => ({
   ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -71,7 +74,6 @@ describe('App auth-state listener', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    const { supabase } = require('@/lib/supabase');
     (supabase.auth.onAuthStateChange as jest.Mock).mockReturnValue({
       data: { subscription: { unsubscribe: jest.fn() } },
     });
@@ -85,9 +87,6 @@ describe('App auth-state listener', () => {
   test('reinstalls realtime listeners and syncs again when auth changes to signed in', async () => {
     render(<App />);
 
-    const { supabase } = require('@/lib/supabase');
-    const { setupRealtimeListeners } = require('@/services/realtimeService');
-    const { syncToCloud } = require('@/services/syncService');
     await waitFor(() => expect(supabase.auth.onAuthStateChange).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(setupRealtimeListeners).toHaveBeenCalledTimes(1));
 
@@ -107,8 +106,6 @@ describe('App auth-state listener', () => {
   test('cleans up realtime listeners when auth changes to signed out', async () => {
     render(<App />);
 
-    const { supabase } = require('@/lib/supabase');
-    const { cleanupRealtimeListeners } = require('@/services/realtimeService');
     await waitFor(() => expect(supabase.auth.onAuthStateChange).toHaveBeenCalledTimes(1));
 
     const authCallback = (supabase.auth.onAuthStateChange as jest.Mock).mock.calls[0][0] as (

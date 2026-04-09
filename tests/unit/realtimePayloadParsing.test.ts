@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals';
 import { createEmptyPromptPayload } from '@/models/promptSchema';
+import { supabase } from '@/lib/supabase';
+import { db } from '@/db/database';
 
 type RealtimePayload = {
   eventType: 'INSERT' | 'UPDATE' | 'DELETE';
@@ -17,7 +19,7 @@ jest.mock('@/lib/supabase', () => ({
     auth: {
       getSession: jest.fn(),
     },
-    channel: jest.fn((name: string) => {
+    channel: jest.fn((_name: string) => {
       const subscription = { unsubscribe: jest.fn() };
       const channel = {
         on: jest.fn((_eventName: string, config: { table: 'categories' | 'prompts' | 'context_menus' }, callback: RealtimeCallback) => {
@@ -60,30 +62,30 @@ jest.mock('@/utils/backupManager', () => ({
 }));
 
 describe('realtime payload parsing', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetModules();
     jest.clearAllMocks();
     channelCallbacks.categories = undefined;
     channelCallbacks.prompts = undefined;
     channelCallbacks.context_menus = undefined;
 
-    const { supabase } = require('@/lib/supabase');
-    supabase.auth.getSession.mockResolvedValue({
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as any;
+    mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
 
-    const { db } = require('@/db/database');
-    db.categories.where.mockReturnValue({
+    const { db: mockedDb } = (await import('@/db/database')) as any;
+    mockedDb.categories.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => ({ id: 11 })),
       })),
     });
-    db.prompts.where.mockReturnValue({
+    mockedDb.prompts.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => null),
       })),
     });
-    db.contextMenus.where.mockReturnValue({
+    mockedDb.contextMenus.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => null),
       })),
