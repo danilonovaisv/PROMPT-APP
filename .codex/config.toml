@@ -1,45 +1,104 @@
-approval_policy = "on-failure"
-model = "gpt-4o"
-model_provider = "local_openai"
-profile = "equilibrado"
-sandbox_mode = "workspace-write"
-
-[model_providers.local_openai]
-base_url = "http://localhost:23333/api/openai/v1"
-name = "Local OpenAI-compatible"
-wire_api = "responses"
-
-[profiles.agressivo]
+allow_login_shell = true
 approval_policy = "never"
-model = "gpt-4o"
-model_provider = "local_openai"
+check_for_update_on_startup = true
+developer_instructions = "Sempre verificar o repositório https://github.com/danilonovaisv/DATABASE_AGENT_NEXT antes de decisões técnicas e consultar o vector store vs_69520b1fb834819197e445db9aab8d69 para contexto/intenção, cruzando ambas as fontes antes de implementar."
+file_opener = "vscode"
+model = "gpt-5.4"
+model_provider = "openai"
 model_reasoning_effort = "medium"
+model_reasoning_summary = "auto"
 model_verbosity = "medium"
+personality = "pragmatic"
+plan_mode_reasoning_effort = "high"
+project_doc_fallback_filenames = ["AGENTS.md"]
+project_doc_max_bytes = 65536
 sandbox_mode = "danger-full-access"
+web_search = "live"
 
-[profiles.deepseek_coder]
-approval_policy = "on-failure"
-model = "deepseek-coder"
-model_provider = "local_openai"
-model_reasoning_effort = "medium"
-model_verbosity = "medium"
-sandbox_mode = "workspace-write"
+[agents]
+max_depth = 1
+max_threads = 6
 
-[profiles.equilibrado]
-approval_policy = "on-failure"
-model = "gpt-4o"
-model_provider = "local_openai"
-model_reasoning_effort = "medium"
-model_verbosity = "medium"
-sandbox_mode = "workspace-write"
+[agents.docs_researcher]
+config_file = "agents/docs-researcher.toml"
+description = "Documentation specialist that verifies APIs, framework behavior, and release notes."
 
-[profiles.seguro]
-approval_policy = "on-failure"
-model = "gpt-4o-mini"
-model_provider = "local_openai"
-model_reasoning_effort = "medium"
-model_verbosity = "medium"
-sandbox_mode = "workspace-write"
+[agents.explorer]
+config_file = "agents/explorer.toml"
+description = "Read-only codebase explorer for gathering evidence before changes are proposed."
+
+[agents.reviewer]
+config_file = "agents/reviewer.toml"
+description = "PR reviewer focused on correctness, security, and regression risks."
+
+[features]
+enable_request_compression = true
+multi_agent = true
+shell_snapshot = true
+unified_exec = true
+
+[history]
+persistence = "save-all"
+
+[mcp_servers.context7]
+args = [
+    "-y",
+    "@upstash/context7-mcp@latest",
+]
+command = "npx"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
+
+[mcp_servers.exa]
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
+url = "https://mcp.exa.ai/mcp"
+
+[mcp_servers.firebase]
+args = [
+    "run",
+    "mcp:firebase",
+]
+command = "pnpm"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 120.0
+
+[mcp_servers.github]
+args = [
+    "run",
+    "mcp:github",
+]
+command = "pnpm"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
+
+[mcp_servers.memory]
+args = [
+    "-y",
+    "@modelcontextprotocol/server-memory",
+]
+command = "npx"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
+
+[mcp_servers.playwright]
+args = [
+    "-y",
+    "@playwright/mcp@latest",
+    "--extension",
+]
+command = "npx"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 120.0
+
+[mcp_servers.sequential-thinking]
+args = [
+    "-y",
+    "@modelcontextprotocol/server-sequential-thinking",
+]
+command = "npx"
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
 
 [shell_environment_policy]
 inherit = "core"
@@ -48,3 +107,8 @@ inherit = "core"
 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1"
 CLAUDE_FLOW_HOOKS_ENABLED = "true"
 CLAUDE_FLOW_V3_ENABLED = "true"
+
+[tui]
+animations = true
+notifications = false
+show_tooltips = true
