@@ -2,6 +2,7 @@ import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchem
 import type { ContextMenu } from '@/models/types';
 import MultiSelect from '@/components/ui/MultiSelect';
 import { Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -35,6 +36,16 @@ export function EditorDefinitionForm({
       label: menu.menuName || menu.menuId,
       description: menu.menuId,
     }));
+  
+  const lastItemRef = useRef<HTMLTextAreaElement>(null);
+  const prevExamplesLength = useRef(template.prompt_definition.few_shot_examples.length);
+
+  useEffect(() => {
+    if (template.prompt_definition.few_shot_examples.length > prevExamplesLength.current) {
+      lastItemRef.current?.focus();
+    }
+    prevExamplesLength.current = template.prompt_definition.few_shot_examples.length;
+  }, [template.prompt_definition.few_shot_examples.length]);
 
   return (
     <>
@@ -132,10 +143,12 @@ export function EditorDefinitionForm({
               return (
                 <div key={`few-shot-${index}`} className={`few-shot-item card${inputEmpty || outputEmpty ? ' few-shot-item--invalid' : ''}`}>
                   <div className="form-group">
-                    <label className="form-label">
+                    <label className="form-label" htmlFor={`few-shot-input-${index}`}>
                       Input do usuário <span className="form-label__required" aria-hidden="true">*</span>
                     </label>
                     <textarea
+                      id={`few-shot-input-${index}`}
+                      ref={index === template.prompt_definition.few_shot_examples.length - 1 ? lastItemRef : null}
                       value={example.input}
                       onChange={(e) => {
                         const next = [...template.prompt_definition.few_shot_examples];
@@ -154,10 +167,11 @@ export function EditorDefinitionForm({
                     )}
                   </div>
                   <div className="form-group">
-                    <label className="form-label">
+                    <label className="form-label" htmlFor={`few-shot-output-${index}`}>
                       Resposta esperada <span className="form-label__required" aria-hidden="true">*</span>
                     </label>
                     <textarea
+                      id={`few-shot-output-${index}`}
                       value={example.output}
                       onChange={(e) => {
                         const next = [...template.prompt_definition.few_shot_examples];
@@ -182,6 +196,7 @@ export function EditorDefinitionForm({
                       updatePromptDefinitionField('few_shot_examples', next);
                     }}
                     title="Remover exemplo"
+                    aria-label={`Remover exemplo ${index + 1}`}
                   >
                     <Trash2 size={16} />
                   </button>

@@ -47,36 +47,36 @@ const uniqueArrayBy =
     const seen = new Set<string>();
     items.forEach((item, index) => {
       const key = getKey(item);
-      if (seen.has(key)) {
+      if (key && seen.has(key)) {
         ctx.addIssue({
           code: "custom",
           message: `${label} deve ser único`,
           path: [index],
         });
       }
-      seen.add(key);
+      if (key) seen.add(key);
     });
   };
 
 export const FewShotExampleSchema = z
   .object({
-    input: z.string().trim().min(1),
-    output: z.string().trim().min(1),
+    input: z.string().trim().default(""),
+    output: z.string().trim().default(""),
   })
   .strict();
 
 export const MenuSubOptionSchema = z
   .object({
-    label: z.string().trim().min(1),
-    value: z.string().trim().min(1),
+    label: z.string().trim().default(""),
+    value: z.string().trim().default(""),
     description: z.string().trim().default(""),
   })
   .strict();
 
 export const MenuOptionSchema = z
   .object({
-    label: z.string().trim().min(1),
-    value: z.string().trim().min(1),
+    label: z.string().trim().default(""),
+    value: z.string().trim().default(""),
     description: z.string().trim().default(""),
     sub_options: z
       .array(MenuSubOptionSchema)

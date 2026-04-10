@@ -253,6 +253,24 @@ select option {
   left: 12px;
 }
 
+/* --- Motion & Transitions --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.motion-entry {
+  animation: fadeInUp var(--transition-fast) forwards;
+}
+
 /* --- SEO Fallback (no-JS) --- */
 .seo-fallback {
   max-width: 960px;

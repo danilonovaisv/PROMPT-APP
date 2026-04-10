@@ -226,6 +226,7 @@ export default function EditorPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? EMPTY_MENUS;
   const debouncedForm = useDebounce(form, 300);
@@ -315,6 +316,7 @@ export default function EditorPage() {
   useEffect(() => {
     if (!loaded) return;
     localStorage.setItem(`template_draft_${id}`, JSON.stringify(debouncedForm));
+    setLastSaved(new Date());
   }, [debouncedForm, id, loaded]);
 
   const previewState = useMemo(() => {
@@ -358,12 +360,9 @@ export default function EditorPage() {
       const nextDefinition = { ...current.prompt_definition, [field]: value };
       // Strip incomplete few-shot entries so Zod's min(1) constraint doesn't
       // fire while the user is actively typing into a newly-added row.
-      const safeFewShot = (nextDefinition.few_shot_examples ?? []).filter(
-        (example) => example.input.trim().length > 0 || example.output.trim().length > 0
-      );
       return TemplatePayloadSchema.parse({
         ...current,
-        prompt_definition: { ...nextDefinition, few_shot_examples: safeFewShot },
+        prompt_definition: nextDefinition,
       });
     });
   };
@@ -590,6 +589,11 @@ export default function EditorPage() {
           <h1 className="app-header__title">{isNew ? 'Novo Template' : 'Editar Template'}</h1>
         </div>
         <div className="app-header__actions">
+          {lastSaved && (
+            <span className="app-header__autosave-status" aria-live="polite">
+              Rascunho salvo às {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
           <button className="btn btn--ghost" onClick={() => setShowPreview(true)}>
             <Eye size={16} /> Preview do prompt
           </button>
