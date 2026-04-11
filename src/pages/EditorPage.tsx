@@ -300,9 +300,10 @@ export default function EditorPage() {
       if (parsedDraftResult.success) {
         const draftData = parsedDraftResult.data as Partial<TemplateFormState>;
         if (draftData.template?.meta?.template_name) {
-          // eslint-disable-next-line react-hooks/set-state-in-effect
-          setForm((current) => ({ ...current, ...draftData }));
-          showToast('Rascunho recuperado automaticamente!', 'info');
+          setTimeout(() => {
+            setForm((current) => ({ ...current, ...draftData }));
+            showToast('Rascunho recuperado automaticamente!', 'info');
+          }, 0);
         }
       } else {
         console.error('Rascunho inválido detectado:', parsedDraftResult.error);
@@ -316,7 +317,8 @@ export default function EditorPage() {
   useEffect(() => {
     if (!loaded) return;
     localStorage.setItem(`template_draft_${id}`, JSON.stringify(debouncedForm));
-    setLastSaved(new Date());
+    const now = new Date();
+    setTimeout(() => setLastSaved(now), 0);
   }, [debouncedForm, id, loaded]);
 
   const previewState = useMemo(() => {

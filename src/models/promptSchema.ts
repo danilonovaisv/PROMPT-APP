@@ -259,10 +259,12 @@ type LegacyPromptRecord = Partial<{
   systemRole: string;
   task: string;
   context: string;
+  user_scene_description: string;
   contextMenus: Record<string, LegacyContextMenuSelection>;
   enabledMenuIds: string[];
   constraints: string[];
   negativePrompt: string[];
+  required_fields: string[];
   outputSchema: Partial<{ formato: string; estrutura: string }>;
   referenceUrl: string;
   language: string;
@@ -537,8 +539,7 @@ export function createTemplatePayloadFromLegacyRecord(
       system_role: legacyPrompt.systemRole?.trim() || "",
       task: legacyPrompt.task?.trim() || "",
       context: legacyPrompt.context?.trim() || "",
-      user_scene_description:
-        (legacyPrompt as any).user_scene_description?.trim() || "",
+      user_scene_description: legacyPrompt.user_scene_description?.trim() || "",
       constraints: uniqueStrings(legacyPrompt.constraints || []),
       negative_prompt: uniqueStrings(legacyPrompt.negativePrompt || []),
       few_shot_examples: normalizeFewShotExamples(legacyPrompt.fewShotExamples),
@@ -550,7 +551,7 @@ export function createTemplatePayloadFromLegacyRecord(
       format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
       language: legacyPrompt.language || DEFAULT_LANGUAGE,
       strict_mode: true,
-      required_fields: (legacyPrompt as any).required_fields || [],
+      required_fields: legacyPrompt.required_fields || [],
       response_rules: responseRules,
     },
   });
@@ -610,10 +611,7 @@ export function parseTemplatePayload(
         ? (legacyPromptContract.input_data as Record<string, unknown>)
         : undefined;
 
-      const legacyRecord: LegacyPromptRecord & {
-        user_scene_description?: string;
-        required_fields?: string[];
-      } = {
+      const legacyRecord: LegacyPromptRecord = {
         title: typeof legacyPromptContract.title === "string"
           ? legacyPromptContract.title
           : typeof legacyPromptContract.name === "string"
@@ -658,10 +656,10 @@ export function parseTemplatePayload(
         user_scene_description:
           typeof legacyPromptContract.user_scene_description === "string"
             ? legacyPromptContract.user_scene_description
-            : (fallback as any)?.user_scene_description,
+            : fallback?.user_scene_description,
         required_fields: Array.isArray(legacyPromptContract.required_fields)
           ? uniqueStrings(legacyPromptContract.required_fields as string[])
-          : (fallback as any)?.required_fields,
+          : fallback?.required_fields,
         enabledMenuIds: Array.isArray(legacyPromptContract.enabled_menu_ids)
           ? (legacyPromptContract.enabled_menu_ids as string[])
           : Array.isArray(legacyPromptContract.enabledMenuIds)
