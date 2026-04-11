@@ -28,7 +28,7 @@ function slugify(value: string): string {
 }
 
 function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
 function uniqueBy<T>(items: T[], getKey: (item: T) => string): T[] {

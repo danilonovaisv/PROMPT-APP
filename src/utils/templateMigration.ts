@@ -6,7 +6,7 @@ import {
 } from '@/utils/schemaCompatibility';
 
 function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
 export interface TemplateMigrationResult {

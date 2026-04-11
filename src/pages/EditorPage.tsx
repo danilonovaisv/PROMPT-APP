@@ -567,7 +567,7 @@ export default function EditorPage() {
 
   const handleSelectedMenuIdsChange = (menuIds: number[]) => {
     setForm((current) => {
-      const uniqueSelectedIds = [...new Set(menuIds)];
+      const uniqueSelectedIds = Array.from(new Set(menuIds));
 
       return syncFormMenus(
         {
