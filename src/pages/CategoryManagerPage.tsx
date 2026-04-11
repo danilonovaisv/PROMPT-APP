@@ -131,9 +131,11 @@ export default function CategoryManagerPage() {
     };
 
     const handleDelete = async (id: number, remoteId?: number) => {
-        const promptsByCategory = (await db.prompts.toArray()).filter(
-            (prompt) => prompt.categoryId === id && !prompt.isDeleted
-        );
+        const promptsByCategory = await db.prompts
+            .where('categoryId')
+            .equals(id)
+            .filter((prompt) => !prompt.isDeleted)
+            .toArray();
         const promptCount = promptsByCategory.length;
         if (promptCount > 0) {
             // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
