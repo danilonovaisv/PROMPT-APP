@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/hooks/useConfirm';
 import { downloadJson } from '@/utils/exportJson';
 import { exportMenusToJson } from '@/utils/importMenusJson';
 import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
 import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
+import SEO from '@/components/SEO';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
 
@@ -34,7 +36,11 @@ const EMPTY_FORM: MenuFormData = {
 export default function MenuManagerPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const menus = useLiveQuery(() => db.contextMenus.toArray()) ?? [];
+  const confirm = useConfirm();
+  const menus = useLiveQuery(async () => {
+    const allMenus = await db.contextMenus.toArray();
+    return allMenus.filter((menu) => !menu.isDeleted);
+  }) ?? [];
 
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -147,20 +153,45 @@ export default function MenuManagerPage() {
 
   // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
   const handleDelete = useCallback(async (id: number, remoteId?: number) => {
-    if (!confirm('Deseja realmente excluir este menu?')) return;
+    const menu = await db.contextMenus.get(id);
+    if (!menu) return;
+
+    const shouldDelete = await confirm({
+      title: 'Excluir menu',
+      message: `Deseja realmente excluir "${menu.menuName}"?`,
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      variant: 'danger',
+    });
+
+    if (!shouldDelete) return;
+
     try {
+      if (!remoteId) {
+        await db.contextMenus.delete(id);
+        await saveLocalBackup();
+        showToast('Menu excluído!');
+        return;
+      }
+
+      await db.contextMenus.update(id, {
+        isDeleted: true,
+        syncStatus: 'pending',
+        updatedAt: new Date(),
+      });
+      await saveLocalBackup();
+
       if (remoteId) {
         await deleteMenuFromSupabase(remoteId);
       }
       await db.contextMenus.delete(id);
       await saveLocalBackup();
-      showToast('Menu excluído do servidor!');
+      showToast('Menu excluído!');
     } catch (error: unknown) {
       console.error('Erro ao excluir do Supabase:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao deletar menu no servidor.';
-      showToast(errorMessage, 'error');
+      showToast('Menu removido localmente. A exclusão será sincronizada ao reconectar.', 'info');
     }
-  }, [showToast]);
+  }, [confirm, showToast]);
 
   const addOption = () => {
     setForm((prev) => ({
@@ -234,6 +265,10 @@ export default function MenuManagerPage() {
 
   return (
     <>
+      <SEO
+        title="Menus do Template"
+        description="Gerencie menus de contexto reutilizáveis para os templates de prompt."
+      />
       <header className="app-header">
         <div className="flex-row-center">
           <button

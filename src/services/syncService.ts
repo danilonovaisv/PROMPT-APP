@@ -129,6 +129,15 @@ export const syncToCloud = async () => {
     }
   }
 
+  const categoriesToPurgeLocally = allCategories.filter(
+    (c) => c.isDeleted === true && !c.remoteId
+  );
+  for (const cat of categoriesToPurgeLocally) {
+    if (cat.id) {
+      await db.categories.delete(cat.id);
+    }
+  }
+
   // Sincronizar categorias ativas não sincronizadas
   const categoriesToSync = allCategories.filter(
     (c) => !c.isDeleted && c.syncStatus !== "synced"
@@ -191,6 +200,41 @@ export const syncToCloud = async () => {
 
   // 2. Sincronizar Menus de Contexto
   console.log("☁️ Sincronizando Menus...");
+  const menusToDeleteRemotely = snapshot.data.contextMenus.filter(
+    (menu) => menu.isDeleted === true && menu.remoteId && menu.syncStatus !== "synced"
+  );
+  for (const menu of menusToDeleteRemotely) {
+    try {
+      await withRetry(() =>
+        supabase
+          .from("context_menus")
+          .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", menu.remoteId!)
+          .eq("user_id", userId)
+      );
+      if (menu.id) await db.contextMenus.delete(menu.id);
+      console.log(`✅ Menu soft-delete sincronizado e removido: ${menu.menuName}`);
+    } catch (error) {
+      console.error("Falha ao sincronizar delete de menu:", menu.menuName, error);
+      if (menu.id) {
+        await db.contextMenus.update(menu.id, { syncStatus: "error" });
+      }
+    }
+  }
+
+  const menusToPurgeLocally = snapshot.data.contextMenus.filter(
+    (menu) => menu.isDeleted === true && !menu.remoteId
+  );
+  for (const menu of menusToPurgeLocally) {
+    if (menu.id) {
+      await db.contextMenus.delete(menu.id);
+    }
+  }
+
   const menusToSync = snapshot.data.contextMenus.filter(
     (m) => m.syncStatus !== "synced" && m.isDeleted !== true
   );
@@ -230,6 +274,41 @@ export const syncToCloud = async () => {
 
   // 3. Sincronizar Prompts
   console.log("☁️ Sincronizando Prompts...");
+  const promptsToDeleteRemotely = snapshot.data.prompts.filter(
+    (prompt) => prompt.isDeleted === true && prompt.remoteId && prompt.syncStatus !== "synced"
+  );
+  for (const prompt of promptsToDeleteRemotely) {
+    try {
+      await withRetry(() =>
+        supabase
+          .from("prompts")
+          .update({
+            is_deleted: true,
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", prompt.remoteId!)
+          .eq("user_id", userId)
+      );
+      if (prompt.id) await db.prompts.delete(prompt.id);
+      console.log(`✅ Prompt soft-delete sincronizado e removido: ${prompt.title}`);
+    } catch (error) {
+      console.error("Falha ao sincronizar delete de prompt:", prompt.title, error);
+      if (prompt.id) {
+        await db.prompts.update(prompt.id, { syncStatus: "error" });
+      }
+    }
+  }
+
+  const promptsToPurgeLocally = snapshot.data.prompts.filter(
+    (prompt) => prompt.isDeleted === true && !prompt.remoteId
+  );
+  for (const prompt of promptsToPurgeLocally) {
+    if (prompt.id) {
+      await db.prompts.delete(prompt.id);
+    }
+  }
+
   const promptsToSync = snapshot.data.prompts.filter(
     (p) => p.syncStatus !== "synced" && p.isDeleted !== true
   );
@@ -350,6 +429,9 @@ export const downloadFromCloud = async () => {
         if (c.is_deleted === true) continue;
 
         const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
+        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+          continue;
+        }
 
         const catData: Category = {
           id: existing?.id,
@@ -396,9 +478,16 @@ export const downloadFromCloud = async () => {
         }
 
         const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
+        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+          continue;
+        }
         const existingBySlug = (!existing
           ? menusByMenuId.get(m.menu_id)
           : null) as ContextMenu | undefined;
+
+        if (existingBySlug?.isDeleted === true && existingBySlug.syncStatus !== "synced") {
+          continue;
+        }
 
         const targetId = existing?.id || existingBySlug?.id;
 
@@ -438,6 +527,9 @@ export const downloadFromCloud = async () => {
         }
 
         const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
+        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+          continue;
+        }
 
         if (
           existing?.id &&

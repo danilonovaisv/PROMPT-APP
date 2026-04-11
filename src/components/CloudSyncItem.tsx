@@ -2,7 +2,7 @@
    Componente de Sincronização em Nuvem (Supabase)
    ====================================================== */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
@@ -18,8 +18,13 @@ export default function CloudSyncItem() {
     const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authModalMode, setAuthModalMode] = useState<'login' | 'update-password'>('login');
+    const [isOffline, setIsOffline] = useState(() =>
+        typeof navigator !== 'undefined' ? !navigator.onLine : false
+    );
+    const [sessionNotice, setSessionNotice] = useState<string | null>(null);
     const { showToast } = useToast();
     const configHintId = 'cloud-sync-config-hint';
+    const manualLogoutRef = useRef(false);
 
     useEffect(() => {
         if (!isSupabaseConfigured) {
@@ -36,8 +41,19 @@ export default function CloudSyncItem() {
         });
 
         // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, newSession: Session | null) => {
-            setSession(newSession);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, newSession: Session | null) => {
+            setSession((currentSession) => {
+                if (!newSession && currentSession && !manualLogoutRef.current && event !== 'INITIAL_SESSION') {
+                    setSessionNotice('Sua sessão expirou. Faça login novamente para continuar sincronizando.');
+                }
+                if (newSession) {
+                    setSessionNotice(null);
+                }
+                if (!newSession && manualLogoutRef.current) {
+                    manualLogoutRef.current = false;
+                }
+                return newSession;
+            });
             // Se acabou de logar (newSession exists), trigger sync
             if (newSession && !session) {
                 triggerAutoSync();
@@ -48,6 +64,19 @@ export default function CloudSyncItem() {
 
         return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        const handleOffline = () => setIsOffline(true);
+        const handleOnline = () => setIsOffline(false);
+
+        window.addEventListener('offline', handleOffline);
+        window.addEventListener('online', handleOnline);
+
+        return () => {
+            window.removeEventListener('offline', handleOffline);
+            window.removeEventListener('online', handleOnline);
+        };
     }, []);
 
     // Verificar periodicamente se há atualizações
@@ -114,6 +143,8 @@ export default function CloudSyncItem() {
     };
 
     const handleLogout = async () => {
+        manualLogoutRef.current = true;
+        setSessionNotice(null);
         await supabase.auth.signOut();
         showToast('Logout realizado');
     };
@@ -156,9 +187,30 @@ export default function CloudSyncItem() {
         }
     };
 
+    const statusBanner = isOffline
+        ? {
+            tone: 'warning',
+            message: 'Você está offline. Suas alterações continuam locais e serão sincronizadas ao reconectar.',
+        }
+        : sessionNotice
+            ? {
+                tone: 'danger',
+                message: sessionNotice,
+            }
+            : null;
+
     if (!session) {
         return (
             <>
+                {statusBanner && (
+                    <div
+                        className={`cloud-sync-box__banner cloud-sync-box__banner--${statusBanner.tone}`}
+                        role="alert"
+                        aria-live="assertive"
+                    >
+                        {statusBanner.message}
+                    </div>
+                )}
                 <button className="app-sidebar__nav-item" onClick={handleLogin}>
                     <CloudOff size={18} />
                     <span>Nuvem Desconectada</span>
@@ -178,6 +230,15 @@ export default function CloudSyncItem() {
     return (
         <>
         <div className="cloud-sync-box">
+            {statusBanner && (
+                <div
+                    className={`cloud-sync-box__banner cloud-sync-box__banner--${statusBanner.tone}`}
+                    role="alert"
+                    aria-live="assertive"
+                >
+                    {statusBanner.message}
+                </div>
+            )}
             {isAuthModalOpen && (
                 <AuthModal
                     isOpen={isAuthModalOpen}

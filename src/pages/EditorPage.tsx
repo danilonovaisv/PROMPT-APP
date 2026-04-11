@@ -35,6 +35,7 @@ import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
 import { EditorPlayground } from '@/components/editor/EditorPlayground';
 import { EditorPreviewModal } from '@/components/editor/EditorPreviewModal';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import SEO from '@/components/SEO';
 import { z } from 'zod';
 
 type FreeInputEntry = { key: string; value: string };
@@ -224,11 +225,16 @@ export default function EditorPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
+    typeof window !== 'undefined' ? !window.matchMedia('(max-width: 768px)').matches : true
+  );
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  const contextMenus = useLiveQuery(() => db.contextMenus.toArray()) ?? EMPTY_MENUS;
+  const contextMenus = useLiveQuery(async () => {
+    const allMenus = await db.contextMenus.toArray();
+    return allMenus.filter((menu) => !menu.isDeleted);
+  }) ?? EMPTY_MENUS;
   const debouncedForm = useDebounce(form, 300);
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
@@ -237,7 +243,8 @@ export default function EditorPage() {
 
   useEffect(() => {
     (async () => {
-      const categoryList = await db.categories.toArray();
+      const allCategories = await db.categories.toArray();
+      const categoryList = allCategories.filter((category) => !category.isDeleted);
       setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
     })();
   }, []);
@@ -583,6 +590,14 @@ export default function EditorPage() {
 
   return (
     <>
+      <SEO
+        title={isNew ? 'Novo Template' : (form.template.meta.template_name || 'Editar Template')}
+        description={
+          isNew
+            ? 'Crie um novo template estruturado com categorias, menus vinculados e output contract.'
+            : `Edite o template ${form.template.meta.template_name || 'selecionado'} com preview e playground em tempo real.`
+        }
+      />
       <header className="app-header">
         <div className="flex-row-center">
           <button className="btn btn--ghost btn--icon" onClick={() => navigate(-1)} aria-label="Voltar" title="Voltar">
@@ -654,7 +669,11 @@ export default function EditorPage() {
           </div>
         </div>
 
-        <aside className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}>
+        <aside
+          id="editor-playground-panel"
+          className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}
+          aria-hidden={!isSidebarOpen}
+        >
           <div className="editor-floating-sidebar__header">
             <h3 className="form-section__title editor-floating-sidebar__title">
               <Settings2 size={18} /> Playground
@@ -685,6 +704,8 @@ export default function EditorPage() {
           className={`editor-floating-toggle ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label="Alternar Playground"
+          aria-expanded={isSidebarOpen}
+          aria-controls="editor-playground-panel"
         >
           {isSidebarOpen ? <PanelRightClose size={24} /> : <PanelRightOpen size={24} />}
         </button>

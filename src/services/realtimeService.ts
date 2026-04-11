@@ -161,6 +161,11 @@ async function handleCategoryChange(payload: {
           .equals(rd.id)
           .first();
 
+        if (existingLocal?.isDeleted === true && existingLocal.syncStatus !== "synced") {
+          console.log(`⏸️ Ignorando update remoto para categoria pendente de exclusão: ${existingLocal.name}`);
+          break;
+        }
+
         const categoryData: Partial<Category> = {
           remoteId: rd.id,
           name: rd.name,
@@ -260,6 +265,11 @@ async function handlePromptChange(payload: {
           .where("remoteId")
           .equals(rd.id)
           .first();
+
+        if (existingLocal?.isDeleted === true && existingLocal.syncStatus !== "synced") {
+          console.log(`⏸️ Ignorando update remoto para prompt pendente de exclusão: ${existingLocal.title}`);
+          break;
+        }
 
         // Resolver ID local da categoria a partir do remoteId do Supabase
         let localCategoryId = 0;
@@ -411,6 +421,11 @@ async function handleMenuChange(payload: {
           .where("remoteId")
           .equals(rd.id)
           .first();
+
+        if (existingLocal?.isDeleted === true && existingLocal.syncStatus !== "synced") {
+          console.log(`⏸️ Ignorando update remoto para menu pendente de exclusão: ${existingLocal.menuName}`);
+          break;
+        }
 
         const menuData: Partial<ContextMenu> = {
           remoteId: rd.id,

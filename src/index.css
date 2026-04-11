@@ -491,6 +491,10 @@ select option {
 
 .app-footer__links a {
   color: var(--color-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--space-1);
 }
 
 .app-footer__links a:hover {
@@ -557,6 +561,8 @@ select option {
   transition: all var(--transition-fast);
   white-space: nowrap;
   line-height: 1.4;
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .btn--primary {
@@ -615,10 +621,10 @@ select option {
 /* A11y Audit Fix #05: Touch target minimum 44x44px (WCAG AAA) */
 .btn--icon {
   padding: var(--space-2);
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2092,10 +2098,12 @@ select option {
   display: flex;
   flex-direction: column;
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
 }
 
 .editor-floating-sidebar--open {
   transform: translateX(0);
+  pointer-events: auto;
 }
 
 .editor-floating-sidebar__header {
@@ -2191,8 +2199,12 @@ select option {
   }
 
   .editor-floating-sidebar {
-    width: 100%;
-    top: 0;
+    width: min(100vw - (var(--space-4) * 2), 420px);
+    top: calc(var(--header-height) + var(--space-2));
+    right: var(--space-4);
+    bottom: var(--space-18);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
   }
 
   .editor-floating-sidebar__content {
@@ -2624,6 +2636,27 @@ select option {
   margin: var(--space-4) var(--space-1);
 }
 
+.cloud-sync-box__banner {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.cloud-sync-box__banner--warning {
+  background: rgba(255, 170, 0, 0.12);
+  border-color: rgba(255, 170, 0, 0.25);
+  color: #ffd180;
+}
+
+.cloud-sync-box__banner--danger {
+  background: rgba(255, 68, 102, 0.12);
+  border-color: rgba(255, 68, 102, 0.25);
+  color: #ffb4c3;
+}
+
 .cloud-sync-box__user {
   display: flex;
   align-items: center;
@@ -2960,6 +2993,10 @@ select option {
   color: var(--color-text-secondary);
   text-decoration: none;
   transition: color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 var(--space-1);
 }
 
 .breadcrumb__link:hover {

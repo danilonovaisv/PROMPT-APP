@@ -8,6 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
+import SEO from '@/components/SEO';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
@@ -40,7 +41,10 @@ export default function CategoryManagerPage() {
     const confirm = useConfirm();
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
     const categories = useLiveQuery(
-        () => db.categories.filter(c => !c.isDeleted).toArray()
+        async () => {
+            const allCategories = await db.categories.toArray();
+            return allCategories.filter((category) => !category.isDeleted);
+        }
     ) ?? [];
 
     const [isEditing, setIsEditing] = useState<number | null>(null);
@@ -127,7 +131,10 @@ export default function CategoryManagerPage() {
     };
 
     const handleDelete = async (id: number, remoteId?: number) => {
-        const promptCount = await db.prompts.where('categoryId').equals(id).count();
+        const promptsByCategory = (await db.prompts.toArray()).filter(
+            (prompt) => prompt.categoryId === id && !prompt.isDeleted
+        );
+        const promptCount = promptsByCategory.length;
         if (promptCount > 0) {
             // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
             const ok = await confirm({
@@ -136,14 +143,25 @@ export default function CategoryManagerPage() {
                 variant: 'danger',
             });
             if (!ok) return;
-            const promptsToDelete = await db.prompts.where('categoryId').equals(id).toArray();
-            await db.prompts.where('categoryId').equals(id).delete();
-            for (const p of promptsToDelete) {
+            for (const p of promptsByCategory) {
+                if (!p.id) continue;
+
+                if (!p.remoteId) {
+                    await db.prompts.delete(p.id);
+                    continue;
+                }
+
                 if (p.remoteId) {
                     try {
                         await deletePromptFromSupabase(p.remoteId);
+                        await db.prompts.delete(p.id);
                     } catch (e) {
                         console.error('Falha ao soft-delete prompt:', p.title, e);
+                        await db.prompts.update(p.id, {
+                            isDeleted: true,
+                            syncStatus: 'pending',
+                            updatedAt: new Date(),
+                        });
                     }
                 }
             }
@@ -157,18 +175,32 @@ export default function CategoryManagerPage() {
             // Preserva o histórico de nomes excluídos para que seedDatabase()
             // não recrie a categoria no próximo boot, e para que syncToCloud()
             // não faça upsert dentro da janela de debounce do autoSync.
-            await db.categories.update(id, { isDeleted: true, syncStatus: 'synced' });
+            await db.categories.update(id, {
+                isDeleted: true,
+                syncStatus: 'synced',
+                updatedAt: new Date(),
+            });
             await saveLocalBackup();
-            showToast('Categoria excluída do servidor!');
+            showToast('Categoria excluída!');
         } catch (e: unknown) {
-        const error = e as Error;
+            const error = e as Error;
             console.error('Erro ao excluir no Supabase:', error);
-            showToast(error.message || 'Erro ao deletar categoria no servidor.', 'error');
+            await db.categories.update(id, {
+                isDeleted: true,
+                syncStatus: 'pending',
+                updatedAt: new Date(),
+            });
+            await saveLocalBackup();
+            showToast('Categoria removida localmente. A exclusão será sincronizada ao reconectar.', 'info');
         }
     };
 
     return (
         <>
+            <SEO
+                title="Gerenciar Categorias"
+                description="Crie, edite e organize categorias para agrupar templates de prompt."
+            />
             <header className="app-header">
                 <div className="flex-row-center">
                     <button

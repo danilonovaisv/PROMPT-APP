@@ -86,7 +86,7 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
           onChange={(event) => onCategoryChange(Number(event.target.value))}
           aria-required="true"
           aria-invalid={categoryMissing}
-          aria-describedby={categoryMissing ? 'template-category-error' : undefined}
+          aria-describedby={categoryMissing ? 'template-category-hint template-category-error' : 'template-category-hint'}
         >
           <option value={0}>Selecione uma categoria</option>
           {categories.map((category) => (
@@ -95,6 +95,9 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
             </option>
           ))}
         </select>
+        <span id="template-category-hint" className="form-label__hint">
+          Categoria usada para organizar o template na biblioteca principal.
+        </span>
         {categoryMissing && (
           <span id="template-category-error" className="form-error-inline" role="alert">
             Selecione uma categoria para o template.

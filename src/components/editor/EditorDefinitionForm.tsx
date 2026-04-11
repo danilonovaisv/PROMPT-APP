@@ -47,6 +47,18 @@ export function EditorDefinitionForm({
     prevExamplesLength.current = template.prompt_definition.few_shot_examples.length;
   }, [template.prompt_definition.few_shot_examples.length]);
 
+  const fieldHints = {
+    systemRole: 'system-role-hint',
+    task: 'task-hint',
+    context: 'context-hint',
+    constraints: 'constraints-hint',
+    negativePrompt: 'negative-prompt-hint',
+    outputFormat: 'output-format-hint',
+    outputLanguage: 'output-language-hint',
+    requiredFields: 'required-fields-hint',
+    responseRules: 'response-rules-hint',
+  } as const;
+
   return (
     <>
       <div className="form-section">
@@ -62,7 +74,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updatePromptDefinitionField('system_role', event.target.value)}
             rows={4}
             placeholder="Defina o papel do modelo"
+            aria-describedby={fieldHints.systemRole}
           />
+          <span id={fieldHints.systemRole} className="form-label__hint">
+            Defina o papel e a especialidade que o modelo deve assumir neste template.
+          </span>
         </div>
 
         <div className="form-group">
@@ -73,7 +89,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updatePromptDefinitionField('task', event.target.value)}
             rows={4}
             placeholder="Descreva a tarefa principal"
+            aria-describedby={fieldHints.task}
           />
+          <span id={fieldHints.task} className="form-label__hint">
+            Explique a entrega principal esperada para o template.
+          </span>
         </div>
 
         <div className="form-group">
@@ -84,7 +104,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updatePromptDefinitionField('context', event.target.value)}
             rows={4}
             placeholder="Explique o contexto do template"
+            aria-describedby={fieldHints.context}
           />
+          <span id={fieldHints.context} className="form-label__hint">
+            Registre premissas, cenário de uso e informações de apoio para a resposta.
+          </span>
         </div>
 
 
@@ -96,7 +120,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updatePromptDefinitionField('constraints', event.target.value.split('\n').filter(Boolean))}
             rows={4}
             placeholder="Uma restrição por linha"
+            aria-describedby={fieldHints.constraints}
           />
+          <span id={fieldHints.constraints} className="form-label__hint">
+            Liste limites, critérios e guardrails, uma instrução por linha.
+          </span>
         </div>
 
         <div className="form-group">
@@ -107,7 +135,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updatePromptDefinitionField('negative_prompt', event.target.value.split('\n').filter(Boolean))}
             rows={4}
             placeholder="Uma proibição por linha"
+            aria-describedby={fieldHints.negativePrompt}
           />
+          <span id={fieldHints.negativePrompt} className="form-label__hint">
+            Informe o que a resposta deve evitar, uma proibição por linha.
+          </span>
         </div>
 
         {/* Menu Selection Multi-Select */}
@@ -231,6 +263,7 @@ export function EditorDefinitionForm({
             onChange={(event) =>
               updateOutputContractField('format', event.target.value as PromptOutputContract['format'])
             }
+            aria-describedby={fieldHints.outputFormat}
           >
             {PROMPT_OUTPUT_FORMATS.map((format) => (
               <option key={format} value={format}>
@@ -238,6 +271,9 @@ export function EditorDefinitionForm({
               </option>
             ))}
           </select>
+          <span id={fieldHints.outputFormat} className="form-label__hint">
+            Defina o formato final esperado para a resposta compilada.
+          </span>
         </div>
 
         <div className="form-group">
@@ -247,7 +283,11 @@ export function EditorDefinitionForm({
             value={template.output_contract.language}
             onChange={(event) => updateOutputContractField('language', event.target.value)}
             placeholder="pt-BR"
+            aria-describedby={fieldHints.outputLanguage}
           />
+          <span id={fieldHints.outputLanguage} className="form-label__hint">
+            Idioma preferencial da resposta final gerada pelo template.
+          </span>
         </div>
 
         <div className="form-group">
@@ -269,7 +309,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updateOutputContractField('required_fields', event.target.value.split('\n').filter(Boolean))}
             rows={4}
             placeholder="Um campo obrigatório por linha"
+            aria-describedby={fieldHints.requiredFields}
           />
+          <span id={fieldHints.requiredFields} className="form-label__hint">
+            Informe os campos que devem existir na resposta, um item por linha.
+          </span>
         </div>
 
         <div className="form-group">
@@ -280,7 +324,11 @@ export function EditorDefinitionForm({
             onChange={(event) => updateOutputContractField('response_rules', event.target.value.split('\n').filter(Boolean))}
             rows={4}
             placeholder="Uma regra por linha"
+            aria-describedby={fieldHints.responseRules}
           />
+          <span id={fieldHints.responseRules} className="form-label__hint">
+            Liste regras obrigatórias de formatação e comportamento, uma por linha.
+          </span>
         </div>
       </div>
     </>

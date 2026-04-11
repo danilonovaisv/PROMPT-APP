@@ -6,11 +6,6 @@ import Layout from '@/components/Layout';
 import ImportExportModal from '@/components/ImportExportModal';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SkeletonEditor } from '@/components/SkeletonLoader';
-import { saveLocalBackup } from '@/utils/backupManager';
-import { seedDatabase } from '@/db/database';
-import { setupAutoSync } from '@/services/autoSync';
-import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
-import { syncToCloud } from '@/services/syncService';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 // Lazy-loaded pages for code splitting
@@ -34,13 +29,20 @@ export default function App() {
 
   useEffect(() => {
     const init = async () => {
+      // Dynamic imports for services to keep main bundle light
+      const { seedDatabase } = await import('@/db/database');
+      const { saveLocalBackup } = await import('@/utils/backupManager');
+      const { setupAutoSync } = await import('@/services/autoSync');
+
       await seedDatabase();
       setTimeout(() => {
         saveLocalBackup();
       }, 2000);
       setupAutoSync();
+
       if (isSupabaseConfigured) {
         try {
+          const { setupRealtimeListeners } = await import('@/services/realtimeService');
           await setupRealtimeListeners();
         } catch (error) {
           console.error('❌ Erro ao iniciar realtime:', error);
@@ -51,7 +53,7 @@ export default function App() {
     init();
 
     return () => {
-      cleanupRealtimeListeners();
+      import('@/services/realtimeService').then(m => m.cleanupRealtimeListeners());
     };
   }, []);
 
@@ -65,13 +67,15 @@ export default function App() {
       
       if (session) {
         try {
+          const { setupRealtimeListeners } = await import('@/services/realtimeService');
+          const { syncToCloud } = await import('@/services/syncService');
           await setupRealtimeListeners();
           await syncToCloud();
         } catch (error) {
           console.error('❌ Erro ao reiniciar realtime após login:', error);
         }
       } else {
-        cleanupRealtimeListeners();
+        import('@/services/realtimeService').then(m => m.cleanupRealtimeListeners());
       }
     });
 

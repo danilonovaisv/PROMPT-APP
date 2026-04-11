@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, createRef, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -12,6 +12,8 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  private readonly fallbackRef = createRef<HTMLDivElement>();
+
   public state: State = {
     hasError: false,
     error: null,
@@ -26,6 +28,12 @@ export class ErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, errorInfo);
   }
 
+  public componentDidUpdate(_prevProps: Props, prevState: State) {
+    if (!prevState.hasError && this.state.hasError) {
+      this.fallbackRef.current?.focus();
+    }
+  }
+
   public reset = () => {
     this.setState({ hasError: false, error: null });
   };
@@ -37,7 +45,13 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="error-boundary-fallback">
+        <div
+          ref={this.fallbackRef}
+          className="error-boundary-fallback"
+          role="alert"
+          aria-live="assertive"
+          tabIndex={-1}
+        >
           <h2>Ops! Algo deu errado</h2>
           <p>Ocorreu um erro inesperado. Tente recarregar a página.</p>
           {this.state.error && (

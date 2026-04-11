@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/hooks/useConfirm';
+import { saveLocalBackup } from '@/utils/backupManager';
 import { downloadPrompt, copyToClipboard } from '@/utils/exportJson';
 import { renderPromptTextFromPrompt } from '@/utils/promptArtifacts';
 import { deletePromptFromSupabase } from '@/services/supabasePrompts';
@@ -22,6 +24,7 @@ export default function CategoryPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const confirm = useConfirm();
     const categoryId = Number(id);
 
     const [rawSearch, setRawSearch] = useState('');
@@ -33,7 +36,10 @@ export default function CategoryPage() {
     );
 
     const prompts = useLiveQuery(
-        () => db.prompts.where('categoryId').equals(categoryId).toArray(),
+        async () => {
+            const allPrompts = await db.prompts.toArray();
+            return allPrompts.filter((prompt) => prompt.categoryId === categoryId && !prompt.isDeleted);
+        },
         [categoryId]
     ) ?? [];
 
@@ -55,21 +61,49 @@ export default function CategoryPage() {
     }, [showToast]);
 
     const handleDelete = useCallback(async (promptId: number) => {
-        if (!confirm('Deseja realmente excluir este prompt?')) return;
         const prompt = await db.prompts.get(promptId);
-        if (prompt?.remoteId) {
-            try {
-                await deletePromptFromSupabase(prompt.remoteId);
-            } catch (e: unknown) {
-        const error = e as Error;
-                console.error("Erro ao deletar no Supabase:", error);
-                showToast(error.message || 'Erro ao deletar o prompt no servidor.', 'error');
-                return;
-            }
+        if (!prompt) return;
+
+        const shouldDelete = await confirm({
+            title: 'Excluir template',
+            message: `Deseja realmente excluir "${prompt.title}"?`,
+            confirmLabel: 'Excluir',
+            cancelLabel: 'Cancelar',
+            variant: 'danger',
+        });
+
+        if (!shouldDelete) return;
+
+        if (!prompt.remoteId) {
+            await db.prompts.delete(promptId);
+            await saveLocalBackup();
+            showToast('Prompt excluído!');
+            return;
         }
-        await db.prompts.delete(promptId);
-        showToast('Prompt excluído!');
-    }, [showToast]);
+
+        const tombstone = {
+            isDeleted: true,
+            syncStatus: 'pending' as const,
+            updatedAt: new Date(),
+        };
+
+        await db.prompts.update(promptId, tombstone);
+        await saveLocalBackup();
+
+        try {
+            await deletePromptFromSupabase(prompt.remoteId);
+            await db.prompts.delete(promptId);
+            await saveLocalBackup();
+            showToast('Prompt excluído!');
+        } catch (e: unknown) {
+            const error = e as Error;
+            console.error("Erro ao deletar no Supabase:", error);
+            showToast(
+                'Prompt removido localmente. A exclusão será sincronizada ao reconectar.',
+                'info'
+            );
+        }
+    }, [confirm, showToast]);
 
     const handleEdit = useCallback((id: number) => {
         navigate(`/editor/${id}`);
@@ -83,7 +117,7 @@ export default function CategoryPage() {
         });
     }, []);
 
-    if (!category) {
+    if (!category || category.isDeleted) {
         return (
             <>
                 <SEO title="Categoria não encontrada" />
