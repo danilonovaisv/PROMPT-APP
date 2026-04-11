@@ -2,10 +2,12 @@
 
 > **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blueviolet)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite)
+![Version](https://img.shields.io/badge/version-2.0.0-blue?style=flat-square)
+![Vite](https://img.shields.io/badge/Vite-8.0.5-646CFF?style=flat-square&logo=vite)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?style=flat-square&logo=typescript)
+![React](https://img.shields.io/badge/React-19.0.0-61DAFB?style=flat-square&logo=react)
+![Dexie](https://img.shields.io/badge/Dexie.js-4.0.1-008080?style=flat-square)
+![Supabase](https://img.shields.io/badge/Supabase-Synced-3ECF8E?style=flat-square&logo=supabase)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)
 
 ---
@@ -38,24 +40,27 @@ O **Prompt App** é uma ferramenta local-first para engenharia de prompts profis
 - ✅ Configurar **menus de contexto hierárquicos** (Tom, Público, Idioma, Estilo) com sub-opções
 - ✅ Exportar em **formato JSON cognitivo** — otimizado para alimentar LLMs
 - ✅ Importar/exportar prompts em lote com backup completo
-- ✅ Funcionar 100% offline — todos os dados ficam no **IndexedDB** do navegador
+- ✅ **Sincronização em Nuvem (Cloud Sync)** — Sincronize dados entre dispositivos via Supabase
+- ✅ **Offline First** — Funciona 100% offline via IndexedDB, sincronizando quando há conexão
 
 ---
 
 ## ⚡ Tech Stack
 
-| Camada             | Tecnologia                 | Versão |
-| :----------------- | :------------------------- | :----- |
-| **Framework**      | React                      | 19.x   |
-| **Linguagem**      | TypeScript                 | 5.9    |
-| **Build Tool**     | Vite                       | 7.3    |
-| **Banco de Dados** | IndexedDB (via Dexie.js)   | 4.x    |
-| **Roteamento**     | React Router DOM           | 7.x    |
-| **Ícones**         | Lucide React               | 0.563+ |
-| **Tipografia**     | Inter (Google Fonts)       | —      |
-| **Estilização**    | Vanilla CSS (sem Tailwind) | —      |
+| Camada | Tecnologia | Versão |
+| :--- | :--- | :--- |
+| **Build Tool** | Vite | 8.0.5 |
+| **Linguagem** | TypeScript | 6.0.2 |
+| **Framework** | React | 19.0.0 |
+| **Banco de Dados** | Dexie.js | 4.0.1 |
+| **Backend/Sync** | Supabase | Latest |
+| **Validação** | Zod | 3.24.2 |
+| **Roteamento** | React Router | 7.3.0 |
+| **Ícones** | Lucide React | 0.477.0 |
+| **Tipografia** | Inter (Google Fonts) | — |
+| **Estilização** | Vanilla CSS (sem Tailwind) | — |
 
-> **Nota:** Nenhum backend é necessário. Todos os dados são persistidos localmente no navegador via IndexedDB.
+> **Nota:** A aplicação segue o paradigma **Local-First**. Todos os dados são persistidos no navegador via IndexedDB. A sincronização com o Supabase é opcional e ocorre automaticamente caso as chaves de API sejam configuradas.
 
 ---
 
@@ -105,6 +110,13 @@ O coração da aplicação. Campos disponíveis:
 - **Importar:** Lê arquivos `.json` — detecta automaticamente formato individual ou bulk
 - **Copiar JSON:** Copia o prompt formatado direto para a área de transferência
 - **Preview JSON:** Visualização inline do JSON antes de exportar
+
+### ☁️ Cloud Sync & Autenticação
+
+- **Backup Automático:** Sincronização bi-direcional entre IndexedDB e Supabase
+- **Conflitos Inteligentes:** Resolução baseada em timestamps (`updated_at`)
+- **Realtime:** Atualizações em tempo real entre diferentes abas ou dispositivos
+- **Soft-deletes:** Recuperação de itens excluídos via sincronização
 
 ---
 
@@ -216,19 +228,28 @@ prompt-app/
 ├── public/                      # Assets estáticos (favicon, etc.)
 │
 └── src/
-    ├── main.tsx                 # Bootstrap do React
-    ├── App.tsx                  # Roteamento principal
-    ├── index.css                # Design system (variáveis, componentes, utilitários)
-    ├── vite-env.d.ts            # Tipos do Vite
-    │
-    ├── models/
-    │   └── types.ts             # Interfaces e tipos (Category, Prompt, ContextMenu, etc.)
-    │
-    ├── db/
-    │   └── database.ts          # Dexie.js — schema, migrações, seed data
-    │
-    ├── context/
-    │   └── ToastContext.tsx      # Provider de notificações toast
+     ├── main.tsx                 # Bootstrap do React
+     ├── App.tsx                  # Roteamento principal
+     ├── index.css                # Design system (variáveis, componentes, utilitários)
+     ├── instrument.ts            # Monitoramento de erros (Sentry)
+     ├── vite-env.d.ts            # Tipos do Vite
+     │
+     ├── models/
+     │   ├── types.ts             # Interfaces e tipos (Category, Prompt, ContextMenu, etc.)
+     │   └── promptSchema.ts      # Validação Zod para prompts
+     │
+     ├── services/
+     │   ├── syncService.ts       # Sincronização inteligente com Supabase
+     │   └── supabaseClient.ts    # Configuração do cliente Supabase
+     │
+     ├── hooks/
+     │   └── useAutoSync.ts        # Hook para sincronização automática
+     │
+     ├── context/
+     │   └── ToastContext.tsx     # Provider de notificações toast
+     │
+     ├── db/
+     │   └── database.ts          # Dexie.js — schema, migrações, seed data
     │
     ├── components/
     │   ├── Layout.tsx            # Shell da app (sidebar + conteúdo)
@@ -544,13 +565,16 @@ docker run -p 3000:80 prompt-app
 
 ## 📜 Scripts Disponíveis
 
-| Script         | Comando            | Descrição                                  |
-| :------------- | :----------------- | :----------------------------------------- |
-| **Dev**        | `pnpm run dev`     | Servidor de desenvolvimento com HMR (Vite) |
-| **Build**      | `pnpm run build`   | Type-check + bundle de produção            |
-| **Preview**    | `pnpm run preview` | Serve o build de produção localmente       |
-| **Type Check** | `npx tsc --noEmit` | Verifica tipos sem emitir arquivos         |
-
+| Script | Comando | Descrição |
+| :--- | :--- | :--- |
+| **Dev** | `pnpm run dev` | Servidor de desenvolvimento com HMR (Vite) |
+| **Build** | `pnpm run build` | Type-check + bundle de produção |
+| **Preview** | `pnpm run preview` | Serve o build de produção localmente |
+| **Type Check** | `pnpm run type-check` | Verifica tipos sem emitir arquivos |
+| **Lint** | `pnpm run lint` | Analisa código com ESLint |
+| **Test** | `pnpm run test` | Executa testes unitários (Jest) |
+| **Test:E2E** | `pnpm run test:e2e` | Executa testes ponta-a-ponta (Playwright) |
+| **Config Cloud** | `pnpm run setup:cloud-env` | Gera template `.env.local` para Supabase |
 ---
 
 ## 🎨 Personalização
@@ -672,5 +696,5 @@ MIT © [Danilo Novais](https://github.com/danilonovaisv)
 ---
 
 <p align="center">
-  <strong>Prompt App v2.0</strong> — Feito com 🧠 e ☕ para engenheiros de IA
+  <strong>Prompt App v2.0.0</strong> — Feito com 🧠 e ☕ para engenheiros de IA
 </p>
