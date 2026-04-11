@@ -12,6 +12,9 @@ on:
       - "tests/**"
       - "*.lock"
 
+permissions:
+  contents: read
+
 concurrency:
   # Evita deploys simultâneos na mesma branch
   group: deploy-netlify-${{ github.ref }}
