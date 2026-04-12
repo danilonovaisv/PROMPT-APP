@@ -13,3 +13,6 @@
 ## 2026-10-27 - N+1 Network & DB Writes in Bulk Imports
 **Learning:** Individual `.add()` calls combined with inline remote synchronization (`savePromptToSupabase`) within a bulk JSON import loop causes catastrophic N+1 performance degradation. It blocks the main thread, delays the import process proportionally to network latency, and can trigger API rate limits.
 **Action:** Extract database insertions from the loop and use `bulkAdd()` for batch processing. Defer cloud synchronization to the background `syncService` by initially marking records with `syncStatus: 'pending'`.
+## 2024-11-20 - Dexie.js Full Table Scans vs Indexed Queries
+**Learning:** Loading entire large tables using `db.prompts.toArray()` just to filter records by foreign key (`categoryId`) in JavaScript is incredibly inefficient when indices exist, leading to severe O(N) memory allocation bottlenecks.
+**Action:** Always prefer `db.table.where('indexedField').equals(value).filter(...).toArray()` for subsets, or `.count()` for raw counts to keep execution at the IndexedDB C++ layer and minimize JS heap overhead.
