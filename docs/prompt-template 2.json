@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "template_id": "novo_template",
+    "template_name": "Novo Template",
+    "template_type": "generic_prompt",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "draft"
+  },
+  "prompt_definition": {
+    "system_role": "",
+    "task": "",
+    "context": "",
+    "user_scene_description": "",
+    "constraints": [],
+    "negative_prompt": [],
+    "few_shot_examples": []
+  },
+  "menu_definitions": [],
+  "menu_ids": [],
+  "output_contract": {
+    "format": "text",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [],
+    "response_rules": []
+  }
+}

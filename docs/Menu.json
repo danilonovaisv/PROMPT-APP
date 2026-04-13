@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "string",
+      "menu_name": "string",
+      "description": "string",
+      "options": [
+        {
+          "label": "string",
+          "value": "string",
+          "sub_options": [
+            {
+              "label": "string",
+              "value": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
