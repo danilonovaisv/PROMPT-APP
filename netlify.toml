@@ -1,10 +1,6 @@
-# Configuração de produção Netlify otimizada para {{FRAMEWORK}} detectado (Vite + React)
-
 [build]
-  # Build enxuto: somente compilação da aplicação
   command = "pnpm install --frozen-lockfile && pnpm run build"
   publish = "dist"
-  # Ignora builds para mudanças que não impactam deploy (docs, testes, CI e lockfiles)
   ignore = '''bash -c 'if [ -z "$CACHED_COMMIT_REF" ]; then exit 1; fi; CHANGED="$(git diff --name-only "$CACHED_COMMIT_REF" "$COMMIT_REF")"; echo "$CHANGED" | grep -qvE "^(docs/|\.github/|tests/|.*\.md$|.*\.lock$)"' '''
 
 [build.environment]
@@ -12,39 +8,45 @@
   CI = "true"
 
 [build.processing]
-  # Evita processamento automático de assets para reduzir tempo/custo
   skip_processing = true
-
-[build.processing.css]
-  bundle = false
-  minify = false
-
-[build.processing.js]
-  bundle = false
-  minify = false
-
-[build.processing.images]
-  compress = false
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
 [[redirects]]
-  # Preserva o sitemap real como arquivo estático.
   from = "/sitemap.xml"
   to = "/sitemap.xml"
   status = 200
 
 [[redirects]]
-  # Evita que XML inexistente seja mascarado pelo fallback da SPA.
   from = "/sitemap*.xml"
   to = "/index.html"
   status = 404
 
 [[redirects]]
-  # SPA fallback para roteamento client-side
   from = "/*"
   to = "/index.html"
   status = 200
-  force = false
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io;"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.map"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Cache-Control = "no-store"
