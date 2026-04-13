@@ -24,6 +24,7 @@
 - [Schema JSON de Exportação](#-schema-json-de-exportação)
 - [Menus de Contexto Hierárquicos](#-menus-de-contexto-hierárquicos)
 - [Deploy](#-deploy)
+- [Performance / Cache / Netlify usage limits](#-performance--cache--netlify-usage-limits)
 - [Scripts Disponíveis](#-scripts-disponíveis)
 - [Personalização](#-personalização)
 - [Contribuição](#-contribuição)
@@ -560,6 +561,60 @@ server {
 docker build -t prompt-app .
 docker run -p 3000:80 prompt-app
 ```
+
+---
+
+## 🚦 Performance / Cache / Netlify usage limits
+
+### Regras de cache (Netlify)
+
+As regras de cache e headers ficam em `public/_headers` e são copiadas para `dist/_headers` durante o build.
+
+- `/*` (HTML): `Cache-Control: public, max-age=0, must-revalidate`
+- `/assets/*` (bundles Vite com hash): `Cache-Control: public, max-age=31536000, immutable`
+- Fontes (`.woff2`, `.woff`, `.ttf`, `.otf`): cache longo imutável
+- `/*.map`: `no-store` + `noindex`
+
+> Observação: para evitar duplicidade de regras, os headers de cache estão centralizados no `public/_headers` (não em `[[headers]]` do `netlify.toml`).
+
+### Build menor e mais cacheável
+
+- `vite.config.ts` está com `build.sourcemap = false` para produção.
+- O projeto já usa `manualChunks` para separar `vendor-react`, `vendor-supabase`, etc., melhorando reaproveitamento de cache entre deploys.
+
+### Como verificar tamanho do `dist`
+
+```bash
+# build de produção
+pnpm run build
+
+# tamanho total do output
+du -sh dist
+
+# maiores arquivos gerados
+find dist/assets -type f -printf "%s %p\n" | sort -nr | head -n 15
+```
+
+### Como validar headers no deploy
+
+Depois do deploy no Netlify, teste:
+
+```bash
+curl -I https://SEU-SITE.netlify.app/
+curl -I https://SEU-SITE.netlify.app/assets/index-XXXXXXXX.js
+```
+
+Esperado:
+
+- HTML com `Cache-Control: public, max-age=0, must-revalidate`
+- Asset versionado com `Cache-Control: public, max-age=31536000, immutable`
+
+### Redução de tráfego abusivo/hotlink
+
+- Coloque o domínio atrás do Cloudflare (plano free já ajuda com cache de edge e proteção básica).
+- Considere WAF/rate-limit para bloquear scraping agressivo.
+- Evite publicar links diretos de arquivos pesados fora do app (reduz hotlink).
+- Para imagens grandes no repositório, prefira `.webp`/`.avif` quando possível.
 
 ---
 

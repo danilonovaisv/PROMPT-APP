@@ -30,21 +30,6 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-[[headers]]
-  # HTML sempre validado para evitar conteúdo stale
-  for = "/*"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[headers]]
-  # Assets versionados com cache agressivo e imutável
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
 [[redirects]]
   # Preserva o sitemap real como arquivo estático.
   from = "/sitemap.xml"

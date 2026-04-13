@@ -56,6 +56,6 @@ export default defineConfig(async () => ({
       },
     },
     chunkSizeWarningLimit: 500,
-    sourcemap: true,
+    sourcemap: false,
   },
 }));
