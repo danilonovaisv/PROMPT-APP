@@ -18,24 +18,22 @@ export default function HomePage() {
     // into memory just to count them. Instead, fetch only the categories and use Dexie's
     // optimized .count() to compute totals directly via IndexedDB indexes.
     const { categories, countsMap, totalPrompts } = useLiveQuery(async () => {
-        const [allCategories, allPrompts] = await Promise.all([
-            db.categories.toArray(),
-            db.prompts.toArray(),
-        ]);
-        const cats = allCategories.filter((category) => !category.isDeleted);
+        const cats = await db.categories.filter((category) => !category.isDeleted).toArray();
         const map: Record<number, number> = {};
 
         await Promise.all(
             cats.map(async (cat) => {
                 if (cat.id) {
-                    map[cat.id] = allPrompts.filter(
-                        (prompt) => prompt.categoryId === cat.id && !prompt.isDeleted
-                    ).length;
+                    map[cat.id] = await db.prompts
+                        .where('categoryId')
+                        .equals(cat.id)
+                        .filter((prompt) => !prompt.isDeleted)
+                        .count();
                 }
             })
         );
 
-        const total = allPrompts.filter((prompt) => !prompt.isDeleted).length;
+        const total = await db.prompts.filter((prompt) => !prompt.isDeleted).count();
 
         return { categories: cats, countsMap: map, totalPrompts: total };
     }, []) ?? { categories: [], countsMap: {}, totalPrompts: 0 };

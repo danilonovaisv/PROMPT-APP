@@ -41,10 +41,7 @@ export default function CategoryManagerPage() {
     const confirm = useConfirm();
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
     const categories = useLiveQuery(
-        async () => {
-            const allCategories = await db.categories.toArray();
-            return allCategories.filter((category) => !category.isDeleted);
-        }
+        () => db.categories.filter((category) => !category.isDeleted).toArray()
     ) ?? [];
 
     const [isEditing, setIsEditing] = useState<number | null>(null);
@@ -131,9 +128,11 @@ export default function CategoryManagerPage() {
     };
 
     const handleDelete = async (id: number, remoteId?: number) => {
-        const promptsByCategory = (await db.prompts.toArray()).filter(
-            (prompt) => prompt.categoryId === id && !prompt.isDeleted
-        );
+        const promptsByCategory = await db.prompts
+            .where('categoryId')
+            .equals(id)
+            .filter((prompt) => !prompt.isDeleted)
+            .toArray();
         const promptCount = promptsByCategory.length;
         if (promptCount > 0) {
             // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
