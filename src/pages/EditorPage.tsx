@@ -242,7 +242,8 @@ export default function EditorPage() {
 
   useEffect(() => {
     (async () => {
-      const categoryList = await db.categories.filter((category) => !category.isDeleted).toArray();
+      const allCategories = await db.categories.toArray();
+      const categoryList = allCategories.filter((category) => !category.isDeleted);
       setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
     })();
   }, []);
