@@ -120,12 +120,14 @@ jest.mock('@/db/database', () => ({
     categories: {
       toArray: jest.fn(),
       get: jest.fn(),
+      filter: jest.fn(),
     },
     prompts: {
       get: jest.fn(),
     },
     contextMenus: {
       toArray: jest.fn(),
+      filter: jest.fn(),
     },
   },
 }));
@@ -157,6 +159,9 @@ describe('Editor state consistency', () => {
     });
     (db.categories.toArray as jest.Mock).mockResolvedValue(categories);
     (db.categories.get as jest.Mock).mockResolvedValue(categories[0]);
+    (db.contextMenus.filter as jest.Mock).mockReturnValue({
+      toArray: jest.fn().mockResolvedValue(contextMenus)
+    });
     (db.contextMenus.toArray as jest.Mock).mockResolvedValue(contextMenus);
 
     const promptPayload = createEmptyPromptPayload('Old template');
