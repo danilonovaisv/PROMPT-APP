@@ -53,7 +53,7 @@ api_patch() {
 }
 
 echo "[INFO] Coletando sites do time ${TEAM_ID}..."
-SITES_JSON="$(api_get "/accounts/${TEAM_ID}/sites")"
+SITES_JSON="$(api_get "/sites?account_id=${TEAM_ID}")"
 
 SITE_COUNT="$(jq 'length' <<<"$SITES_JSON")"
 INACTIVE_SITES="$(jq '[.[] | select((.published_deploy == null) or (.state != "current" and .state != "ready"))]' <<<"$SITES_JSON")"
@@ -81,10 +81,14 @@ if [[ "$AUTO_DISABLE_BRANCH_BUILDS" == "true" ]]; then
 fi
 
 echo "[INFO] Coletando builds recentes..."
-BUILDS_JSON="$(api_get "/accounts/${TEAM_ID}/builds?per_page=100")"
+# O endpoint de builds por conta pode falhar em contas pessoais, tentando fallback para lista vazia se necessário.
+if ! BUILDS_JSON="$(api_get "/accounts/${TEAM_ID}/builds?per_page=100" 2>/dev/null)"; then
+  echo "[AVISO] Não foi possível coletar builds (endpoint não suportado para este tipo de conta)."
+  BUILDS_JSON="[]"
+fi
 
-TOTAL_MINUTES_APPROX="$(jq '[.[] | (.deploy_time // 0)] | add / 60' <<<"$BUILDS_JSON")"
-BANDWIDTH_APPROX_MB="$(jq '[.[] | (.deploy_ssl_url // empty)] | length * 0' <<<"$BUILDS_JSON")"
+TOTAL_MINUTES_APPROX="$(jq '[.[] | (.deploy_time // 0)] | (add // 0) / 60' <<<"$BUILDS_JSON")"
+BANDWIDTH_APPROX_MB="$(jq '[.[] | (.deploy_ssl_url // empty)] | (length // 0) * 0' <<<"$BUILDS_JSON")"
 
 jq -n \
   --arg generated_at "$TIMESTAMP" \
