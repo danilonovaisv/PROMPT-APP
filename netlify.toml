@@ -21,13 +21,20 @@
         echo "[ignore] Diff vazio; pulando build."
         exit 0
       fi
-      # Se TODAS as linhas do diff casam com os padrões abaixo, pula o build.
-      if echo "$CHANGED" | grep -qvE "^(docs/|\.github/|tests/|test-results/|playwright-report/|coverage/|\.vscode/|\.idea/|scripts/|logs/|backup-superpower/|customization/|.*\.md$|.*\.lock$|.*\.log$|pnpm-lock\.yaml$|\.gitignore$|\.npmrc$|LICENSE$|SECURITY\.md$)"; then
+      # Lista os arquivos do diff que NÃO casam com os padrões de ignore.
+      # Se essa lista for vazia, todos os arquivos alterados são irrelevantes
+      # para o bundle → pula o build (exit 0).
+      # Caso contrário, há pelo menos um arquivo relevante → executa o build (exit 1).
+      # Nota: Netlify convenciona exit 0 = skip, exit 1 = build.
+      # Ref: https://docs.netlify.com/configure-builds/ignore-builds/
+      RELEVANT="$(echo "$CHANGED" | grep -vE "^(docs/|\.github/|tests/|test-results/|playwright-report/|coverage/|\.vscode/|\.idea/|scripts/|logs/|backup-superpower/|customization/|.*\.md$|.*\.lock$|.*\.log$|pnpm-lock\.yaml$|\.gitignore$|\.npmrc$|LICENSE$|SECURITY\.md$)" || true)"
+      if [ -z "$RELEVANT" ]; then
         echo "[ignore] Apenas arquivos irrelevantes alterados; pulando build."
         echo "$CHANGED"
         exit 0
       fi
       echo "[ignore] Alterações relevantes detectadas; executando build."
+      echo "$RELEVANT"
       exit 1
     '
   '''
