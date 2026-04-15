@@ -1,23 +1,35 @@
-name: Deploy Netlify (Otimizado)
+name: Deploy Netlify (Manual)
+
+# ATENÇÃO:
+# Este workflow é EXCLUSIVAMENTE manual (workflow_dispatch).
+# O auto-deploy em push foi DESATIVADO em abril/2026 para evitar
+# concorrência com o auto-publish nativo da integração Netlify ↔ GitHub,
+# que estava gerando múltiplos builds simultâneos e esgotando a cota
+# de minutos de build / bandwidth.
+#
+# Use este workflow apenas como:
+#   1) Fallback manual caso o auto-publish do Netlify esteja desativado
+#   2) Deploy forçado a partir de uma branch específica
+#
+# Acionamento: aba "Actions" do GitHub → "Deploy Netlify (Manual)" → "Run workflow".
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".github/**"
-      - "tests/**"
-      - "*.lock"
+  workflow_dispatch:
+    inputs:
+      production:
+        description: "Deploy em produção? (false = draft/preview)"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 permissions:
   contents: read
 
 concurrency:
-  # Evita deploys simultâneos na mesma branch
-  group: deploy-netlify-${{ github.ref }}
+  group: deploy-netlify-manual-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -51,34 +63,18 @@ jobs:
             exit 1
           fi
 
-      - name: Pré-build otimizado
+      - name: Pré-build
         run: |
           pnpm install --frozen-lockfile --prefer-offline
           pnpm run build
 
-      - name: Deploy produção (primário)
-        id: deploy_primary
-        continue-on-error: true
+      - name: Deploy (manual)
         uses: nwtgck/actions-netlify@v3
         with:
           publish-dir: ./dist
-          production-deploy: true
+          production-deploy: ${{ github.event.inputs.production == 'true' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          enable-pull-request-comment: false
-          enable-commit-comment: false
-          overwrites-pull-request-comment: false
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-      - name: Fallback em caso de falha (draft deploy)
-        if: steps.deploy_primary.outcome == 'failure'
-        uses: nwtgck/actions-netlify@v3
-        with:
-          publish-dir: ./dist
-          production-deploy: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Fallback deploy acionado automaticamente"
+          deploy-message: "Manual deploy via workflow_dispatch (${{ github.actor }})"
           enable-pull-request-comment: false
           enable-commit-comment: false
           overwrites-pull-request-comment: false
