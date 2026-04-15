@@ -1,0 +1,93 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "perfil_do_output",
+      "menu_name": "Perfil do Output",
+      "description": "Define o tipo de entrega priorizado pelo template.",
+      "options": [
+        {
+          "label": "Guia equilibrado",
+          "value": "guia_equilibrado",
+          "sub_options": []
+        },
+        {
+          "label": "Hands-on",
+          "value": "hands_on",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetural",
+          "value": "arquitetural",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "agentes_prioritarios",
+      "menu_name": "Agentes Prioritários",
+      "description": "Define quais agentes de IA devem ser priorizados nos prompts operacionais.",
+      "options": [
+        {
+          "label": "Claude Code",
+          "value": "claude_code",
+          "sub_options": []
+        },
+        {
+          "label": "Codex",
+          "value": "codex",
+          "sub_options": []
+        },
+        {
+          "label": "Antigravity",
+          "value": "antigravity",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "uso_de_contexto_externo",
+      "menu_name": "Uso de Contexto Externo",
+      "description": "Controla como o template deve orientar uso de MCP, Context7 e documentação conectada.",
+      "options": [
+        {
+          "label": "Automático quando disponível",
+          "value": "automatico",
+          "sub_options": []
+        },
+        {
+          "label": "Somente quando técnico",
+          "value": "somente_tecnico",
+          "sub_options": []
+        },
+        {
+          "label": "Sem dependência externa",
+          "value": "sem_dependencia_externa",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_de_detalhamento",
+      "menu_name": "Nível de Detalhamento",
+      "description": "Define a profundidade do guia e da análise de expansão.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Profundo",
+          "value": "profundo",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
