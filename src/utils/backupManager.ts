@@ -17,6 +17,23 @@ export interface AppSnapshot {
 
 const BACKUP_KEY = 'prompt_app_global_backup';
 
+/** Verifica se um objeto é um AppSnapshot válido */
+export function isValidSnapshot(obj: unknown): obj is AppSnapshot {
+    if (typeof obj !== 'object' || obj === null) return false;
+
+    const snap = obj as Record<string, unknown>;
+    if (typeof snap.version !== 'string' || typeof snap.timestamp !== 'string') return false;
+
+    const data = snap.data as Record<string, unknown>;
+    if (typeof data !== 'object' || data === null) return false;
+
+    if (!Array.isArray(data.categories) || !Array.isArray(data.prompts) || !Array.isArray(data.contextMenus)) {
+        return false;
+    }
+
+    return true;
+}
+
 /** Gera um snapshot completo de todos os dados do banco */
 export async function createSnapshot(): Promise<AppSnapshot> {
     const categories = await db.categories.toArray();
@@ -43,13 +60,17 @@ export async function saveLocalBackup() {
         // a menos que o usuário explicitamente delete tudo ou seja o primeiro backup.
         const existingRaw = localStorage.getItem(BACKUP_KEY);
         if (existingRaw) {
-            const existing = JSON.parse(existingRaw) as AppSnapshot;
-            const hasExistingData = existing.data.prompts.length > 0 || existing.data.categories.length > 6; // 6 é o seed padrão
-            const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
+            const existing = JSON.parse(existingRaw);
+            if (isValidSnapshot(existing)) {
+                const hasExistingData = existing.data.prompts.length > 0 || existing.data.categories.length > 6; // 6 é o seed padrão
+                const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
 
-            if (hasExistingData && isNewEmpty) {
-                console.warn('⚠️ Tentativa de backup vazio detectada. Preservando backup anterior com dados.');
-                return;
+                if (hasExistingData && isNewEmpty) {
+                    console.warn('⚠️ Tentativa de backup vazio detectada. Preservando backup anterior com dados.');
+                    return;
+                }
+            } else {
+                console.warn('⚠️ Backup anterior é inválido. Será sobrescrito.');
             }
         }
 
@@ -94,7 +115,10 @@ export function getLocalBackupInfo() {
     const raw = localStorage.getItem(BACKUP_KEY);
     if (!raw) return null;
     try {
-        const snapshot = JSON.parse(raw) as AppSnapshot;
+        const snapshot = JSON.parse(raw);
+        if (!isValidSnapshot(snapshot)) {
+            return null;
+        }
         return {
             timestamp: snapshot.timestamp,
             count: {
