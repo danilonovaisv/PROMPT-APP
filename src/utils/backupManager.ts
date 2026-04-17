@@ -29,6 +29,23 @@ export function isValidSnapshot(data: unknown): data is AppSnapshot {
 
 const BACKUP_KEY = 'prompt_app_global_backup';
 
+/** Verifica se um objeto é um AppSnapshot válido */
+export function isValidSnapshot(obj: unknown): obj is AppSnapshot {
+    if (typeof obj !== 'object' || obj === null) return false;
+
+    const snap = obj as Record<string, unknown>;
+    if (typeof snap.version !== 'string' || typeof snap.timestamp !== 'string') return false;
+
+    const data = snap.data as Record<string, unknown>;
+    if (typeof data !== 'object' || data === null) return false;
+
+    if (!Array.isArray(data.categories) || !Array.isArray(data.prompts) || !Array.isArray(data.contextMenus)) {
+        return false;
+    }
+
+    return true;
+}
+
 /** Gera um snapshot completo de todos os dados do banco */
 export async function createSnapshot(): Promise<AppSnapshot> {
     const categories = await db.categories.toArray();
