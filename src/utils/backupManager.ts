@@ -15,6 +15,18 @@ export interface AppSnapshot {
     };
 }
 
+export function isValidSnapshot(data: unknown): data is AppSnapshot {
+    if (!data || typeof data !== 'object') return false;
+    const snap = data as Record<string, unknown>;
+    if (typeof snap.version !== 'string' || typeof snap.timestamp !== 'string') return false;
+    if (!snap.data || typeof snap.data !== 'object') return false;
+
+    const snapData = snap.data as Record<string, unknown>;
+    return Array.isArray(snapData.categories) &&
+           Array.isArray(snapData.prompts) &&
+           Array.isArray(snapData.contextMenus);
+}
+
 const BACKUP_KEY = 'prompt_app_global_backup';
 
 /** Verifica se um objeto é um AppSnapshot válido */
@@ -60,17 +72,21 @@ export async function saveLocalBackup() {
         // a menos que o usuário explicitamente delete tudo ou seja o primeiro backup.
         const existingRaw = localStorage.getItem(BACKUP_KEY);
         if (existingRaw) {
-            const existing = JSON.parse(existingRaw);
-            if (isValidSnapshot(existing)) {
-                const hasExistingData = existing.data.prompts.length > 0 || existing.data.categories.length > 6; // 6 é o seed padrão
-                const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
+            try {
+                const parsed = JSON.parse(existingRaw);
+                if (isValidSnapshot(parsed)) {
+                    const hasExistingData = parsed.data.prompts.length > 0 || parsed.data.categories.length > 6; // 6 é o seed padrão
+                    const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
 
-                if (hasExistingData && isNewEmpty) {
-                    console.warn('⚠️ Tentativa de backup vazio detectada. Preservando backup anterior com dados.');
-                    return;
+                    if (hasExistingData && isNewEmpty) {
+                        console.warn('⚠️ Tentativa de backup vazio detectada. Preservando backup anterior com dados.');
+                        return;
+                    }
+                } else {
+                    console.warn('⚠️ Backup anterior inválido ou corrompido. Será sobrescrito.');
                 }
-            } else {
-                console.warn('⚠️ Backup anterior é inválido. Será sobrescrito.');
+            } catch (e) {
+                console.warn('⚠️ Falha ao ler backup anterior, sobrescrevendo.', e);
             }
         }
 
@@ -115,15 +131,14 @@ export function getLocalBackupInfo() {
     const raw = localStorage.getItem(BACKUP_KEY);
     if (!raw) return null;
     try {
-        const snapshot = JSON.parse(raw);
-        if (!isValidSnapshot(snapshot)) {
-            return null;
-        }
+        const parsed = JSON.parse(raw);
+        if (!isValidSnapshot(parsed)) return null;
+
         return {
-            timestamp: snapshot.timestamp,
+            timestamp: parsed.timestamp,
             count: {
-                prompts: snapshot.data.prompts.length,
-                categories: snapshot.data.categories.length
+                prompts: parsed.data.prompts.length,
+                categories: parsed.data.categories.length
             }
         };
     } catch {
