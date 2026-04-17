@@ -37,8 +37,11 @@ export default function CategoryPage() {
 
     const prompts = useLiveQuery(
         async () => {
-            const allPrompts = await db.prompts.toArray();
-            return allPrompts.filter((prompt) => prompt.categoryId === categoryId && !prompt.isDeleted);
+            return await db.prompts
+                .where('categoryId')
+                .equals(categoryId)
+                .filter(p => !p.isDeleted)
+                .toArray();
         },
         [categoryId]
     ) ?? [];
