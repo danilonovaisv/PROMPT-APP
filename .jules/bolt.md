@@ -16,3 +16,7 @@
 ## 2026-04-17 - Dexie.js Frontend Filtering
 **Learning:** React frontend code commonly loads entire tables into memory just to filter them locally (e.g. `const allPrompts = await db.prompts.toArray(); return allPrompts.filter(...)`). This creates severe memory bottlenecks with large JSON payloads, locking the main thread and slowing down renders.
 **Action:** Always delegate filtering to IndexedDB by replacing `table.toArray().filter(...)` with `.where('field').equals(value).filter(condition).toArray()`. If only a total is needed, replace `.toArray().length` with `.count()`.
+
+## 2026-04-18 - Push filters to IndexedDB/Dexie cursor level
+**Learning:** Fetching an entire database table into memory using `toArray()` and then running a standard JavaScript `.filter()` (e.g., `await db.categories.toArray().then(arr => arr.filter(...))`) causes significant memory bloat, especially as datasets grow with tombstoned (soft-deleted) items or large JSON payloads.
+**Action:** Always chain `.filter()` directly onto the Dexie query (e.g., `await db.categories.filter(c => !c.isDeleted).toArray()`) so that the filtering happens at the cursor level *before* the resulting set is serialized into a JavaScript array.

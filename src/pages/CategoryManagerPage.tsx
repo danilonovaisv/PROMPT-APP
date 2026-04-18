@@ -42,8 +42,8 @@ export default function CategoryManagerPage() {
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
     const categories = useLiveQuery(
         async () => {
-            const allCategories = await db.categories.toArray();
-            return allCategories.filter((category) => !category.isDeleted);
+            // ⚡ Bolt: Push filter to Dexie cursor to avoid loading soft-deleted records into JS memory
+            return await db.categories.filter((category) => !category.isDeleted).toArray();
         }
     ) ?? [];
 

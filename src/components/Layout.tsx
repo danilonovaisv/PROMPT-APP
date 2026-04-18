@@ -28,7 +28,8 @@ interface LayoutProps {
 export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
+    // ⚡ Bolt: Push filter to Dexie cursor and prevent soft-deleted items from rendering
+    const categories = useLiveQuery(() => db.categories.filter(c => !c.isDeleted).toArray()) ?? [];
 
     const navItemClass = ({ isActive }: { isActive: boolean }) =>
         `app-sidebar__nav-item ${isActive ? 'app-sidebar__nav-item--active' : ''}`;
