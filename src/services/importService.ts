@@ -424,6 +424,12 @@ export async function importFromJsonText(
     };
   } catch (e: unknown) {
     const error = e as Error;
+    console.error('[importService] Erro interno na importação de JSON:', e);
+
+    // Allow specific validation messages (like wrong file extension) to pass through to UI,
+    // but sanitize unhandled parsing/internal errors.
+    const isValidationError = error.message === 'Apenas arquivos .json são aceitos';
+
     return {
       success: false,
       count: 0,
@@ -431,7 +437,7 @@ export async function importFromJsonText(
         {
           type: 'processing',
           field: 'general',
-          message: error.message || 'Erro desconhecido durante a importação',
+          message: isValidationError ? error.message : 'Erro interno durante a importação do arquivo. O formato pode ser inválido ou corrompido.',
         },
       ],
       warnings,

@@ -112,9 +112,9 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
             setParsedData(result.data);
             setStep('preview');
         } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-            setValidationErrors([{ field: 'file', message: `JSON inválido: ${msg}` }]);
-            showToast('JSON mal-formatado', 'error');
+            console.error('[ImportMenusModal] Erro ao validar o JSON:', err);
+            setValidationErrors([{ field: 'file', message: 'Falha ao processar o arquivo. Verifique se o formato JSON é válido.' }]);
+            showToast('JSON mal-formatado ou inválido', 'error');
         }
 
         if (fileRef.current) fileRef.current.value = '';
@@ -137,13 +137,13 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                 showToast('Falha na importação', 'error');
             }
         } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+            console.error('[ImportMenusModal] Erro durante importação:', err);
             setImportResult({
                 success: false,
                 imported: 0,
-                errors: [{ field: 'system', message: msg }],
+                errors: [{ field: 'system', message: 'Erro interno ao processar a importação' }],
                 conflicts: [],
-                log: [`Erro fatal: ${msg}`],
+                log: ['Erro fatal: Falha no processamento. Verifique os logs do console.'],
             });
             setStep('result');
             showToast('Erro inesperado na importação', 'error');
