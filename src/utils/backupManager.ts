@@ -15,6 +15,9 @@ export interface AppSnapshot {
     };
 }
 
+const BACKUP_KEY = 'prompt_app_global_backup';
+
+/** Verifica se um objeto é um AppSnapshot válido */
 export function isValidSnapshot(data: unknown): data is AppSnapshot {
     if (!data || typeof data !== 'object') return false;
     const snap = data as Record<string, unknown>;
@@ -25,25 +28,6 @@ export function isValidSnapshot(data: unknown): data is AppSnapshot {
     return Array.isArray(snapData.categories) &&
            Array.isArray(snapData.prompts) &&
            Array.isArray(snapData.contextMenus);
-}
-
-const BACKUP_KEY = 'prompt_app_global_backup';
-
-/** Verifica se um objeto é um AppSnapshot válido */
-export function isValidSnapshot(obj: unknown): obj is AppSnapshot {
-    if (typeof obj !== 'object' || obj === null) return false;
-
-    const snap = obj as Record<string, unknown>;
-    if (typeof snap.version !== 'string' || typeof snap.timestamp !== 'string') return false;
-
-    const data = snap.data as Record<string, unknown>;
-    if (typeof data !== 'object' || data === null) return false;
-
-    if (!Array.isArray(data.categories) || !Array.isArray(data.prompts) || !Array.isArray(data.contextMenus)) {
-        return false;
-    }
-
-    return true;
 }
 
 /** Gera um snapshot completo de todos os dados do banco */
