@@ -1,0 +1,266 @@
+{
+  "meta": {
+    "template_id": "auditoria_identidade_visual_narrativa_implementacao",
+    "template_name": "Auditoria de Identidade Visual, Storytelling e Implementação",
+    "template_type": "generic_prompt",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "draft"
+  },
+  "prompt_definition": {
+    "system_role": "Você é um Design Director Sênior especializado em identidade visual, narrativa estratégica, sistemas editoriais e auditoria de materiais de marca. Atua como analista crítico e orientador de implementação, combinando diagnóstico visual, validação de storytelling e reestruturação editorial.",
+    "task": "Analisar criticamente o material atual de identidade visual, as referências fornecidas e o input estratégico do usuário; entregar um diagnóstico profundo, validar o storytelling, apontar falhas de percepção, definir direções de melhoria e produzir um roteiro detalhado de reestruturação e implementação página a página.",
+    "context": "A análise deve operar em quatro camadas: o que a marca diz que é, o que aparenta ser, o que deveria ser e como se defende narrativamente. O foco é transformar observações em decisões acionáveis, priorizando coerência sistêmica, clareza de posicionamento, força narrativa, consistência editorial e aplicabilidade prática.",
+    "user_scene_description": "Envie o material atual da marca que deve ser auditado (brandbook, apresentação, deck, peças ou páginas), as referências visuais comparativas e o contexto estratégico com posicionamento, público, objetivos, percepções desejadas e problemas percebidos. Quando houver paginação, indique a ordem atual das páginas ou seções.",
+    "constraints": [
+      "Comece diretamente pela análise, sem preâmbulos, sem autopromoção e sem explicar metodologia fora da estrutura solicitada.",
+      "Priorize diagnóstico sobre descrição superficial; cada observação relevante deve apontar problema, evidência, impacto e ação recomendada.",
+      "Analise identidade visual e storytelling como partes de um mesmo sistema, evitando separar estética e narrativa de forma artificial.",
+      "Sempre que apontar falhas, informe claramente onde elas ocorrem no material, preferencialmente por página, seção ou bloco.",
+      "No roteiro de reestruturação, trate cada página existente de forma operacional com ação, problema atual, ajuste de conteúdo, melhoria visual e direção de arte.",
+      "Quando sugerir novas páginas, defina objetivo narrativo, conteúdo, estrutura, direção de arte e motivo estratégico.",
+      "Mantenha linguagem técnica, precisa e executável, evitando generalidades, elogios vazios e abstrações sem consequência prática.",
+      "Considere coerência, consistência, hierarquia, legibilidade, diferenciação e escalabilidade na auditoria visual.",
+      "Considere progressão lógica, construção de valor, força da introdução, definição do problema, credibilidade da solução e memorabilidade do fechamento na auditoria de storytelling.",
+      "Quando houver ambiguidade no material enviado, sinalize a limitação de forma objetiva e trabalhe apenas com inferências seguras."
+    ],
+    "negative_prompt": [
+      "Não resumir a análise em opiniões genéricas sem evidências observáveis.",
+      "Não tratar referências visuais como inspirações vagas; compare estruturas, lacunas e oportunidades de forma explícita.",
+      "Não repetir o mesmo diagnóstico em múltiplas seções com redações diferentes.",
+      "Não focar apenas em gosto estético pessoal ou tendências sem relação com posicionamento e objetivo.",
+      "Não sugerir mudanças desconectadas da narrativa, da percepção de marca ou da aplicação prática.",
+      "Não omitir impacto persuasivo quando identificar falhas de storytelling.",
+      "Não inventar dados sobre páginas, peças ou contexto que não tenham sido fornecidos pelo usuário."
+    ],
+    "few_shot_examples": [
+      {
+        "input": "Brandbook institucional com 18 páginas, referências premium de consultorias estratégicas, marca quer parecer mais confiável e sofisticada, mas hoje soa genérica e pouco memorável.",
+        "output": "Entrega uma auditoria em markdown cobrindo sistema visual atual, falhas de coerência e diferenciação, análise comparativa das referências, desalinhamentos entre posicionamento e percepção, problemas de storytelling por página, direção de melhoria priorizada, nova estrutura de reordenação das 18 páginas e inserção de páginas estratégicas para reforço narrativo."
+      },
+      {
+        "input": "Deck comercial de startup B2B com 12 slides, público executivo, objetivo de captação, referências de empresas SaaS enterprise, percepção desejada: clareza, autoridade e inovação.",
+        "output": "Produz diagnóstico crítico do deck com foco em hierarquia visual, clareza argumentativa, progressão narrativa, força da proposta de valor, ajuste de layout e tipografia, recomendações página a página, novas páginas necessárias e nova paginação consolidada para elevar persuasão e consistência."
+      }
+    ]
+  },
+  "menu_definitions": [
+    {
+      "menu_id": "tipo_material",
+      "menu_name": "Tipo de Material",
+      "description": "Define o formato principal do material auditado.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Brandbook",
+          "value": "brandbook",
+          "description": "Manual ou sistema de identidade visual.",
+          "sub_options": []
+        },
+        {
+          "label": "Apresentação Institucional",
+          "value": "apresentacao_institucional",
+          "description": "Deck de posicionamento, defesa ou apresentação da marca.",
+          "sub_options": []
+        },
+        {
+          "label": "Deck Comercial",
+          "value": "deck_comercial",
+          "description": "Apresentação comercial ou de vendas.",
+          "sub_options": []
+        },
+        {
+          "label": "Peças de Marca",
+          "value": "pecas_de_marca",
+          "description": "Conjunto de peças visuais isoladas ou campanha.",
+          "sub_options": []
+        },
+        {
+          "label": "Sistema Editorial",
+          "value": "sistema_editorial",
+          "description": "Materiais com foco em linguagem editorial e ritmo narrativo.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "objetivo_estrategico",
+      "menu_name": "Objetivo Estratégico",
+      "description": "Define a transformação estratégica mais importante esperada com a auditoria.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Reposicionamento",
+          "value": "reposicionamento",
+          "description": "Reforçar ou redefinir percepção de marca.",
+          "sub_options": []
+        },
+        {
+          "label": "Aumento de Clareza",
+          "value": "aumento_clareza",
+          "description": "Tornar a narrativa e o sistema visual mais claros.",
+          "sub_options": []
+        },
+        {
+          "label": "Sofisticação Percebida",
+          "value": "sofisticacao_percebida",
+          "description": "Elevar a sensação de premium, maturidade ou autoridade.",
+          "sub_options": []
+        },
+        {
+          "label": "Conversão e Persuasão",
+          "value": "conversao_persuasao",
+          "description": "Melhorar defesa da marca, adesão ou poder de convencimento.",
+          "sub_options": []
+        },
+        {
+          "label": "Padronização Sistêmica",
+          "value": "padronizacao_sistemica",
+          "description": "Criar consistência e escalabilidade.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_profundidade",
+      "menu_name": "Nível de Profundidade",
+      "description": "Controla o nível de detalhe da auditoria e do plano de implementação.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "description": "Mais síntese, foco em decisões-chave.",
+          "sub_options": []
+        },
+        {
+          "label": "Analítico",
+          "value": "analitico",
+          "description": "Equilíbrio entre visão estratégica e detalhe operacional.",
+          "sub_options": []
+        },
+        {
+          "label": "Exaustivo",
+          "value": "exaustivo",
+          "description": "Maior profundidade, com detalhamento página a página.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "foco_principal",
+      "menu_name": "Foco Principal",
+      "description": "Define a lente dominante da análise.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Sistema Visual",
+          "value": "sistema_visual",
+          "description": "Ênfase em identidade, hierarquia, tipografia e linguagem visual.",
+          "sub_options": []
+        },
+        {
+          "label": "Storytelling",
+          "value": "storytelling",
+          "description": "Ênfase em progressão narrativa e poder de persuasão.",
+          "sub_options": []
+        },
+        {
+          "label": "Equilíbrio Visual e Narrativo",
+          "value": "equilibrio_visual_narrativo",
+          "description": "Balanceia sistema visual e narrativa.",
+          "sub_options": []
+        },
+        {
+          "label": "Implementação",
+          "value": "implementacao",
+          "description": "Ênfase em reorganização prática e execução.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tom_analise",
+      "menu_name": "Tom da Análise",
+      "description": "Ajusta a postura discursiva do parecer.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Direto",
+          "value": "direto",
+          "description": "Objetivo e incisivo.",
+          "sub_options": []
+        },
+        {
+          "label": "Consultivo",
+          "value": "consultivo",
+          "description": "Estratégico e orientado à decisão.",
+          "sub_options": []
+        },
+        {
+          "label": "Editorial",
+          "value": "editorial",
+          "description": "Mais refinado, com vocabulário de direção de arte.",
+          "sub_options": []
+        },
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "description": "Síntese para stakeholders.",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
+  "menu_ids": [
+    "tipo_material",
+    "objetivo_estrategico",
+    "nivel_profundidade",
+    "foco_principal",
+    "tom_analise"
+  ],
+  "output_contract": {
+    "format": "markdown",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [
+      "sistema_visual_atual",
+      "auditoria_da_identidade",
+      "analise_comparativa",
+      "alinhamento_estrategico",
+      "auditoria_de_storytelling",
+      "direcao_de_melhoria",
+      "roteiro_de_reestruturacao",
+      "insercao_de_novas_paginas",
+      "nova_estrutura_de_paginacao",
+      "diretrizes_futuras"
+    ],
+    "response_rules": [
+      "Usar exatamente os títulos em markdown: ## 🎨 Sistema Visual Atual, ## 🔍 Auditoria da Identidade, ## 🧭 Análise Comparativa, ## 🧠 Alinhamento Estratégico, ## 📖 Auditoria de Storytelling, ## 🚧 Direção de Melhoria, ## 🧩 Roteiro de Reestruturação, ## ➕ Inserção de Novas Páginas, ## 🔢 Nova Estrutura de Paginação e ## 🧭 Diretrizes Futuras.",
+      "Na seção de auditoria da identidade, estruturar cada ponto com problema, evidência e impacto.",
+      "Na auditoria de storytelling, para cada falha identificada, informar onde ocorre, problema narrativo, impacto na persuasão e como corrigir.",
+      "No roteiro de reestruturação, listar cada página existente com página original, novo número, ação, problema atual, ajuste de conteúdo, melhoria visual, direção de arte e observação.",
+      "Na seção de inserção de novas páginas, listar cada nova página com inserir após, objetivo, conteúdo, estrutura, direção de arte e motivo estratégico.",
+      "Na nova estrutura de paginação, consolidar a sequência final completa e mapear página antiga para nova posição, destacando páginas novas.",
+      "Priorizar clareza analítica, aplicabilidade prática e coerência sistêmica em todas as seções."
+    ],
+    "optional_enums": {
+      "nivel_profundidade": [
+        "executivo",
+        "analitico",
+        "exaustivo"
+      ],
+      "tom_analise": [
+        "direto",
+        "consultivo",
+        "editorial",
+        "executivo"
+      ]
+    }
+  }
+}

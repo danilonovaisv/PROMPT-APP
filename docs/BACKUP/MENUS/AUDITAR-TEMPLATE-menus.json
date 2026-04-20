@@ -1,0 +1,210 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "audit_scope",
+      "menu_name": "Escopo da Auditoria",
+      "description": "Define a profundidade e o foco principal da auditoria e do ajuste.",
+      "options": [
+        {
+          "label": "Página completa",
+          "value": "page_full",
+          "sub_options": [
+            {
+              "label": "Landing",
+              "value": "landing"
+            },
+            {
+              "label": "Página interna",
+              "value": "inner_page"
+            },
+            {
+              "label": "Dashboard/Admin",
+              "value": "dashboard_admin"
+            }
+          ]
+        },
+        {
+          "label": "Seção específica",
+          "value": "section_specific",
+          "sub_options": [
+            {
+              "label": "Hero",
+              "value": "hero"
+            },
+            {
+              "label": "Projetos",
+              "value": "projects"
+            },
+            {
+              "label": "Sobre",
+              "value": "about"
+            },
+            {
+              "label": "Contato",
+              "value": "contact"
+            },
+            {
+              "label": "Footer",
+              "value": "footer"
+            },
+            {
+              "label": "Outro",
+              "value": "other"
+            }
+          ]
+        },
+        {
+          "label": "Componente isolado",
+          "value": "component_isolated",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "audit_axes",
+      "menu_name": "Eixos de Auditoria",
+      "description": "Seleciona os eixos técnicos e de produto que devem ser verificados.",
+      "options": [
+        {
+          "label": "UX/UI",
+          "value": "ux_ui",
+          "sub_options": []
+        },
+        {
+          "label": "Acessibilidade",
+          "value": "accessibility",
+          "sub_options": []
+        },
+        {
+          "label": "Performance",
+          "value": "performance",
+          "sub_options": []
+        },
+        {
+          "label": "Responsividade",
+          "value": "responsiveness",
+          "sub_options": []
+        },
+        {
+          "label": "SEO e Metadata",
+          "value": "seo_metadata",
+          "sub_options": []
+        },
+        {
+          "label": "Qualidade Frontend",
+          "value": "frontend_quality",
+          "sub_options": []
+        },
+        {
+          "label": "Animações",
+          "value": "motion",
+          "sub_options": []
+        },
+        {
+          "label": "Integrações",
+          "value": "integrations",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "execution_mode",
+      "menu_name": "Modo de Execução",
+      "description": "Controla se o agente só audita, planeja ou também gera correções.",
+      "options": [
+        {
+          "label": "Auditar",
+          "value": "audit_only",
+          "sub_options": []
+        },
+        {
+          "label": "Auditar + Planejar",
+          "value": "audit_and_plan",
+          "sub_options": []
+        },
+        {
+          "label": "Auditar + Planejar + Corrigir",
+          "value": "audit_plan_fix",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "delivery_depth",
+      "menu_name": "Profundidade da Entrega",
+      "description": "Define o nível de detalhamento técnico esperado na resposta.",
+      "options": [
+        {
+          "label": "Executiva",
+          "value": "executive",
+          "sub_options": []
+        },
+        {
+          "label": "Técnica padrão",
+          "value": "technical_standard",
+          "sub_options": []
+        },
+        {
+          "label": "Implementação detalhada",
+          "value": "implementation_detailed",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "target_surface",
+      "menu_name": "Superfície Alvo",
+      "description": "Define o ambiente ou breakpoint prioritário da auditoria.",
+      "options": [
+        {
+          "label": "Desktop",
+          "value": "desktop",
+          "sub_options": []
+        },
+        {
+          "label": "Tablet",
+          "value": "tablet",
+          "sub_options": []
+        },
+        {
+          "label": "Mobile",
+          "value": "mobile",
+          "sub_options": []
+        },
+        {
+          "label": "Admin",
+          "value": "admin",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "fix_output_type",
+      "menu_name": "Formato da Correção",
+      "description": "Define o tipo de saída esperada para as correções propostas.",
+      "options": [
+        {
+          "label": "Plano técnico",
+          "value": "technical_plan",
+          "sub_options": []
+        },
+        {
+          "label": "Diff conceitual",
+          "value": "conceptual_diff",
+          "sub_options": []
+        },
+        {
+          "label": "Snippets",
+          "value": "snippets",
+          "sub_options": []
+        },
+        {
+          "label": "Patch completo",
+          "value": "full_patch",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

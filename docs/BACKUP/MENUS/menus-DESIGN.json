@@ -1,0 +1,145 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_material",
+      "menu_name": "Tipo de Material",
+      "description": "Define o formato principal do material auditado.",
+      "options": [
+        {
+          "label": "Brandbook",
+          "value": "brandbook",
+          "sub_options": []
+        },
+        {
+          "label": "Apresentação Institucional",
+          "value": "apresentacao_institucional",
+          "sub_options": []
+        },
+        {
+          "label": "Deck Comercial",
+          "value": "deck_comercial",
+          "sub_options": []
+        },
+        {
+          "label": "Peças de Marca",
+          "value": "pecas_de_marca",
+          "sub_options": []
+        },
+        {
+          "label": "Sistema Editorial",
+          "value": "sistema_editorial",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "objetivo_estrategico",
+      "menu_name": "Objetivo Estratégico",
+      "description": "Define a transformação estratégica mais importante esperada com a auditoria.",
+      "options": [
+        {
+          "label": "Reposicionamento",
+          "value": "reposicionamento",
+          "sub_options": []
+        },
+        {
+          "label": "Aumento de Clareza",
+          "value": "aumento_clareza",
+          "sub_options": []
+        },
+        {
+          "label": "Sofisticação Percebida",
+          "value": "sofisticacao_percebida",
+          "sub_options": []
+        },
+        {
+          "label": "Conversão e Persuasão",
+          "value": "conversao_persuasao",
+          "sub_options": []
+        },
+        {
+          "label": "Padronização Sistêmica",
+          "value": "padronizacao_sistemica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_profundidade",
+      "menu_name": "Nível de Profundidade",
+      "description": "Controla o nível de detalhe da auditoria e do plano de implementação.",
+      "options": [
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "sub_options": []
+        },
+        {
+          "label": "Analítico",
+          "value": "analitico",
+          "sub_options": []
+        },
+        {
+          "label": "Exaustivo",
+          "value": "exaustivo",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "foco_principal",
+      "menu_name": "Foco Principal",
+      "description": "Define a lente dominante da análise.",
+      "options": [
+        {
+          "label": "Sistema Visual",
+          "value": "sistema_visual",
+          "sub_options": []
+        },
+        {
+          "label": "Storytelling",
+          "value": "storytelling",
+          "sub_options": []
+        },
+        {
+          "label": "Equilíbrio Visual e Narrativo",
+          "value": "equilibrio_visual_narrativo",
+          "sub_options": []
+        },
+        {
+          "label": "Implementação",
+          "value": "implementacao",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tom_analise",
+      "menu_name": "Tom da Análise",
+      "description": "Ajusta a postura discursiva do parecer.",
+      "options": [
+        {
+          "label": "Direto",
+          "value": "direto",
+          "sub_options": []
+        },
+        {
+          "label": "Consultivo",
+          "value": "consultivo",
+          "sub_options": []
+        },
+        {
+          "label": "Editorial",
+          "value": "editorial",
+          "sub_options": []
+        },
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

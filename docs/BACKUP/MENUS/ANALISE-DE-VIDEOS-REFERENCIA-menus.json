@@ -1,0 +1,135 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "objetivo_novo_video",
+      "menu_name": "Objetivo do Novo Vídeo",
+      "description": "Direciona a análise para o tipo de peça que será recriada a partir da referência.",
+      "options": [
+        {
+          "label": "Comercial",
+          "value": "comercial",
+          "sub_options": [
+            {
+              "label": "Produto",
+              "value": "produto"
+            },
+            {
+              "label": "Marca",
+              "value": "marca"
+            }
+          ]
+        },
+        {
+          "label": "Institucional",
+          "value": "institucional",
+          "sub_options": [
+            {
+              "label": "Corporativo",
+              "value": "corporativo"
+            },
+            {
+              "label": "Manifesto",
+              "value": "manifesto"
+            }
+          ]
+        },
+        {
+          "label": "Artístico",
+          "value": "artistico",
+          "sub_options": [
+            {
+              "label": "Experimental",
+              "value": "experimental"
+            },
+            {
+              "label": "Narrativo",
+              "value": "narrativo"
+            }
+          ]
+        },
+        {
+          "label": "Conteúdo Social",
+          "value": "conteudo_social",
+          "sub_options": [
+            {
+              "label": "Reels",
+              "value": "reels"
+            },
+            {
+              "label": "TikTok",
+              "value": "tiktok"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "plataforma_exibicao",
+      "menu_name": "Plataforma de Exibição",
+      "description": "Ajusta as diretrizes de recriação conforme o contexto principal de publicação.",
+      "options": [
+        {
+          "label": "Instagram",
+          "value": "instagram",
+          "sub_options": [
+            {
+              "label": "Reels",
+              "value": "reels"
+            },
+            {
+              "label": "Feed",
+              "value": "feed"
+            }
+          ]
+        },
+        {
+          "label": "YouTube",
+          "value": "youtube",
+          "sub_options": [
+            {
+              "label": "Shorts",
+              "value": "shorts"
+            },
+            {
+              "label": "Vídeo padrão",
+              "value": "video_padrao"
+            }
+          ]
+        },
+        {
+          "label": "TV",
+          "value": "tv",
+          "sub_options": []
+        },
+        {
+          "label": "Apresentação Corporativa",
+          "value": "apresentacao_corporativa",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "Nível de Detalhamento",
+      "description": "Controla a profundidade da análise e das diretrizes de recriação.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Completo",
+          "value": "completo",
+          "sub_options": []
+        },
+        {
+          "label": "Máximo",
+          "value": "maximo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

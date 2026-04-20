@@ -1,0 +1,86 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "formato_resposta",
+      "menu_name": "Formato da resposta",
+      "description": "Define o estilo de organização do resultado.",
+      "options": [
+        {
+          "label": "Lista",
+          "value": "lista",
+          "sub_options": []
+        },
+        {
+          "label": "Resumo estruturado",
+          "value": "resumo_estruturado",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "perfil_fontes",
+      "menu_name": "Perfil das fontes",
+      "description": "Define quais tipos de fontes devem ser priorizados.",
+      "options": [
+        {
+          "label": "Oficiais",
+          "value": "oficiais",
+          "sub_options": []
+        },
+        {
+          "label": "Técnicas",
+          "value": "tecnicas",
+          "sub_options": []
+        },
+        {
+          "label": "Estudos e pesquisas",
+          "value": "estudos",
+          "sub_options": []
+        },
+        {
+          "label": "Exemplos aplicados",
+          "value": "exemplos_aplicados",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "foco_pesquisa",
+      "menu_name": "Foco da pesquisa",
+      "description": "Define os recortes do projeto a investigar.",
+      "options": [
+        {
+          "label": "Criação de vídeos",
+          "value": "criacao_de_videos",
+          "sub_options": []
+        },
+        {
+          "label": "Geração de imagens",
+          "value": "geracao_de_imagens",
+          "sub_options": []
+        },
+        {
+          "label": "Design",
+          "value": "design",
+          "sub_options": []
+        },
+        {
+          "label": "Web desenvolvimento",
+          "value": "web_desenvolvimento",
+          "sub_options": []
+        },
+        {
+          "label": "Automação",
+          "value": "automacao",
+          "sub_options": []
+        },
+        {
+          "label": "Prompting",
+          "value": "prompting",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
