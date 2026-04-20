@@ -38,8 +38,8 @@ export default function MenuManagerPage() {
   const { showToast } = useToast();
   const confirm = useConfirm();
   const menus = useLiveQuery(async () => {
-    const allMenus = await db.contextMenus.toArray();
-    return allMenus.filter((menu) => !menu.isDeleted);
+    // ⚡ Bolt Optimization: Delegate filtering to Dexie to reduce memory allocations
+    return await db.contextMenus.filter((menu) => !menu.isDeleted).toArray();
   }) ?? [];
 
   const [isEditing, setIsEditing] = useState<number | null>(null);
