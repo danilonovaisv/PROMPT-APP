@@ -57,7 +57,7 @@ export class ErrorBoundary extends Component<Props, State> {
           {this.state.error && (
             <details>
               <summary>Detalhes do erro</summary>
-              <pre>{this.state.error.message}</pre>
+              <pre>Verifique o console para mais detalhes ou contate o suporte.</pre>
             </details>
           )}
           <button onClick={this.reset} className="btn btn--primary">
