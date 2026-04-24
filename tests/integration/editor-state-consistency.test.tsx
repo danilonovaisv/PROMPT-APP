@@ -118,6 +118,7 @@ jest.mock('@/components/editor/EditorPreviewModal', () => ({
 jest.mock('@/db/database', () => ({
   db: {
     categories: {
+      filter: jest.fn(),
       toArray: jest.fn(),
       get: jest.fn(),
     },
@@ -125,6 +126,7 @@ jest.mock('@/db/database', () => ({
       get: jest.fn(),
     },
     contextMenus: {
+      filter: jest.fn(),
       toArray: jest.fn(),
     },
   },
