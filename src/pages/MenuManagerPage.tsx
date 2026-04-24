@@ -38,8 +38,7 @@ export default function MenuManagerPage() {
   const { showToast } = useToast();
   const confirm = useConfirm();
   const menus = useLiveQuery(async () => {
-    const allMenus = await db.contextMenus.toArray();
-    return allMenus.filter((menu) => !menu.isDeleted);
+    return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   }) ?? [];
 
   const [isEditing, setIsEditing] = useState<number | null>(null);

@@ -19,11 +19,10 @@ export default function HomePage() {
     // optimized .count() to compute totals directly via IndexedDB indexes.
     const { categories, countsMap, totalPrompts } = useLiveQuery(async () => {
         const allCategories = await db.categories.filter(c => !c.isDeleted).toArray();
-        const cats = allCategories.filter((category) => !category.isDeleted);
         const map: Record<number, number> = {};
 
         await Promise.all(
-            cats.map(async (cat) => {
+            allCategories.map(async (cat) => {
                 if (cat.id) {
                     map[cat.id] = await db.prompts
                         .where('categoryId')
@@ -36,7 +35,7 @@ export default function HomePage() {
 
         const total = await db.prompts.filter((prompt) => !prompt.isDeleted).count();
 
-        return { categories: cats, countsMap: map, totalPrompts: total };
+        return { categories: allCategories, countsMap: map, totalPrompts: total };
     }, []) ?? { categories: [], countsMap: {}, totalPrompts: 0 };
 
     const stats = useMemo(() => [
