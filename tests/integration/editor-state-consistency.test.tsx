@@ -152,9 +152,9 @@ describe('Editor state consistency', () => {
       return liveQueryRenderCount === 1 ? [] : contextMenus;
     });
 
-    (db.categories.toArray as jest.Mock).mockResolvedValue(categories);
+    (db.categories.filter as jest.Mock).mockReturnValue({ toArray: jest.fn().mockResolvedValue(categories) });
     (db.categories.get as jest.Mock).mockResolvedValue(categories[0]);
-    (db.contextMenus.toArray as jest.Mock).mockResolvedValue(contextMenus);
+    (db.contextMenus.filter as jest.Mock).mockReturnValue({ toArray: jest.fn().mockResolvedValue(contextMenus) });
 
     const promptPayload = createEmptyPromptPayload('Old template');
     promptPayload.meta.template_id = 'existing-template';
