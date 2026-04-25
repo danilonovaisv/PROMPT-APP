@@ -1,0 +1,108 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_apresentacao",
+      "menu_name": "Tipo de Apresentação",
+      "description": "Define o contexto principal da apresentação e influencia a lógica narrativa.",
+      "options": [
+        {
+          "label": "Corporativa",
+          "value": "corporativa",
+          "sub_options": []
+        },
+        {
+          "label": "Comercial / Pitch",
+          "value": "comercial_pitch",
+          "sub_options": []
+        },
+        {
+          "label": "Educacional",
+          "value": "educacional",
+          "sub_options": []
+        },
+        {
+          "label": "Investidor",
+          "value": "investidor",
+          "sub_options": []
+        },
+        {
+          "label": "Produto",
+          "value": "produto",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "Nível de Detalhamento",
+      "description": "Controla a profundidade do outline e da orientação de conteúdo.",
+      "options": [
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "sub_options": []
+        },
+        {
+          "label": "Equilibrado",
+          "value": "equilibrado",
+          "sub_options": []
+        },
+        {
+          "label": "Analítico",
+          "value": "analitico",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estilo_visual",
+      "menu_name": "Estilo Visual",
+      "description": "Define a linguagem visual predominante da apresentação.",
+      "options": [
+        {
+          "label": "Corporativo Clean",
+          "value": "corporativo_clean",
+          "sub_options": []
+        },
+        {
+          "label": "Minimalista",
+          "value": "minimalista",
+          "sub_options": []
+        },
+        {
+          "label": "Premium",
+          "value": "premium",
+          "sub_options": []
+        },
+        {
+          "label": "Didático",
+          "value": "didatico",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_outline",
+      "menu_name": "Formato do Outline",
+      "description": "Ajusta a granularidade da estrutura narrativa.",
+      "options": [
+        {
+          "label": "Enxuto",
+          "value": "enxuto",
+          "sub_options": []
+        },
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Expandido",
+          "value": "expandido",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
