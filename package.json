@@ -28,6 +28,7 @@
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
   "dependencies": {
+    "23": "^0.0.0",
     "@netlify/neon": "^0.1.2",
     "@netlify/vite-plugin": "^2.11.7",
     "@sentry/browser": "^10.50.0",
@@ -41,6 +42,7 @@
     "drizzle-orm": "^0.45.2",
     "fix": "^0.0.6",
     "lucide-react": "^1.11.0",
+    "netlify-cli": "^25.6.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",

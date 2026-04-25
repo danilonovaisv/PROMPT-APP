@@ -1,0 +1,1 @@
+{"version":3,"file":"login-check.d.ts","sourceRoot":"","sources":["../../../src/commands/login/login-check.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAE,MAAM,WAAW,CAAA;AAIxC,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,aAAa,CAAA;AAEjD,eAAO,MAAM,UAAU,GACrB,SAAS,YAAY,EACrB,SAAS,cAAc,CAAC,SAAS,CAAC,EAClC,cAAc,cAAc,CAAC,cAAc,CAAC,uBAoD7C,CAAA"}

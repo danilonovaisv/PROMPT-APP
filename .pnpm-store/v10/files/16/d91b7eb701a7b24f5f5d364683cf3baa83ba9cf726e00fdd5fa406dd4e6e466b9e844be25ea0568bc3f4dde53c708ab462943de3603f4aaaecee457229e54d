@@ -1,0 +1,39 @@
+import inquirer from 'inquirer';
+import { chalk, log } from '../../utils/command-helpers.js';
+import { login } from '../login/login.js';
+const LOGIN_NEW = 'I would like to login to a new account';
+export const switchCommand = async (options, command) => {
+    const users = (command.netlify.globalConfig.get('users') || {});
+    const availableUsersChoices = Object.values(users).reduce((prev, current) => Object.assign(prev, { [current.id]: current.name ? `${current.name} (${current.email})` : current.email }), {});
+    if (options.email) {
+        const matchedUser = Object.values(users).find((user) => user.email === options.email);
+        if (matchedUser) {
+            command.netlify.globalConfig.set('userId', matchedUser.id);
+            log('');
+            log(`You're now using ${chalk.bold(availableUsersChoices[matchedUser.id])}.`);
+            return;
+        }
+        log(`No account found matching ${chalk.bold(options.email)}, showing all available accounts.`);
+        log('');
+    }
+    const { accountSwitchChoice } = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'accountSwitchChoice',
+            message: 'Please select the account you want to use:',
+            choices: [...Object.entries(availableUsersChoices).map(([, val]) => val), LOGIN_NEW],
+        },
+    ]);
+    if (accountSwitchChoice === LOGIN_NEW) {
+        await login({ new: true }, command);
+    }
+    else {
+        const selectedAccount = Object.entries(availableUsersChoices).find(([, availableUsersChoice]) => availableUsersChoice === accountSwitchChoice);
+        // @ts-expect-error TS(2532) FIXME: Object is possibly 'undefined'.
+        command.netlify.globalConfig.set('userId', selectedAccount[0]);
+        log('');
+        // @ts-expect-error TS(2532) FIXME: Object is possibly 'undefined'.
+        log(`You're now using ${chalk.bold(selectedAccount[1])}.`);
+    }
+};
+//# sourceMappingURL=switch.js.map
