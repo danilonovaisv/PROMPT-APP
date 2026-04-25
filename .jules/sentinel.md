@@ -4,3 +4,8 @@
 **Vulnerability:** Application blindly trusted data parsed from `localStorage` (`JSON.parse` cast directly with `as AppSnapshot`).
 **Learning:** `localStorage` is susceptible to tampering by users or malicious scripts. Accessing nested properties on unvalidated deserialized data can cause unhandled `TypeError` crashes or potentially expose logic flaws.
 **Prevention:** Always implement runtime type validation (e.g., a type guard like `isValidSnapshot` or Zod schemas) immediately after `JSON.parse` before asserting types or accessing deeply nested properties.
+
+## 2025-04-25 - Information Disclosure in ErrorBoundary
+**Vulnerability:** The ErrorBoundary component rendered `error.message` directly in the UI inside a `<details>` block.
+**Learning:** Exposing raw error objects and stack traces to users can leak internal system details, third-party URLs, or sensitive data inadvertently captured during an exception.
+**Prevention:** Catch errors gracefully, log raw error details securely to the console (or a logging service) for debugging, and display generic, sanitized error messages to the end user.

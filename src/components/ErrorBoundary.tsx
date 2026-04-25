@@ -54,12 +54,6 @@ export class ErrorBoundary extends Component<Props, State> {
         >
           <h2>Ops! Algo deu errado</h2>
           <p>Ocorreu um erro inesperado. Tente recarregar a página.</p>
-          {this.state.error && (
-            <details>
-              <summary>Detalhes do erro</summary>
-              <pre>{this.state.error.message}</pre>
-            </details>
-          )}
           <button onClick={this.reset} className="btn btn--primary">
             Tentar novamente
           </button>
