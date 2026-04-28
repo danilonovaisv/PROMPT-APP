@@ -1,0 +1,1 @@
+{"version":3,"file":"db-migrate.d.ts","sourceRoot":"","sources":["../../../src/commands/database/db-migrate.ts"],"names":[],"mappings":"AAMA,OAAO,WAAW,MAAM,oBAAoB,CAAA;AAI5C,MAAM,WAAW,cAAc;IAC7B,EAAE,CAAC,EAAE,MAAM,CAAA;IACX,IAAI,CAAC,EAAE,OAAO,CAAA;CACf;AAED,eAAO,MAAM,OAAO,GAAU,SAAS,cAAc,EAAE,SAAS,WAAW,kBAqC1E,CAAA"}
