@@ -55,3 +55,14 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock as unknown as Storage;
+
+// Polyfill import.meta.env for Jest
+const meta = {
+  env: {
+    VITE_SUPABASE_URL: "http://localhost:54321",
+    VITE_SUPABASE_ANON_KEY: "placeholder"
+  }
+};
+Object.defineProperty(global, "importMeta", {
+  get() { return meta; }
+});

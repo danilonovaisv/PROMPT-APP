@@ -1,3 +1,9 @@
+jest.mock('@/lib/supabase', () => ({
+  supabase: {},
+  isSupabaseConfigured: true,
+  assertSupabaseConfigured: jest.fn(),
+}));
+
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import EditorPage from '@/pages/EditorPage';
@@ -120,12 +126,14 @@ jest.mock('@/db/database', () => ({
     categories: {
       toArray: jest.fn(),
       get: jest.fn(),
+      filter: jest.fn(),
     },
     prompts: {
       get: jest.fn(),
     },
     contextMenus: {
       toArray: jest.fn(),
+      filter: jest.fn(),
     },
   },
 }));
@@ -153,8 +161,14 @@ describe('Editor state consistency', () => {
     });
 
     (db.categories.toArray as jest.Mock).mockResolvedValue(categories);
+    (db.categories.filter as jest.Mock).mockReturnValue({
+      toArray: jest.fn().mockResolvedValue(categories)
+    });
     (db.categories.get as jest.Mock).mockResolvedValue(categories[0]);
     (db.contextMenus.toArray as jest.Mock).mockResolvedValue(contextMenus);
+    (db.contextMenus.filter as jest.Mock).mockReturnValue({
+      toArray: jest.fn().mockResolvedValue(contextMenus)
+    });
 
     const promptPayload = createEmptyPromptPayload('Old template');
     promptPayload.meta.template_id = 'existing-template';
