@@ -28,7 +28,7 @@ interface LayoutProps {
 export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const categories = useLiveQuery(() => db.categories.toArray()) ?? [];
+    const categories = useLiveQuery(() => db.categories.filter(c => !c.isDeleted).toArray()) ?? [];
 
     const navItemClass = ({ isActive }: { isActive: boolean }) =>
         `app-sidebar__nav-item ${isActive ? 'app-sidebar__nav-item--active' : ''}`;
