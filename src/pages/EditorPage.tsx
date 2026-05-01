@@ -25,6 +25,7 @@ import {
   sanitizeUserSelection,
 } from '@/models/promptSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
+import { fetchMemory, saveMemory, deleteMemory } from '@/services/memoryService';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
@@ -158,7 +159,11 @@ function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): 
   return contextMenus.length > 0 ? syncFormMenus(baseState, contextMenus) : baseState;
 }
 
-function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextMenu[]) {
+function buildPersistedArtifacts(
+  form: TemplateFormState,
+  contextMenus: ContextMenu[],
+  fixedMemory: Record<string, string> = {}
+) {
   const linkedContextMenus = getLinkedContextMenusFromSelection(
     contextMenus,
     form.selectedMenuIds,
@@ -195,7 +200,10 @@ function buildPersistedArtifacts(form: TemplateFormState, contextMenus: ContextM
   const rawSelection = UserSelectionSchema.parse({
     ...form.selection,
     template_id: syncedTemplate.meta.template_id,
-    free_inputs: fromFreeInputEntries(form.freeInputs),
+    free_inputs: {
+      ...fixedMemory,
+      ...fromFreeInputEntries(form.freeInputs),
+    },
   });
 
   const normalizedSelection = sanitizeUserSelection(syncedTemplate, rawSelection);
@@ -230,11 +238,17 @@ export default function EditorPage() {
   );
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [fixedMemory, setFixedMemory] = useState<Record<string, string>>({});
+  const [isMemoryLoading, setIsMemoryLoading] = useState(false);
+  const [isSavingMemory, setIsSavingMemory] = useState(false);
 
   const contextMenus = useLiveQuery(async () => {
     return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   }) ?? EMPTY_MENUS;
+  
   const debouncedForm = useDebounce(form, 300);
+  const debouncedFixedMemory = useDebounce(fixedMemory, 800);
+  
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
@@ -246,6 +260,45 @@ export default function EditorPage() {
       setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setIsMemoryLoading(true);
+        const memory = await fetchMemory();
+        setFixedMemory(memory);
+      } catch (error) {
+        console.error('Erro ao carregar memória fixa:', error);
+      } finally {
+        setIsMemoryLoading(false);
+      }
+    })();
+  }, []);
+
+  // Autosave da Memória Fixa (Debounced)
+  useEffect(() => {
+    // Evita salvar no load inicial ou se nada mudou de fato (comparação profunda simples)
+    if (!loaded || Object.keys(debouncedFixedMemory).length === 0) return;
+
+    const saveChanges = async () => {
+      setIsSavingMemory(true);
+      try {
+        const keys = Object.keys(debouncedFixedMemory);
+        for (const key of keys) {
+          await saveMemory(key, debouncedFixedMemory[key]);
+        }
+      } catch (error) {
+        if (!isUnauthenticatedCloudError(error)) {
+          showToast('Erro ao sincronizar memória context', 'error');
+        }
+      } finally {
+        // Feedback visual mínimo
+        setTimeout(() => setIsSavingMemory(false), 800);
+      }
+    };
+
+    saveChanges();
+  }, [debouncedFixedMemory, loaded, showToast]);
 
   useEffect(() => {
     if (!loaded && isNew && categories.length > 0) {
@@ -328,7 +381,7 @@ export default function EditorPage() {
 
   const previewState = useMemo(() => {
     try {
-      const artifacts = buildPersistedArtifacts(debouncedForm, availableContextMenus);
+      const artifacts = buildPersistedArtifacts(debouncedForm, availableContextMenus, fixedMemory);
       return {
         payload: artifacts.compiledPayload,
         template: artifacts.template,
@@ -453,6 +506,37 @@ export default function EditorPage() {
         ? current.freeInputs.filter((_, i) => i !== index)
         : [{ key: '', value: '' }],
     }));
+  };
+
+  const handleSaveMemory = (key: string, value: string) => {
+    // Atualiza estado local imediatamente para fluidez
+    setFixedMemory((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleDeleteMemory = async (key: string) => {
+    try {
+      await deleteMemory(key);
+      setFixedMemory((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      showToast('Chave de memória removida', 'success');
+    } catch (error) {
+      if (!isUnauthenticatedCloudError(error)) {
+        showToast('Erro ao remover chave de memória', 'error');
+      }
+    }
+  };
+
+  const handleAddMemoryKey = (key: string) => {
+    if (fixedMemory[key] !== undefined) {
+      showToast('Esta chave já existe', 'info');
+      return;
+    }
+    // Adiciona ao estado local, o autosave cuidará do resto assim que houver valor
+    // ou podemos salvar imediatamente como vazio se quisermos persistir a existência da chave
+    setFixedMemory((prev) => ({ ...prev, [key]: '' }));
   };
 
   const clearDraft = () => localStorage.removeItem(`template_draft_${id}`);
@@ -685,6 +769,12 @@ export default function EditorPage() {
               template={form.template}
               selection={form.selection}
               freeInputs={form.freeInputs}
+              fixedMemory={fixedMemory}
+              isMemoryLoading={isMemoryLoading}
+              isSavingMemory={isSavingMemory}
+              onSaveMemory={handleSaveMemory}
+              onDeleteMemory={handleDeleteMemory}
+              onAddMemoryKey={handleAddMemoryKey}
               renderedPrompt={previewState.renderedPrompt}
               outputError={previewState.error}
               contextMenus={availableContextMenus}

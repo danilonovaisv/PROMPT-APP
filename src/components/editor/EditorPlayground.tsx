@@ -1,4 +1,5 @@
-import { Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Trash2, Check, X } from 'lucide-react';
 import type { TemplatePayload, UserSelection } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 
@@ -12,9 +13,15 @@ type EditorPlaygroundProps = {
   outputError?: string | null;
   contextMenus: ContextMenu[];
   selectedMenuIds?: number[];
+  fixedMemory?: Record<string, string>;
+  isMemoryLoading?: boolean;
+  isSavingMemory?: boolean;
   onAddFreeInput: () => void;
   onRemoveFreeInput: (index: number) => void;
   onUpdateFreeInput: (index: number, entry: { key: string; value: string }) => void;
+  onSaveMemory?: (key: string, value: string) => void;
+  onDeleteMemory?: (key: string) => void;
+  onAddMemoryKey?: (key: string) => void;
   onToggleOption: (menuId: string, selectionMode: string, optionValue: string) => void;
   onToggleSubOption: (menuId: string, optionValue: string, subOptionValue: string) => void;
 };
@@ -22,6 +29,12 @@ type EditorPlaygroundProps = {
 export function EditorPlayground({
   selection,
   freeInputs,
+  fixedMemory = {},
+  isMemoryLoading = false,
+  isSavingMemory = false,
+  onSaveMemory,
+  onDeleteMemory,
+  onAddMemoryKey,
   renderedPrompt,
   outputError,
   contextMenus,
@@ -39,15 +52,128 @@ export function EditorPlayground({
         )
       : [];
 
+  const [newKeyName, setNewKeyName] = useState('');
+  const [isAddingKey, setIsAddingKey] = useState(false);
+
+  const handleConfirmAddKey = () => {
+    const trimmedKey = newKeyName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '_');
+    if (trimmedKey && onAddMemoryKey) {
+      onAddMemoryKey(trimmedKey);
+      setNewKeyName('');
+      setIsAddingKey(false);
+    }
+  };
+
   return (
     <div className="form-section">
+      <div className="form-section">
+        <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+          <h4 className="form-section__title" style={{ margin: 0 }}>Memória Fixa</h4>
+          {isSavingMemory && (
+            <div className="memory-status memory-status--saving">
+              <div className="loading-spinner loading-spinner--xs" />
+              Salvando...
+            </div>
+          )}
+          {!isSavingMemory && Object.keys(fixedMemory).length > 0 && (
+            <div className="memory-status memory-status--saved">
+              <Check size={12} /> Salvo
+            </div>
+          )}
+        </div>
+        
+        <p className="form-label__hint" style={{ marginBottom: 'var(--space-4)' }}>
+          Estes valores são salvos na sua conta e preenchem automaticamente variáveis globais (ex: <code>JSON_WORKFLOW_ATUAL</code>, <code>FOCO_DA_MELHORIA</code>).
+        </p>
+        
+        {isMemoryLoading ? (
+          <div className="skeleton-block" style={{ height: '100px', marginBottom: '1rem', width: '100%' }} />
+        ) : (
+          <>
+            {Object.keys(fixedMemory).length === 0 && !isAddingKey && (
+              <div className="empty-state-hint" style={{ marginBottom: 'var(--space-4)', padding: 'var(--space-4)', border: '1px dashed var(--color-border)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
+                  Nenhuma chave de memória definida. Adicione chaves para persistir contextos globais.
+                </p>
+              </div>
+            )}
+            <div className="memory-grid">
+              {Object.keys(fixedMemory).map((key) => {
+                const value = fixedMemory[key] || '';
+                return (
+                  <div key={key} className="card memory-card">
+                    <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
+                      <label className="form-label" style={{ marginBottom: 0, fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-light)' }}>
+                        {key}
+                      </label>
+                      <button 
+                        className="btn btn--ghost btn--icon btn--xs" 
+                        onClick={() => onDeleteMemory?.(key)}
+                        title="Remover chave permanente"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                    <div className="form-group">
+                      <textarea
+                        value={value}
+                        onChange={(e) => onSaveMemory?.(key, e.target.value)}
+                        rows={2}
+                        placeholder={`Valor para ${key}...`}
+                        className="form-input"
+                        style={{ fontSize: 'var(--font-size-sm)' }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {isAddingKey ? (
+                <div className="card memory-card memory-card--add animate-fade-in">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label" style={{ fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Nova Chave Permanente
+                    </label>
+                    <div className="flex-row-center" style={{ gap: 'var(--space-2)' }}>
+                      <input
+                        autoFocus
+                        className="form-input"
+                        value={newKeyName}
+                        onChange={(e) => setNewKeyName(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleConfirmAddKey()}
+                        onBlur={(e) => !e.target.value && setIsAddingKey(false)}
+                        placeholder="EX: BRAND_VOICE"
+                        style={{ textTransform: 'uppercase' }}
+                      />
+                      <button className="btn btn--primary btn--sm" onClick={handleConfirmAddKey}>
+                        <Check size={14} />
+                      </button>
+                      <button className="btn btn--ghost btn--sm" onClick={() => setIsAddingKey(false)}>
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  className="btn btn--ghost btn--sm memory-grid__add" 
+                  onClick={() => setIsAddingKey(true)}
+                >
+                  <Plus size={14} /> Adicionar Chave Permanente
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
       <div className="page-header">
         <div>
           <h3 className="form-section__title">
-            Playground de Uso
+            Inputs Livres
           </h3>
           <p className="page-header__subtitle">
-            Essas seleções alimentam o prompt final copiável e o payload técnico.
+            Variáveis específicas para este teste.
           </p>
         </div>
       </div>

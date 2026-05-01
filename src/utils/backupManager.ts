@@ -116,3 +116,18 @@ export function getLocalBackupInfo() {
         return null;
     }
 }
+
+/** Valida se um objeto segue a interface AppSnapshot */
+function isValidSnapshot(obj: any): obj is AppSnapshot {
+    return (
+        obj &&
+        typeof obj === 'object' &&
+        typeof obj.version === 'string' &&
+        typeof obj.timestamp === 'string' &&
+        obj.data &&
+        typeof obj.data === 'object' &&
+        Array.isArray(obj.data.categories) &&
+        Array.isArray(obj.data.prompts) &&
+        Array.isArray(obj.data.contextMenus)
+    );
+}
