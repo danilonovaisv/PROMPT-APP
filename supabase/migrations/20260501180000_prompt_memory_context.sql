@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.prompt_memory_context (
 ALTER TABLE public.prompt_memory_context ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Users can manage their own memory context" ON public.prompt_memory_context;
 CREATE POLICY "Users can manage their own memory context"
     ON public.prompt_memory_context
     FOR ALL
@@ -29,6 +30,7 @@ BEGIN
 END;
 55647 language 'plpgsql';
 
+DROP TRIGGER IF EXISTS on_prompt_memory_context_updated ON public.prompt_memory_context;
 CREATE TRIGGER on_prompt_memory_context_updated
     BEFORE UPDATE ON public.prompt_memory_context
     FOR EACH ROW
