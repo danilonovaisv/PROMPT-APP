@@ -1,0 +1,182 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_saida",
+      "menu_name": "CLAUDE - Tipo de Saída",
+      "description": "Define se a entrega deve vir como arquivos completos, prompt operacional para Claude Code executar no projeto, ou ambos.",
+      "options": [
+        {
+          "label": "Arquivos completos prontos para colar",
+          "value": "conteudo_completo",
+          "sub_options": []
+        },
+        {
+          "label": "Prompt operacional para Claude Code",
+          "value": "prompt_claude_code",
+          "sub_options": []
+        },
+        {
+          "label": "Ambos: arquivos completos + prompt operacional",
+          "value": "ambos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_frontend",
+      "menu_name": "CLAUDE - Stack Frontend",
+      "description": "Define a stack principal registrada no CLAUDE.md e usada como base para SKILL.md, padrões de código e scaffolds.",
+      "options": [
+        {
+          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "next_app_router_react_typescript_tailwind",
+          "sub_options": [
+            {
+              "label": "Framer Motion",
+              "value": "framer_motion"
+            },
+            {
+              "label": "shadcn/ui",
+              "value": "shadcn_ui"
+            }
+          ]
+        },
+        {
+          "label": "React + Vite + TypeScript + Tailwind CSS",
+          "value": "react_vite_typescript_tailwind",
+          "sub_options": [
+            {
+              "label": "React Router",
+              "value": "react_router"
+            }
+          ]
+        },
+        {
+          "label": "Stack customizada",
+          "value": "custom_stack",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "fonte_design_system",
+      "menu_name": "CLAUDE - Fonte do Design System",
+      "description": "Define a fonte de verdade para extrair tokens, padrões visuais, assets, componentes e decisões do design system.",
+      "options": [
+        {
+          "label": "Brand guide",
+          "value": "brand_guide",
+          "sub_options": []
+        },
+        {
+          "label": "Assets locais",
+          "value": "assets_locais",
+          "sub_options": []
+        },
+        {
+          "label": "URL de referência",
+          "value": "url_referencia",
+          "sub_options": []
+        },
+        {
+          "label": "Codebase existente",
+          "value": "codebase_existente",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "CLAUDE - Backend Preferido",
+      "description": "Define a integração backend que deve ser documentada no CLAUDE.md e considerada nos exemplos, variáveis de ambiente e padrões de integração.",
+      "options": [
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Database",
+              "value": "database"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Firestore",
+              "value": "firestore"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "Sem backend inicial",
+          "value": "sem_backend",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_animacao",
+      "menu_name": "CLAUDE - Estratégia de Animação",
+      "description": "Define como o SKILL.md deve documentar intensidade, padrões e limites de movimento na interface.",
+      "options": [
+        {
+          "label": "Sutil e performática",
+          "value": "sutil_performatica",
+          "sub_options": []
+        },
+        {
+          "label": "Premium com staggered reveals",
+          "value": "premium_staggered_reveals",
+          "sub_options": []
+        },
+        {
+          "label": "Expressiva e imersiva",
+          "value": "expressiva_imersiva",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "CLAUDE - Nível de Detalhamento",
+      "description": "Controla a profundidade do conteúdo gerado para CLAUDE.md, SKILL.md, estrutura de pastas, exemplos e regras operacionais.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Completo",
+          "value": "completo",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

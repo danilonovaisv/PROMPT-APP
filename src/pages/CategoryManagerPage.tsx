@@ -42,8 +42,7 @@ export default function CategoryManagerPage() {
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
     const categories = useLiveQuery(
         async () => {
-            const allCategories = await db.categories.toArray();
-            return allCategories.filter((category) => !category.isDeleted);
+            return await db.categories.filter((category) => !category.isDeleted).toArray();
         }
     ) ?? [];
 
@@ -131,12 +130,17 @@ export default function CategoryManagerPage() {
     };
 
     const handleDelete = async (id: number, remoteId?: number) => {
-        const promptsByCategory = await db.prompts
+        // ⚡ Bolt Optimization:
+        // Use Dexie's optimized .count() to determine the number of prompts before showing
+        // the confirmation dialog. This prevents loading potentially large JSON payloads into
+        // an array (.toArray()) memory before the user has even confirmed the deletion.
+        const promptQuery = db.prompts
             .where('categoryId')
             .equals(id)
-            .filter(p => !p.isDeleted)
-            .toArray();
-        const promptCount = promptsByCategory.length;
+            .filter(p => !p.isDeleted);
+
+        const promptCount = await promptQuery.count();
+
         if (promptCount > 0) {
             // Fix A11y: useConfirm em vez de confirm() nativo (bloqueia thread, sem acessibilidade)
             const ok = await confirm({
@@ -145,6 +149,9 @@ export default function CategoryManagerPage() {
                 variant: 'danger',
             });
             if (!ok) return;
+
+            // Now that user has confirmed, fetch the actual records
+            const promptsByCategory = await promptQuery.toArray();
             for (const p of promptsByCategory) {
                 if (!p.id) continue;
 

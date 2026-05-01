@@ -1,0 +1,335 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_projeto",
+      "menu_name": "CLAUDE - Tipo de Projeto",
+      "description": "Define a natureza do projeto que será iniciado ou redesenhado no Claude Design.",
+      "options": [
+        {
+          "label": "Landing page",
+          "value": "landing_page",
+          "sub_options": [
+            {
+              "label": "SaaS",
+              "value": "saas"
+            },
+            {
+              "label": "Produto digital",
+              "value": "produto_digital"
+            }
+          ]
+        },
+        {
+          "label": "Dashboard SaaS",
+          "value": "dashboard_saas",
+          "sub_options": [
+            {
+              "label": "Analytics",
+              "value": "analytics"
+            },
+            {
+              "label": "Operacional",
+              "value": "operacional"
+            }
+          ]
+        },
+        {
+          "label": "Web app",
+          "value": "web_app",
+          "sub_options": [
+            {
+              "label": "Marketplace",
+              "value": "marketplace"
+            },
+            {
+              "label": "Portal de usuário",
+              "value": "portal_usuario"
+            }
+          ]
+        },
+        {
+          "label": "E-commerce",
+          "value": "ecommerce",
+          "sub_options": []
+        },
+        {
+          "label": "Site institucional",
+          "value": "site_institucional",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_destino",
+      "menu_name": "CLAUDE - Stack Destino",
+      "description": "Seleciona a stack de destino que o prompt deve considerar para scaffold, componentização, estados de UI e integração.",
+      "options": [
+        {
+          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "nextjs_app_router",
+          "sub_options": [
+            {
+              "label": "Com Server Components",
+              "value": "server_components"
+            },
+            {
+              "label": "Client UI controlada",
+              "value": "client_ui"
+            }
+          ]
+        },
+        {
+          "label": "React + Vite + TypeScript + Tailwind CSS",
+          "value": "react_vite",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Design HTML/CSS/JS",
+          "value": "claude_design_native",
+          "sub_options": []
+        },
+        {
+          "label": "Next.js + Supabase",
+          "value": "nextjs_supabase",
+          "sub_options": [
+            {
+              "label": "Auth + Database",
+              "value": "auth_database"
+            },
+            {
+              "label": "Storage + Realtime",
+              "value": "storage_realtime"
+            }
+          ]
+        },
+        {
+          "label": "Next.js + Firebase",
+          "value": "nextjs_firebase",
+          "sub_options": [
+            {
+              "label": "Auth + Firestore",
+              "value": "auth_firestore"
+            },
+            {
+              "label": "Storage + Functions",
+              "value": "storage_functions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "fonte_brand_guide",
+      "menu_name": "CLAUDE - Fonte do Brand Guide",
+      "description": "Define de onde o agente deve extrair identidade visual, tom de marca, tokens, assets e regras de uso.",
+      "options": [
+        {
+          "label": "PDF anexado",
+          "value": "pdf_anexado",
+          "sub_options": []
+        },
+        {
+          "label": "DESIGN.md",
+          "value": "design_md",
+          "sub_options": []
+        },
+        {
+          "label": "Figma ou tokens exportados",
+          "value": "figma_tokens",
+          "sub_options": []
+        },
+        {
+          "label": "Texto colado pelo usuário",
+          "value": "texto_colado",
+          "sub_options": []
+        },
+        {
+          "label": "Site oficial da marca",
+          "value": "site_oficial",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "fonte_referencia_ui",
+      "menu_name": "CLAUDE - Fonte da Referência UI",
+      "description": "Define como a interface de referência será analisada para estrutura, layout, hierarquia visual, comportamento responsivo e animações.",
+      "options": [
+        {
+          "label": "Screenshot anexado",
+          "value": "screenshot_anexado",
+          "sub_options": []
+        },
+        {
+          "label": "URL do site de referência",
+          "value": "url_referencia",
+          "sub_options": []
+        },
+        {
+          "label": "Captura HTML/CSS",
+          "value": "html_css_capture",
+          "sub_options": []
+        },
+        {
+          "label": "Descrição textual",
+          "value": "descricao_textual",
+          "sub_options": []
+        },
+        {
+          "label": "Figma/protótipo",
+          "value": "figma_prototipo",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estilo_visual",
+      "menu_name": "CLAUDE - Estilo Visual",
+      "description": "Escolhe a direção estética que deve orientar o prompt final para Claude Design.",
+      "options": [
+        {
+          "label": "Premium editorial",
+          "value": "premium_editorial",
+          "sub_options": []
+        },
+        {
+          "label": "Minimalista técnico",
+          "value": "minimalista_tecnico",
+          "sub_options": []
+        },
+        {
+          "label": "Bold experimental",
+          "value": "bold_experimental",
+          "sub_options": []
+        },
+        {
+          "label": "Corporativo sofisticado",
+          "value": "corporativo_sofisticado",
+          "sub_options": []
+        },
+        {
+          "label": "Futurista funcional",
+          "value": "futurista_funcional",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_animacao",
+      "menu_name": "CLAUDE - Estratégia de Animação",
+      "description": "Define a intensidade, tecnologia e abordagem de movimento esperada na interface, sempre respeitando performance e acessibilidade.",
+      "options": [
+        {
+          "label": "Microinterações sutis",
+          "value": "microinteracoes_sutis",
+          "sub_options": []
+        },
+        {
+          "label": "Staggered reveals premium",
+          "value": "staggered_reveals",
+          "sub_options": []
+        },
+        {
+          "label": "Framer Motion",
+          "value": "framer_motion",
+          "sub_options": [
+            {
+              "label": "Layout animations",
+              "value": "layout_animations"
+            },
+            {
+              "label": "Scroll reveals",
+              "value": "scroll_reveals"
+            }
+          ]
+        },
+        {
+          "label": "CSS-first",
+          "value": "css_first",
+          "sub_options": []
+        },
+        {
+          "label": "Reduced motion first",
+          "value": "reduced_motion_first",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "CLAUDE - Backend Preferido",
+      "description": "Define se o scaffold deve incluir integração com backend, permanecer visual ou reservar pontos de integração para API própria.",
+      "options": [
+        {
+          "label": "Sem backend nesta fase",
+          "value": "sem_backend",
+          "sub_options": []
+        },
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Database",
+              "value": "database"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Firestore",
+              "value": "firestore"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "API própria",
+          "value": "api_propria",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "CLAUDE - Nível de Detalhamento",
+      "description": "Controla a profundidade da resposta final: síntese executiva, especificação padrão ou detalhamento Enterprise.",
+      "options": [
+        {
+          "label": "Objetivo",
+          "value": "objetivo",
+          "sub_options": []
+        },
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

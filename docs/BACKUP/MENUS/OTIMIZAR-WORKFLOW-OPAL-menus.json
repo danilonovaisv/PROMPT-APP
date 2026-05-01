@@ -1,0 +1,219 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "foco_melhoria",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Foco de Melhoria",
+      "description": "Define as prioridades da otimização do workflow Opal.",
+      "options": [
+        {
+          "label": "Reduzir alucinações",
+          "value": "reduzir_alucinacoes",
+          "sub_options": []
+        },
+        {
+          "label": "Adicionar novos nós de processamento",
+          "value": "adicionar_novos_nos",
+          "sub_options": [
+            {
+              "label": "Pré-processamento",
+              "value": "pre_processamento"
+            },
+            {
+              "label": "Pós-processamento",
+              "value": "pos_processamento"
+            },
+            {
+              "label": "Validação intermediária",
+              "value": "validacao_intermediaria"
+            }
+          ]
+        },
+        {
+          "label": "Melhorar integrabilidade via @",
+          "value": "integrabilidade_arroba",
+          "sub_options": []
+        },
+        {
+          "label": "Fortalecer contratos de saída",
+          "value": "fortalecer_contratos_saida",
+          "sub_options": []
+        },
+        {
+          "label": "Melhorar UI de renderização final",
+          "value": "melhorar_ui_renderizacao",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_workflow_opal",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Tipo de Workflow Opal",
+      "description": "Classifica o tipo de micro-aplicativo ou automação analisada.",
+      "options": [
+        {
+          "label": "Produto ou protótipo de IA",
+          "value": "produto_prototipo_ia",
+          "sub_options": []
+        },
+        {
+          "label": "Geração de imagem",
+          "value": "geracao_imagem",
+          "sub_options": []
+        },
+        {
+          "label": "Geração de vídeo",
+          "value": "geracao_video",
+          "sub_options": []
+        },
+        {
+          "label": "Automação textual ou análise",
+          "value": "automacao_textual_analise",
+          "sub_options": []
+        },
+        {
+          "label": "Workflow híbrido multimodal",
+          "value": "workflow_hibrido_multimodal",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_auditoria",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Profundidade da Auditoria",
+      "description": "Define o nível de detalhe técnico da análise.",
+      "options": [
+        {
+          "label": "Rápida",
+          "value": "rapida",
+          "sub_options": []
+        },
+        {
+          "label": "Técnica",
+          "value": "tecnica",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "contrato_saida_nos",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Contrato de Saída dos Nós",
+      "description": "Determina como os outputs dos nós devem ser padronizados.",
+      "options": [
+        {
+          "label": "Markdown por padrão",
+          "value": "markdown_por_padrao",
+          "sub_options": []
+        },
+        {
+          "label": "JSON tipado",
+          "value": "json_tipado",
+          "sub_options": []
+        },
+        {
+          "label": "Híbrido por finalidade",
+          "value": "hibrido_por_finalidade",
+          "sub_options": []
+        },
+        {
+          "label": "Tabela operacional",
+          "value": "tabela_operacional",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_integracao_arroba",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Estratégia de Integração @",
+      "description": "Define como mapear dependências entre nós.",
+      "options": [
+        {
+          "label": "Rastreabilidade completa",
+          "value": "rastreabilidade_completa",
+          "sub_options": []
+        },
+        {
+          "label": "Somente dependências críticas",
+          "value": "dependencias_criticas",
+          "sub_options": []
+        },
+        {
+          "label": "Reorganização por cadeia de dados",
+          "value": "reorganizacao_cadeia_dados",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_prompts_copiaveis",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Formato dos Prompts Copiáveis",
+      "description": "Controla como os prompts otimizados devem aparecer na resposta.",
+      "options": [
+        {
+          "label": "Blocos .md obrigatórios",
+          "value": "blocos_md_obrigatorios",
+          "sub_options": []
+        },
+        {
+          "label": "Blocos .md com instruções de uso",
+          "value": "blocos_md_com_instrucoes",
+          "sub_options": []
+        },
+        {
+          "label": "Blocos .md e checklist final",
+          "value": "blocos_md_checklist",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "politica_capacidades_tecnicas",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Política de Capacidades Técnicas",
+      "description": "Define como tratar modelos, SDKs, ferramentas, APIs e recursos que podem mudar.",
+      "options": [
+        {
+          "label": "Conservadora",
+          "value": "conservadora",
+          "sub_options": []
+        },
+        {
+          "label": "Assumir intenção declarada",
+          "value": "assumir_intencao_declarada",
+          "sub_options": []
+        },
+        {
+          "label": "Exigir referência técnica",
+          "value": "exigir_referencia_tecnica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estilo_resposta",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Estilo da Resposta",
+      "description": "Define o tom e a densidade da resposta final.",
+      "options": [
+        {
+          "label": "Direto e operacional",
+          "value": "direto_operacional",
+          "sub_options": []
+        },
+        {
+          "label": "Didático técnico",
+          "value": "didatico_tecnico",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist executivo",
+          "value": "checklist_executivo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
