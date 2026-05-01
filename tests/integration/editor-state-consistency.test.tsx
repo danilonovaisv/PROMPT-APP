@@ -120,12 +120,15 @@ jest.mock('@/db/database', () => ({
     categories: {
       toArray: jest.fn(),
       get: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
     prompts: {
       get: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
     contextMenus: {
       toArray: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
   },
 }));
@@ -152,8 +155,10 @@ describe('Editor state consistency', () => {
       return liveQueryRenderCount === 1 ? [] : contextMenus;
     });
 
+    (db.categories.filter as jest.Mock).mockReturnValue(db.categories);
     (db.categories.toArray as jest.Mock).mockResolvedValue(categories);
     (db.categories.get as jest.Mock).mockResolvedValue(categories[0]);
+    (db.contextMenus.filter as jest.Mock).mockReturnValue(db.contextMenus);
     (db.contextMenus.toArray as jest.Mock).mockResolvedValue(contextMenus);
 
     const promptPayload = createEmptyPromptPayload('Old template');
