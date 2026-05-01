@@ -67,3 +67,5 @@ htmlcov/
 *.tar.xz
 *.tar.zst
 ```
+# Local Netlify folder
+.netlify
