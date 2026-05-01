@@ -1,0 +1,116 @@
+import { Option } from 'commander';
+export const createDatabaseCommand = (program) => {
+    const dbCommand = program
+        .command('database')
+        .alias('db')
+        .description(`Provision a production ready Postgres database with a single command`)
+        .addExamples([
+        'netlify database status',
+        'netlify database migrations apply',
+        'netlify database migrations pull',
+        'netlify database migrations new',
+        'netlify database reset',
+    ]);
+    dbCommand
+        .command('status')
+        .description('Check the status of the database, including applied and pending migrations')
+        .option('-b, --branch <branch>', 'Netlify branch name to query; defaults to the local development database')
+        .option('--show-credentials', 'Include the full connection string (including username and password) in the output', false)
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { statusDb } = await import('./db-status.js');
+        await statusDb(options, command);
+    })
+        .addExamples([
+        'netlify database status',
+        'netlify database status --show-credentials',
+        'netlify database status --json',
+        'netlify database status --branch my-feature-branch',
+    ]);
+    dbCommand
+        .command('init')
+        .description('Interactive setup: install the package, scaffold a starter migration, and verify the database')
+        .option('-y, --yes', 'Non-interactive mode. Accepts the defaults for every prompt.', false)
+        .action(async (options, command) => {
+        const { initDatabase } = await import('./db-init.js');
+        await initDatabase(options, command);
+    })
+        .addExamples(['netlify database init', 'netlify database init --yes']);
+    dbCommand
+        .command('connect')
+        .description('Connect to the database')
+        .option('-q, --query <sql>', 'Execute a single query and exit')
+        .option('--json', 'Output query results as JSON. When used without --query, prints the connection details as JSON instead.')
+        .action(async (options, command) => {
+        const { connect } = await import('./db-connect.js');
+        await connect(options, command);
+    })
+        .addExamples([
+        'netlify database connect',
+        'netlify database connect --query "SELECT * FROM users"',
+        'netlify database connect --json --query "SELECT * FROM users"',
+        'netlify database connect --json',
+    ]);
+    dbCommand
+        .command('reset')
+        .description('Reset the local development database, removing all data and tables')
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { reset } = await import('./db-reset.js');
+        await reset(options, command);
+    });
+    const migrationsCommand = dbCommand.command('migrations').description('Manage database migrations');
+    migrationsCommand
+        .command('apply')
+        .description('Apply database migrations to the local development database')
+        .option('--to <name>', 'Target migration name or prefix to apply up to (applies all if omitted)')
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { migrate } = await import('./db-migrate.js');
+        await migrate(options, command);
+    });
+    migrationsCommand
+        .command('new')
+        .description('Create a new migration')
+        .option('-d, --description <description>', 'Purpose of the migration (used to generate the file name)')
+        .addOption(new Option('-s, --scheme <scheme>', 'Numbering scheme for migration prefixes').choices([
+        'sequential',
+        'timestamp',
+    ]))
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { migrationNew } = await import('./db-migration-new.js');
+        await migrationNew(options, command);
+    })
+        .addExamples([
+        'netlify database migrations new',
+        'netlify database migrations new --description "add users table" --scheme sequential',
+    ]);
+    migrationsCommand
+        .command('pull')
+        .description('Pull migrations and overwrite local migration files')
+        .option('-b, --branch [branch]', "Pull migrations for a specific branch (defaults to 'production'; pass --branch with no value to use local git branch)")
+        .option('--force', 'Skip confirmation prompt', false)
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { migrationPull } = await import('./db-migration-pull.js');
+        await migrationPull(options, command);
+    })
+        .addExamples([
+        'netlify database migrations pull',
+        'netlify database migrations pull --branch staging',
+        'netlify database migrations pull --branch',
+        'netlify database migrations pull --force',
+    ]);
+    migrationsCommand
+        .command('reset')
+        .description('Delete local migration files that have not been applied yet')
+        .option('-b, --branch <branch>', 'Target a remote preview branch instead of the local development database')
+        .option('--json', 'Output result as JSON')
+        .action(async (options, command) => {
+        const { migrationsReset } = await import('./db-migrations-reset.js');
+        await migrationsReset(options, command);
+    })
+        .addExamples(['netlify database migrations reset', 'netlify database migrations reset --branch my-feature-branch']);
+};
+//# sourceMappingURL=database.js.map

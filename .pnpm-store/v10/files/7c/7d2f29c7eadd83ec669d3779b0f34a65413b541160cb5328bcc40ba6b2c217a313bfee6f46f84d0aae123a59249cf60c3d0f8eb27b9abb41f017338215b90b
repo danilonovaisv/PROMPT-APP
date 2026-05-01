@@ -1,0 +1,1 @@
+{"name":"@ruvector/sona-darwin-arm64","version":"0.1.4","os":["darwin"],"cpu":["arm64"],"main":"sona.darwin-arm64.node","files":["sona.darwin-arm64.node"],"license":"MIT OR Apache-2.0","repository":{"type":"git","url":"https://github.com/ruvnet/ruvector.git"}}

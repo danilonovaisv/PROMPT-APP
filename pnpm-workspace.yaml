@@ -1,4 +1,5 @@
 ignoredBuiltDependencies:
+  - '@google/genai'
   - '@parcel/watcher'
   - '@sentry/cli'
   - agentdb
@@ -8,9 +9,11 @@ ignoredBuiltDependencies:
   - better-sqlite3
   - esbuild
   - hnswlib-node
+  - netlify-cli
   - onnxruntime-node
   - protobufjs
   - sharp
   - sqlite3
   - tldjs
+  - unix-dgram
   - unrs-resolver
