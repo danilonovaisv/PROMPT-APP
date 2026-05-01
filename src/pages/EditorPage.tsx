@@ -232,7 +232,7 @@ export default function EditorPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const contextMenus = useLiveQuery(async () => {
-    return await db.contextMenus.filter((menu) => !menu.isDeleted).toArray();
+    return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   }) ?? EMPTY_MENUS;
   const debouncedForm = useDebounce(form, 300);
   const availableContextMenus = useMemo(
@@ -242,7 +242,7 @@ export default function EditorPage() {
 
   useEffect(() => {
     (async () => {
-      const categoryList = await db.categories.filter((category) => !category.isDeleted).toArray();
+      const categoryList = await db.categories.filter((c) => !c.isDeleted).toArray();
       setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
     })();
   }, []);

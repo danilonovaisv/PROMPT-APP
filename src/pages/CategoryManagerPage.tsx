@@ -42,7 +42,7 @@ export default function CategoryManagerPage() {
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
     const categories = useLiveQuery(
         async () => {
-            return await db.categories.filter((category) => !category.isDeleted).toArray();
+            return await db.categories.filter((c) => !c.isDeleted).toArray();
         }
     ) ?? [];
 
