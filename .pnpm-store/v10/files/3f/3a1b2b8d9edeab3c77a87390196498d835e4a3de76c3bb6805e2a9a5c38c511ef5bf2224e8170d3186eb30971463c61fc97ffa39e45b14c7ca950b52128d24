@@ -1,0 +1,1 @@
+{"version":3,"file":"psql-formatter.d.ts","sourceRoot":"","sources":["../../../../src/commands/database/util/psql-formatter.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,IAAI,CAAA;AAkBlC,eAAO,MAAM,iBAAiB,GAC5B,QAAQ,QAAQ,EAAE,EAClB,MAAM,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,EAAE,EAC/B,UAAU,MAAM,GAAG,IAAI,EACvB,SAAS,MAAM,KACd,MAuCF,CAAA"}

@@ -401,18 +401,19 @@ export async function seedDatabase() {
                     await db.categories.bulkDelete(duplicateCategoryIds);
                 }
 
-                const missingCategories = (() => {
-                    // Fix P0 (V1): Usar TODOS os registros existentes (incluindo isDeleted: true)
-                    // como base para a comparação do seed.
-                    // Isso impede que o seed recrie categorias que o usuário intencionalmente excluiu,
-                    // mesmo que elas já tenham sido removidas fisicamente ou marcadas como excluídas.
-                    const allExistingNames = new Set(
-                        existingCategories.map((item) => normalizeKey(item.name))
-                    );
-                    return DEFAULT_CATEGORIES.filter(
-                        (def) => !allExistingNames.has(normalizeKey(def.name))
-                    );
-                })();
+                const categoriesAfterCleanup = existingCategories.filter(
+                    (item) => !duplicateCategoryIds.includes(item.id ?? -1)
+                );
+
+                // Fix P0 (V1): Usar TODOS os registros existentes (incluindo isDeleted: true)
+                // como base para a comparação do seed.
+                // Isso impede que o seed recrie categorias que o usuário intencionalmente excluiu,
+                // mesmo que elas já tenham sido removidas fisicamente ou marcadas como excluídas.
+                const missingCategories = getMissingSeedRecords(
+                    DEFAULT_CATEGORIES,
+                    categoriesAfterCleanup,
+                    (item) => normalizeKey(item.name)
+                );
                 if (missingCategories.length > 0) {
                     console.log(`🌱 Seed: Criando ${missingCategories.length} categorias padrão...`);
                     await db.categories.bulkAdd(missingCategories);

@@ -1,0 +1,177 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_tarefa",
+      "menu_name": "Tipo de Tarefa",
+      "description": "Define a natureza principal da missão a ser orquestrada.",
+      "options": [
+        {
+          "label": "Nova feature",
+          "value": "feature",
+          "sub_options": []
+        },
+        {
+          "label": "Refatoração",
+          "value": "refactor",
+          "sub_options": []
+        },
+        {
+          "label": "Correção crítica",
+          "value": "bugfix",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria",
+          "value": "audit",
+          "sub_options": []
+        },
+        {
+          "label": "Migração",
+          "value": "migration",
+          "sub_options": []
+        },
+        {
+          "label": "Automação",
+          "value": "automation",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "especialista_principal",
+      "menu_name": "Especialista Principal",
+      "description": "Escolhe a persona dominante que deve conduzir a missão.",
+      "options": [
+        {
+          "label": "@engineer",
+          "value": "engineer",
+          "sub_options": []
+        },
+        {
+          "label": "@frontend-specialist",
+          "value": "frontend_specialist",
+          "sub_options": []
+        },
+        {
+          "label": "@backend-specialist",
+          "value": "backend_specialist",
+          "sub_options": []
+        },
+        {
+          "label": "@security-auditor",
+          "value": "security_auditor",
+          "sub_options": []
+        },
+        {
+          "label": "@pm",
+          "value": "pm",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "workflow_inicial",
+      "menu_name": "Workflow Inicial",
+      "description": "Define como a missão deve ser iniciada no agente.",
+      "options": [
+        {
+          "label": "/plan",
+          "value": "plan",
+          "sub_options": []
+        },
+        {
+          "label": "/create",
+          "value": "create",
+          "sub_options": []
+        },
+        {
+          "label": "/refactor",
+          "value": "refactor_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Planning Mode textual",
+          "value": "planning_mode",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "artefatos_obrigatorios",
+      "menu_name": "Artefatos Obrigatórios",
+      "description": "Define quais entregáveis intermediários devem ser exigidos antes da execução.",
+      "options": [
+        {
+          "label": "implementation_plan.md",
+          "value": "implementation_plan_md",
+          "sub_options": []
+        },
+        {
+          "label": "task.md",
+          "value": "task_md",
+          "sub_options": []
+        },
+        {
+          "label": "risk_assessment.md",
+          "value": "risk_assessment_md",
+          "sub_options": []
+        },
+        {
+          "label": "walkthrough.md",
+          "value": "walkthrough_md",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_de_controle",
+      "menu_name": "Nível de Controle",
+      "description": "Define quão rígido deve ser o gate de aprovação e a governança da missão.",
+      "options": [
+        {
+          "label": "Alto",
+          "value": "high_control",
+          "sub_options": []
+        },
+        {
+          "label": "Moderado",
+          "value": "moderate_control",
+          "sub_options": []
+        },
+        {
+          "label": "Máximo",
+          "value": "maximum_control",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "validacao_final",
+      "menu_name": "Validação Final",
+      "description": "Escolhe como o agente deve comprovar que a missão foi concluída corretamente.",
+      "options": [
+        {
+          "label": "Testes automatizados",
+          "value": "automated_tests",
+          "sub_options": []
+        },
+        {
+          "label": "Teste visual no browser",
+          "value": "browser_visual_test",
+          "sub_options": []
+        },
+        {
+          "label": "Screenshots",
+          "value": "screenshots",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist final",
+          "value": "final_checklist",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

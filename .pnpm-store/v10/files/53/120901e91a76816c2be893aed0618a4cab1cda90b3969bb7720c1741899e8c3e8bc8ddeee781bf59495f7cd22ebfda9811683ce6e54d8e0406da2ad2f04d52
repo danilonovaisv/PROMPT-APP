@@ -1,0 +1,1 @@
+{"version":3,"file":"db-migration-pull.d.ts","sourceRoot":"","sources":["../../../src/commands/database/db-migration-pull.ts"],"names":[],"mappings":"AAOA,OAAO,WAAW,MAAM,oBAAoB,CAAA;AAK5C,MAAM,WAAW,oBAAoB;IACnC,MAAM,CAAC,EAAE,MAAM,GAAG,IAAI,CAAA;IACtB,KAAK,CAAC,EAAE,OAAO,CAAA;IACf,IAAI,CAAC,EAAE,OAAO,CAAA;CACf;AAuGD,eAAO,MAAM,aAAa,GAAU,SAAS,oBAAoB,EAAE,SAAS,WAAW,kBAsEtF,CAAA"}

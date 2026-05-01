@@ -1,0 +1,1 @@
+{"version":3,"file":"db-migrations-reset.d.ts","sourceRoot":"","sources":["../../../src/commands/database/db-migrations-reset.ts"],"names":[],"mappings":"AAIA,OAAO,WAAW,MAAM,oBAAoB,CAAA;AAK5C,MAAM,WAAW,sBAAsB;IACrC,MAAM,CAAC,EAAE,MAAM,CAAA;IACf,IAAI,CAAC,EAAE,OAAO,CAAA;CACf;AAYD,eAAO,MAAM,eAAe,GAAU,SAAS,sBAAsB,EAAE,SAAS,WAAW,kBAU1F,CAAA"}

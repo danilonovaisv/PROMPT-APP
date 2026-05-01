@@ -40,18 +40,38 @@ unified_exec = true
 [history]
 persistence = "save-all"
 
-[mcp_servers]
+[mcp_servers.claude-flow]
+args = [
+    "-y",
+    "@claude-flow/cli@latest",
+    "mcp",
+    "start",
+]
+command = "npx"
 
-[mcp_servers.exa]
-url = "https://mcp.exa.ai/mcp"
-startup_timeout_sec = 20.0
-tool_timeout_sec = 90.0
+[mcp_servers.claude-flow.env]
+CLAUDE_FLOW_HOOKS_ENABLED = "true"
+CLAUDE_FLOW_MAX_AGENTS = "15"
+CLAUDE_FLOW_MEMORY_BACKEND = "hybrid"
+CLAUDE_FLOW_MODE = "v3"
+CLAUDE_FLOW_TOPOLOGY = "hierarchical-mesh"
+npm_config_update_notifier = "false"
 
 [mcp_servers.context7]
+args = [
+    "-y",
+    "@upstash/context7-mcp",
+    "--api-key",
+    "ctx7sk-bf901e23-5473-4d9b-82d8-adc0a4b3acea",
+]
 command = "npx"
-args = ["-y", "@upstash/context7-mcp", "--api-key", "ctx7sk-bf901e23-5473-4d9b-82d8-adc0a4b3acea"]
 startup_timeout_sec = 20.0
 tool_timeout_sec = 90.0
+
+[mcp_servers.exa]
+startup_timeout_sec = 20.0
+tool_timeout_sec = 90.0
+url = "https://mcp.exa.ai/mcp"
 
 [mcp_servers.firebase]
 args = [

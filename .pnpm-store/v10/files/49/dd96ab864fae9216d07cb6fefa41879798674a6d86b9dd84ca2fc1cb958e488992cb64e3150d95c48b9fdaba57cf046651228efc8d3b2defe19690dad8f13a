@@ -1,0 +1,88 @@
+{
+  "name": "@sentry/bundler-plugin-core",
+  "version": "5.2.0",
+  "description": "Sentry Bundler Plugin Core",
+  "repository": "git://github.com/getsentry/sentry-javascript-bundler-plugins.git",
+  "homepage": "https://github.com/getsentry/sentry-javascript-bundler-plugins/tree/main/packages/bundler-plugin-core",
+  "author": "Sentry",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "sentry-release-injection-file.js",
+    "sentry-esbuild-debugid-injection-file.js"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./sentry-release-injection-file": {
+      "import": "./sentry-release-injection-file.js",
+      "require": "./sentry-release-injection-file.js"
+    },
+    "./sentry-esbuild-debugid-injection-file": {
+      "import": "./sentry-esbuild-debugid-injection-file.js",
+      "require": "./sentry-esbuild-debugid-injection-file.js"
+    }
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "prebuild": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "build": "premove ./out && run-p build:rollup build:types && run-s build:npm",
+    "build:watch": "run-p build:rollup:watch build:types:watch",
+    "build:rollup": "rolldown --config rollup.config.mjs",
+    "build:rollup:watch": "rolldown --config rollup.config.mjs --watch --no-watch.clearScreen",
+    "build:types": "tsc --project types.tsconfig.json",
+    "build:types:watch": "tsc --project types.tsconfig.json --watch --preserveWatchOutput",
+    "build:npm": "npm pack",
+    "check:types": "run-p check:types:src check:types:test",
+    "check:types:src": "tsc --project ./src/tsconfig.json --noEmit",
+    "check:types:test": "tsc --project ./test/tsconfig.json --noEmit",
+    "clean": "run-s clean:build",
+    "clean:all": "run-p clean clean:deps",
+    "clean:build": "premove ./dist *.tgz",
+    "clean:deps": "premove node_modules",
+    "pretest": "yarn prebuild",
+    "test": "vitest run",
+    "lint": "eslint ./src ./test",
+    "fix": "eslint ./src ./test --format stylish --fix"
+  },
+  "dependencies": {
+    "@babel/core": "^7.18.5",
+    "@sentry/babel-plugin-component-annotate": "5.2.0",
+    "@sentry/cli": "^2.58.5",
+    "dotenv": "^16.3.1",
+    "find-up": "^5.0.0",
+    "glob": "^13.0.6",
+    "magic-string": "~0.30.8"
+  },
+  "devDependencies": {
+    "@sentry-internal/eslint-config": "5.2.0",
+    "@sentry-internal/sentry-bundler-plugin-tsconfig": "5.2.0",
+    "@sentry/core": "8.30.0",
+    "@sentry/types": "8.30.0",
+    "@sentry/utils": "8.30.0",
+    "@types/node": "^18.6.3",
+    "eslint": "^8.18.0",
+    "vitest": "^4.0.0",
+    "premove": "^4.0.0",
+    "rolldown": "1.0.0-rc.10",
+    "typescript": "^4.7.4"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "sideEffects": [
+    "./sentry-release-injection-file.js",
+    "./sentry-esbuild-debugid-injection-file.js"
+  ]
+}

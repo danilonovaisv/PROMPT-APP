@@ -1,0 +1,1 @@
+{"version":3,"file":"db-reset.d.ts","sourceRoot":"","sources":["../../../src/commands/database/db-reset.ts"],"names":[],"mappings":"AAGA,OAAO,WAAW,MAAM,oBAAoB,CAAA;AAG5C,MAAM,WAAW,YAAY;IAC3B,IAAI,CAAC,EAAE,OAAO,CAAA;CACf;AAED,eAAO,MAAM,KAAK,GAAU,SAAS,YAAY,EAAE,SAAS,WAAW,kBAoBtE,CAAA"}

@@ -1,0 +1,8 @@
+export declare const STARTER_TABLE = "planets";
+export declare const STARTER_MIGRATION_NAME = "create_planets";
+export declare const SEED_MIGRATION_NAME = "seed_planets";
+export declare const STARTER_MIGRATION_SQL = "-- Starter migration scaffolded by \"netlify database init\".\nCREATE TABLE IF NOT EXISTS planets (\n  id SERIAL PRIMARY KEY,\n  name TEXT NOT NULL,\n  mass_kg DOUBLE PRECISION NOT NULL,\n  temperature_celsius INTEGER NOT NULL\n);\n\nINSERT INTO planets (name, mass_kg, temperature_celsius) VALUES\n  ('Mercury', 3.30e23, 167),\n  ('Venus', 4.87e24, 464),\n  ('Earth', 5.97e24, 15),\n  ('Mars', 6.42e23, -65),\n  ('Jupiter', 1.898e27, -110),\n  ('Saturn', 5.68e26, -140),\n  ('Uranus', 8.68e25, -195),\n  ('Neptune', 1.02e26, -200);\n";
+export declare const DRIZZLE_SCHEMA_TS = "import { doublePrecision, integer, pgTable, serial, text } from 'drizzle-orm/pg-core'\n\nexport const planets = pgTable('planets', {\n  id: serial('id').primaryKey(),\n  name: text('name').notNull(),\n  massKg: doublePrecision('mass_kg').notNull(),\n  temperatureCelsius: integer('temperature_celsius').notNull(),\n})\n";
+export declare const DRIZZLE_SEED_SQL = "-- Seed data scaffolded by \"netlify database init\".\nINSERT INTO planets (name, mass_kg, temperature_celsius) VALUES\n  ('Mercury', 3.30e23, 167),\n  ('Venus', 4.87e24, 464),\n  ('Earth', 5.97e24, 15),\n  ('Mars', 6.42e23, -65),\n  ('Jupiter', 1.898e27, -110),\n  ('Saturn', 5.68e26, -140),\n  ('Uranus', 8.68e25, -195),\n  ('Neptune', 1.02e26, -200);\n";
+export declare const drizzleConfigTs: (migrationsOutPath: string) => string;
+//# sourceMappingURL=init-data.d.ts.map

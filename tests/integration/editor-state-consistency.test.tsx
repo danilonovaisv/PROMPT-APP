@@ -121,13 +121,16 @@ jest.mock('@/db/database', () => ({
       filter: jest.fn(),
       toArray: jest.fn(),
       get: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
     prompts: {
       get: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
     contextMenus: {
       filter: jest.fn(),
       toArray: jest.fn(),
+      filter: jest.fn().mockReturnThis(),
     },
   },
 }));

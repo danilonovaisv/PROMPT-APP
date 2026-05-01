@@ -401,21 +401,42 @@ export const downloadFromCloud = async () => {
   console.log("☁️ Iniciando Smart Merge (Nuvem -> Local)...");
 
   await db.transaction("rw", [db.categories, db.prompts, db.contextMenus], async () => {
-    const [allLocalCategories, allLocalMenus, allLocalPrompts] = await Promise.all([
-      db.categories.toArray(),
-      db.contextMenus.toArray(),
-      db.prompts.toArray(),
+    // ⚡ Bolt Optimization: Avoid fetching entire tables into memory to eliminate N+1 memory bottlenecks.
+    // Ensure that remoteId and menuId are valid IndexedDB indexes before using .where()
+    const remoteCatIds = (catRes.data || []).map((c: any) => c.id);
+    const remoteMenuIds = (menuRes.data || []).map((m: any) => m.id);
+    const remoteMenuSlugs = (menuRes.data || []).map((m: any) => m.menu_id);
+    const remotePromptIds = (promptRes.data || []).map((p: any) => p.id);
+
+    const [
+      localCategoriesByRemoteId,
+      localMenusByRemoteId,
+      localMenusBySlug,
+      localPromptsByRemoteId
+    ] = await Promise.all([
+      remoteCatIds.length > 0 ? db.categories.where('remoteId').anyOf(remoteCatIds).toArray() : Promise.resolve([]),
+      remoteMenuIds.length > 0 ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : Promise.resolve([]),
+      remoteMenuSlugs.length > 0 ? db.contextMenus.where('menuId').anyOf(remoteMenuSlugs).toArray() : Promise.resolve([]),
+      remotePromptIds.length > 0 ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : Promise.resolve([]),
     ]);
 
+    const allRelevantLocalMenus = [...localMenusByRemoteId];
+    const existingMenuIds = new Set(localMenusByRemoteId.map((m) => m.id));
+    for (const menu of localMenusBySlug) {
+      if (!existingMenuIds.has(menu.id)) {
+        allRelevantLocalMenus.push(menu);
+      }
+    }
+
     const categoriesByRemoteId = new Map(
-      allLocalCategories.filter((c) => c.remoteId).map((c) => [c.remoteId, c])
+      localCategoriesByRemoteId.filter((c) => c.remoteId).map((c) => [c.remoteId, c])
     );
     const menusByRemoteId = new Map(
-      allLocalMenus.filter((m) => m.remoteId).map((m) => [m.remoteId, m])
+      allRelevantLocalMenus.filter((m) => m.remoteId).map((m) => [m.remoteId, m])
     );
-    const menusByMenuId = new Map(allLocalMenus.map((m) => [m.menuId, m]));
+    const menusByMenuId = new Map(allRelevantLocalMenus.map((m) => [m.menuId, m]));
     const promptsByRemoteId = new Map(
-      allLocalPrompts.filter((p) => p.remoteId).map((p) => [p.remoteId, p])
+      localPromptsByRemoteId.filter((p) => p.remoteId).map((p) => [p.remoteId, p])
     );
 
     // --- A. Sincronizar Categorias ---

@@ -1,0 +1,118 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_projeto",
+      "menu_name": "Tipo de Projeto",
+      "description": "Define o contexto principal de aplicação da identidade visual.",
+      "options": [
+        {
+          "label": "Rebranding SaaS B2B",
+          "value": "rebranding_saas_b2b",
+          "sub_options": []
+        },
+        {
+          "label": "Lançamento de App FinTech",
+          "value": "lancamento_app_fintech",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetura de Marca Corporativa",
+          "value": "arquitetura_marca_corporativa",
+          "sub_options": []
+        },
+        {
+          "label": "Marca D2C",
+          "value": "marca_d2c",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "objetivo_estrategico",
+      "menu_name": "Objetivo Estratégico",
+      "description": "Define a prioridade principal do sistema de identidade.",
+      "options": [
+        {
+          "label": "Transmitir confiança e inovação",
+          "value": "confianca_inovacao",
+          "sub_options": []
+        },
+        {
+          "label": "Criar coerência omnichannel",
+          "value": "coerencia_omnichannel",
+          "sub_options": []
+        },
+        {
+          "label": "Escalar produção criativa",
+          "value": "escalar_producao_criativa",
+          "sub_options": []
+        },
+        {
+          "label": "Reduzir dependência de campanhas isoladas",
+          "value": "reduzir_dependencia_de_pecas",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "percepcao_desejada",
+      "menu_name": "Percepção Desejada",
+      "description": "Define a atmosfera e o posicionamento perceptivo buscados.",
+      "options": [
+        {
+          "label": "Minimalista",
+          "value": "minimalista",
+          "sub_options": []
+        },
+        {
+          "label": "Atmosférico",
+          "value": "atmosferico",
+          "sub_options": []
+        },
+        {
+          "label": "Confiável",
+          "value": "confiavel",
+          "sub_options": []
+        },
+        {
+          "label": "Tecnológico",
+          "value": "tecnologico",
+          "sub_options": []
+        },
+        {
+          "label": "Acessível",
+          "value": "acessivel",
+          "sub_options": []
+        },
+        {
+          "label": "Premium",
+          "value": "premium",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "Nível de Detalhamento",
+      "description": "Define a profundidade técnica esperada na análise e no roteiro.",
+      "options": [
+        {
+          "label": "Técnico",
+          "value": "tecnico",
+          "sub_options": []
+        },
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "sub_options": []
+        },
+        {
+          "label": "Expandido",
+          "value": "expandido",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
