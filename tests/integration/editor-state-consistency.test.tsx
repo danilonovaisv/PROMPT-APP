@@ -67,6 +67,28 @@ jest.mock('@/utils/promptArtifacts', () => ({
   syncTemplateWithLinkedMenus: jest.fn((template) => template),
 }));
 
+jest.mock('@/services/memoryService', () => ({
+  fetchMemory: jest.fn().mockResolvedValue({}),
+  saveMemory: jest.fn().mockResolvedValue(undefined),
+  deleteMemory: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('@/lib/supabase', () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }),
+    },
+    from: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    upsert: jest.fn().mockReturnThis(),
+  },
+  isSupabaseConfigured: false,
+  missingSupabaseVars: [],
+  supabaseConfigErrorMessage: '',
+  assertSupabaseConfigured: jest.fn(),
+}));
+
 jest.mock('@/components/Breadcrumb', () => ({
   Breadcrumb: ({ items }: { items: Array<{ label: string }> }) => (
     <nav data-testid="breadcrumb">{items.map((item) => item.label).join(' / ')}</nav>
@@ -118,7 +140,6 @@ jest.mock('@/components/editor/EditorPreviewModal', () => ({
 jest.mock('@/db/database', () => ({
   db: {
     categories: {
-      filter: jest.fn(),
       toArray: jest.fn(),
       get: jest.fn(),
       filter: jest.fn().mockReturnThis(),
@@ -128,7 +149,6 @@ jest.mock('@/db/database', () => ({
       filter: jest.fn().mockReturnThis(),
     },
     contextMenus: {
-      filter: jest.fn(),
       toArray: jest.fn(),
       filter: jest.fn().mockReturnThis(),
     },

@@ -2,7 +2,7 @@ import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchem
 import type { ContextMenu } from '@/models/types';
 import MultiSelect from '@/components/ui/MultiSelect';
 import { Plus, Trash2 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useId } from 'react';
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -39,6 +39,7 @@ export function EditorDefinitionForm({
   
   const lastItemRef = useRef<HTMLTextAreaElement>(null);
   const prevExamplesLength = useRef(template.prompt_definition.few_shot_examples.length);
+  const formId = useId();
 
   useEffect(() => {
     if (template.prompt_definition.few_shot_examples.length > prevExamplesLength.current) {
@@ -48,15 +49,15 @@ export function EditorDefinitionForm({
   }, [template.prompt_definition.few_shot_examples.length]);
 
   const fieldHints = {
-    systemRole: 'system-role-hint',
-    task: 'task-hint',
-    context: 'context-hint',
-    constraints: 'constraints-hint',
-    negativePrompt: 'negative-prompt-hint',
-    outputFormat: 'output-format-hint',
-    outputLanguage: 'output-language-hint',
-    requiredFields: 'required-fields-hint',
-    responseRules: 'response-rules-hint',
+    systemRole: `${formId}-system-role-hint`,
+    task: `${formId}-task-hint`,
+    context: `${formId}-context-hint`,
+    constraints: `${formId}-constraints-hint`,
+    negativePrompt: `${formId}-negative-prompt-hint`,
+    outputFormat: `${formId}-output-format-hint`,
+    outputLanguage: `${formId}-output-language-hint`,
+    requiredFields: `${formId}-required-fields-hint`,
+    responseRules: `${formId}-response-rules-hint`,
   } as const;
 
   return (
@@ -67,9 +68,9 @@ export function EditorDefinitionForm({
         </h3>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="system-role">System role</label>
+          <label className="form-label" htmlFor={`${formId}-system-role`}>System role</label>
           <textarea
-            id="system-role"
+            id={`${formId}-system-role`}
             value={template.prompt_definition.system_role}
             onChange={(event) => updatePromptDefinitionField('system_role', event.target.value)}
             rows={4}
@@ -82,9 +83,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="task">Task</label>
+          <label className="form-label" htmlFor={`${formId}-task`}>Task</label>
           <textarea
-            id="task"
+            id={`${formId}-task`}
             value={template.prompt_definition.task}
             onChange={(event) => updatePromptDefinitionField('task', event.target.value)}
             rows={4}
@@ -97,9 +98,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="context">Context</label>
+          <label className="form-label" htmlFor={`${formId}-context`}>Context</label>
           <textarea
-            id="context"
+            id={`${formId}-context`}
             value={template.prompt_definition.context}
             onChange={(event) => updatePromptDefinitionField('context', event.target.value)}
             rows={4}
@@ -113,9 +114,9 @@ export function EditorDefinitionForm({
 
 
         <div className="form-group">
-          <label className="form-label" htmlFor="constraints">Constraints</label>
+          <label className="form-label" htmlFor={`${formId}-constraints`}>Constraints</label>
           <textarea
-            id="constraints"
+            id={`${formId}-constraints`}
             value={template.prompt_definition.constraints.join('\n')}
             onChange={(event) => updatePromptDefinitionField('constraints', event.target.value.split('\n').filter(Boolean))}
             rows={4}
@@ -128,9 +129,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="negative-prompt">Negative prompt</label>
+          <label className="form-label" htmlFor={`${formId}-negative-prompt`}>Negative prompt</label>
           <textarea
-            id="negative-prompt"
+            id={`${formId}-negative-prompt`}
             value={template.prompt_definition.negative_prompt.join('\n')}
             onChange={(event) => updatePromptDefinitionField('negative_prompt', event.target.value.split('\n').filter(Boolean))}
             rows={4}
@@ -145,10 +146,10 @@ export function EditorDefinitionForm({
         {/* Menu Selection Multi-Select */}
         {availableContextMenus.length > 0 && (
           <div className="form-group">
-            <label className="form-label">
+            <label className="form-label" id={`${formId}-menus-label`}>
               Menus do Template
             </label>
-            <p className="form-label__hint">
+            <p className="form-label__hint" id={`${formId}-menus-hint`}>
               Selecione os menus que estarão disponíveis neste template
             </p>
             <div id="template-linked-menus">
@@ -158,6 +159,8 @@ export function EditorDefinitionForm({
                 onChange={(ids) => onMenuSelectionChange?.(ids)}
                 placeholder="Escolha os menus vinculados ao template"
                 emptyMessage="Nenhum menu cadastrado no banco local."
+                ariaLabelledBy={`${formId}-menus-label`}
+                ariaDescribedBy={`${formId}-menus-hint`}
               />
             </div>
           </div>
@@ -175,11 +178,11 @@ export function EditorDefinitionForm({
               return (
                 <div key={`few-shot-${index}`} className={`few-shot-item card${inputEmpty || outputEmpty ? ' few-shot-item--invalid' : ''}`}>
                   <div className="form-group">
-                    <label className="form-label" htmlFor={`few-shot-input-${index}`}>
+                    <label className="form-label" htmlFor={`${formId}-few-shot-input-${index}`}>
                       Input do usuário <span className="form-label__required" aria-hidden="true">*</span>
                     </label>
                     <textarea
-                      id={`few-shot-input-${index}`}
+                      id={`${formId}-few-shot-input-${index}`}
                       ref={index === template.prompt_definition.few_shot_examples.length - 1 ? lastItemRef : null}
                       value={example.input}
                       onChange={(e) => {
@@ -190,20 +193,20 @@ export function EditorDefinitionForm({
                       rows={2}
                       placeholder="Ex: Como faço para..."
                       aria-invalid={inputEmpty}
-                      aria-describedby={inputEmpty ? `few-shot-input-error-${index}` : undefined}
+                      aria-describedby={inputEmpty ? `${formId}-few-shot-input-error-${index}` : undefined}
                     />
                     {inputEmpty && (
-                      <span id={`few-shot-input-error-${index}`} className="form-field-error" role="alert">
+                      <span id={`${formId}-few-shot-input-error-${index}`} className="form-field-error" role="alert">
                         Campo obrigatório — preencha o input do exemplo antes de salvar.
                       </span>
                     )}
                   </div>
                   <div className="form-group">
-                    <label className="form-label" htmlFor={`few-shot-output-${index}`}>
+                    <label className="form-label" htmlFor={`${formId}-few-shot-output-${index}`}>
                       Resposta esperada <span className="form-label__required" aria-hidden="true">*</span>
                     </label>
                     <textarea
-                      id={`few-shot-output-${index}`}
+                      id={`${formId}-few-shot-output-${index}`}
                       value={example.output}
                       onChange={(e) => {
                         const next = [...template.prompt_definition.few_shot_examples];
@@ -213,10 +216,10 @@ export function EditorDefinitionForm({
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
                       aria-invalid={outputEmpty}
-                      aria-describedby={outputEmpty ? `few-shot-output-error-${index}` : undefined}
+                      aria-describedby={outputEmpty ? `${formId}-few-shot-output-error-${index}` : undefined}
                     />
                     {outputEmpty && (
-                      <span id={`few-shot-output-error-${index}`} className="form-field-error" role="alert">
+                      <span id={`${formId}-few-shot-output-error-${index}`} className="form-field-error" role="alert">
                         Campo obrigatório — preencha a resposta esperada antes de salvar.
                       </span>
                     )}
@@ -256,9 +259,9 @@ export function EditorDefinitionForm({
         </h3>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="output-format">Format</label>
+          <label className="form-label" htmlFor={`${formId}-output-format`}>Format</label>
           <select
-            id="output-format"
+            id={`${formId}-output-format`}
             value={template.output_contract.format}
             onChange={(event) =>
               updateOutputContractField('format', event.target.value as PromptOutputContract['format'])
@@ -277,9 +280,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="output-language">Response language</label>
+          <label className="form-label" htmlFor={`${formId}-output-language`}>Response language</label>
           <input
-            id="output-language"
+            id={`${formId}-output-language`}
             value={template.output_contract.language}
             onChange={(event) => updateOutputContractField('language', event.target.value)}
             placeholder="pt-BR"
@@ -291,8 +294,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label">
+          <label className="form-label" htmlFor={`${formId}-strict-mode`}>
             <input
+              id={`${formId}-strict-mode`}
               type="checkbox"
               checked={template.output_contract.strict_mode}
               onChange={(event) => updateOutputContractField('strict_mode', event.target.checked)}
@@ -302,9 +306,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="required-fields">Required fields</label>
+          <label className="form-label" htmlFor={`${formId}-required-fields`}>Required fields</label>
           <textarea
-            id="required-fields"
+            id={`${formId}-required-fields`}
             value={template.output_contract.required_fields.join('\n')}
             onChange={(event) => updateOutputContractField('required_fields', event.target.value.split('\n').filter(Boolean))}
             rows={4}
@@ -317,9 +321,9 @@ export function EditorDefinitionForm({
         </div>
 
         <div className="form-group">
-          <label className="form-label" htmlFor="response-rules">Response rules</label>
+          <label className="form-label" htmlFor={`${formId}-response-rules`}>Response rules</label>
           <textarea
-            id="response-rules"
+            id={`${formId}-response-rules`}
             value={template.output_contract.response_rules.join('\n')}
             onChange={(event) => updateOutputContractField('response_rules', event.target.value.split('\n').filter(Boolean))}
             rows={4}

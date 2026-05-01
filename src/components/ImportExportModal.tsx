@@ -2,7 +2,7 @@
    Modal de Importação e Exportação
    ====================================================== */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, startTransition } from 'react';
 import {
     FileUp,
     Download,
@@ -43,8 +43,10 @@ export default function ImportExportModal({
 
     useEffect(() => {
         if (!isOpen) {
-            setResult(null);
-            setJsonInput('');
+            startTransition(() => {
+                setResult(null);
+                setJsonInput('');
+            });
         }
     }, [isOpen]);
 

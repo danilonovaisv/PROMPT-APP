@@ -2,7 +2,7 @@
    Layout — Shell com sidebar e área principal
    ====================================================== */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
@@ -15,6 +15,7 @@ import {
     X,
     Sparkles,
     Layers,
+    WifiOff,
 } from 'lucide-react';
 import { downloadAllPrompts } from '@/utils/exportJson';
 import CloudSyncItem from './CloudSyncItem';
@@ -27,6 +28,18 @@ interface LayoutProps {
 
 export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+    useEffect(() => {
+        const handleOnline = () => setIsOffline(false);
+        const handleOffline = () => setIsOffline(true);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     const categories = useLiveQuery(() => db.categories.filter(c => !c.isDeleted).toArray()) ?? [];
 
@@ -125,6 +138,13 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             {/* Main */}
             <main className="app-main" id="main-content" tabIndex={-1}>
                 <div className="app-content-wrapper app-shell-container">
+                    {isOffline && (
+                        <div className="app-shell-notice app-shell-notice--offline" role="alert" aria-live="assertive" style={{ backgroundColor: '#111827', color: '#f3f4f6', borderColor: '#4fe6ff', borderLeftWidth: '4px', borderLeftStyle: 'solid' }}>
+                            <WifiOff size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px', color: '#4fe6ff' }} />
+                            <strong>Você está offline.</strong>
+                            <span>{' '}Alterações serão salvas localmente e sincronizadas quando houver conexão.</span>
+                        </div>
+                    )}
                     {!isSupabaseConfigured && (
                         <div className="app-shell-notice" role="status" aria-live="polite">
                             <strong>Supabase não configurado.</strong>

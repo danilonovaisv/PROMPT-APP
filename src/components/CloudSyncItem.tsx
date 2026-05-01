@@ -2,7 +2,7 @@
    Componente de Sincronização em Nuvem (Supabase)
    ====================================================== */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
@@ -25,6 +25,30 @@ export default function CloudSyncItem() {
     const { showToast } = useToast();
     const configHintId = 'cloud-sync-config-hint';
     const manualLogoutRef = useRef(false);
+
+    // Declarações ANTES dos useEffects para evitar TDZ nos closures
+    // (const não são hoisted; devem aparecer antes do primeiro uso no código-fonte)
+    const triggerAutoSync = useCallback(async () => {
+        console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
+        setLoading(true);
+        try {
+            await downloadFromCloud();
+            showToast('Sincronizado com a nuvem', 'success');
+        } catch (err) {
+            console.error('Auto-sync failed:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, [showToast]);
+
+    const checkForUpdatesStatus = useCallback(async () => {
+        try {
+            const updatesAvailable = await checkForUpdates();
+            setHasUpdates(updatesAvailable);
+        } catch (error) {
+            console.error('Erro ao verificar atualizações:', error);
+        }
+    }, []);
 
     useEffect(() => {
         if (!isSupabaseConfigured) {
@@ -88,7 +112,7 @@ export default function CloudSyncItem() {
         }, 30000); // Checar a cada 30 segundos
 
         return () => clearInterval(interval);
-    }, [session]);
+    }, [session, checkForUpdatesStatus]);
 
     if (!isSupabaseConfigured) {
         return (
@@ -108,34 +132,6 @@ export default function CloudSyncItem() {
             </div>
         );
     }
-
-    // Função de Auto-Sync separada para não causar loops ou re-renders desnecessários
-    const triggerAutoSync = async () => {
-        console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
-        setLoading(true);
-        try {
-            // Primeiro puxamos da nuvem (Smart Merge) para garantir que temos tudo
-            await downloadFromCloud();
-            // Opcional: Poderíamos fazer upload logo sem seguida para garantir consistência total
-            // await syncToCloud(); 
-            showToast('Sincronizado com a nuvem', 'success');
-        } catch (err) {
-            console.error("Auto-sync failed:", err);
-            // Não mostramos toast de erro no auto-sync para não atrapalhar a UX inicial, apenas log
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Verifica se há atualizações disponíveis
-    const checkForUpdatesStatus = async () => {
-        try {
-            const updatesAvailable = await checkForUpdates();
-            setHasUpdates(updatesAvailable);
-        } catch (error) {
-            console.error('Erro ao verificar atualizações:', error);
-        }
-    };
 
     const handleLogin = () => {
         setAuthModalMode('login');

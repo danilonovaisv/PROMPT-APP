@@ -13,6 +13,8 @@ type MultiSelectProps = {
   onChange: (ids: number[]) => void;
   placeholder?: string;
   emptyMessage?: string;
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
 };
 
 export default function MultiSelect({
@@ -21,6 +23,8 @@ export default function MultiSelect({
   onChange,
   placeholder = 'Selecione uma ou mais opções',
   emptyMessage = 'Nenhuma opção encontrada.',
+  ariaLabelledBy,
+  ariaDescribedBy,
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,6 +79,8 @@ export default function MultiSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={listboxId}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
         onClick={() => setIsOpen((current) => !current)}
       >
         <span className="multi-select__trigger-label">

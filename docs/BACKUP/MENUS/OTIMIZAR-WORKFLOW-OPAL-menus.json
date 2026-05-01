@@ -2,9 +2,41 @@
   "version": "1.0",
   "menus": [
     {
+      "menu_id": "modo_operacao",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Modo de Operação",
+      "description": "Define se o template deve criar, auditar, corrigir ou expandir um workflow OPAL.",
+      "options": [
+        {
+          "label": "Criar workflow do zero",
+          "value": "criar_workflow_zero",
+          "sub_options": []
+        },
+        {
+          "label": "Auditar workflow existente",
+          "value": "auditar_workflow_existente",
+          "sub_options": []
+        },
+        {
+          "label": "Reescrever micro-prompts de nós",
+          "value": "reescrever_micro_prompts",
+          "sub_options": []
+        },
+        {
+          "label": "Corrigir erro pelo Console",
+          "value": "corrigir_erro_console",
+          "sub_options": []
+        },
+        {
+          "label": "Expandir workflow com novos nós",
+          "value": "expandir_workflow_novos_nos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
       "menu_id": "foco_melhoria",
       "menu_name": "GOOGLE & ANTIGRAVITY - Foco de Melhoria",
-      "description": "Define as prioridades da otimização do workflow Opal.",
+      "description": "Define as prioridades da otimização do workflow OPAL.",
       "options": [
         {
           "label": "Reduzir alucinações",
@@ -43,12 +75,17 @@
           "label": "Melhorar UI de renderização final",
           "value": "melhorar_ui_renderizacao",
           "sub_options": []
+        },
+        {
+          "label": "Gerar prompts copiáveis em .md",
+          "value": "gerar_prompts_md",
+          "sub_options": []
         }
       ]
     },
     {
       "menu_id": "tipo_workflow_opal",
-      "menu_name": "GOOGLE & ANTIGRAVITY - Tipo de Workflow Opal",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Tipo de Workflow OPAL",
       "description": "Classifica o tipo de micro-aplicativo ou automação analisada.",
       "options": [
         {
@@ -189,6 +226,43 @@
         {
           "label": "Exigir referência técnica",
           "value": "exigir_referencia_tecnica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_saida_opal",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Tipo de Saída OPAL",
+      "description": "Define o destino ou formato esperado para o output final do workflow.",
+      "options": [
+        {
+          "label": "Página web",
+          "value": "pagina_web",
+          "sub_options": []
+        },
+        {
+          "label": "Google Docs",
+          "value": "google_docs",
+          "sub_options": []
+        },
+        {
+          "label": "Google Slides",
+          "value": "google_slides",
+          "sub_options": []
+        },
+        {
+          "label": "HTML",
+          "value": "html",
+          "sub_options": []
+        },
+        {
+          "label": "JSON",
+          "value": "json",
+          "sub_options": []
+        },
+        {
+          "label": "Arquivos para download",
+          "value": "arquivos_download",
           "sub_options": []
         }
       ]
