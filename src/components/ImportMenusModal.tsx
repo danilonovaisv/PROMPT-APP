@@ -174,7 +174,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
             >
                 <div className="modal__header">
                     <h2 id="import-menus-title">
-                        <Upload size={20} /> Importar Menus (JSON)
+                        <Upload size={20} aria-hidden="true" /> Importar Menus (JSON)
                     </h2>
                     <button
                         ref={closeButtonRef}
@@ -182,24 +182,24 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                         onClick={handleClose}
                         aria-label="Fechar modal"
                     >
-                        <X size={20} />
+                        <X size={20} aria-hidden="true" />
                     </button>
                 </div>
 
                 <div className="modal__body">
                     {/* === STEP: UPLOAD === */}
                     {step === 'upload' && (
-                        <div className="form-section">
-                            <h3 className="form-section__title">
-                                <FileUp size={18} /> Selecionar Arquivo
-                            </h3>
+                        <fieldset className="form-section">
+                            <legend className="form-section__title">
+                                <FileUp size={18} aria-hidden="true" /> Selecionar Arquivo
+                            </legend>
                             <p className="import-description">
                                 Selecione um arquivo <strong>.json</strong> no formato de importação de menus.
                                 O sistema validará o schema antes de importar.
                             </p>
 
                             <label className="dropzone">
-                                <FileUp size={32} color="var(--color-text-muted)" />
+                                <FileUp size={32} color="var(--color-text-muted)" aria-hidden="true" />
                                 <span className="dropzone__label">
                                     Clique ou arraste um arquivo .json
                                 </span>
@@ -216,7 +216,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                             {validationErrors.length > 0 && (
                                 <div className="import-result import-result--error">
                                     <div className="import-result__header">
-                                        <AlertCircle size={16} />
+                                        <AlertCircle size={16} aria-hidden="true" />
                                         <strong>
                                             {validationErrors.length} erro(s) de validação
                                         </strong>
@@ -234,7 +234,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                             {/* Schema reference */}
                             <details className="import-schema-ref">
                                 <summary className="import-schema-ref__toggle">
-                                    <Eye size={14} /> Ver schema esperado
+                                    <Eye size={14} aria-hidden="true" /> Ver schema esperado
                                 </summary>
                                 <pre className="json-preview json-preview--compact">{JSON.stringify({
                                     version: '1.0',
@@ -250,21 +250,21 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                     }],
                                 }, null, 2)}</pre>
                             </details>
-                        </div>
+                        </fieldset>
                     )}
 
                     {/* === STEP: PREVIEW === */}
                     {step === 'preview' && parsedData && (
-                        <div className="form-section">
-                            <h3 className="form-section__title">
-                                <Eye size={18} /> Preview — {parsedData.menus.length} menu(s) encontrado(s)
-                            </h3>
+                        <fieldset className="form-section">
+                            <legend className="form-section__title">
+                                <Eye size={18} aria-hidden="true" /> Preview — {parsedData.menus.length} menu(s) encontrado(s)
+                            </legend>
 
                             {/* Conflicts warning */}
                             {conflicts.length > 0 && (
                                 <div className="import-result import-result--warning">
                                     <div className="import-result__header">
-                                        <AlertTriangle size={16} />
+                                        <AlertTriangle size={16} aria-hidden="true" />
                                         <strong>
                                             {conflicts.length} conflito(s) de ID
                                         </strong>
@@ -272,8 +272,9 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                     <p className="import-warning-text">
                                         Os seguintes menu_id(s) já existem: <strong>{conflicts.join(', ')}</strong>
                                     </p>
-                                    <label className="import-skip-label">
+                                    <label className="import-skip-label" htmlFor="skip-conflicts-checkbox">
                                         <input
+                                            id="skip-conflicts-checkbox"
                                             type="checkbox"
                                             checked={skipConflicts}
                                             onChange={(e) => setSkipConflicts(e.target.checked)}
@@ -297,9 +298,18 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                             <div
                                                 className="import-preview-card__header"
                                                 onClick={() => togglePreviewMenu(idx)}
+                                                role="button"
+                                                aria-expanded={isExpanded}
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        togglePreviewMenu(idx);
+                                                    }
+                                                }}
                                             >
-                                                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                                                <Layers size={14} />
+                                                {isExpanded ? <ChevronDown size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
+                                                <Layers size={14} aria-hidden="true" />
                                                 <span className="import-preview-card__name">
                                                     {menu.menu_name}
                                                 </span>
@@ -308,7 +318,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                                 </span>
                                                 {isConflict && (
                                                     <span className="import-preview-card__conflict-badge">
-                                                        <AlertTriangle size={12} /> Conflito
+                                                        <AlertTriangle size={12} aria-hidden="true" /> Conflito
                                                     </span>
                                                 )}
                                                 <span className="import-preview-card__count">
@@ -356,7 +366,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                     className="btn btn--secondary"
                                     onClick={reset}
                                 >
-                                    <X size={16} /> Cancelar
+                                    <X size={16} aria-hidden="true" /> Cancelar
                                 </button>
                                 <button
                                     className="btn btn--primary"
@@ -367,23 +377,23 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                         'Importando...'
                                     ) : (
                                         <>
-                                            <Upload size={16} /> Confirmar Importação
+                                            <Upload size={16} aria-hidden="true" /> Confirmar Importação
                                         </>
                                     )}
                                 </button>
                             </div>
-                        </div>
+                        </fieldset>
                     )}
 
                     {/* === STEP: RESULT === */}
                     {step === 'result' && importResult && (
-                        <div className="form-section">
+                        <fieldset className="form-section">
                             <div
                                 className={`import-result ${importResult.success ? 'import-result--success' : 'import-result--error'}`}
                             >
                                 {importResult.success ? (
                                     <>
-                                        <CheckCircle size={24} />
+                                        <CheckCircle size={24} aria-hidden="true" />
                                         <div>
                                             <strong>{importResult.imported} menu(s) importado(s) com sucesso!</strong>
                                             <p className="import-result__detail">
@@ -393,7 +403,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                     </>
                                 ) : (
                                     <>
-                                        <AlertCircle size={24} />
+                                        <AlertCircle size={24} aria-hidden="true" />
                                         <div>
                                             <strong>Importação falhou</strong>
                                             <ul className="import-errors-list">
@@ -409,7 +419,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                             {/* Import log */}
                             <details className="import-schema-ref">
                                 <summary className="import-schema-ref__toggle">
-                                    <Eye size={14} /> Ver log de importação
+                                    <Eye size={14} aria-hidden="true" /> Ver log de importação
                                 </summary>
                                 <pre className="json-preview json-preview--compact import-log">
                                     {importResult.log.join('\n')}
@@ -419,7 +429,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                             <div className="flex-row-end import-actions">
                                 {importResult.success ? (
                                     <button className="btn btn--primary" onClick={handleClose}>
-                                        <CheckCircle size={16} /> Concluir
+                                        <CheckCircle size={16} aria-hidden="true" /> Concluir
                                     </button>
                                 ) : (
                                     <button className="btn btn--secondary" onClick={reset}>
@@ -427,7 +437,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                     </button>
                                 )}
                             </div>
-                        </div>
+                        </fieldset>
                     )}
                 </div>
             </div>

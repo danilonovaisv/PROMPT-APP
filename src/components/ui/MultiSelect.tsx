@@ -27,8 +27,10 @@ export default function MultiSelect({
   ariaDescribedBy,
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
+  const triggerId = useId();
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -71,9 +73,49 @@ export default function MultiSelect({
     onChange([...selectedIds, id]);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!isOpen) {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setIsOpen(true);
+        setActiveIndex(0);
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        setActiveIndex((prev) => (prev < options.length - 1 ? prev + 1 : prev));
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        if (activeIndex >= 0 && activeIndex < options.length) {
+          toggleOption(options[activeIndex].id);
+        }
+        break;
+      case 'Escape':
+      case 'Tab':
+        setIsOpen(false);
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setActiveIndex(-1);
+    }
+  }, [isOpen]);
+
   return (
     <div className="multi-select" ref={containerRef}>
       <button
+        id={triggerId}
         type="button"
         className={`multi-select__trigger ${isOpen ? 'multi-select__trigger--open' : ''}`}
         aria-haspopup="listbox"
@@ -81,7 +123,9 @@ export default function MultiSelect({
         aria-controls={listboxId}
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
+        aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${options[activeIndex].id}` : undefined}
         onClick={() => setIsOpen((current) => !current)}
+        onKeyDown={handleKeyDown}
       >
         <span className="multi-select__trigger-label">
           {selectedOptions.length > 0
@@ -91,6 +135,7 @@ export default function MultiSelect({
         <ChevronDown
           size={16}
           className={`multi-select__chevron ${isOpen ? 'multi-select__chevron--open' : ''}`}
+          aria-hidden="true"
         />
       </button>
 
@@ -105,7 +150,7 @@ export default function MultiSelect({
                 onClick={() => toggleOption(option.id)}
                 aria-label={`Remover ${option.label}`}
               >
-                <X size={14} />
+                <X size={14} aria-hidden="true" />
               </button>
             </span>
           ))
@@ -127,17 +172,22 @@ export default function MultiSelect({
             {options.length === 0 ? (
               <div className="multi-select__empty">{emptyMessage}</div>
             ) : (
-              options.map((option) => {
+              options.map((option, index) => {
                 const isSelected = selectedIds.includes(option.id);
 
                 return (
-                  <button
+                  <div
                     key={option.id}
-                    type="button"
+                    id={`${listboxId}-option-${option.id}`}
                     role="option"
                     aria-selected={isSelected}
-                    className={`multi-select__option ${isSelected ? 'multi-select__option--selected' : ''}`}
-                    onClick={() => toggleOption(option.id)}
+                    className={`multi-select__option ${isSelected ? 'multi-select__option--selected' : ''} ${
+                      index === activeIndex ? 'multi-select__option--active' : ''
+                    }`}
+                    onClick={() => {
+                      toggleOption(option.id);
+                      setActiveIndex(index);
+                    }}
                   >
                     <div className="multi-select__option-copy">
                       <span className="multi-select__option-label">{option.label}</span>
@@ -148,7 +198,7 @@ export default function MultiSelect({
                     <span className="multi-select__option-state">
                       {isSelected ? 'Selecionado' : 'Selecionar'}
                     </span>
-                  </button>
+                  </div>
                 );
               })
             )}

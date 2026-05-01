@@ -390,8 +390,8 @@ export default function EditorPage() {
         error: null,
       };
     } catch (e: unknown) {
-        const error = e as Error;
-      return { payload: null, template: null, selection: null, renderedPrompt: '', error: error.message || 'Payload inválido' };
+      const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
+      return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
     }
   }, [availableContextMenus, debouncedForm]);
 
@@ -570,8 +570,8 @@ export default function EditorPage() {
     try {
       ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus));
     } catch (e: unknown) {
-        const error = e as Error;
-      showToast(error.message || 'Template inválido', 'error');
+      const errorMessage = e instanceof Error ? e.message : 'Template inválido';
+      showToast(errorMessage, 'error');
       return;
     }
 
@@ -605,9 +605,9 @@ export default function EditorPage() {
       clearDraft();
       await saveLocalBackup();
     } catch (e: unknown) {
-        const error = e as Error;
-      console.error('Erro ao salvar localmente:', error);
-      showToast(error.message || 'Erro ao salvar localmente', 'error');
+      const errorMessage = e instanceof Error ? e.message : 'Erro ao salvar localmente';
+      console.error('Erro ao salvar localmente:', e);
+      showToast(errorMessage, 'error');
       return;
     }
 

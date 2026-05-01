@@ -62,10 +62,10 @@ export function EditorDefinitionForm({
 
   return (
     <>
-      <div className="form-section">
-        <h3 className="form-section__title">
+      <fieldset className="form-section">
+        <legend className="form-section__title">
           Definição do Prompt
-        </h3>
+        </legend>
 
         <div className="form-group">
           <label className="form-label" htmlFor={`${formId}-system-role`}>System role</label>
@@ -76,6 +76,7 @@ export function EditorDefinitionForm({
             rows={4}
             placeholder="Defina o papel do modelo"
             aria-describedby={fieldHints.systemRole}
+            aria-required="true"
           />
           <span id={fieldHints.systemRole} className="form-label__hint">
             Defina o papel e a especialidade que o modelo deve assumir neste template.
@@ -91,6 +92,7 @@ export function EditorDefinitionForm({
             rows={4}
             placeholder="Descreva a tarefa principal"
             aria-describedby={fieldHints.task}
+            aria-required="true"
           />
           <span id={fieldHints.task} className="form-label__hint">
             Explique a entrega principal esperada para o template.
@@ -193,6 +195,7 @@ export function EditorDefinitionForm({
                       rows={2}
                       placeholder="Ex: Como faço para..."
                       aria-invalid={inputEmpty}
+                      aria-required="true"
                       aria-describedby={inputEmpty ? `${formId}-few-shot-input-error-${index}` : undefined}
                     />
                     {inputEmpty && (
@@ -216,6 +219,7 @@ export function EditorDefinitionForm({
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
                       aria-invalid={outputEmpty}
+                      aria-required="true"
                       aria-describedby={outputEmpty ? `${formId}-few-shot-output-error-${index}` : undefined}
                     />
                     {outputEmpty && (
@@ -233,7 +237,7 @@ export function EditorDefinitionForm({
                     title="Remover exemplo"
                     aria-label={`Remover exemplo ${index + 1}`}
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} aria-hidden="true" />
                   </button>
                 </div>
               );
@@ -246,17 +250,18 @@ export function EditorDefinitionForm({
                   { input: '', output: '' },
                 ]);
               }}
+              aria-label="Adicionar novo exemplo de few-shot"
             >
-              <Plus size={14} /> Novo exemplo
+              <Plus size={14} aria-hidden="true" /> Novo exemplo
             </button>
           </div>
         </div>
-      </div>
+      </fieldset>
 
-      <div className="form-section">
-        <h3 className="form-section__title">
+      <fieldset className="form-section">
+        <legend className="form-section__title">
           Output Contract
-        </h3>
+        </legend>
 
         <div className="form-group">
           <label className="form-label" htmlFor={`${formId}-output-format`}>Format</label>
@@ -334,7 +339,7 @@ export function EditorDefinitionForm({
             Liste regras obrigatórias de formatação e comportamento, uma por linha.
           </span>
         </div>
-      </div>
+      </fieldset>
     </>
   );
 }

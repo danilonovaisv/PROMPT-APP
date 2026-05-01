@@ -48,8 +48,9 @@ export function MenuForm({
       </h3>
 
       <div className="form-group">
-        <label className="form-label">Nome do Menu</label>
+        <label className="form-label" htmlFor="menu-name">Nome do Menu</label>
         <input
+          id="menu-name"
           value={form.menuName}
           onChange={(e) => {
             onFieldChange('menuName', e.target.value);
@@ -61,11 +62,12 @@ export function MenuForm({
       </div>
 
       <div className="form-group">
-        <label className="form-label">
+        <label className="form-label" htmlFor="menu-slug">
           Identificador
           <span className="form-label__hint">(slug único)</span>
         </label>
         <input
+          id="menu-slug"
           value={form.menuId}
           onChange={(e) => onFieldChange('menuId', toSlug(e.target.value))}
           placeholder="auto-gerado a partir do nome"
@@ -74,8 +76,9 @@ export function MenuForm({
       </div>
 
       <div className="form-group">
-        <label className="form-label">Descrição</label>
+        <label className="form-label" htmlFor="menu-description">Descrição</label>
         <textarea
+          id="menu-description"
           value={form.description}
           onChange={(e) => onFieldChange('description', e.target.value)}
           placeholder="Descreva o propósito deste menu dinâmico..."
@@ -97,10 +100,10 @@ export function MenuForm({
         </select>
       </div>
 
-      <div className="form-group">
-        <label className="form-label">
-          <Layers size={14} /> Opções
-        </label>
+      <fieldset className="form-group">
+        <legend className="form-label">
+          <Layers size={14} aria-hidden="true" /> Opções
+        </legend>
 
         <div className="ctx-options-list">
           {form.options.map((opt, optIdx) => (
@@ -119,17 +122,17 @@ export function MenuForm({
           ))}
         </div>
 
-        <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={onAddOption}>
-          <Plus size={14} /> Adicionar opção
+        <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={onAddOption} type="button">
+          <Plus size={14} aria-hidden="true" /> Adicionar opção
         </button>
-      </div>
+      </fieldset>
 
       <div className="flex-row-end">
-        <button className="btn btn--secondary" onClick={onCancel}>
-          <X size={16} /> Cancelar
+        <button className="btn btn--secondary" onClick={onCancel} type="button">
+          <X size={16} aria-hidden="true" /> Cancelar
         </button>
-        <button className="btn btn--primary" onClick={onSave}>
-          <Check size={16} /> Salvar
+        <button className="btn btn--primary" onClick={onSave} type="button">
+          <Check size={16} aria-hidden="true" /> Salvar
         </button>
       </div>
     </div>

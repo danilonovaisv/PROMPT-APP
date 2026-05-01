@@ -20,7 +20,7 @@ if (typeof global.TextDecoder === "undefined") {
 // Polyfill Blob.prototype.text for JSDOM
 if (typeof Blob.prototype.text === "undefined") {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Blob.prototype.text = function (this: any): Promise<string> {
+  Blob.prototype.text = function (this: Blob): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);

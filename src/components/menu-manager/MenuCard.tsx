@@ -33,7 +33,7 @@ export const MenuCard = memo(function MenuCard({ menu, onEdit, onDelete }: MenuC
             aria-label="Editar menu"
             title="Editar"
           >
-            <Edit3 size={16} />
+            <Edit3 size={16} aria-hidden="true" />
           </button>
           <button
             className="btn btn--ghost btn--icon"
@@ -41,7 +41,7 @@ export const MenuCard = memo(function MenuCard({ menu, onEdit, onDelete }: MenuC
             aria-label="Excluir menu"
             title="Excluir"
           >
-            <Trash2 size={16} />
+            <Trash2 size={16} aria-hidden="true" />
           </button>
         </div>
       </div>

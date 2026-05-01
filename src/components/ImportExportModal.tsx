@@ -72,8 +72,8 @@ export default function ImportExportModal({
                 showToast('Importação concluída com erros.', 'error');
             }
         } catch (e: unknown) {
-        const error = e as Error;
-            showToast(error.message || 'Erro ao importar', 'error');
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao importar';
+            showToast(errorMessage, 'error');
         } finally {
             setImporting(false);
             if (fileRef.current) fileRef.current.value = '';
@@ -105,8 +105,8 @@ export default function ImportExportModal({
                 showToast('Importação concluída com erros.', 'error');
             }
         } catch (e: unknown) {
-        const error = e as Error;
-            showToast(error.message || 'Erro ao importar JSON colado', 'error');
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao importar JSON colado';
+            showToast(errorMessage, 'error');
         } finally {
             setImporting(false);
         }
@@ -144,14 +144,14 @@ export default function ImportExportModal({
                         onClick={onClose}
                         aria-label="Fechar modal"
                     >
-                        <X size={20} />
+                        <X size={20} aria-hidden="true" />
                     </button>
                 </div>
 
                 <div className="modal-body">
                     {/* Importar */}
-                    <div className="form-section">
-                        <h3 className="section-title">Importar</h3>
+                    <fieldset className="form-section">
+                        <legend className="section-title">Importar</legend>
                         <p className="section-desc" id="modal-description">
                             Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
                         </p>
@@ -181,6 +181,7 @@ export default function ImportExportModal({
                                 onChange={(event) => setJsonInput(event.target.value)}
                                 rows={8}
                                 placeholder="Cole aqui um prompt exportado ou um backup em JSON"
+                                aria-required="true"
                             />
                         </div>
 
@@ -189,7 +190,7 @@ export default function ImportExportModal({
                             onClick={handleImportFromText}
                             disabled={importing}
                         >
-                            <Copy size={16} /> Importar JSON colado
+                            <Copy size={16} aria-hidden="true" /> Importar JSON colado
                         </button>
 
                         {result && (
@@ -251,17 +252,18 @@ export default function ImportExportModal({
                                 )}
                             </div>
                         )}
-                    </div>
+                    </fieldset>
 
                     {/* Exportar */}
-                    <div className="form-section form-section--flush">
-                        <h3 className="section-title">Exportar</h3>
+                    <fieldset className="form-section form-section--flush">
+                        <legend className="section-title">Exportar</legend>
                         <div className="action-grid">
                             <button
                                 className="action-card"
                                 onClick={() => downloadAllPrompts()}
+                                aria-label="Exportar todos os prompts como backup completo"
                             >
-                                <Download size={24} color="var(--blue-primary)" />
+                                <Download size={24} color="var(--blue-primary)" aria-hidden="true" />
                                 <div className="action-card__info">
                                     <strong>Exportar Tudo</strong>
                                     <span>Backup completo de todos os prompts</span>
@@ -271,19 +273,20 @@ export default function ImportExportModal({
                             <button
                                 className="action-card"
                                 onClick={handleDownloadTemplate}
+                                aria-label="Baixar template padrão para criação de novos prompts"
                             >
-                                <Save size={24} color="var(--blue-accent)" />
+                                <Save size={24} color="var(--blue-accent)" aria-hidden="true" />
                                 <div className="action-card__info">
                                     <strong>Baixar Template</strong>
                                     <span>Modelo para criar novos prompts</span>
                                 </div>
                             </button>
                         </div>
-                    </div>
+                    </fieldset>
 
                     {/* Dicas */}
                     <div className="info-box">
-                        <Copy size={18} />
+                        <Copy size={18} aria-hidden="true" />
                         <div>
                             <strong>Dica:</strong> O JSON técnico continua disponível para backup;
                             a ação primária de uso do produto deve ser copiar o prompt final no editor.

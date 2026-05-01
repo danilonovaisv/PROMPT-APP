@@ -276,7 +276,7 @@ export default function MenuManagerPage() {
             aria-label="Voltar ao início"
             title="Voltar"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={18} aria-hidden="true" />
           </button>
           <h1 className="app-header__title">Menus do Template</h1>
         </div>
@@ -286,7 +286,7 @@ export default function MenuManagerPage() {
             onClick={() => setShowImportModal(true)}
             title="Importar menus de um arquivo .json"
           >
-            <Upload size={16} />
+            <Upload size={16} aria-hidden="true" />
             Importar
           </button>
           <button
@@ -298,11 +298,11 @@ export default function MenuManagerPage() {
             }}
             title="Exportar todos os menus em formato .json"
           >
-            <Download size={16} />
+            <Download size={16} aria-hidden="true" />
             Exportar
           </button>
           <button className="btn btn--primary" onClick={startCreate}>
-            <Plus size={16} />
+            <Plus size={16} aria-hidden="true" />
             Novo Menu
           </button>
         </div>
@@ -330,7 +330,7 @@ export default function MenuManagerPage() {
 
         {menus.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state__icon"><Settings size={48} /></div>
+            <div className="empty-state__icon"><Settings size={48} aria-hidden="true" /></div>
             <h3 className="empty-state__title">Nenhum menu do template</h3>
             <p className="empty-state__description">
               Menus do template são conjuntos reutilizáveis de opções configuráveis que enriquecem seus formatos de saída.
