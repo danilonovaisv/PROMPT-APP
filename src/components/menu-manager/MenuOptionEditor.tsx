@@ -26,33 +26,28 @@ export function MenuOptionEditor({
 }: MenuOptionEditorProps) {
   return (
     <div className="ctx-option-card">
-      <div
-        className="ctx-option-card__header"
-        role="button"
-        tabIndex={0}
-        onClick={onToggleExpand}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onToggleExpand();
-          }
-        }}
-        aria-expanded={isExpanded}
-        aria-label={`Editar opção: ${option.label || `Opção ${index + 1}`}`}
-      >
-        {isExpanded ? (
-          <ChevronDown size={16} aria-hidden="true" />
-        ) : (
-          <ChevronRight size={16} aria-hidden="true" />
-        )}
-        <span className="ctx-option-card__title">
-          {option.label || `Opção ${index + 1}`}
-        </span>
-        {(option.subOptions || []).length > 0 && (
-          <span className="ctx-option-card__badge">
-            {(option.subOptions || []).length} sub
+      <div className="ctx-option-card__header">
+        <button
+          type="button"
+          className="ctx-option-card__toggle-btn"
+          onClick={onToggleExpand}
+          aria-expanded={isExpanded ? 'true' : 'false'}
+          aria-label={`Editar opção: ${option.label || `Opção ${index + 1}`}`}
+        >
+          {isExpanded ? (
+            <ChevronDown size={16} aria-hidden="true" />
+          ) : (
+            <ChevronRight size={16} aria-hidden="true" />
+          )}
+          <span className="ctx-option-card__title">
+            {option.label || `Opção ${index + 1}`}
           </span>
-        )}
+          {(option.subOptions || []).length > 0 && (
+            <span className="ctx-option-card__badge">
+              {(option.subOptions || []).length} sub
+            </span>
+          )}
+        </button>
         <button
           className="btn btn--ghost btn--icon btn--sm"
           onClick={(e) => {

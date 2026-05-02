@@ -139,8 +139,8 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             <main className="app-main" id="main-content" tabIndex={-1}>
                 <div className="app-content-wrapper app-shell-container">
                     {isOffline && (
-                        <div className="app-shell-notice app-shell-notice--offline" role="alert" aria-live="assertive" style={{ backgroundColor: '#111827', color: '#f3f4f6', borderColor: '#4fe6ff', borderLeftWidth: '4px', borderLeftStyle: 'solid' }}>
-                            <WifiOff size={18} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px', color: '#4fe6ff' }} />
+                        <div className="app-shell-notice app-shell-notice--offline" role="alert" aria-live="assertive">
+                            <WifiOff size={18} className="app-shell-notice-icon" />
                             <strong>Você está offline.</strong>
                             <span>{' '}Alterações serão salvas localmente e sincronizadas quando houver conexão.</span>
                         </div>

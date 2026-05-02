@@ -106,25 +106,26 @@ export default function MultiSelect({
     }
   };
 
-  useEffect(() => {
-    if (!isOpen) {
-      setActiveIndex(-1);
-    }
-  }, [isOpen]);
+  // removed useEffect to prevent React state update during render loop warning if it was an issue, 
+  // but wait it was an effect, however it's better to update together with setIsOpen.
 
   return (
     <div className="multi-select" ref={containerRef}>
       <button
         id={triggerId}
+        role="combobox"
         type="button"
         className={`multi-select__trigger ${isOpen ? 'multi-select__trigger--open' : ''}`}
         aria-haspopup="listbox"
-        aria-expanded={isOpen}
+        aria-expanded={isOpen ? 'true' : 'false'}
         aria-controls={listboxId}
-        aria-labelledby={ariaLabelledBy}
+        aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${triggerId}` : undefined}
         aria-describedby={ariaDescribedBy}
         aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${options[activeIndex].id}` : undefined}
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (isOpen) setActiveIndex(-1);
+        }}
         onKeyDown={handleKeyDown}
       >
         <span className="multi-select__trigger-label">
@@ -168,6 +169,7 @@ export default function MultiSelect({
             className="multi-select__options"
             role="listbox"
             aria-multiselectable="true"
+            aria-labelledby={ariaLabelledBy || triggerId}
           >
             {options.length === 0 ? (
               <div className="multi-select__empty">{emptyMessage}</div>

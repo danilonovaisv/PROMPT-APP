@@ -299,7 +299,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                                 className="import-preview-card__header"
                                                 onClick={() => togglePreviewMenu(idx)}
                                                 role="button"
-                                                aria-expanded={isExpanded}
+                                                aria-expanded={isExpanded ? 'true' : 'false'}
                                                 tabIndex={0}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === ' ') {

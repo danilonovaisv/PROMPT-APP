@@ -3277,3 +3277,31 @@ select option {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Fixes for MenuOptionEditor and Layout offline notice */
+.ctx-option-card__toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+}
+.app-shell-notice--offline {
+  background-color: #111827;
+  color: #f3f4f6;
+  border-color: #4fe6ff;
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+.app-shell-notice-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  color: #4fe6ff;
+}

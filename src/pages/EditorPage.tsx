@@ -393,7 +393,7 @@ export default function EditorPage() {
       const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
     }
-  }, [availableContextMenus, debouncedForm]);
+  }, [availableContextMenus, debouncedForm, fixedMemory]);
 
   useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false), containerRef: previewModalRef });
 
@@ -568,7 +568,7 @@ export default function EditorPage() {
     let migrationWarnings: string[];
 
     try {
-      ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus));
+      ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus, fixedMemory));
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Template inválido';
       showToast(errorMessage, 'error');
@@ -754,7 +754,7 @@ export default function EditorPage() {
         <aside
           id="editor-playground-panel"
           className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}
-          aria-hidden={!isSidebarOpen}
+          aria-hidden={!isSidebarOpen ? 'true' : 'false'}
         >
           <div className="editor-floating-sidebar__header">
             <h3 className="form-section__title editor-floating-sidebar__title">
@@ -792,7 +792,7 @@ export default function EditorPage() {
           className={`editor-floating-toggle ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label="Alternar Playground"
-          aria-expanded={isSidebarOpen}
+          aria-expanded={isSidebarOpen ? 'true' : 'false'}
           aria-controls="editor-playground-panel"
         >
           {isSidebarOpen ? <PanelRightClose size={24} /> : <PanelRightOpen size={24} />}

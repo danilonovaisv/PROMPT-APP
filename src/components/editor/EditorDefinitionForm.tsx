@@ -148,9 +148,9 @@ export function EditorDefinitionForm({
         {/* Menu Selection Multi-Select */}
         {availableContextMenus.length > 0 && (
           <div className="form-group">
-            <label className="form-label" id={`${formId}-menus-label`}>
+            <div className="form-label" id={`${formId}-menus-label`}>
               Menus do Template
-            </label>
+            </div>
             <p className="form-label__hint" id={`${formId}-menus-hint`}>
               Selecione os menus que estarão disponíveis neste template
             </p>
@@ -168,11 +168,11 @@ export function EditorDefinitionForm({
           </div>
         )}
 
-        <div className="form-group">
-          <label className="form-label">
+        <fieldset className="form-group fieldset-group">
+          <legend className="form-label">
             Exemplos de Resposta (Few-shot)
             <span className="form-label__hint"> — preencha os campos antes de salvar</span>
-          </label>
+          </legend>
           <div className="dynamic-list">
             {template.prompt_definition.few_shot_examples.map((example, index) => {
               const inputEmpty = example.input.trim() === '';
@@ -194,7 +194,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Como faço para..."
-                      aria-invalid={inputEmpty}
+                      aria-invalid={inputEmpty ? 'true' : 'false'}
                       aria-required="true"
                       aria-describedby={inputEmpty ? `${formId}-few-shot-input-error-${index}` : undefined}
                     />
@@ -218,7 +218,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
-                      aria-invalid={outputEmpty}
+                      aria-invalid={outputEmpty ? 'true' : 'false'}
                       aria-required="true"
                       aria-describedby={outputEmpty ? `${formId}-few-shot-output-error-${index}` : undefined}
                     />
@@ -255,7 +255,7 @@ export function EditorDefinitionForm({
               <Plus size={14} aria-hidden="true" /> Novo exemplo
             </button>
           </div>
-        </div>
+        </fieldset>
       </fieldset>
 
       <fieldset className="form-section">
