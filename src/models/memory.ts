@@ -1,6 +1,7 @@
 export interface MemoryEntry {
   id?: string;
   user_id?: string;
+  template_id?: string;
   key: string;
   value: string;
   updated_at?: string;

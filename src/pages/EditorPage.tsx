@@ -262,10 +262,12 @@ export default function EditorPage() {
   }, []);
 
   useEffect(() => {
+    if (!form.template.meta.template_id) return;
+
     (async () => {
       try {
         setIsMemoryLoading(true);
-        const memory = await fetchMemory();
+        const memory = await fetchMemory(form.template.meta.template_id);
         setFixedMemory(memory);
       } catch (error) {
         console.error('Erro ao carregar memória fixa:', error);
@@ -273,19 +275,19 @@ export default function EditorPage() {
         setIsMemoryLoading(false);
       }
     })();
-  }, []);
+  }, [form.template.meta.template_id]);
 
   // Autosave da Memória Fixa (Debounced)
   useEffect(() => {
-    // Evita salvar no load inicial ou se nada mudou de fato (comparação profunda simples)
-    if (!loaded || Object.keys(debouncedFixedMemory).length === 0) return;
+    // Evita salvar no load inicial ou se nada mudou de fato
+    if (!loaded || !form.template.meta.template_id || Object.keys(debouncedFixedMemory).length === 0) return;
 
     const saveChanges = async () => {
       setIsSavingMemory(true);
       try {
         const keys = Object.keys(debouncedFixedMemory);
         for (const key of keys) {
-          await saveMemory(key, debouncedFixedMemory[key]);
+          await saveMemory(form.template.meta.template_id, key, debouncedFixedMemory[key]);
         }
       } catch (error) {
         if (!isUnauthenticatedCloudError(error)) {
@@ -298,7 +300,7 @@ export default function EditorPage() {
     };
 
     saveChanges();
-  }, [debouncedFixedMemory, loaded, showToast]);
+  }, [debouncedFixedMemory, loaded, form.template.meta.template_id, showToast]);
 
   useEffect(() => {
     if (!loaded && isNew && categories.length > 0) {
@@ -515,7 +517,7 @@ export default function EditorPage() {
 
   const handleDeleteMemory = async (key: string) => {
     try {
-      await deleteMemory(key);
+      await deleteMemory(form.template.meta.template_id, key);
       setFixedMemory((prev) => {
         const next = { ...prev };
         delete next[key];

@@ -43,7 +43,7 @@ importers:
         version: 4.4.0(dexie@4.4.2)(react@19.2.5)
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@electric-sql/pglite@0.3.16)(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.8.0)(@types/pg@8.6.1)(better-sqlite3@11.10.0)(pg@8.20.0)(sql.js@1.14.1)
+        version: 0.45.2(@electric-sql/pglite@0.3.16)(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.6.1)(better-sqlite3@11.10.0)(pg@8.20.0)(sql.js@1.14.1)
       fix:
         specifier: ^0.0.6
         version: 0.0.6
@@ -13873,11 +13873,11 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.21.0
 
-  drizzle-orm@0.45.2(@electric-sql/pglite@0.3.16)(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.8.0)(@types/pg@8.6.1)(better-sqlite3@11.10.0)(pg@8.20.0)(sql.js@1.14.1):
+  drizzle-orm@0.45.2(@electric-sql/pglite@0.3.16)(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.6.1)(better-sqlite3@11.10.0)(pg@8.20.0)(sql.js@1.14.1):
     optionalDependencies:
       '@electric-sql/pglite': 0.3.16
       '@neondatabase/serverless': 1.1.0
-      '@opentelemetry/api': 1.8.0
+      '@opentelemetry/api': 1.9.1
       '@types/pg': 8.6.1
       better-sqlite3: 11.10.0
       pg: 8.20.0
