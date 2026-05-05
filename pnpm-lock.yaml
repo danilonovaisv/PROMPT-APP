@@ -34,7 +34,7 @@ importers:
         version: 2.105.1
       agentic-flow:
         specifier: ^2.0.7
-        version: 2.0.7(@modelcontextprotocol/sdk@1.29.0(zod@4.4.1))(@types/node@25.6.0)(marked@11.2.0)
+        version: 2.0.7(@modelcontextprotocol/sdk@1.29.0(zod@4.4.2))(@types/node@25.6.0)(marked@11.2.0)
       dexie:
         specifier: ^4.4.2
         version: 4.4.2
@@ -66,8 +66,8 @@ importers:
         specifier: ^7.14.2
         version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       zod:
-        specifier: ^4.4.1
-        version: 4.4.1
+        specifier: ^4.4.2
+        version: 4.4.2
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.3
@@ -103,7 +103,7 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
       '@typescript-eslint/parser':
-        specifier: ^8.5.0
+        specifier: ^8.59.1
         version: 8.59.1(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3)
       '@vitejs/plugin-react':
         specifier: ^6.0.1
@@ -6772,7 +6772,6 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
-    deprecated: Use your platform's native DOMException instead
 
   node-emoji@2.2.0:
     resolution: {integrity: sha512-Z3lTE9pLaJF47NyMhd4ww1yFTAP8YhYI8SleJiHzM46Fgpm5cnNzSl9XfzFNqbaz+VlJrIj3fXQ4DeN1Rjm6cw==}
@@ -8492,7 +8491,6 @@ packages:
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -8838,8 +8836,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.4.1:
-    resolution: {integrity: sha512-a6ENMBBGZBsnlSebQ/eKCguSBeGKSf4O7BPnqVPmYGtpBYI7VSqoVqw+QcB7kPRjbqPwhYTpFbVj/RqNz/CT0Q==}
+  zod@4.4.2:
+    resolution: {integrity: sha512-IynmDyxsEsb9RKzO3J9+4SxXnl2FTFSzNBaKKaMV6tsSk0rw9gYw9gs+JFCq/qk2LCZ78KDwyj+Z289TijSkUw==}
 
 snapshots:
 
@@ -9608,14 +9606,14 @@ snapshots:
       fastq: 1.20.1
       glob: 13.0.6
 
-  '@google/genai@1.51.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.1))':
+  '@google/genai@1.51.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.2))':
     dependencies:
       google-auth-library: 10.6.2
       p-retry: 4.6.2
       protobufjs: 7.5.6
       ws: 8.20.0
     optionalDependencies:
-      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.1)
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.2)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -10102,7 +10100,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.29.0(zod@4.4.1)':
+  '@modelcontextprotocol/sdk@1.29.0(zod@4.4.2)':
     dependencies:
       '@hono/node-server': 1.19.14(hono@4.12.16)
       ajv: 8.20.0
@@ -10119,8 +10117,8 @@ snapshots:
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
       raw-body: 3.0.2
-      zod: 4.4.1
-      zod-to-json-schema: 3.25.2(zod@4.4.1)
+      zod: 4.4.2
+      zod-to-json-schema: 3.25.2(zod@4.4.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -10287,7 +10285,7 @@ snapshots:
       validate-npm-package-name: 5.0.1
       yaml: 2.8.3
       yargs: 17.7.2
-      zod: 4.4.1
+      zod: 4.4.2
 
   '@netlify/database-dev@0.10.1':
     dependencies:
@@ -12924,11 +12922,11 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  agentic-flow@2.0.7(@modelcontextprotocol/sdk@1.29.0(zod@4.4.1))(@types/node@25.6.0)(marked@11.2.0):
+  agentic-flow@2.0.7(@modelcontextprotocol/sdk@1.29.0(zod@4.4.2))(@types/node@25.6.0)(marked@11.2.0):
     dependencies:
       '@anthropic-ai/claude-agent-sdk': 0.1.77(zod@3.25.76)
       '@anthropic-ai/sdk': 0.65.0(zod@3.25.76)
-      '@google/genai': 1.51.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.1))
+      '@google/genai': 1.51.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.2))
       '@ruvector/core': 0.1.31
       '@ruvector/edge-full': 0.1.0
       '@ruvector/router': 0.1.30
@@ -14203,8 +14201,8 @@ snapshots:
       '@babel/parser': 7.29.3
       eslint: 10.3.0(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.4.1
-      zod-validation-error: 4.0.2(zod@4.4.1)
+      zod: 4.4.2
+      zod-validation-error: 4.0.2(zod@4.4.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -14475,7 +14473,7 @@ snapshots:
 
   fastmcp@3.35.0:
     dependencies:
-      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.1)
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.2)
       '@standard-schema/spec': 1.1.0
       execa: 9.6.1
       file-type: 21.3.4
@@ -14485,10 +14483,10 @@ snapshots:
       strict-event-emitter-types: 2.0.0
       undici: 7.25.0
       uri-templates: 0.2.0
-      xsschema: 0.4.4(zod-to-json-schema@3.25.2(zod@4.4.1))(zod@4.4.1)
+      xsschema: 0.4.4(zod-to-json-schema@3.25.2(zod@4.4.2))(zod@4.4.2)
       yargs: 18.0.0
-      zod: 4.4.1
-      zod-to-json-schema: 3.25.2(zod@4.4.1)
+      zod: 4.4.2
+      zod-to-json-schema: 3.25.2(zod@4.4.2)
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - '@valibot/to-json-schema'
@@ -18636,10 +18634,10 @@ snapshots:
       commander: 2.20.3
       cssfilter: 0.0.10
 
-  xsschema@0.4.4(zod-to-json-schema@3.25.2(zod@4.4.1))(zod@4.4.1):
+  xsschema@0.4.4(zod-to-json-schema@3.25.2(zod@4.4.2))(zod@4.4.2):
     optionalDependencies:
-      zod: 4.4.1
-      zod-to-json-schema: 3.25.2(zod@4.4.1)
+      zod: 4.4.2
+      zod-to-json-schema: 3.25.2(zod@4.4.2)
 
   xtend@4.0.2: {}
 
@@ -18699,14 +18697,14 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-to-json-schema@3.25.2(zod@4.4.1):
+  zod-to-json-schema@3.25.2(zod@4.4.2):
     dependencies:
-      zod: 4.4.1
+      zod: 4.4.2
 
-  zod-validation-error@4.0.2(zod@4.4.1):
+  zod-validation-error@4.0.2(zod@4.4.2):
     dependencies:
-      zod: 4.4.1
+      zod: 4.4.2
 
   zod@3.25.76: {}
 
-  zod@4.4.1: {}
+  zod@4.4.2: {}

@@ -1,0 +1,242 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "camadas_animacao",
+      "menu_name": "ANIMA-WEBDEV - Camadas de Animação",
+      "description": "Define quais camadas cinéticas devem orientar a leitura da referência e o scaffold técnico.",
+      "options": [
+        {
+          "label": "Entrada e reveal",
+          "value": "entrada_reveal",
+          "sub_options": [
+            {
+              "label": "Stagger por seção",
+              "value": "stagger_secao"
+            },
+            {
+              "label": "Reveal por máscara",
+              "value": "reveal_mascara"
+            }
+          ]
+        },
+        {
+          "label": "Scroll e parallax",
+          "value": "scroll_parallax",
+          "sub_options": [
+            {
+              "label": "Scroll progressivo",
+              "value": "scroll_progressivo"
+            },
+            {
+              "label": "Parallax em camadas",
+              "value": "parallax_camadas"
+            }
+          ]
+        },
+        {
+          "label": "3D e WebGL",
+          "value": "webgl_3d",
+          "sub_options": [
+            {
+              "label": "Cena R3F simples",
+              "value": "r3f_simples"
+            },
+            {
+              "label": "Cena R3F avançada",
+              "value": "r3f_avancada"
+            }
+          ]
+        },
+        {
+          "label": "Hover e microinterações",
+          "value": "hover_microinteracoes",
+          "sub_options": [
+            {
+              "label": "Microinterações DOM",
+              "value": "microinteracoes_dom"
+            },
+            {
+              "label": "Interação com cursor",
+              "value": "interacao_cursor"
+            }
+          ]
+        },
+        {
+          "label": "Sequências narrativas",
+          "value": "sequencias_narrativas",
+          "sub_options": [
+            {
+              "label": "Timeline por seções",
+              "value": "timeline_secoes"
+            },
+            {
+              "label": "Transições de cena",
+              "value": "transicoes_cena"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_referencia",
+      "menu_name": "ANIMA-WEBDEV - Tipo de Referência",
+      "description": "Define a origem analisada pelo agente antes de propor arquitetura e animações.",
+      "options": [
+        {
+          "label": "URL pública",
+          "value": "url_publica",
+          "sub_options": [
+            {
+              "label": "Analisar visual e comportamento",
+              "value": "visual_comportamento"
+            },
+            {
+              "label": "Analisar código quando disponível",
+              "value": "codigo_disponivel"
+            }
+          ]
+        },
+        {
+          "label": "Descrição textual",
+          "value": "descricao_textual",
+          "sub_options": [
+            {
+              "label": "Inferência controlada",
+              "value": "inferencia_controlada"
+            }
+          ]
+        },
+        {
+          "label": "Vídeo ou captura",
+          "value": "video_captura",
+          "sub_options": [
+            {
+              "label": "Mapeamento por frames",
+              "value": "mapeamento_frames"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "ANIMA-WEBDEV - Backend Preferido",
+      "description": "Define a abordagem de backend a ser considerada no scaffold.",
+      "options": [
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Database",
+              "value": "database"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "sub_options": [
+            {
+              "label": "Auth",
+              "value": "auth"
+            },
+            {
+              "label": "Firestore",
+              "value": "firestore"
+            },
+            {
+              "label": "Storage",
+              "value": "storage"
+            }
+          ]
+        },
+        {
+          "label": "Sem backend",
+          "value": "sem_backend",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "ANIMA-WEBDEV - Nível de Detalhamento",
+      "description": "Define a profundidade do output técnico produzido.",
+      "options": [
+        {
+          "label": "Conciso",
+          "value": "conciso",
+          "sub_options": []
+        },
+        {
+          "label": "Completo",
+          "value": "completo",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estilo_interface",
+      "menu_name": "ANIMA-WEBDEV - Estilo de Interface",
+      "description": "Define a direção visual esperada para design system e componentes.",
+      "options": [
+        {
+          "label": "Minimalista premium",
+          "value": "minimalista_premium",
+          "sub_options": [
+            {
+              "label": "Editorial",
+              "value": "editorial"
+            },
+            {
+              "label": "SaaS moderno",
+              "value": "saas_moderno"
+            }
+          ]
+        },
+        {
+          "label": "Futurista interativo",
+          "value": "futurista_interativo",
+          "sub_options": [
+            {
+              "label": "WebGL hero",
+              "value": "webgl_hero"
+            },
+            {
+              "label": "Glass e neon",
+              "value": "glass_neon"
+            }
+          ]
+        },
+        {
+          "label": "Corporativo técnico",
+          "value": "corporativo_tecnico",
+          "sub_options": [
+            {
+              "label": "Dashboard",
+              "value": "dashboard"
+            },
+            {
+              "label": "Produto B2B",
+              "value": "produto_b2b"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
