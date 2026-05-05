@@ -1,3 +1,4 @@
+
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import { jest } from "@jest/globals";
@@ -54,35 +55,3 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock as unknown as Storage;
-
-// Mock environment variables to prevent failing configuration tests for isolated suites
-process.env.VITE_SUPABASE_URL = "http://localhost:54321";
-process.env.VITE_SUPABASE_ANON_KEY = "dummy_anon";
-process.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY = "dummy_anon";
-
-// Create a global mock for supabase to fix the `isSupabaseConfigured` dependency issues
-jest.mock('@/lib/supabase', () => {
-    return {
-        isSupabaseConfigured: true,
-        assertSupabaseConfigured: jest.fn(),
-        supabase: {
-            auth: {
-                getSession: jest.fn().mockResolvedValue({ data: { session: null }, error: null }),
-                onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
-            },
-            channel: jest.fn(() => ({
-                on: jest.fn().mockReturnThis(),
-                subscribe: jest.fn(),
-                unsubscribe: jest.fn(),
-            })),
-            getChannels: jest.fn().mockReturnValue([]),
-            removeChannel: jest.fn(),
-            from: jest.fn(() => ({
-                upsert: jest.fn().mockResolvedValue({ error: null }),
-                select: jest.fn().mockReturnThis(),
-                eq: jest.fn().mockReturnThis(),
-                in: jest.fn().mockReturnThis(),
-            })),
-        },
-    };
-});
