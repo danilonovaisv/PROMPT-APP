@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "workflow_scope",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Workflow Scope",
+      "description": "Defines the primary conversion target for the generic Antigravity workflow.",
+      "options": [
+        {
+          "label": "Full Workflow Conversion",
+          "value": "full_workflow_conversion",
+          "sub_options": []
+        },
+        {
+          "label": "Page or Section Implementation",
+          "value": "page_or_section_implementation",
+          "sub_options": []
+        },
+        {
+          "label": "3D Experience Integration",
+          "value": "three_d_experience_integration",
+          "sub_options": []
+        },
+        {
+          "label": "QA and Deployment Hardening",
+          "value": "qa_and_deployment_hardening",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "execution_depth",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Execution Depth",
+      "description": "Controls how detailed and strict the generated Antigravity workflow should be.",
+      "options": [
+        {
+          "label": "Standard Production Workflow",
+          "value": "standard_production_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Strict Production Workflow",
+          "value": "strict_production_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Audit-Grade Workflow",
+          "value": "audit_grade_workflow",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "artifact_policy",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Artifact Policy",
+      "description": "Defines the minimum Antigravity evidence expected after execution.",
+      "options": [
+        {
+          "label": "Screenshots and Terminal Logs",
+          "value": "screenshots_and_terminal_logs",
+          "sub_options": []
+        },
+        {
+          "label": "Full Verification Artifact",
+          "value": "full_verification_artifact",
+          "sub_options": []
+        },
+        {
+          "label": "Deployment Evidence Pack",
+          "value": "deployment_evidence_pack",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "visual_reference_mode",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Visual Reference Mode",
+      "description": "Controls how the workflow must use the visual references under .context/DOCS-PORTFOLIO-PAGES.",
+      "options": [
+        {
+          "label": "Strict Reference Parity",
+          "value": "strict_reference_parity",
+          "sub_options": []
+        },
+        {
+          "label": "Adaptive Reference Alignment",
+          "value": "adaptive_reference_alignment",
+          "sub_options": []
+        },
+        {
+          "label": "Performance-First Visual Alignment",
+          "value": "performance_first_visual_alignment",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "repository_mode",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Repository Mode",
+      "description": "Defines how the workflow should interact with the Portfolio Danilo repository.",
+      "options": [
+        {
+          "label": "Existing Repository Update",
+          "value": "existing_repository_update",
+          "sub_options": []
+        },
+        {
+          "label": "Implementation Branch",
+          "value": "implementation_branch",
+          "sub_options": []
+        },
+        {
+          "label": "Patch Existing Components",
+          "value": "patch_existing_components",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "output_specificity",
+      "menu_name": "GOOGLE & ANTIGRAVITY - Output Specificity",
+      "description": "Controls the density of the final workflow instructions.",
+      "options": [
+        {
+          "label": "Concise Workflow",
+          "value": "concise_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Detailed Workflow",
+          "value": "detailed_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Highly Granular Workflow",
+          "value": "highly_granular_workflow",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
