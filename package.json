@@ -47,7 +47,7 @@
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.14.2",
-    "zod": "^4.4.1"
+    "zod": "^4.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -60,7 +60,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/parser": "^8.5.0",
+    "@typescript-eslint/parser": "^8.59.1",
     "@vitejs/plugin-react": "^6.0.1",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.3.0",

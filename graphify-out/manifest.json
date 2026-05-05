@@ -1,0 +1,314 @@
+{
+  "/Users/PROJETOS DEV/PROMPT-APP/src/App.tsx": {
+    "mtime": 1775934365.1415293,
+    "hash": "f9041b3030e2ede269cba823b32d3dce"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/main.tsx": {
+    "mtime": 1773901167.971353,
+    "hash": "4e0959c82acc68c07476e3455c47a3a9"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/instrument.ts": {
+    "mtime": 1773907577.460294,
+    "hash": "02858fd12a6f3df263b5335c17db1f2d"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/vite-env.d.ts": {
+    "mtime": 1773903643.999739,
+    "hash": "bd270d6e33a3cd3ff8783da72edf416c"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/context/ConfirmContext.tsx": {
+    "mtime": 1774585321.1203132,
+    "hash": "4601ad049897ed4b6e32e59414830b1f"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/context/ToastContext.tsx": {
+    "mtime": 1774584813.5180173,
+    "hash": "1143647f328209a2dd128f52d7be8478"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/context/ConfirmProvider.tsx": {
+    "mtime": 1774585324.81652,
+    "hash": "1be842a478baa2e848002799ce6c7368"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/constants.d.ts": {
+    "mtime": 1772532327.7331364,
+    "hash": "a535393ee1f6f83a4cbe376fce05b215"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/contextMenuOptions.ts": {
+    "mtime": 1773901167.9735372,
+    "hash": "4f242579e50ccbb0ef5351606e187efc"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/importMenusJson.ts": {
+    "mtime": 1774480742.967803,
+    "hash": "417d0218405d8f1a96b4edb105df6687"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/backupManager.ts": {
+    "mtime": 1777668346.559153,
+    "hash": "33543411cccebecb4c59c4d199cb0eee"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/promptArtifacts.ts": {
+    "mtime": 1775931936.0600123,
+    "hash": "a11ee2e05eec306442ed2fd96dafee3b"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/exportJson.d.ts": {
+    "mtime": 1772532453.3081574,
+    "hash": "7c7353f968eb8a5a7408fc064dca288b"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/logger.ts": {
+    "mtime": 1773901171.973644,
+    "hash": "f923dbf42d8920fed7584c55bcc75314"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/importJson.d.ts": {
+    "mtime": 1772532327.7512505,
+    "hash": "0644fde1d17d949f701364b64fd80963"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/constants.ts": {
+    "mtime": 1770759295.7945695,
+    "hash": "6f670b3e08048ebdde3173657949112e"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/backupManager.d.ts": {
+    "mtime": 1772532327.727867,
+    "hash": "c87879c0c760aa935ce618c6dc6e7de0"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/schemaCompatibility.ts": {
+    "mtime": 1773192674.9557695,
+    "hash": "290e325c27c5222a9158201d05c66329"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/templateMigration.ts": {
+    "mtime": 1775931949.9258752,
+    "hash": "88574aede42ddfc5f9bfc2011486e130"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/exportJson.ts": {
+    "mtime": 1775353823.8077507,
+    "hash": "3b8cd54325f6f2c6f22ea1b4861729e2"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/normalizeFewShot.d.ts": {
+    "mtime": 1772532327.5179687,
+    "hash": "06112f7cae4248c598b346acb30de763"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/importMenusJson.d.ts": {
+    "mtime": 1772532327.7657886,
+    "hash": "572f1bbeefdb3dd1942459eeaa6b390c"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/normalizeFewShot.ts": {
+    "mtime": 1774567326.283133,
+    "hash": "cb2d5111bf0b617ca262bcb5e5cab739"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/utils/__tests__/promptArtifacts.test.ts": {
+    "mtime": 1777691351.0349562,
+    "hash": "dff342a68b28a87c0e21d6c94ce6aac2"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/types.d.ts": {
+    "mtime": 1772576446.5532181,
+    "hash": "d752045201d732b6452ef6e7a64a7269"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/promptSchema.ts": {
+    "mtime": 1775931900.2299395,
+    "hash": "e339037dc20c6dfcb2ab1f1c34ff7e5f"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/types.ts": {
+    "mtime": 1775200311.8477087,
+    "hash": "3317c9f8e8c233d5e76c2bb384e1a241"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/outputSchema.ts": {
+    "mtime": 1775200311.847485,
+    "hash": "582d5caca0174a68fecd3dd3e619c3c7"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/memory.ts": {
+    "mtime": 1777693718.470892,
+    "hash": "8dbf9c049d52474bd5a3a0761d0c9d82"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/models/__tests__/promptSchema.test.ts": {
+    "mtime": 1775783519.8065512,
+    "hash": "37521b2f5b0aae32cf156e39ac0647d4"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/SkeletonLoader.tsx": {
+    "mtime": 1774585195.0579984,
+    "hash": "af295a7d732e1ba1ca623d73071eadf7"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/ImportExportModal.tsx": {
+    "mtime": 1777679698.295663,
+    "hash": "ffbf85de4c7e345346f543892227e5a9"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/AuthModal.tsx": {
+    "mtime": 1775200311.8467064,
+    "hash": "7312152220da15da1f1ca970a9624bf5"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/SEO.tsx": {
+    "mtime": 1771793534.7924118,
+    "hash": "36aaec63861cb8aa32ebb8f3aedffd8c"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/CategoryCard.tsx": {
+    "mtime": 1772531905.6218207,
+    "hash": "f1b01de361ab2fb93612baa1fc073526"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/CloudSyncItem.tsx": {
+    "mtime": 1777679052.0748675,
+    "hash": "025b7e048dd6d5f8f4d5d21aa3b68a01"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/ImportMenusModal.tsx": {
+    "mtime": 1777692893.6476982,
+    "hash": "6199b5f2681be07fbc16d404ebd048bc"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/Breadcrumb.tsx": {
+    "mtime": 1774584833.2137146,
+    "hash": "9b2d94a1b040334f573803f82115fc79"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx": {
+    "mtime": 1777692907.1575065,
+    "hash": "f6933aba6b31508ba09f92ffc81a3c19"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/PromptCard.tsx": {
+    "mtime": 1773122112.3840137,
+    "hash": "5f1dd6e994795fbb1fb72fcf9fab75d4"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/ErrorBoundary.tsx": {
+    "mtime": 1775934287.8741124,
+    "hash": "02b0257d20f7d3c6049759198144f7ff"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/ui/MultiSelect.tsx": {
+    "mtime": 1777692903.2745173,
+    "hash": "1fb746e87cc03ed29986478a50303454"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/menu-manager/MenuCard.tsx": {
+    "mtime": 1777679634.2859128,
+    "hash": "0496625dcce09bd67105f8d41cb10daf"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/menu-manager/MenuOptionEditor.tsx": {
+    "mtime": 1777692899.645727,
+    "hash": "34feed3495b1668282f492c94030ac41"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/menu-manager/MenuForm.tsx": {
+    "mtime": 1777679644.6724086,
+    "hash": "9aeabf4796501614507740d2812b3d39"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/editor/EditorPreviewModal.tsx": {
+    "mtime": 1773387612.599003,
+    "hash": "8b989b703720137302674798a0937f66"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/editor/EditorPlayground.tsx": {
+    "mtime": 1777669764.91564,
+    "hash": "d1122ca540b2232145c8a90b2c7531c0"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/editor/EditorContextMenuSelector.tsx": {
+    "mtime": 1773901167.9695172,
+    "hash": "1c50646cbd2ddc16550813ef365898b7"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/editor/EditorMetaForm.tsx": {
+    "mtime": 1775934287.8738687,
+    "hash": "e0742081a7fc7eb82abc7372635ff175"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/components/editor/EditorDefinitionForm.tsx": {
+    "mtime": 1777692888.5898921,
+    "hash": "8e5ec8dc0965aabdfefda2b26e0e6e3c"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/hooks/useConfirm.ts": {
+    "mtime": 1774585326.8318703,
+    "hash": "06bd6c442a3fc7bcb37f80eb1b615fe9"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/hooks/useAccessibleModal.ts": {
+    "mtime": 1773192312.6908693,
+    "hash": "771d784890b3e47cff822905e04eb77e"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/hooks/useDebounce.ts": {
+    "mtime": 1772531876.4525762,
+    "hash": "143c11619e2b25c5c1fbe2c179830c04"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/hooks/useSearchFilter.ts": {
+    "mtime": 1774584835.2273753,
+    "hash": "178e4a60020394de8d130834d4e4f8c3"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/lib/supabaseConfig.ts": {
+    "mtime": 1773903638.3922942,
+    "hash": "6bc0fe7d80da07acb73630a29a1ea400"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/lib/supabase.ts": {
+    "mtime": 1773902276.645568,
+    "hash": "a971d648f79f7a6a97bb1b71793ba7d7"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/db/database.d.ts": {
+    "mtime": 1772532327.586681,
+    "hash": "2db8fe748ba1203539bbae7e7752eae1"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/db/seedHelpers.ts": {
+    "mtime": 1773190282.968363,
+    "hash": "6de0422e7d8427f5813096715ecfb072"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/db/database.ts": {
+    "mtime": 1777667523.3587945,
+    "hash": "ea260e8f45f02fbd44607ca7c4cc45bc"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/EditorPage.tsx": {
+    "mtime": 1777693800.832463,
+    "hash": "7129dc69c1392a5543f60453e81ed30d"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/AboutPage.tsx": {
+    "mtime": 1772538237.0053592,
+    "hash": "bd6f241d3037baa2ebd28f8587651e9a"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/CategoryManagerPage.tsx": {
+    "mtime": 1777667970.8752782,
+    "hash": "44a3c2b2612a684adc8206ef0d92c277"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/MenuManagerPage.tsx": {
+    "mtime": 1777679628.3478365,
+    "hash": "89822ab48b1c8e9edf47fb4ee29dd5a0"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/ContactPage.tsx": {
+    "mtime": 1775200311.8485065,
+    "hash": "81221a4fab94dcd48a61616bc10d9407"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/CategoryPage.tsx": {
+    "mtime": 1776700351.539315,
+    "hash": "6a52be00711e430910fb88b456ac7ebf"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/PrivacyPage.tsx": {
+    "mtime": 1775200311.848948,
+    "hash": "80df6a0cbd959fd35e6cc8be65caed47"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/pages/HomePage.tsx": {
+    "mtime": 1777667970.8763375,
+    "hash": "538e08a2cc57fb5f17020ea617418302"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/memoryService.ts": {
+    "mtime": 1777693787.948517,
+    "hash": "3272479d985ebf03d36ce91a26ff1046"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/importService.ts": {
+    "mtime": 1775717176.9441621,
+    "hash": "5d8135dd8c5a8de49a9359bb75f8c825"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/assetManager.ts": {
+    "mtime": 1775200362.218797,
+    "hash": "07e577c9a3ab979f2a0efb33c962b391"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/contextMenuSync.ts": {
+    "mtime": 1775586743.2865543,
+    "hash": "91c3c0e7039de4c19969bd79aa417026"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/supabaseCategories.ts": {
+    "mtime": 1775586743.2877655,
+    "hash": "445d013f036b9137bb066ab7c52934bf"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/supabasePrompts.ts": {
+    "mtime": 1775586743.2885084,
+    "hash": "9ce7eae104c07e9aa02fe66e92276845"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/syncService.ts": {
+    "mtime": 1777667523.3619657,
+    "hash": "ddbc7c34b3f2528bc3c2bc842b366e50"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/realtimeService.ts": {
+    "mtime": 1775934348.1418557,
+    "hash": "8fea827c9e2514f810954c7e585649c8"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/supabaseMenus.ts": {
+    "mtime": 1775586743.2882662,
+    "hash": "484aebf382b0410b6f6eb7a892c821a6"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/autoSync.ts": {
+    "mtime": 1773901171.972645,
+    "hash": "ffe86c4e4b9671fa8b41e08fe0096cb2"
+  },
+  "/Users/PROJETOS DEV/PROMPT-APP/src/services/auditResourceContent.ts": {
+    "mtime": 1773171155.3752267,
+    "hash": "cf214115492ea1dc84bc1e0d15939627"
+  }
+}

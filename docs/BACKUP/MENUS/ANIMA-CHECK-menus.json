@@ -1,0 +1,152 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_auditoria",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Tipo de Auditoria",
+      "description": "Define o foco principal da auditoria técnica no agente IDE.",
+      "options": [
+        {
+          "label": "Auditoria completa",
+          "value": "auditoria_completa",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria arquitetural",
+          "value": "auditoria_arquitetural",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria de animações",
+          "value": "auditoria_animacoes",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria rápida de QA",
+          "value": "auditoria_rapida_qa",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_alvo",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Stack Alvo",
+      "description": "Define a stack esperada para comparar contra o código real.",
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "nextjs_app_router",
+          "sub_options": []
+        },
+        {
+          "label": "React + TypeScript",
+          "value": "react_typescript",
+          "sub_options": []
+        },
+        {
+          "label": "Tailwind CSS",
+          "value": "tailwind_css",
+          "sub_options": []
+        },
+        {
+          "label": "Motion para React",
+          "value": "motion_react",
+          "sub_options": []
+        },
+        {
+          "label": "React Three Fiber",
+          "value": "react_three_fiber",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "rigor_evidencia",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Rigor de Evidência",
+      "description": "Controla o nível de prova exigido antes de aprovar ou reprovar critérios.",
+      "options": [
+        {
+          "label": "Rigor máximo",
+          "value": "rigor_maximo",
+          "sub_options": []
+        },
+        {
+          "label": "Rigor equilibrado",
+          "value": "rigor_equilibrado",
+          "sub_options": []
+        },
+        {
+          "label": "Rigor exploratório",
+          "value": "rigor_exploratorio",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_arquivos",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Escopo de Arquivos",
+      "description": "Define a amplitude da inspeção de arquivos e pastas.",
+      "options": [
+        {
+          "label": "Projeto inteiro",
+          "value": "projeto_inteiro",
+          "sub_options": []
+        },
+        {
+          "label": "Pastas informadas",
+          "value": "pastas_informadas",
+          "sub_options": []
+        },
+        {
+          "label": "Arquivos críticos",
+          "value": "arquivos_criticos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_relatorio",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Profundidade do Relatório",
+      "description": "Controla o nível de detalhamento do relatório final.",
+      "options": [
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "sub_options": []
+        },
+        {
+          "label": "Técnico completo",
+          "value": "tecnico_completo",
+          "sub_options": []
+        },
+        {
+          "label": "Pronto para execução por agente",
+          "value": "pronto_para_execucao_agente",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_correcao",
+      "menu_name": "ANIMA-CHECK-WEBDEV - Modo de Correção",
+      "description": "Define se a saída deve apenas auditar ou preparar execução posterior.",
+      "options": [
+        {
+          "label": "Somente auditoria",
+          "value": "somente_auditoria",
+          "sub_options": []
+        },
+        {
+          "label": "Plano executável por fases",
+          "value": "plano_executavel_fases",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria com snippets mínimos",
+          "value": "auditoria_snippets_minimos",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

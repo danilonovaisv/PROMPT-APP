@@ -1,5 +1,5 @@
 # CLAUDE.md — Danilo Novais · PROMPT-APP Project Config
-# Auto-compiled: 2025-04-12
+# Auto-compiled: 2026-05-02
 # Scope: Global · Context7 + Cowork PROMPT-APP Integration
 
 ---
@@ -54,8 +54,10 @@ STEP 3 → Inject into response
 The PROMPT-APP is Danilo's prompt engineering web application. All prompt generation work follows its schema strictly.
 
 **GitHub:** `danilonovaisv/PROMPT-APP`  
-**Deploy:** Netlify  
-**Stack:** Supabase · Netlify Functions · JSON template schema
+**Deploy:** Netlify (publish dir: `dist`, SPA redirect ✓)  
+**Stack:** Vite ^8 · React 19 · TypeScript ~6 · Dexie ^4 (IndexedDB local-first) · Supabase JS ^2 · react-router-dom ^7 · zod ^4  
+**Package manager:** pnpm  
+**Build:** `pnpm run build` → `tsc -p tsconfig.app.json && vite build`
 
 ### PROMPT-APP JSON Schema (canonical fields):
 
@@ -107,7 +109,7 @@ When operating in Claude Code terminal context:
 ~workflow   → /Users/danilonovais/workflow
 ~portfolio  → /Users/danilonovais/portfolio
 ~projetos   → /Users/danilonovais/projetos
-~prompt-app → /Users/danilonovais/projetos/PROMPT-APP
+~prompt-app → /Users/PROJETOS DEV/PROMPT-APP
 ```
 
 ---
@@ -158,12 +160,16 @@ Active skills in this environment:
 
 | Skill | Trigger |
 |---|---|
-| `context7-research` | Any lib/framework code request |
-| `prompt-app-executor` | Any prompt/template creation request |
-| `prompt-factory` | Structured prompt generation (PROMPT-APP schema) |
-| `ugc-video-prompt` | UGC video production pipeline |
+| `context7-mcp` | Any lib/framework code request |
 | `nano-banana-prompt` | Nano Banana Pro image generation |
-| `sync-local-config` | Sync ~/.claude/ rules and skills |
+| `video-prompting-guide` | UGC/video production pipeline |
+| `supabase` | Supabase queries, RLS, migrations |
+| `supabase-postgres-best-practices` | DB schema/query optimization |
+| `systematic-debugging` | Error/bug/test failure → Phase 1 first |
+| `verification-before-completion` | Before claiming any task done |
+| `session-end` | Exit signals ("done for today", "heading out") |
+| `security-review` | Before pushing/deploying |
+| `planning-with-files` | Complex task >5 files |
 
 ---
 
@@ -176,4 +182,4 @@ Active skills in this environment:
 
 ---
 
-*Last updated: 2025-04-12 · Compiled from ~/.claude/rules/ via sync-local-config*
+*Last updated: 2026-05-02 · Synced from ~/.claude/rules/ — stack, paths, skills registry corrected*
