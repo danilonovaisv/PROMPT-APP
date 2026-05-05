@@ -11,6 +11,7 @@ jest.mock('@/lib/supabase', () => ({
   supabase: {
     auth: {
       getSession: jest.fn(),
+      refreshSession: jest.fn(),
     },
     from: jest.fn(),
   },
@@ -63,6 +64,11 @@ describe('syncToCloud', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    (supabase.auth.refreshSession as unknown as jest.Mock).mockResolvedValue({
+      data: { session: { user: { id: mockUserId } } },
+      error: null,
+    });
+
     (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: { user: { id: mockUserId } } },
     });
@@ -77,8 +83,9 @@ describe('syncToCloud', () => {
   });
 
   test('throws an error if the user is not authenticated', async () => {
-    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
+    (supabase.auth.refreshSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: null },
+      error: null,
     });
 
     await expect(syncToCloud()).rejects.toThrow('Usuário não autenticado');
@@ -423,13 +430,14 @@ describe('syncToCloud', () => {
 
     (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
       if (table === 'categories' || table === 'context_menus' || table === 'prompts') {
+        // .select().eq().range() chain used by fetchAllPages in downloadFromCloud
+        const range = jest.fn().mockResolvedValue({
+          data: table === 'prompts' ? [remotePrompt] : [],
+          error: null,
+        });
+        const eq = jest.fn().mockReturnValue({ range });
         return {
-          select: jest.fn().mockReturnValue({
-            eq: jest.fn().mockResolvedValue({
-              data: table === 'prompts' ? [remotePrompt] : [],
-              error: null,
-            }),
-          }),
+          select: jest.fn().mockReturnValue({ eq }),
         };
       }
       return {};

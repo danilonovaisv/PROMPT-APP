@@ -55,13 +55,18 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             <button
                 className="mobile-toggle"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                aria-label="Abrir menu"
+                aria-label={sidebarOpen ? "Fechar menu" : "Abrir menu"}
+                aria-expanded={sidebarOpen}
+                aria-controls="app-sidebar"
             >
-                {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                {sidebarOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
             </button>
 
             {/* Sidebar */}
-            <aside className={`app-sidebar ${sidebarOpen ? 'app-sidebar--open' : ''}`}>
+            <aside 
+                id="app-sidebar"
+                className={`app-sidebar ${sidebarOpen ? 'app-sidebar--open' : ''}`}
+            >
                 <div className="app-sidebar__logo">
                     <Sparkles size={24} color="#0048ff" aria-hidden="true" />
                     <div className="app-sidebar__logo-text">Prompt App</div>
@@ -74,7 +79,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         className={navItemClass}
                         onClick={() => setSidebarOpen(false)}
                     >
-                        <Home size={18} />
+                        <Home size={18} aria-hidden="true" />
                         Início
                     </NavLink>
 
@@ -83,7 +88,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         className={navItemClass}
                         onClick={() => setSidebarOpen(false)}
                     >
-                        <FolderPlus size={18} />
+                        <FolderPlus size={18} aria-hidden="true" />
                         Categorias
                     </NavLink>
 
@@ -92,7 +97,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                         className={navItemClass}
                         onClick={() => setSidebarOpen(false)}
                     >
-                        <Layers size={18} />
+                        <Layers size={18} aria-hidden="true" />
                         Menus do Template
                     </NavLink>
 
@@ -116,14 +121,14 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                     <CloudSyncItem />
 
                     <button className="app-sidebar__nav-item" onClick={onOpenImportExport}>
-                        <Upload size={18} />
+                        <Upload size={18} aria-hidden="true" />
                         Importar Templates
                     </button>
                     <button
                         className="app-sidebar__nav-item"
                         onClick={() => downloadAllPrompts()}
                     >
-                        <Download size={18} />
+                        <Download size={18} aria-hidden="true" />
                         Exportar Todos
                     </button>
                 </nav>
@@ -168,12 +173,11 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             </main>
 
             {/* Overlay para mobile */}
-            {sidebarOpen && (
-                <div
-                    className="mobile-overlay"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
+            <div
+                className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay--active' : ''}`}
+                onClick={() => setSidebarOpen(false)}
+                aria-hidden="true"
+            />
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, Copy, Download, Eye, Save, PanelRightClose, PanelRightOpen, X, Settings2 } from 'lucide-react';
@@ -228,6 +228,7 @@ export default function EditorPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const previewModalRef = useRef<HTMLDivElement>(null);
+  const draftAppliedRef = useRef(false);
   const isNew = id === 'novo';
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -236,6 +237,7 @@ export default function EditorPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
     typeof window !== 'undefined' ? !window.matchMedia('(max-width: 768px)').matches : true
   );
+  const [isFocusMode, setIsFocusMode] = useState(false);
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [fixedMemory, setFixedMemory] = useState<Record<string, string>>({});
@@ -260,6 +262,17 @@ export default function EditorPage() {
       setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
     })();
   }, []);
+
+  useEffect(() => {
+    if (isFocusMode) {
+      document.body.classList.add('editor-focus-mode');
+    } else {
+      document.body.classList.remove('editor-focus-mode');
+    }
+    return () => {
+      document.body.classList.remove('editor-focus-mode');
+    };
+  }, [isFocusMode]);
 
   useEffect(() => {
     if (!form.template.meta.template_id) return;
@@ -324,11 +337,14 @@ export default function EditorPage() {
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((current) => {
       let nextState = current;
 
-      if (current.selectedMenuIds.length === 0 && (current.template.menu_ids || []).length > 0) {
+      // If a draft was applied, its selectedMenuIds take precedence — do not
+      // overwrite them with the inference from menu_ids.
+      const skipInference = draftAppliedRef.current;
+
+      if (!skipInference && current.selectedMenuIds.length === 0 && (current.template.menu_ids || []).length > 0) {
         const inferredSelectedMenuIds = availableContextMenus
           .filter(
             (menu): menu is ContextMenu & { id: number } =>
@@ -360,10 +376,18 @@ export default function EditorPage() {
       if (parsedDraftResult.success) {
         const draftData = parsedDraftResult.data as Partial<TemplateFormState>;
         if (draftData.template?.meta?.template_name) {
-          setTimeout(() => {
-            setForm((current) => ({ ...current, ...draftData }));
-            showToast('Rascunho recuperado automaticamente!', 'info');
-          }, 0);
+          // Mark draft as applied BEFORE calling setForm so the menu-sync
+          // effect that may fire afterwards knows to preserve selectedMenuIds.
+          draftAppliedRef.current = true;
+          // startTransition evita o warning "setState within an effect":
+          // o React adia esta atualização para depois do commit em curso,
+          // quebrando a cadeia síncrona de renderizações.
+          import('react').then(({ startTransition }) => {
+            startTransition(() => {
+              setForm((current) => ({ ...current, ...draftData }));
+            });
+          });
+          showToast('Rascunho recuperado automaticamente!', 'info');
         }
       } else {
         console.error('Rascunho inválido detectado:', parsedDraftResult.error);
@@ -375,11 +399,123 @@ export default function EditorPage() {
   }, [id, loaded, showToast]);
 
   useEffect(() => {
+    // Only autosave after the component has fully loaded (and the draft
+    // recovery effect has had a chance to run), to avoid overwriting a
+    // pre-existing draft in localStorage before we can restore it.
     if (!loaded) return;
     localStorage.setItem(`template_draft_${id}`, JSON.stringify(debouncedForm));
     const now = new Date();
     setTimeout(() => setLastSaved(now), 0);
   }, [debouncedForm, id, loaded]);
+
+  const clearDraft = () => localStorage.removeItem(`template_draft_${id}`);
+
+  const handleSave = useCallback(async () => {
+    if (!form.template.meta.template_name.trim()) {
+      showToast('Nome do template é obrigatório', 'error');
+      return;
+    }
+    if (!form.categoryId) {
+      showToast('Selecione uma categoria', 'error');
+      return;
+    }
+
+    // Validar que a categoria ainda existe e não foi excluída
+    const selectedCategory = await db.categories.get(form.categoryId);
+    if (!selectedCategory) {
+      showToast('Categoria selecionada não existe mais', 'error');
+      return;
+    }
+    if (selectedCategory.isDeleted === true) {
+      showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
+      return;
+    }
+
+    let template: TemplatePayload;
+    let selection: UserSelection;
+    let compiledPayload: CompiledPromptPayload;
+    let migrationWarnings: string[];
+
+    try {
+      ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus, fixedMemory));
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Template inválido';
+      showToast(errorMessage, 'error');
+      return;
+    }
+
+    const summary = getPromptSummaryFields(template);
+    const now = new Date();
+    const promptRecord: Omit<Prompt, 'id'> = {
+      categoryId: form.categoryId,
+      title: summary.title,
+      selectedMenuIds: form.selectedMenuIds,
+      promptPayload: template,
+      selectionPayload: selection,
+      compiledPayload,
+      schemaVersion: summary.schemaVersion,
+      language: summary.language,
+      outputFormat: summary.outputFormat,
+      fewShotExamples: template.prompt_definition.few_shot_examples,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    let localId: number | null;
+    try {
+      if (isNew) {
+        localId = (await db.prompts.add({ ...promptRecord, syncStatus: 'pending' } as Prompt)) ?? null;
+        navigate(`/editor/${localId}`, { replace: true });
+      } else {
+        localId = Number(id);
+        const existingPrompt = await db.prompts.get(localId);
+        await db.prompts.update(localId, { ...promptRecord, createdAt: existingPrompt?.createdAt || now, syncStatus: 'pending' });
+      }
+      clearDraft();
+      await saveLocalBackup();
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Erro ao salvar localmente';
+      console.error('Erro ao salvar localmente:', e);
+      showToast(errorMessage, 'error');
+      return;
+    }
+
+    migrationWarnings.forEach((warning) => showToast(warning, 'info'));
+
+    try {
+      const existingPrompt = !isNew && localId !== null ? await db.prompts.get(localId) : undefined;
+      const savedRemote = await savePromptToSupabase({ ...promptRecord, remoteId: existingPrompt?.remoteId });
+      if (localId !== null) {
+        await db.prompts.update(localId, { remoteId: savedRemote.id, syncStatus: 'synced' });
+      }
+      showToast(isNew ? 'Template criado e sincronizado!' : 'Template atualizado e sincronizado!', 'success');
+    } catch (error) {
+      if (!isUnauthenticatedCloudError(error)) {
+        console.error('Erro ao salvar no Supabase:', error);
+      }
+      showToast('Template salvo localmente. Sincronize ao fazer login.', 'info');
+    }
+  }, [availableContextMenus, clearDraft, fixedMemory, form, id, isNew, navigate, showToast]);
+
+  // Shortcut handling
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      const cmdKey = isMac ? e.metaKey : e.ctrlKey;
+
+      if (cmdKey && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+      if (cmdKey && e.key === 'p') {
+        e.preventDefault();
+        setShowPreview(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave]);
 
   const previewState = useMemo(() => {
     try {
@@ -541,95 +677,6 @@ export default function EditorPage() {
     setFixedMemory((prev) => ({ ...prev, [key]: '' }));
   };
 
-  const clearDraft = () => localStorage.removeItem(`template_draft_${id}`);
-
-  const handleSave = async () => {
-    if (!form.template.meta.template_name.trim()) {
-      showToast('Nome do template é obrigatório', 'error');
-      return;
-    }
-    if (!form.categoryId) {
-      showToast('Selecione uma categoria', 'error');
-      return;
-    }
-
-    // Validar que a categoria ainda existe e não foi excluída
-    const selectedCategory = await db.categories.get(form.categoryId);
-    if (!selectedCategory) {
-      showToast('Categoria selecionada não existe mais', 'error');
-      return;
-    }
-    if (selectedCategory.isDeleted === true) {
-      showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
-      return;
-    }
-
-    let template: TemplatePayload;
-    let selection: UserSelection;
-    let compiledPayload: CompiledPromptPayload;
-    let migrationWarnings: string[];
-
-    try {
-      ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus, fixedMemory));
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Template inválido';
-      showToast(errorMessage, 'error');
-      return;
-    }
-
-    const summary = getPromptSummaryFields(template);
-    const now = new Date();
-    const promptRecord: Omit<Prompt, 'id'> = {
-      categoryId: form.categoryId,
-      title: summary.title,
-      selectedMenuIds: form.selectedMenuIds,
-      promptPayload: template,
-      selectionPayload: selection,
-      compiledPayload,
-      schemaVersion: summary.schemaVersion,
-      language: summary.language,
-      outputFormat: summary.outputFormat,
-      fewShotExamples: template.prompt_definition.few_shot_examples,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    let localId: number | null;
-    try {
-      if (isNew) {
-        localId = (await db.prompts.add({ ...promptRecord, syncStatus: 'pending' } as Prompt)) ?? null;
-        navigate(`/editor/${localId}`, { replace: true });
-      } else {
-        localId = Number(id);
-        const existingPrompt = await db.prompts.get(localId);
-        await db.prompts.update(localId, { ...promptRecord, createdAt: existingPrompt?.createdAt || now, syncStatus: 'pending' });
-      }
-      clearDraft();
-      await saveLocalBackup();
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Erro ao salvar localmente';
-      console.error('Erro ao salvar localmente:', e);
-      showToast(errorMessage, 'error');
-      return;
-    }
-
-    migrationWarnings.forEach((warning) => showToast(warning, 'info'));
-
-    try {
-      const existingPrompt = !isNew && localId !== null ? await db.prompts.get(localId) : undefined;
-      const savedRemote = await savePromptToSupabase({ ...promptRecord, remoteId: existingPrompt?.remoteId });
-      if (localId !== null) {
-        await db.prompts.update(localId, { remoteId: savedRemote.id, syncStatus: 'synced' });
-      }
-      showToast(isNew ? 'Template criado e sincronizado!' : 'Template atualizado e sincronizado!', 'success');
-    } catch (error) {
-      if (!isUnauthenticatedCloudError(error)) {
-        console.error('Erro ao salvar no Supabase:', error);
-      }
-      showToast('Template salvo localmente. Sincronize ao fazer login.', 'info');
-    }
-  };
-
   const handleCopy = async () => {
     if (!previewState.payload || previewState.error) {
       showToast(previewState.error || 'Payload inválido', 'error');
@@ -687,19 +734,28 @@ export default function EditorPage() {
           <button className="btn btn--ghost btn--icon" onClick={() => navigate(-1)} aria-label="Voltar" title="Voltar">
             <ArrowLeft size={18} />
           </button>
-          <h1 className="app-header__title">{isNew ? 'Novo Template' : 'Editar Template'}</h1>
+          <h1 className="app-header__title mobile-hide">{isNew ? 'Novo Template' : 'Editar Template'}</h1>
+          {!isNew && (
+             <div className="app-header__title-mobile mobile-only">
+                {form.template.meta.template_name || 'Editar Template'}
+             </div>
+          )}
         </div>
-        <div className="app-header__actions">
+        <div className="app-header__actions mobile-hide">
           {lastSaved && (
             <span className="app-header__autosave-status" aria-live="polite">
               Rascunho salvo às {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
-          <button className="btn btn--ghost" onClick={() => setShowPreview(true)}>
-            <Eye size={16} /> Preview do prompt
+          <button 
+            className={`btn btn--ghost ${isFocusMode ? 'btn--active' : ''}`} 
+            onClick={() => setIsFocusMode(!isFocusMode)}
+            title={isFocusMode ? "Sair do modo foco" : "Modo foco"}
+          >
+            <Eye size={16} /> {isFocusMode ? 'Ver Tudo' : 'Foco'}
           </button>
           <button className="btn btn--secondary" onClick={handleCopy}>
-            <Copy size={16} /> Copiar prompt
+            <Copy size={16} /> Copiar
           </button>
           <button className="btn btn--secondary" onClick={handleDownload}>
             <Download size={16} /> Baixar
@@ -708,9 +764,27 @@ export default function EditorPage() {
             <Save size={16} /> Salvar
           </button>
         </div>
+        <div className="mobile-only flex-row-center editor-mobile-actions">
+             <button 
+                className={`btn btn--ghost btn--icon ${isFocusMode ? 'btn--active' : ''}`} 
+                onClick={() => setIsFocusMode(!isFocusMode)} 
+                aria-label="Modo Foco"
+                data-tooltip="Modo Foco"
+             >
+                <Eye size={20} />
+             </button>
+             <button 
+                className="btn btn--ghost btn--icon" 
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
+                aria-label="Playground"
+                data-tooltip="Playground"
+             >
+                <Settings2 size={20} />
+             </button>
+        </div>
       </header>
 
-      <div className="editor-sidebar-container">
+      <div className={`editor-sidebar-container ${isSidebarOpen ? 'editor-sidebar-container--split' : ''}`}>
         <div className={`editor-main-scrollable ${isSidebarOpen ? 'editor-main-scrollable--with-sidebar' : ''}`}>
           <div className="app-content">
             <div className="editor-form--constrained">
@@ -741,7 +815,7 @@ export default function EditorPage() {
                 availableContextMenus={availableContextMenus}
               />
 
-              <div className="editor-footer editor-footer--spaced">
+              <div className="editor-footer editor-footer--spaced mobile-hide">
                 <button className="btn btn--secondary btn--lg" onClick={() => navigate(-1)}>
                   Cancelar
                 </button>
@@ -756,7 +830,7 @@ export default function EditorPage() {
         <aside
           id="editor-playground-panel"
           className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}
-          aria-hidden={!isSidebarOpen ? 'true' : 'false'}
+          aria-hidden={!isSidebarOpen}
         >
           <div className="editor-floating-sidebar__header">
             <h3 className="form-section__title editor-floating-sidebar__title">
@@ -791,13 +865,25 @@ export default function EditorPage() {
         </aside>
 
         <button
-          className={`editor-floating-toggle ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
+          className={`editor-floating-toggle mobile-hide ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label="Alternar Playground"
-          aria-expanded={isSidebarOpen ? 'true' : 'false'}
+          aria-expanded={isSidebarOpen}
           aria-controls="editor-playground-panel"
         >
           {isSidebarOpen ? <PanelRightClose size={24} /> : <PanelRightOpen size={24} />}
+        </button>
+      </div>
+
+      <div className="sticky-mobile-bar mobile-only">
+        <button className="btn btn--secondary" onClick={() => setShowPreview(true)} aria-label="Preview" data-tooltip="Preview">
+          <Eye size={20} />
+        </button>
+        <button className="btn btn--secondary" onClick={handleCopy} aria-label="Copiar" data-tooltip="Copiar">
+          <Copy size={20} />
+        </button>
+        <button className="btn btn--primary editor-mobile-save" onClick={handleSave} data-tooltip="Salvar Template">
+          <Save size={20} /> Salvar
         </button>
       </div>
 

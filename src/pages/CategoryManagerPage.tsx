@@ -210,33 +210,41 @@ export default function CategoryManagerPage() {
                 title="Gerenciar Categorias"
                 description="Crie, edite e organize categorias para agrupar templates de prompt."
             />
-            <header className="app-header">
-                <div className="flex-row-center">
+            <header className="app-header glass">
+                <div className="flex-row-center gap-4">
                     <button
                         className="btn btn--ghost btn--icon"
                         onClick={() => navigate('/')}
                         aria-label="Voltar ao início"
                         title="Voltar"
                     >
-                        <ArrowLeft size={18} />
+                        <ArrowLeft size={20} />
                     </button>
-                    <h1 className="app-header__title">Gerenciar Categorias</h1>
+                    <div className="flex-column">
+                        <h1 className="app-header__title">Gerenciar Categorias</h1>
+                        <p className="util-text-muted util-text-xs">Organize seus templates por tópicos</p>
+                    </div>
                 </div>
                 <div className="app-header__actions">
                     <button className="btn btn--primary" onClick={startCreate}>
-                        <Plus size={16} />
+                        <Plus size={18} />
                         Nova Categoria
                     </button>
                 </div>
             </header>
 
-            <div className="app-content">
+            <div className="app-content motion-entry">
                 {/* Formulário de criação/edição */}
                 {(isCreating || isEditing !== null) && (
-                    <div className="card card--active">
-                        <h3 className="card__title">
-                            {isEditing ? 'Editar Categoria' : 'Nova Categoria'}
-                        </h3>
+                    <div className="card card--active glass motion-entry">
+                        <div className="flex-column gap-1 mb-6">
+                            <h3 className="card__title">
+                                {isEditing ? 'Editar Categoria' : 'Nova Categoria'}
+                            </h3>
+                            <p className="util-text-muted util-text-xs">
+                                Defina o nome, ícone e cor visual para esta categoria.
+                            </p>
+                        </div>
 
                         <div className="form-group">
                             {/* Fix A11y: htmlFor conecta label ao input via id */}
@@ -253,15 +261,16 @@ export default function CategoryManagerPage() {
 
                         <div className="form-group">
                             <label className="form-label">Ícone</label>
-                            <div className="icon-picker-grid">
+                            <div className="icon-picker-grid glass">
                                 {CATEGORY_ICONS.map((icon) => (
                                     <button
                                         key={icon}
                                         type="button"
                                         className={`icon-picker-grid__item ${form.icon === icon ? 'icon-picker-grid__item--selected' : ''}`}
                                         onClick={() => setForm({ ...form, icon })}
+                                        aria-label={`Selecionar ícone ${icon}`}
                                     >
-                                        {icon}
+                                        <span className="icon-picker-grid__emoji">{icon}</span>
                                     </button>
                                 ))}
                             </div>
@@ -269,13 +278,14 @@ export default function CategoryManagerPage() {
 
                         <div className="form-group">
                             <label className="form-label">Cor</label>
-                            <div className="color-picker-grid">
+                            <div className="color-picker-grid glass">
                                 {CATEGORY_COLORS.map((color) => (
                                     <button
                                         key={color}
                                         type="button"
-                                        className={`color-picker-grid__swatch util-cat-color-${color.replace('#', '')} ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
+                                        className={`color-picker-grid__swatch ${form.color === color ? 'color-picker-grid__swatch--selected' : ''}`}
                                         onClick={() => setForm({ ...form, color })}
+                                        style={{ backgroundColor: color }}
                                         aria-label={`Cor ${color}`}
                                     />
                                 ))}
@@ -313,48 +323,54 @@ export default function CategoryManagerPage() {
                         </p>
                     </div>
                 ) : (
-                    <div className="prompt-list">
+                    <div className="category-grid">
                         {categories.map((cat) => (
-                            <div key={cat.id} className="prompt-item">
-                                <div
-                                    className="cat-list-item"
-                                    onClick={() => navigate(`/categoria/${cat.id}`)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === 'Enter' || event.key === ' ') {
-                                            event.preventDefault();
-                                            navigate(`/categoria/${cat.id}`);
-                                        }
-                                    }}
-                                    role="button"
-                                    tabIndex={0}
-                                >
-                                    <span
-                                        className={`cat-list-item__icon util-cat-color-${cat.color.replace('#', '')}`}
-                                    >
+                            <div 
+                                key={cat.id} 
+                                className="category-item"
+                                onClick={() => navigate(`/categoria/${cat.id}`)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        navigate(`/categoria/${cat.id}`);
+                                    }
+                                }}
+                                role="button"
+                                tabIndex={0}
+                                aria-label={`Categoria ${cat.name}`}
+                                style={{ '--cat-color': cat.color, '--cat-color-glow': `${cat.color}20` } as React.CSSProperties}
+                            >
+                                <div className="category-item__content">
+                                    <span className="category-item__icon">
                                         {cat.icon}
                                     </span>
-                                    <div>
-                                        <div className={`prompt-item__title cat-list-item__title util-cat-color-${cat.color.replace('#', '')}`}>
-                                            {cat.name}
-                                        </div>
+                                    <div className="category-item__title">
+                                        {cat.name}
                                     </div>
                                 </div>
-                                <div className="prompt-item__actions prompt-item__actions--visible">
+                                
+                                <div className="category-item__actions">
                                     <button
                                         className="btn btn--ghost btn--icon"
-                                        onClick={() => startEdit(cat)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            startEdit(cat);
+                                        }}
                                         aria-label="Editar categoria"
                                         title="Editar"
                                     >
-                                        <Edit3 size={16} />
+                                        <Edit3 size={18} />
                                     </button>
                                     <button
                                         className="btn btn--ghost btn--icon"
-                                        onClick={() => handleDelete(cat.id!, cat.remoteId)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(cat.id!, cat.remoteId);
+                                        }}
                                         aria-label="Excluir categoria"
                                         title="Excluir"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={18} />
                                     </button>
                                 </div>
                             </div>

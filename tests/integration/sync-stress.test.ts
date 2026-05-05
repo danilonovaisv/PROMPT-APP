@@ -11,10 +11,13 @@ jest.mock('@/lib/supabase', () => {
             auth: {
                 onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
                 getSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'test-user' } } }, error: null })),
+                refreshSession: jest.fn(() => Promise.resolve({ data: { session: { user: { id: 'test-user' } } }, error: null })),
             },
             from: jest.fn(() => ({
                 select: jest.fn(() => ({
-                    eq: jest.fn(() => Promise.resolve({ data: [], error: null })),
+                    eq: jest.fn(() => ({
+                        range: jest.fn(() => Promise.resolve({ data: [], error: null })),
+                    })),
                 })),
                 upsert: jest.fn(() => Promise.resolve({ data: null, error: null })),
                 insert: jest.fn(() => ({
@@ -24,6 +27,9 @@ jest.mock('@/lib/supabase', () => {
                 })),
                 delete: jest.fn(() => ({
                     eq: jest.fn(() => Promise.resolve({ data: null, error: null })),
+                })),
+                update: jest.fn(() => ({
+                    eq: jest.fn().mockReturnThis(),
                 })),
             })),
         },
@@ -145,9 +151,12 @@ describe('Sync Stress Test', () => {
         (supabase.from as jest.Mock).mockImplementation((table: string) => {
             return {
                 select: jest.fn(() => ({
-                    eq: jest.fn(() => Promise.resolve({ 
-                        data: table === 'prompts' ? remotePrompts : [], 
-                        error: null 
+                    eq: jest.fn(() => ({
+                        // .range() chain required by fetchAllPages in downloadFromCloud
+                        range: jest.fn(() => Promise.resolve({ 
+                            data: table === 'prompts' ? remotePrompts : [], 
+                            error: null 
+                        })),
                     })),
                 })),
                 upsert: jest.fn(() => Promise.resolve({ data: null, error: null })),

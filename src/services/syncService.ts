@@ -90,10 +90,13 @@ const contextMenuRepository: ContextMenuSyncRepository = {
 export const syncToCloud = async () => {
   assertSupabaseConfigured();
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    throw new Error("Usuário não autenticado");
+  // refreshSession() verifica o JWT com o servidor e renova se necessário,
+  // garantindo que syncs longos não falhem por token expirado.
+  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+  if (refreshError || !refreshData.session) {
+    throw new Error("Usuário não autenticado ou sessão expirada");
   }
+  const session = refreshData.session;
 
   const snapshot = await createSnapshot();
   const userId = session.user.id;
@@ -121,21 +124,21 @@ export const syncToCloud = async () => {
           .eq("id", cat.remoteId!)
           .eq("user_id", userId)
       );
-      if (cat.id) await db.categories.delete(cat.id);
-      console.log(`✅ Categoria soft-delete sincronizada e removida: ${cat.name}`);
+      console.log(`✅ Categoria soft-delete sincronizada: ${cat.name}`);
     } catch (e) {
       console.error("Falha ao sincronizar delete de categoria:", cat.name, e);
       if (cat.id) await db.categories.update(cat.id, { syncStatus: "error" });
     }
   }
-
-  const categoriesToPurgeLocally = allCategories.filter(
-    (c) => c.isDeleted === true && !c.remoteId
-  );
-  for (const cat of categoriesToPurgeLocally) {
-    if (cat.id) {
-      await db.categories.delete(cat.id);
-    }
+  // bulkDelete: remove em lote todas as categorias sincronizadas ou sem remoteId
+  const catLocalIdsToDelete = [
+    ...categoriesToDeleteRemotely.filter((c) => c.syncStatus !== "error"),
+    ...allCategories.filter((c) => c.isDeleted === true && !c.remoteId),
+  ]
+    .map((c) => c.id)
+    .filter((id): id is number => id !== undefined);
+  if (catLocalIdsToDelete.length > 0) {
+    await db.categories.bulkDelete(catLocalIdsToDelete);
   }
 
   // Sincronizar categorias ativas não sincronizadas
@@ -216,8 +219,7 @@ export const syncToCloud = async () => {
           .eq("id", menu.remoteId!)
           .eq("user_id", userId)
       );
-      if (menu.id) await db.contextMenus.delete(menu.id);
-      console.log(`✅ Menu soft-delete sincronizado e removido: ${menu.menuName}`);
+      console.log(`✅ Menu soft-delete sincronizado: ${menu.menuName}`);
     } catch (error) {
       console.error("Falha ao sincronizar delete de menu:", menu.menuName, error);
       if (menu.id) {
@@ -225,14 +227,15 @@ export const syncToCloud = async () => {
       }
     }
   }
-
-  const menusToPurgeLocally = snapshot.data.contextMenus.filter(
-    (menu) => menu.isDeleted === true && !menu.remoteId
-  );
-  for (const menu of menusToPurgeLocally) {
-    if (menu.id) {
-      await db.contextMenus.delete(menu.id);
-    }
+  // bulkDelete: remove em lote todos os menus sincronizados ou sem remoteId
+  const menuLocalIdsToDelete = [
+    ...menusToDeleteRemotely.filter((m) => m.syncStatus !== "error"),
+    ...snapshot.data.contextMenus.filter((m) => m.isDeleted === true && !m.remoteId),
+  ]
+    .map((m) => m.id)
+    .filter((id): id is number => id !== undefined);
+  if (menuLocalIdsToDelete.length > 0) {
+    await db.contextMenus.bulkDelete(menuLocalIdsToDelete);
   }
 
   const menusToSync = snapshot.data.contextMenus.filter(
@@ -290,8 +293,7 @@ export const syncToCloud = async () => {
           .eq("id", prompt.remoteId!)
           .eq("user_id", userId)
       );
-      if (prompt.id) await db.prompts.delete(prompt.id);
-      console.log(`✅ Prompt soft-delete sincronizado e removido: ${prompt.title}`);
+      console.log(`✅ Prompt soft-delete sincronizado: ${prompt.title}`);
     } catch (error) {
       console.error("Falha ao sincronizar delete de prompt:", prompt.title, error);
       if (prompt.id) {
@@ -299,14 +301,15 @@ export const syncToCloud = async () => {
       }
     }
   }
-
-  const promptsToPurgeLocally = snapshot.data.prompts.filter(
-    (prompt) => prompt.isDeleted === true && !prompt.remoteId
-  );
-  for (const prompt of promptsToPurgeLocally) {
-    if (prompt.id) {
-      await db.prompts.delete(prompt.id);
-    }
+  // bulkDelete: remove em lote todos os prompts sincronizados ou sem remoteId
+  const promptLocalIdsToDelete = [
+    ...promptsToDeleteRemotely.filter((p) => p.syncStatus !== "error"),
+    ...snapshot.data.prompts.filter((p) => p.isDeleted === true && !p.remoteId),
+  ]
+    .map((p) => p.id)
+    .filter((id): id is number => id !== undefined);
+  if (promptLocalIdsToDelete.length > 0) {
+    await db.prompts.bulkDelete(promptLocalIdsToDelete);
   }
 
   const promptsToSync = snapshot.data.prompts.filter(
@@ -381,22 +384,49 @@ export const syncToCloud = async () => {
   return true;
 };
 
+/** Busca todas as páginas de uma tabela usando paginação por range (1 000 linhas/página). */
+async function fetchAllPages<T>(
+  query: (range: [number, number]) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+  pageSize = 1000,
+): Promise<T[]> {
+  const all: T[] = [];
+  let from = 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { data, error } = await query([from, from + pageSize - 1]);
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < pageSize) break; // última página
+    from += pageSize;
+  }
+  return all;
+}
+
 export const downloadFromCloud = async () => {
   assertSupabaseConfigured();
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Usuário não autenticado");
 
-  const [catRes, menuRes, promptRes] = await Promise.all([
-    supabase.from("categories").select("*").eq("is_deleted", false),
-    supabase.from("context_menus").select("*").eq("is_deleted", false),
-    supabase.from("prompts").select("*").eq("is_deleted", false),
+  // Paginação: busca todas as linhas em páginas de 1 000 para suportar
+  // coleções com mais de 1 000 itens (limite padrão do Supabase).
+  const [catData, menuData, promptData] = await Promise.all([
+    fetchAllPages((r) =>
+      supabase.from("categories").select("*").eq("is_deleted", false).range(r[0], r[1])
+    ),
+    fetchAllPages((r) =>
+      supabase.from("context_menus").select("*").eq("is_deleted", false).range(r[0], r[1])
+    ),
+    fetchAllPages((r) =>
+      supabase.from("prompts").select("*").eq("is_deleted", false).range(r[0], r[1])
+    ),
   ]);
 
-  if (catRes.error || menuRes.error || promptRes.error) {
-    console.error("Erro no download:", catRes.error, menuRes.error, promptRes.error);
-    throw new Error("Falha ao baixar dados da nuvem");
-  }
+  // Mantém a forma esperada pelo restante da função
+  const catRes = { data: catData, error: null };
+  const menuRes = { data: menuData, error: null };
+  const promptRes = { data: promptData, error: null };
 
   console.log("☁️ Iniciando Smart Merge (Nuvem -> Local)...");
 
