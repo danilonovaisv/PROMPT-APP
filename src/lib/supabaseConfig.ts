@@ -17,8 +17,8 @@ function normalize(value: unknown): string {
 }
 
 export function resolveSupabaseConfig(env: SupabaseEnv): SupabaseResolvedConfig {
-  const url = normalize(env.VITE_SUPABASE_URL);
-  const anonKey = normalize(env.VITE_SUPABASE_ANON_KEY) || normalize(env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY);
+  const url = normalize(env?.VITE_SUPABASE_URL || 'http://localhost:54321');
+  const anonKey = normalize(env?.VITE_SUPABASE_ANON_KEY) || normalize(env?.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY) || 'dummy';
 
   const missingVars: string[] = [];
   if (!url) {
