@@ -1,0 +1,163 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_agente",
+      "menu_name": "AGENT-GOOGLE & ANTIGRAVITY - Tipo de Agente",
+      "description": "Define a especialidade principal do agente a ser criado para o Antigravity.",
+      "options": [
+        {
+          "label": "Orquestrador Multiagente",
+          "value": "orquestrador_multiagente",
+          "sub_options": []
+        },
+        {
+          "label": "Frontend Engineer",
+          "value": "frontend_engineer",
+          "sub_options": [
+            {
+              "label": "Next.js App Router",
+              "value": "nextjs_app_router"
+            },
+            {
+              "label": "Design System",
+              "value": "design_system"
+            }
+          ]
+        },
+        {
+          "label": "Backend e Banco de Dados",
+          "value": "backend_database",
+          "sub_options": [
+            {
+              "label": "Supabase",
+              "value": "supabase"
+            },
+            {
+              "label": "Firebase",
+              "value": "firebase"
+            }
+          ]
+        },
+        {
+          "label": "QA e Testes",
+          "value": "qa_testes",
+          "sub_options": []
+        },
+        {
+          "label": "Segurança e Governança",
+          "value": "seguranca_governanca",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_autonomia",
+      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Nível de Autonomia",
+      "description": "Define quanto o agente pode planejar e executar antes de solicitar revisão humana.",
+      "options": [
+        {
+          "label": "Conservador",
+          "value": "conservador",
+          "sub_options": []
+        },
+        {
+          "label": "Assistido",
+          "value": "assistido",
+          "sub_options": []
+        },
+        {
+          "label": "Autônomo Controlado",
+          "value": "autonomo_controlado",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "mcp_alvo",
+      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - MCP Alvo",
+      "description": "Seleciona o tipo de servidor MCP externo que o agente deve considerar na arquitetura.",
+      "options": [
+        {
+          "label": "Supabase MCP",
+          "value": "supabase_mcp",
+          "sub_options": []
+        },
+        {
+          "label": "GitHub MCP",
+          "value": "github_mcp",
+          "sub_options": []
+        },
+        {
+          "label": "TestSprite ou QA MCP",
+          "value": "testsprite_qa_mcp",
+          "sub_options": []
+        },
+        {
+          "label": "Browser Automation MCP",
+          "value": "browser_automation_mcp",
+          "sub_options": []
+        },
+        {
+          "label": "Custom API MCP",
+          "value": "custom_api_mcp",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "artefatos_gerados",
+      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Artefatos Gerados",
+      "description": "Define quais arquivos e blocos operacionais o prompt deve produzir.",
+      "options": [
+        {
+          "label": "GEMINI.md ou Rules",
+          "value": "rules_gemini",
+          "sub_options": []
+        },
+        {
+          "label": "SKILL.md",
+          "value": "skill_md",
+          "sub_options": []
+        },
+        {
+          "label": "Workflow Markdown",
+          "value": "workflow_md",
+          "sub_options": []
+        },
+        {
+          "label": "Configuração MCP JSON",
+          "value": "mcp_config_json",
+          "sub_options": []
+        },
+        {
+          "label": "Política de Permissões",
+          "value": "permissions_policy",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_saida",
+      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Profundidade da Saída",
+      "description": "Define o nível de detalhe técnico esperado no resultado.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Operacional",
+          "value": "operacional",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
