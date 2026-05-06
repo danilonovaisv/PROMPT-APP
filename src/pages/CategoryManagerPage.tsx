@@ -98,9 +98,9 @@ export default function CategoryManagerPage() {
             }
             await saveLocalBackup();
         } catch (e: unknown) {
-        const error = e as Error;
-            console.error('Erro ao salvar localmente:', error);
-            showToast(error.message || 'Erro ao salvar a categoria localmente.', 'error');
+            console.error('Erro ao salvar localmente:', e);
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao salvar a categoria localmente.';
+            showToast(errorMessage, 'error');
             return;
         }
 
@@ -122,8 +122,7 @@ export default function CategoryManagerPage() {
             showToast(isEditing ? 'Categoria sincronizada!' : 'Categoria criada e sincronizada!');
             cancel();
         } catch (e: unknown) {
-        const error = e as Error;
-            console.error('Erro ao salvar categoria no Supabase:', error);
+            console.error('Erro ao salvar categoria no Supabase:', e);
             showToast('Categoria salva localmente. Sincronize ao fazer login.', 'info');
             cancel();
         }
@@ -192,8 +191,7 @@ export default function CategoryManagerPage() {
             await saveLocalBackup();
             showToast('Categoria excluída!');
         } catch (e: unknown) {
-            const error = e as Error;
-            console.error('Erro ao excluir no Supabase:', error);
+            console.error('Erro ao excluir no Supabase:', e);
             await db.categories.update(id, {
                 isDeleted: true,
                 syncStatus: 'pending',

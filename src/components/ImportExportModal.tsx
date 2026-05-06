@@ -54,11 +54,15 @@ export default function ImportExportModal({
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.type !== 'application/json' && !file.name.toLowerCase().endsWith('.json')) {
+        const fileName = file.name || 'unknown.json';
+        const isJson = (file.type === 'application/json') || fileName.toLowerCase().endsWith('.json');
+
+        if (!isJson) {
             showToast('Por favor, selecione um arquivo .json válido.', 'error');
             if (fileRef.current) fileRef.current.value = '';
             return;
         }
+
 
         setImporting(true);
         setResult(null);

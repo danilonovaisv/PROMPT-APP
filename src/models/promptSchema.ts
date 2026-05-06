@@ -28,8 +28,21 @@ function slugify(value: string): string {
 }
 
 function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+  if (!Array.isArray(values)) return [];
+  return Array.from(
+    new Set(
+      values
+        .map((value) => {
+          if (typeof value !== "string") {
+            throw new Error(`Tipo inválido encontrado em lista de strings: ${typeof value}`);
+          }
+          return value.trim();
+        })
+        .filter(Boolean),
+    ),
+  );
 }
+
 
 function uniqueBy<T>(items: T[], getKey: (item: T) => string): T[] {
   const seen = new Set<string>();
@@ -272,8 +285,9 @@ type LegacyPromptRecord = Partial<{
   fewShotExamples: z.infer<typeof FewShotExampleSchema>[];
 }>;
 
-function normalizeOutputFormat(raw: string | undefined): PromptOutputFormat {
-  const normalized = (raw || "").trim().toLowerCase();
+function normalizeOutputFormat(raw: unknown): PromptOutputFormat {
+  const value = typeof raw === "string" ? raw : String(raw || "");
+  const normalized = value.trim().toLowerCase();
   if (normalized === "texto") return "text";
   if (normalized === "imagem") return "image";
   if (PROMPT_OUTPUT_FORMATS.includes(normalized as PromptOutputFormat)) {
@@ -330,7 +344,9 @@ function normalizeLegacyResponseRules(raw: string | undefined): string[] {
   );
 }
 
-function normalizeFewShotExamples(raw: unknown): z.infer<typeof FewShotExampleSchema>[] {
+function normalizeFewShotExamples(
+  raw: unknown,
+): z.infer<typeof FewShotExampleSchema>[] {
   const parsedExamples = z.array(FewShotExampleSchema).safeParse(raw);
   return parsedExamples.success ? parsedExamples.data : [];
 }
@@ -510,10 +526,13 @@ export function sanitizeUserSelection(
     template_id: template.meta.template_id,
     selected_menus: selectedMenus,
     free_inputs: Object.fromEntries(
-      Object.entries(rawSelection.free_inputs || {}).map((
-        [key, value],
-      ) => [key.trim(), value.trim()]),
+      Object.entries(rawSelection.free_inputs || {}).map(([key, value]) => {
+        const safeKey = typeof key === "string" ? key.trim() : String(key);
+        const safeValue = typeof value === "string" ? value.trim() : String(value || "");
+        return [safeKey, safeValue];
+      }),
     ),
+
   });
 }
 

@@ -99,8 +99,7 @@ export default function CategoryPage() {
             await saveLocalBackup();
             showToast('Prompt excluído!');
         } catch (e: unknown) {
-            const error = e as Error;
-            console.error("Erro ao deletar no Supabase:", error);
+            console.error("Erro ao deletar no Supabase:", e);
             showToast(
                 'Prompt removido localmente. A exclusão será sincronizada ao reconectar.',
                 'info'
