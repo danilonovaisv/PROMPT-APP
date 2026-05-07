@@ -16,3 +16,7 @@
 **Vulnerability:** N/A (CI Build Fix)
 **Learning:** Hardcoding webhooks or using the `supabase_functions` schema in raw database migrations causes `schema "supabase_functions" does not exist` errors in CI and local setups unless the `pg_net` extension and schema are explicitly defined. Environment-specific triggers like build hooks shouldn't be part of the core database schema migrations.
 **Prevention:** Remove or isolate environment-specific triggers (like Netlify build hooks) from standard SQL migrations. Manage webhooks using the Supabase Dashboard or ensure the `pg_net` extension is properly configured in the migration files if local execution is intended.
+## 2026-05-07 - CI Pipeline Fixes for RLS Migration Dependencies
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Referencing a column (like `is_deleted`) in an RLS policy before the column is created in the table schema causes the entire database migration to crash with `column does not exist`. Migration script chronological order is critical.
+**Prevention:** If an RLS policy refers to a new column, ensure the `ALTER TABLE ... ADD COLUMN` statement happens *before* the `CREATE POLICY` statement within the same script or an earlier script in the chronological migration timeline.

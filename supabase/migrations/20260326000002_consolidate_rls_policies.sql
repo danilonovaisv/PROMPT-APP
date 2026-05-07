@@ -21,6 +21,13 @@
 
 BEGIN;
 
+
+-- Adicionando colunas is_deleted precocemente para que as políticas não falhem
+ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE public.context_menus ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE public.prompts ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+
+
 -- ============================================================
 -- SECTION 1: CATEGORIES TABLE — Remove all duplicate policies
 -- ============================================================
