@@ -12,3 +12,7 @@
 **Vulnerability:** N/A (CI Build Fix)
 **Learning:** Adding unsupported keys (like `password_hibp_enabled` under `[auth]`) to `supabase/config.toml` causes the Supabase CLI parsing to fail, breaking CI builds. Certain advanced security settings are exclusively managed via the Supabase dashboard rather than the standard CLI config files.
 **Prevention:** Verify if a configuration option exists in the Supabase CLI docs before adding it to `config.toml` to prevent pipeline parse errors.
+## 2026-05-07 - CI Pipeline Fixes for Database Migrations
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Hardcoding webhooks or using the `supabase_functions` schema in raw database migrations causes `schema "supabase_functions" does not exist` errors in CI and local setups unless the `pg_net` extension and schema are explicitly defined. Environment-specific triggers like build hooks shouldn't be part of the core database schema migrations.
+**Prevention:** Remove or isolate environment-specific triggers (like Netlify build hooks) from standard SQL migrations. Manage webhooks using the Supabase Dashboard or ensure the `pg_net` extension is properly configured in the migration files if local execution is intended.
