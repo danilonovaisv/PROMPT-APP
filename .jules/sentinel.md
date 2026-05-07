@@ -8,3 +8,7 @@
 **Vulnerability:** Role mutable search_path in functions (`handle_updated_at`, `set_updated_at`), public execution of `SECURITY DEFINER` function (`rls_auto_enable`), disabled leaked password protection, and duplicate permissive RLS policies.
 **Learning:** Default generated triggers and functions may leave search paths unspecified, making them vulnerable to malicious overriding. Functions intended as internal triggers (like `rls_auto_enable`) should not be publicly executable. Duplicate policies created dynamically or by accident compound performance issues.
 **Prevention:** Always explicitly set `SET search_path = ''` in PostgreSQL function definitions. Use `REVOKE EXECUTE ON FUNCTION... FROM PUBLIC` for internal trigger functions. Regularly audit and configure `password_hibp_enabled` in `config.toml` to improve authentication security.
+## 2026-05-07 - CI Pipeline Fixes for config.toml
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Adding unsupported keys (like `password_hibp_enabled` under `[auth]`) to `supabase/config.toml` causes the Supabase CLI parsing to fail, breaking CI builds. Certain advanced security settings are exclusively managed via the Supabase dashboard rather than the standard CLI config files.
+**Prevention:** Verify if a configuration option exists in the Supabase CLI docs before adding it to `config.toml` to prevent pipeline parse errors.
