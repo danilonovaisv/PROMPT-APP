@@ -4,3 +4,7 @@
 **Vulnerability:** Application blindly trusted data parsed from `localStorage` (`JSON.parse` cast directly with `as AppSnapshot`).
 **Learning:** `localStorage` is susceptible to tampering by users or malicious scripts. Accessing nested properties on unvalidated deserialized data can cause unhandled `TypeError` crashes or potentially expose logic flaws.
 **Prevention:** Always implement runtime type validation (e.g., a type guard like `isValidSnapshot` or Zod schemas) immediately after `JSON.parse` before asserting types or accessing deeply nested properties.
+## 2026-05-06 - Supabase Linter Security Fixes
+**Vulnerability:** Role mutable search_path in functions (`handle_updated_at`, `set_updated_at`), public execution of `SECURITY DEFINER` function (`rls_auto_enable`), disabled leaked password protection, and duplicate permissive RLS policies.
+**Learning:** Default generated triggers and functions may leave search paths unspecified, making them vulnerable to malicious overriding. Functions intended as internal triggers (like `rls_auto_enable`) should not be publicly executable. Duplicate policies created dynamically or by accident compound performance issues.
+**Prevention:** Always explicitly set `SET search_path = ''` in PostgreSQL function definitions. Use `REVOKE EXECUTE ON FUNCTION... FROM PUBLIC` for internal trigger functions. Regularly audit and configure `password_hibp_enabled` in `config.toml` to improve authentication security.
