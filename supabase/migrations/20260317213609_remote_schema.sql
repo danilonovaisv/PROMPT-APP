@@ -546,7 +546,7 @@ with check ((auth.uid() = user_id));
 
 CREATE TRIGGER context_menus_set_updated_at BEFORE UPDATE ON public.context_menus FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
-CREATE TRIGGER "Netfly" AFTER INSERT OR DELETE OR UPDATE ON public.prompts FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('https://api.netlify.com/build_hooks/69a3b3ec1ecf120e04816abf', 'POST', '{"Content-type":"application/json"}', '{}', '5000');
+-- CREATE TRIGGER "Netfly" AFTER INSERT OR DELETE OR UPDATE ON public.prompts FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('https://api.netlify.com/build_hooks/69a3b3ec1ecf120e04816abf', 'POST', '{"Content-type":"application/json"}', '{}', '5000');
 
 CREATE TRIGGER prompts_set_updated_at BEFORE UPDATE ON public.prompts FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 

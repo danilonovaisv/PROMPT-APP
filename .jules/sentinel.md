@@ -4,3 +4,19 @@
 **Vulnerability:** Application blindly trusted data parsed from `localStorage` (`JSON.parse` cast directly with `as AppSnapshot`).
 **Learning:** `localStorage` is susceptible to tampering by users or malicious scripts. Accessing nested properties on unvalidated deserialized data can cause unhandled `TypeError` crashes or potentially expose logic flaws.
 **Prevention:** Always implement runtime type validation (e.g., a type guard like `isValidSnapshot` or Zod schemas) immediately after `JSON.parse` before asserting types or accessing deeply nested properties.
+## 2026-05-06 - Supabase Linter Security Fixes
+**Vulnerability:** Role mutable search_path in functions (`handle_updated_at`, `set_updated_at`), public execution of `SECURITY DEFINER` function (`rls_auto_enable`), disabled leaked password protection, and duplicate permissive RLS policies.
+**Learning:** Default generated triggers and functions may leave search paths unspecified, making them vulnerable to malicious overriding. Functions intended as internal triggers (like `rls_auto_enable`) should not be publicly executable. Duplicate policies created dynamically or by accident compound performance issues.
+**Prevention:** Always explicitly set `SET search_path = ''` in PostgreSQL function definitions. Use `REVOKE EXECUTE ON FUNCTION... FROM PUBLIC` for internal trigger functions. Regularly audit and configure `password_hibp_enabled` in `config.toml` to improve authentication security.
+## 2026-05-07 - CI Pipeline Fixes for config.toml
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Adding unsupported keys (like `password_hibp_enabled` under `[auth]`) to `supabase/config.toml` causes the Supabase CLI parsing to fail, breaking CI builds. Certain advanced security settings are exclusively managed via the Supabase dashboard rather than the standard CLI config files.
+**Prevention:** Verify if a configuration option exists in the Supabase CLI docs before adding it to `config.toml` to prevent pipeline parse errors.
+## 2026-05-07 - CI Pipeline Fixes for Database Migrations
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Hardcoding webhooks or using the `supabase_functions` schema in raw database migrations causes `schema "supabase_functions" does not exist` errors in CI and local setups unless the `pg_net` extension and schema are explicitly defined. Environment-specific triggers like build hooks shouldn't be part of the core database schema migrations.
+**Prevention:** Remove or isolate environment-specific triggers (like Netlify build hooks) from standard SQL migrations. Manage webhooks using the Supabase Dashboard or ensure the `pg_net` extension is properly configured in the migration files if local execution is intended.
+## 2026-05-07 - CI Pipeline Fixes for RLS Migration Dependencies
+**Vulnerability:** N/A (CI Build Fix)
+**Learning:** Referencing a column (like `is_deleted`) in an RLS policy before the column is created in the table schema causes the entire database migration to crash with `column does not exist`. Migration script chronological order is critical.
+**Prevention:** If an RLS policy refers to a new column, ensure the `ALTER TABLE ... ADD COLUMN` statement happens *before* the `CREATE POLICY` statement within the same script or an earlier script in the chronological migration timeline.
