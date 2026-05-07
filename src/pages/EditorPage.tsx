@@ -25,7 +25,7 @@ import {
   sanitizeUserSelection,
 } from '@/models/promptSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
-import { fetchMemory, saveMemory, deleteMemory, syncMemory } from '@/services/memoryService';
+import { fetchMemory, deleteMemory, syncMemory } from '@/services/memoryService';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
