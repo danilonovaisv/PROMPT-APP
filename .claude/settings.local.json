@@ -8,7 +8,14 @@
       "Bash(pnpm run:*)",
       "mcp__claude_ai_Netlify__netlify-project-services-reader",
       "Bash(python3 -c ':*)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(squirrel *)",
+      "Bash(~/.local/bin/squirrel audit *)",
+      "Bash(grep -E '\\\\.\\(ts|tsx|html|toml|json\\)$')",
+      "Bash(ls .env*)",
+      "Bash(cat .env.example)",
+      "Bash(git push *)",
+      "Bash(pnpm audit *)"
     ]
   },
   "enableAllProjectMcpServers": true,
