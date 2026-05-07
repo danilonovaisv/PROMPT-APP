@@ -52,8 +52,8 @@ export default function PrivacyPage() {
                     <p>
                         Dúvidas sobre privacidade podem ser registradas no repositório do projeto:
                         {' '}
-                        <a href="https://github.com/danilonovaisv/PROMPT-APP" target="_blank" rel="noopener noreferrer">
-                            github.com/danilonovaisv/PROMPT-APP
+                        <a href="https://github.com/danilonovaisv" target="_blank" rel="noopener noreferrer">
+                            github.com/danilonovaisv
                         </a>
                     </p>
                 </section>

@@ -69,6 +69,12 @@
   command = "pnpm install --frozen-lockfile && pnpm run build"
 
 [[redirects]]
+  from = "/*.map"
+  to = "/index.html"
+  status = 404
+  force = true
+
+[[redirects]]
   from = "/sitemap.xml"
   to = "/sitemap.xml"
   status = 200

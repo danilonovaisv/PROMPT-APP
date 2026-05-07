@@ -56,7 +56,7 @@ export default defineConfig(async () => ({
       },
     },
     chunkSizeWarningLimit: 500,
-    sourcemap: shouldEnableSentryBuild ? true : false,
+    sourcemap: shouldEnableSentryBuild ? 'hidden' : false,
   },
   server: {
     port: 5174,
