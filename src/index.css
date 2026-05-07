@@ -3691,10 +3691,102 @@ select option {
 }
 
 /* --- Editor mobile action bar utilities (replaces inline styles) --- */
+/* --- Mobile Experience Hardening --- */
+@media (max-width: 768px) {
+  :root {
+    --header-height: 56px;
+  }
+
+  .app-main {
+    margin-left: 0;
+    padding-bottom: calc(var(--space-16) + 1rem); /* Espaço para o sticky-mobile-bar */
+  }
+
+  .app-content {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .sticky-mobile-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: var(--color-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-4);
+    gap: var(--space-3);
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Garante touch targets de 48px em mobile para todos os botões e inputs interativos */
+  button, 
+  .btn,
+  .app-sidebar__nav-item,
+  .prompt-item,
+  input,
+  select,
+  textarea {
+    min-height: 48px !important;
+  }
+
+  .btn--icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .app-header {
+    padding: 0 var(--space-4);
+  }
+
+  .editor-sidebar-container {
+    display: block; /* Remove o grid split em mobile */
+  }
+
+  .editor-main-scrollable {
+    padding-right: 0 !important;
+  }
+
+  .editor-floating-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100% !important;
+    transform: translateX(100%);
+    z-index: 2000;
+  }
+
+  .editor-floating-sidebar--open {
+    transform: translateX(0);
+  }
+}
+
+.mobile-hide {
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
+.mobile-only {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
 .editor-mobile-actions {
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .editor-mobile-save {
   flex: 1;
+  font-weight: var(--font-weight-bold) !important;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
 }
+

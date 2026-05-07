@@ -125,3 +125,39 @@ export async function deleteMemory(templateId: string, key: string): Promise<voi
     console.warn(`Aviso: falha ao remover memória (${key}) remotamente. Removido apenas localmente.`, error);
   }
 }
+
+/**
+ * Sincroniza todo o mapa de memória para um template, removendo o que não estiver no mapa.
+ */
+export async function syncMemory(templateId: string, memory: MemoryMap): Promise<void> {
+  // 1. Persistência local
+  setLocalMemory(templateId, memory);
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Busca chaves atuais no remoto
+    const { data: remoteEntries } = await supabase
+      .from('prompt_memory_context')
+      .select('key')
+      .eq('user_id', user.id)
+      .eq('template_id', templateId);
+
+    const remoteKeys = new Set((remoteEntries || []).map(e => e.key));
+    const localKeys = Object.keys(memory);
+
+    // Upsert local para remoto
+    for (const key of localKeys) {
+      await saveMemory(templateId, key, memory[key]);
+      remoteKeys.delete(key);
+    }
+
+    // Delete o que sobrou no remoto
+    for (const key of remoteKeys) {
+      await deleteMemory(templateId, key);
+    }
+  } catch (error) {
+    console.warn(`Erro na sincronização completa da memória para ${templateId}`, error);
+  }
+}

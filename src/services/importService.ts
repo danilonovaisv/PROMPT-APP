@@ -57,52 +57,79 @@ function parsePromptContract(value: unknown): PromptContract {
   return parsePromptPayload(value);
 }
 
-function normalizeBulkMenuDefinition(menu: unknown): unknown {
+function normalizeMenuDefinition(menu: unknown): unknown {
   if (!isObject(menu)) return menu;
 
-  if (typeof menu.menu_id === 'string' && typeof menu.menu_name === 'string') {
-    return {
-      ...menu,
-      required: typeof menu.required === 'boolean' ? menu.required : false,
-    };
-  }
+  const getSubOptions = (opt: any) => {
+    const raw = opt.sub_options || opt.subOptions;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((sub: any) => {
+      if (!isObject(sub)) return sub;
+      return {
+        value: typeof (sub.value ?? sub.valor) === 'string' ? (sub.value ?? sub.valor) : '',
+        label: typeof (sub.label ?? sub.rotulo) === 'string' ? (sub.label ?? sub.rotulo) : '',
+        description: typeof sub.description === 'string' ? sub.description : '',
+      };
+    });
+  };
 
-  if (typeof menu.menuId === 'string' && typeof menu.menuName === 'string') {
+  const getOptions = (m: any) => {
+    const raw = m.options || m.menu_options;
+    if (!Array.isArray(raw)) return [];
+    return raw.map((opt: any) => {
+      if (!isObject(opt)) return opt;
+      return {
+        value: typeof (opt.value ?? opt.valor) === 'string' ? (opt.value ?? opt.valor) : '',
+        label: typeof (opt.label ?? opt.rotulo) === 'string' ? (opt.label ?? opt.rotulo) : '',
+        description: typeof opt.description === 'string' ? opt.description : '',
+        sub_options: getSubOptions(opt),
+      };
+    });
+  };
+
+  if (
+    (typeof menu.menu_id === 'string' && typeof menu.menu_name === 'string') ||
+    (typeof menu.menuId === 'string' && typeof menu.menuName === 'string')
+  ) {
     return {
-      menu_id: menu.menuId,
-      menu_name: menu.menuName,
+      menu_id: menu.menu_id || menu.menuId,
+      menu_name: menu.menu_name || menu.menuName,
       description: typeof menu.description === 'string' ? menu.description : '',
-      selection_mode: typeof menu.selectionMode === 'string' ? menu.selectionMode : 'single',
-      required: false,
-      options: Array.isArray(menu.options)
-        ? menu.options.map((option) =>
-            isObject(option)
-              ? {
-                  value: typeof option.value === 'string' ? option.value : '',
-                  label: typeof option.label === 'string' ? option.label : '',
-                  description: typeof option.description === 'string' ? option.description : '',
-                  sub_options: Array.isArray(option.subOptions)
-                    ? option.subOptions.map((subOption) =>
-                        isObject(subOption)
-                          ? {
-                              value: typeof subOption.value === 'string' ? subOption.value : '',
-                              label: typeof subOption.label === 'string' ? subOption.label : '',
-                              description:
-                                typeof subOption.description === 'string'
-                                  ? subOption.description
-                                  : '',
-                            }
-                          : subOption
-                      )
-                    : [],
-                }
-              : option
-          )
-        : [],
+      selection_mode: menu.selection_mode || menu.selectionMode || 'single',
+      required: typeof (menu.required ?? menu.obrigatorio) === 'boolean' ? (menu.required ?? menu.obrigatorio) : false,
+      options: getOptions(menu),
     };
   }
 
   return menu;
+}
+
+function sanitizeMenuDefinition(definition: unknown): any {
+  const normalized = normalizeMenuDefinition(definition);
+  if (!isObject(normalized)) return normalized;
+  
+  // Pick only allowed fields to satisfy .strict() schema
+  return {
+    menu_id: normalized.menu_id,
+    menu_name: normalized.menu_name,
+    description: normalized.description || '',
+    selection_mode: normalized.selection_mode || 'single',
+    required: !!normalized.required,
+    options: Array.isArray(normalized.options) 
+      ? normalized.options.map((opt: any) => ({
+          value: opt.value,
+          label: opt.label,
+          description: opt.description || '',
+          sub_options: Array.isArray(opt.sub_options)
+            ? opt.sub_options.map((sub: any) => ({
+                value: sub.value,
+                label: sub.label,
+                description: sub.description || '',
+              }))
+            : []
+        }))
+      : []
+  };
 }
 
 function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
@@ -124,7 +151,8 @@ function buildPromptRecord(promptPayload: PromptContract, categoryId: number): O
 }
 
 function definitionToContextMenu(definition: unknown): Omit<ContextMenu, 'id'> {
-  const parsed = MenuDefinitionSchema.parse(definition);
+  const sanitized = sanitizeMenuDefinition(definition);
+  const parsed = MenuDefinitionSchema.parse(sanitized);
   const now = new Date();
 
   return {
@@ -322,12 +350,13 @@ export async function importFromJsonText(
     if (isBulkExport(parsed)) {
       pushUniqueWarning(warnings, getBulkExportWarning(parsed.version || '0.0.0'));
       const menuDefinitions = Array.isArray(parsed.menuDefinitions)
-        ? parsed.menuDefinitions.map(normalizeBulkMenuDefinition)
+        ? parsed.menuDefinitions.map(normalizeMenuDefinition)
         : Array.isArray(parsed.contextMenus)
-          ? parsed.contextMenus.map(normalizeBulkMenuDefinition)
+          ? parsed.contextMenus.map(normalizeMenuDefinition)
           : [];
       const parsedMenuDefinitions = menuDefinitions.flatMap((definition) => {
-        const parsedDefinition = MenuDefinitionSchema.safeParse(definition);
+        const sanitized = sanitizeMenuDefinition(definition);
+        const parsedDefinition = MenuDefinitionSchema.safeParse(sanitized);
         return parsedDefinition.success ? [parsedDefinition.data] : [];
       });
 

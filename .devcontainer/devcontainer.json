@@ -11,7 +11,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "Supabase.vscode-supabase-extension"
+        "Supabase.vscode-supabase-extension",
+        "ms-vscode-remote.remote-ssh"
       ]
     }
   }

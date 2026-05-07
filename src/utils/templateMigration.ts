@@ -22,19 +22,63 @@ export function migrateTemplateToCurrentSchema(template: TemplatePayload): Templ
     CURRENT_PROMPT_SCHEMA_VERSION
   );
 
+  // Pre-sanitize to avoid .strict() validation errors from extra fields
+  const sanitizedMeta = {
+    template_id: template.meta.template_id,
+    template_name: template.meta.template_name,
+    template_type: template.meta.template_type,
+    schema_version:
+      compatibility === 'legacy'
+        ? CURRENT_PROMPT_SCHEMA_VERSION
+        : template.meta.schema_version,
+    language: template.meta.language || 'pt-BR',
+    status: template.meta.status || 'draft',
+  };
+
+  // Rebuild the entire object to strictly match TemplatePayloadSchema and avoid .strict() errors
   const nextTemplate = TemplatePayloadSchema.parse({
-    ...template,
-    meta: {
-      ...template.meta,
-      schema_version:
-        compatibility === 'legacy'
-          ? CURRENT_PROMPT_SCHEMA_VERSION
-          : template.meta.schema_version,
+    meta: sanitizedMeta,
+    prompt_definition: {
+      system_role: template.prompt_definition?.system_role || '',
+      task: template.prompt_definition?.task || '',
+      context: template.prompt_definition?.context || '',
+      user_scene_description: template.prompt_definition?.user_scene_description || '',
+      constraints: template.prompt_definition?.constraints || [],
+      negative_prompt: template.prompt_definition?.negative_prompt || [],
+      few_shot_examples: (template.prompt_definition?.few_shot_examples || []).map((ex: any) => ({
+        input: ex.input || '',
+        output: ex.output || '',
+      })),
     },
+    menu_definitions: (template.menu_definitions || []).map((menu: any) => ({
+      menu_id: menu.menu_id,
+      menu_name: menu.menu_name,
+      description: menu.description || '',
+      selection_mode: menu.selection_mode || 'single',
+      required: !!menu.required,
+      options: (menu.options || []).map((opt: any) => ({
+        value: opt.value,
+        label: opt.label,
+        description: opt.description || '',
+        sub_options: (opt.sub_options || []).map((sub: any) => ({
+          value: sub.value,
+          label: sub.label,
+          description: sub.description || '',
+        })),
+      })),
+    })),
     menu_ids: uniqueStrings([
       ...(template.menu_ids || []),
-      ...template.menu_definitions.map((menu) => menu.menu_id),
+      ...(template.menu_definitions || []).map((menu: any) => menu.menu_id),
     ]),
+    output_contract: {
+      format: template.output_contract?.format || 'markdown',
+      language: template.output_contract?.language || 'pt-BR',
+      strict_mode: template.output_contract?.strict_mode !== false,
+      required_fields: template.output_contract?.required_fields || [],
+      response_rules: template.output_contract?.response_rules || [],
+      optional_enums: template.output_contract?.optional_enums || {},
+    },
   });
 
   if (compatibility === 'legacy') {

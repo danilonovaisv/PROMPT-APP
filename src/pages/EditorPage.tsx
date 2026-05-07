@@ -25,7 +25,7 @@ import {
   sanitizeUserSelection,
 } from '@/models/promptSchema';
 import { savePromptToSupabase } from '@/services/supabasePrompts';
-import { fetchMemory, saveMemory, deleteMemory } from '@/services/memoryService';
+import { fetchMemory, saveMemory, deleteMemory, syncMemory } from '@/services/memoryService';
 import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/promptArtifacts';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
@@ -298,10 +298,7 @@ export default function EditorPage() {
     const saveChanges = async () => {
       setIsSavingMemory(true);
       try {
-        const keys = Object.keys(debouncedFixedMemory);
-        for (const key of keys) {
-          await saveMemory(form.template.meta.template_id, key, debouncedFixedMemory[key]);
-        }
+        await syncMemory(form.template.meta.template_id, debouncedFixedMemory);
       } catch (error) {
         if (!isUnauthenticatedCloudError(error)) {
           showToast('Erro ao sincronizar memória context', 'error');
