@@ -1,112 +1,68 @@
+# Configuração de produção Netlify otimizada para {{FRAMEWORK}} detectado (Vite + React)
+
 [build]
+  # Build enxuto: somente compilação da aplicação
   command = "pnpm install --frozen-lockfile && pnpm run build"
   publish = "dist"
-  # Ignore builds que não impactam o bundle publicado.
-  # Pula o build se o diff entre o último commit publicado e o atual só
-  # alterar arquivos de documentação, workflows, testes, lockfiles, etc.
-  # Referência: https://docs.netlify.com/configure-builds/ignore-builds/
-  ignore = '''
-    bash -c '
-      set -euo pipefail
-      if [ -z "${CACHED_COMMIT_REF:-}" ] || [ -z "${COMMIT_REF:-}" ]; then
-        echo "[ignore] Sem CACHED_COMMIT_REF; permitindo build inicial."
-        exit 1
-      fi
-      if [ "$CACHED_COMMIT_REF" = "$COMMIT_REF" ]; then
-        echo "[ignore] COMMIT_REF igual a CACHED_COMMIT_REF; pulando build."
-        exit 0
-      fi
-      CHANGED="$(git diff --name-only "$CACHED_COMMIT_REF" "$COMMIT_REF" || true)"
-      if [ -z "$CHANGED" ]; then
-        echo "[ignore] Diff vazio; pulando build."
-        exit 0
-      fi
-      # Lista os arquivos do diff que NÃO casam com os padrões de ignore.
-      # Se essa lista for vazia, todos os arquivos alterados são irrelevantes
-      # para o bundle → pula o build (exit 0).
-      # Caso contrário, há pelo menos um arquivo relevante → executa o build (exit 1).
-      # Nota: Netlify convenciona exit 0 = skip, exit 1 = build.
-      # Ref: https://docs.netlify.com/configure-builds/ignore-builds/
-      RELEVANT="$(echo "$CHANGED" | grep -vE "^(docs/|\.github/|tests/|test-results/|playwright-report/|coverage/|\.vscode/|\.idea/|scripts/|logs/|backup-superpower/|customization/|.*\.md$|.*\.lock$|.*\.log$|pnpm-lock\.yaml$|\.gitignore$|\.npmrc$|LICENSE$|SECURITY\.md$)" || true)"
-      if [ -z "$RELEVANT" ]; then
-        echo "[ignore] Apenas arquivos irrelevantes alterados; pulando build."
-        echo "$CHANGED"
-        exit 0
-      fi
-      echo "[ignore] Alterações relevantes detectadas; executando build."
-      echo "$RELEVANT"
-      exit 1
-    '
-  '''
+  # Ignora builds para mudanças que não impactam deploy (docs, testes, CI e lockfiles)
+  ignore = '''bash -c 'if [ -z "$CACHED_COMMIT_REF" ]; then exit 1; fi; CHANGED="$(git diff --name-only "$CACHED_COMMIT_REF" "$COMMIT_REF")"; echo "$CHANGED" | grep -qvE "^(docs/|\.github/|tests/|.*\.md$|.*\.lock$)"' '''
 
 [build.environment]
   NODE_VERSION = "20"
   CI = "true"
 
 [build.processing]
+  # Evita processamento automático de assets para reduzir tempo/custo
   skip_processing = true
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.images]
+  compress = false
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# Desabilita deploys de branches secundárias a nível de configuração.
-# A configuração final ainda precisa ser validada no painel Netlify
-# (Site configuration → Build & deploy → Branches and deploy contexts).
-[context.production]
-  command = "pnpm install --frozen-lockfile && pnpm run build"
-
-[context.deploy-preview]
-  # Mantém preview apenas se explicitamente solicitado. O painel Netlify
-  # deve estar configurado como "None" em Deploy previews para economizar
-  # minutos de build.
-  command = "pnpm install --frozen-lockfile && pnpm run build"
-
-[context.branch-deploy]
-  # Branch deploys desativados: o painel Netlify deve estar configurado
-  # como "None" em Branch deploys. Esta seção permanece apenas para
-  # referência/override manual.
-  command = "pnpm install --frozen-lockfile && pnpm run build"
-
-[[redirects]]
-  from = "/*.map"
-  to = "/index.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/sitemap.xml"
-  status = 200
-
-[[redirects]]
-  from = "/sitemap*.xml"
-  to = "/index.html"
-  status = 404
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 [[headers]]
+  # HTML sempre validado para evitar conteúdo stale
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io;"
+    Cache-Control = "public, max-age=0, must-revalidate"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io; img-src 'self' data: https:; frame-ancestors 'none'"
 
 [[headers]]
+  # Assets versionados com cache agressivo e imutável
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-[[headers]]
-  for = "/*.map"
-  [headers.values]
-    X-Robots-Tag = "noindex"
-    Cache-Control = "no-store"
+[[redirects]]
+  # Force HTTPS
+  from = "http://prompt-app-dan.netlify.app/*"
+  to = "https://prompt-app-dan.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  # Block public source maps
+  from = "/assets/*.map"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  # SPA fallback para roteamento client-side
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false

@@ -90,6 +90,18 @@ X-Robots-Tag = "noindex"
 Cache-Control = "no-store"
 
 [[redirects]]
+from = "/*.map"
+to = "/index.html"
+status = 404.0
+force = true
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
 from = "/sitemap.xml"
 to = "/sitemap.xml"
 status = 200.0
