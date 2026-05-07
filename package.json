@@ -27,6 +27,14 @@
     "clean:modules": "rm -rf node_modules",
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
+  "pnpm": {
+    "overrides": {
+      "underscore": ">=1.13.8",
+      "underscore.string": ">=3.3.5",
+      "uuid": ">=13.0.1",
+      "esbuild": ">=0.25.0"
+    }
+  },
   "dependencies": {
     "23": "^0.0.0",
     "@netlify/neon": "^0.1.2",
@@ -39,9 +47,7 @@
     "dexie": "^4.4.2",
     "dexie-react-hooks": "^4.4.0",
     "drizzle-orm": "^0.45.2",
-    "fix": "^0.0.6",
     "lucide-react": "^1.14.0",
-    "netlify-cli": "^26.0.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
@@ -49,6 +55,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "fix": "^0.0.6",
+    "netlify-cli": "^26.0.1",
     "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^10.0.1",
     "@jest/globals": "^30.3.0",
