@@ -585,7 +585,8 @@ select option {
 }
 
 .mobile-toggle:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  opacity: 0.9;
   background: var(--color-surface-hover);
 }
 
@@ -1215,7 +1216,7 @@ select option {
   border-color: var(--color-primary);
   background-color: var(--color-primary-glow);
   box-shadow: 0 0 12px var(--color-primary-glow);
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
 .icon-picker-grid__emoji {
@@ -3444,8 +3445,8 @@ select option {
   }
 
   .btn--icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
