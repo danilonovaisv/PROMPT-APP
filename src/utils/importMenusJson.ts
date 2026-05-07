@@ -324,9 +324,7 @@ export async function importMenusFromFile(
         }
 
         await db.transaction('rw', db.contextMenus, async () => {
-            for (const menu of enrichedMenus) {
-                await db.contextMenus.add(menu as ContextMenu);
-            }
+            await db.contextMenus.bulkPut(enrichedMenus as ContextMenu[]);
         });
 
         log.push(`[${timestamp}] SUCESSO: ${menusToImport.length} menu(s) importado(s)`);

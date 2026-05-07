@@ -20,7 +20,7 @@ publish = "/Users/PROJETOS DEV/PROMPT-APP/dist"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "pnpm install --frozen-lockfile && pnpm run build"
-ignore = "    bash -c '\n      set -euo pipefail\n      if [ -z \"${CACHED_COMMIT_REF:-}\" ] || [ -z \"${COMMIT_REF:-}\" ]; then\n        echo \"[ignore] Sem CACHED_COMMIT_REF; permitindo build inicial.\"\n        exit 1\n      fi\n      if [ \"$CACHED_COMMIT_REF\" = \"$COMMIT_REF\" ]; then\n        echo \"[ignore] COMMIT_REF igual a CACHED_COMMIT_REF; pulando build.\"\n        exit 0\n      fi\n      CHANGED=\"$(git diff --name-only \"$CACHED_COMMIT_REF\" \"$COMMIT_REF\" || true)\"\n      if [ -z \"$CHANGED\" ]; then\n        echo \"[ignore] Diff vazio; pulando build.\"\n        exit 0\n      fi\n      # Lista os arquivos do diff que NÃO casam com os padrões de ignore.\n      # Se essa lista for vazia, todos os arquivos alterados são irrelevantes\n      # para o bundle → pula o build (exit 0).\n      # Caso contrário, há pelo menos um arquivo relevante → executa o build (exit 1).\n      # Nota: Netlify convenciona exit 0 = skip, exit 1 = build.\n      # Ref: https://docs.netlify.com/configure-builds/ignore-builds/\n      RELEVANT=\"$(echo \"$CHANGED\" | grep -vE \"^(docs/|\\.github/|tests/|test-results/|playwright-report/|coverage/|\\.vscode/|\\.idea/|scripts/|logs/|backup-superpower/|customization/|.*\\.md$|.*\\.lock$|.*\\.log$|pnpm-lock\\.yaml$|\\.gitignore$|\\.npmrc$|LICENSE$|SECURITY\\.md$)\" || true)\"\n      if [ -z \"$RELEVANT\" ]; then\n        echo \"[ignore] Apenas arquivos irrelevantes alterados; pulando build.\"\n        echo \"$CHANGED\"\n        exit 0\n      fi\n      echo \"[ignore] Alterações relevantes detectadas; executando build.\"\n      echo \"$RELEVANT\"\n      exit 1\n    '\n  "
+ignore = "bash -c 'if [ -z \"$CACHED_COMMIT_REF\" ]; then exit 1; fi; CHANGED=\"$(git diff --name-only \"$CACHED_COMMIT_REF\" \"$COMMIT_REF\")\"; echo \"$CHANGED\" | grep -qvE \"^(docs/|\\.github/|tests/|.*\\.md$|.*\\.lock$)\"' "
 functions = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
 
 [build.environment]
@@ -31,14 +31,31 @@ CI = "true"
 skip_processing = true
 
 [build.processing.css]
+bundle = false
+minify = false
 
 [build.processing.html]
 
 [build.processing.images]
+compress = false
 
 [build.processing.js]
+bundle = false
+minify = false
 
 [build.services]
+
+[[headers]]
+for = "/*"
+
+[headers.values]
+Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io;"
+Cache-Control = "public, max-age=0, must-revalidate"
+X-Frame-Options = "DENY"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
 [[headers]]
 for = "/*.woff2"
@@ -65,16 +82,21 @@ for = "/*.otf"
 Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
+for = "/*.map"
+
+[headers.values]
+X-Robots-Tag = "noindex"
+Cache-Control = "no-store"
+
+[[headers]]
 for = "/*"
 
 [headers.values]
-Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io;"
+Cache-Control = "public, max-age=0, must-revalidate"
 X-Frame-Options = "DENY"
 X-Content-Type-Options = "nosniff"
 Referrer-Policy = "strict-origin-when-cross-origin"
-Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-Cache-Control = "public, max-age=0, must-revalidate"
+Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io; img-src 'self' data: https:; frame-ancestors 'none'"
 
 [[headers]]
 for = "/assets/*"
@@ -82,18 +104,11 @@ for = "/assets/*"
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"
 
-[[headers]]
-for = "/*.map"
-
-[headers.values]
-X-Robots-Tag = "noindex"
-Cache-Control = "no-store"
-
 [[redirects]]
-from = "/sitemap.xml"
-to = "/sitemap.xml"
-status = 200.0
-force = false
+from = "http://prompt-app-dan.netlify.app/*"
+to = "https://prompt-app-dan.netlify.app/:splat"
+status = 301.0
+force = true
 
 [redirects.query]
 
@@ -102,10 +117,10 @@ force = false
 [redirects.headers]
 
 [[redirects]]
-from = "/sitemap*.xml"
-to = "/index.html"
+from = "/assets/*.map"
+to = "/404"
 status = 404.0
-force = false
+force = true
 
 [redirects.query]
 
