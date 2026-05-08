@@ -28,9 +28,6 @@
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "*"
-    ],
     "overrides": {
       "underscore": ">=1.13.8",
       "underscore.string": ">=3.3.5",
@@ -39,7 +36,6 @@
     }
   },
   "dependencies": {
-    "23": "^0.0.0",
     "@netlify/neon": "^0.1.2",
     "@netlify/vite-plugin": "^2.12.1",
     "@sentry/browser": "^10.51.0",
@@ -76,7 +72,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "fake-indexeddb": "^6.2.5",
-    "fix": "^0.0.6",
     "globals": "^17.6.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",

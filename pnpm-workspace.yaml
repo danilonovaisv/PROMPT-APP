@@ -1,27 +1,22 @@
+packages:
+  - '.'
+
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  '@sentry/cli': set this to true or false
-  esbuild: set this to true or false
-  netlify-cli: set this to true or false
-  sharp: set this to true or false
-  unix-dgram: set this to true or false
-  unrs-resolver: set this to true or false
-ignoredBuiltDependencies:
-  - '@google/genai'
-  - '@parcel/watcher'
-  - '@sentry/cli'
-  - agentdb
-  - agentic-flow
-  - argon2
-  - bcrypt
-  - better-sqlite3
-  - esbuild
-  - hnswlib-node
-  - netlify-cli
-  - onnxruntime-node
-  - protobufjs
-  - sharp
-  - sqlite3
-  - tldjs
-  - unix-dgram
-  - unrs-resolver
+  '@parcel/watcher': true
+  '@sentry/cli': true
+  'esbuild': true
+  'netlify-cli': true
+  'sharp': true
+  'unix-dgram': true
+  'unrs-resolver': true
+  '@google/genai': true
+  'agentdb': true
+  'agentic-flow': true
+  'argon2': true
+  'bcrypt': true
+  'better-sqlite3': true
+  'hnswlib-node': true
+  'onnxruntime-node': true
+  'protobufjs': true
+  'sqlite3': true
+  'tldjs': true
