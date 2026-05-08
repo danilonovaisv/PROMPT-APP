@@ -74,8 +74,8 @@ export function EditorPlayground({
   return (
     <div className="form-section">
       <div className="form-section">
-        <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-          <h4 className="form-section__title" style={{ margin: 0 }}>Memória Fixa</h4>
+        <div className="flex-row-center memory-section-header">
+          <h4 className="form-section__title memory-section-title">Memória Fixa</h4>
           {isSavingMemory && (
             <div className="memory-status memory-status--saving" role="status" aria-live="polite">
               <div className="loading-spinner loading-spinner--xs" />
@@ -89,17 +89,17 @@ export function EditorPlayground({
           )}
         </div>
         
-        <p id={memoryHelpId} className="form-label__hint" style={{ marginBottom: 'var(--space-4)' }}>
+        <p id={memoryHelpId} className="form-label__hint memory-section-hint">
           Estes valores ficam vinculados ao template <strong>{templateLabel}</strong> e preenchem variáveis fixas sempre que este template for usado. Eles não são globais entre templates.
         </p>
         
         {isMemoryLoading ? (
-          <div className="skeleton-block" style={{ height: '100px', marginBottom: '1rem', width: '100%' }} />
+          <div className="skeleton-block memory-skeleton" />
         ) : (
           <>
             {memoryKeys.length === 0 && !isAddingKey && (
-              <div className="empty-state-hint" style={{ marginBottom: 'var(--space-4)', padding: 'var(--space-4)', border: '1px dashed var(--color-border)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
+              <div className="empty-state-hint memory-empty-state">
+                <p className="memory-empty-text">
                   Nenhuma chave fixa definida para este template. Adicione apenas os campos que precisam ser preenchidos sempre neste contexto.
                 </p>
               </div>
@@ -110,8 +110,8 @@ export function EditorPlayground({
                 const fieldId = `fixed-memory-${key.toLowerCase()}`;
                 return (
                   <div key={key} className="card memory-card">
-                    <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                      <label htmlFor={fieldId} className="form-label" style={{ marginBottom: 0, fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-light)' }}>
+                    <div className="flex-row-center memory-card-header">
+                      <label htmlFor={fieldId} className="form-label memory-card-label">
                         {key}
                       </label>
                       <button 
@@ -131,9 +131,8 @@ export function EditorPlayground({
                         onChange={(e) => onSaveMemory?.(key, e.target.value)}
                         rows={2}
                         placeholder={`Valor para ${key}...`}
-                        className="form-input"
+                        className="form-input memory-input-sm"
                         aria-describedby={memoryHelpId}
-                        style={{ fontSize: 'var(--font-size-sm)' }}
                       />
                     </div>
                   </div>
@@ -142,21 +141,20 @@ export function EditorPlayground({
 
               {isAddingKey || memoryKeys.length === 0 ? (
                 <div className="card memory-card memory-card--add animate-fade-in">
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" style={{ fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <div className="form-group memory-add-group">
+                    <label className="form-label memory-add-label">
                       Nova Chave Fixa do Template
                     </label>
-                    <div className="flex-row-center" style={{ gap: 'var(--space-2)' }}>
+                    <div className="memory-card__actions">
                       <input
                         autoFocus
-                        className="form-input"
+                        className="form-input memory-input-upper"
                         value={newKeyName}
                         onChange={(e) => setNewKeyName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleConfirmAddKey()}
                         onBlur={(e) => !e.target.value && setIsAddingKey(false)}
                         aria-label="Nome da nova chave fixa"
                         placeholder="EX: BRAND_VOICE"
-                        style={{ textTransform: 'uppercase' }}
                       />
                       <textarea
                         className="form-input"
@@ -266,7 +264,7 @@ export function EditorPlayground({
                       key={option.value}
                       type="button"
                       className={`menu-tag ${optionSelection ? 'menu-tag--selected' : ''}`}
-                      aria-pressed={optionSelection ? 'true' : 'false'}
+                      aria-pressed={!!optionSelection}
                       onClick={() => onToggleOption(menu.menuId, menu.selectionMode, option.value)}
                     >
                       {option.label}
@@ -297,7 +295,7 @@ export function EditorPlayground({
                               key={subOption.value}
                               type="button"
                               className={`menu-tag menu-tag--sub ${isSelected ? 'menu-tag--selected' : ''}`}
-                              aria-pressed={isSelected ? 'true' : 'false'}
+                              aria-pressed={isSelected}
                               onClick={() => onToggleSubOption(menu.menuId, optionDefinition.value, subOption.value)}
                             >
                               {subOption.label}

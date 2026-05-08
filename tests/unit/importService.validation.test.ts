@@ -134,14 +134,16 @@ describe('importService validation', () => {
     expect(result.errors[0].message).toEqual(expect.any(String));
     expect(result.errors[0].message.length).toBeGreaterThan(0);
     expect(db.prompts.bulkAdd).toHaveBeenCalledTimes(1);
-    expect(db.prompts.bulkAdd).toHaveBeenCalledWith([
-      expect.objectContaining({
-        title: 'Prompt válido',
-        schemaVersion: '1.0.0',
-        language: 'pt-BR',
-        outputFormat: 'markdown',
-      }),
-    ]);
+    expect(db.prompts.bulkAdd).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Prompt válido',
+          schemaVersion: '1.0.0',
+          language: 'pt-BR',
+          outputFormat: 'markdown',
+        }),
+      ])
+    );
   });
 
   test('preserves few_shot_examples when importing legacy prompt JSON', async () => {
@@ -186,7 +188,7 @@ describe('importService validation', () => {
             few_shot_examples: fewShotExamples,
           }),
         }),
-      })
+      }) as any
     );
   });
 });

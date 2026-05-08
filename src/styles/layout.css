@@ -237,3 +237,45 @@
   opacity: 0.9;
   background: var(--color-surface-hover);
 }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+  transition: opacity var(--transition-fast);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-overlay--active {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  .app-sidebar--open {
+    transform: translateX(0);
+  }
+  .app-main {
+    margin-left: 0;
+  }
+  .mobile-toggle {
+    display: flex;
+  }
+  .app-header {
+    padding-left: calc(var(--space-8) + 48px);
+  }
+  .app-content {
+    padding: var(--space-4) var(--space-2);
+  }
+}

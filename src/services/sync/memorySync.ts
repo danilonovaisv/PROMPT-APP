@@ -59,13 +59,20 @@ export const syncMemoryToCloud = async (userId: string) => {
  */
 export const downloadMemoryFromCloud = async () => {
   try {
-    const remoteData = await fetchAllPages<any>((r) =>
+    const remoteData = await fetchAllPages<{
+      template_id: string;
+      key: string;
+      value: string;
+      is_deleted: boolean;
+      created_at: string;
+      updated_at: string;
+    }>((r) =>
       supabase.from("prompt_memory_context").select("*").range(r[0], r[1])
     );
 
     if (remoteData.length === 0) return;
 
-    const templates = [...new Set(remoteData.map(item => item.template_id as string))];
+    const templates = Array.from(new Set(remoteData.map(item => item.template_id)));
     console.log(`🧠 Baixando memória para ${templates.length} template(s)...`);
 
     // 1. ⚡ Buscar todos os registros locais relevantes em UMA query
@@ -118,10 +125,10 @@ export const downloadMemoryFromCloud = async () => {
     // 4. ⚡ Aplicar em transação única
     await db.transaction('rw', db.promptMemory, async () => {
       if (toAdd.length > 0) {
-        await db.promptMemory.bulkAdd(toAdd as any[]);
+        await db.promptMemory.bulkAdd(toAdd as any);
       }
       if (toUpdate.length > 0) {
-        await db.promptMemory.bulkUpdate(toUpdate as any[]);
+        await db.promptMemory.bulkUpdate(toUpdate as any);
       }
     });
 
