@@ -1,0 +1,103 @@
+/* ==========================================================================
+   DESIGN TOKENS — Ghost System
+   ========================================================================== */
+
+:root {
+  /* Cores primárias */
+  --color-primary: #0048ff;
+  --color-primary-light: #3370ff;
+  --color-primary-dark: #0033b3;
+  --color-primary-glow: rgba(0, 72, 255, 0.25);
+  --color-accent: #4fe6ff;
+  --color-accent-glow: rgba(79, 230, 255, 0.2);
+
+  /* Superfícies */
+  --color-void: #040013;
+  --color-bg: #06001a;
+  --color-surface-1: #0a0a1a;
+  --color-surface-2: #111128;
+  --color-surface-3: #1a1a3a;
+  --color-surface-hover: #1e1e42;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-active: rgba(0, 72, 255, 0.4);
+
+  /* Texto */
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #a0a0b8;
+  --color-text-muted: #8e8ea6;
+  --color-text-inverse: #040013;
+
+  /* Feedback */
+  --color-success: #00d68f;
+  --color-warning: #ffaa00;
+  --color-error: #ff4466;
+  --color-info: #0048ff;
+
+  /* Tipografia */
+  --font-family: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-size-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.75rem);
+  --font-size-sm: clamp(0.75rem, 0.7rem + 0.25vw, 0.8125rem);
+  --font-size-base: clamp(0.875rem, 0.8rem + 0.35vw, 0.9375rem);
+  --font-size-md: clamp(0.95rem, 0.9rem + 0.25vw, 1rem);
+  --font-size-lg: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
+  --font-size-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --font-size-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);
+  --font-size-3xl: clamp(2rem, 1.8rem + 1vw, 2.5rem);
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Espaçamento */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Bordas e sombras */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-premium: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px var(--color-primary-glow);
+
+  /* Transições */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-premium: 600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Ghost Era Premium Tokens */
+  --color-glass: rgba(4, 0, 19, 0.75);
+  --glass-blur: 12px;
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --max-content-width: 1280px;
+}
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

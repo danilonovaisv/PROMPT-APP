@@ -1,6 +1,5 @@
 import { db } from '@/db/database';
 import {
-  MenuDefinitionSchema,
   PromptContractSchema,
   parsePromptPayload,
   getPrimaryReferenceUrl,
@@ -9,43 +8,13 @@ import {
 } from '@/models/promptSchema';
 import type { ContextMenu, Prompt } from '@/models/types';
 import { saveCategoryToSupabase } from '@/services/supabaseCategories';
-import { saveMenuToSupabase } from '@/services/supabaseMenus';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { syncTemplateWithMenuDefinitions } from '@/utils/promptArtifacts';
 import { getBulkExportWarning, getPromptSchemaWarning } from '@/utils/schemaCompatibility';
 import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
+import { normalizeMenuBatch } from '@/utils/menuValidation';
 
-interface RawMenuSubOption {
-  value?: string;
-  valor?: string;
-  label?: string;
-  rotulo?: string;
-  description?: string;
-}
-
-interface RawMenuOption {
-  value?: string;
-  valor?: string;
-  label?: string;
-  rotulo?: string;
-  description?: string;
-  sub_options?: RawMenuSubOption[];
-  subOptions?: RawMenuSubOption[];
-}
-
-interface RawMenuDefinition {
-  menu_id?: string;
-  menuId?: string;
-  menu_name?: string;
-  menuName?: string;
-  description?: string;
-  selection_mode?: string;
-  selectionMode?: string;
-  required?: boolean;
-  obrigatorio?: boolean;
-  options?: RawMenuOption[];
-  menu_options?: RawMenuOption[];
-}
+// Interfaces moved to @/utils/menuValidation.ts or shared via types.ts
 
 export interface ImportError {
   type: 'validation' | 'processing' | 'network' | 'conflict';
@@ -89,82 +58,7 @@ function parsePromptContract(value: unknown): PromptContract {
   return parsePromptPayload(value);
 }
 
-function normalizeMenuDefinition(menu: unknown): unknown {
-  if (!isObject(menu)) return menu;
-  const rawMenu = menu as RawMenuDefinition;
-
-  const getSubOptions = (opt: RawMenuOption) => {
-    const raw = opt.sub_options || opt.subOptions;
-    if (!Array.isArray(raw)) return [];
-    return raw.map((sub: RawMenuSubOption) => {
-      if (!isObject(sub)) return sub;
-      return {
-        value: typeof (sub.value ?? sub.valor) === 'string' ? (sub.value ?? sub.valor) : '',
-        label: typeof (sub.label ?? sub.rotulo) === 'string' ? (sub.label ?? sub.rotulo) : '',
-        description: typeof sub.description === 'string' ? sub.description : '',
-      };
-    });
-  };
-
-  const getOptions = (m: RawMenuDefinition) => {
-    const raw = m.options || m.menu_options;
-    if (!Array.isArray(raw)) return [];
-    return raw.map((opt: RawMenuOption) => {
-      if (!isObject(opt)) return opt;
-      return {
-        value: typeof (opt.value ?? opt.valor) === 'string' ? (opt.value ?? opt.valor) : '',
-        label: typeof (opt.label ?? opt.rotulo) === 'string' ? (opt.label ?? opt.rotulo) : '',
-        description: typeof opt.description === 'string' ? opt.description : '',
-        sub_options: getSubOptions(opt),
-      };
-    });
-  };
-
-  if (
-    (typeof rawMenu.menu_id === 'string' && typeof rawMenu.menu_name === 'string') ||
-    (typeof rawMenu.menuId === 'string' && typeof rawMenu.menuName === 'string')
-  ) {
-    return {
-      menu_id: rawMenu.menu_id || rawMenu.menuId,
-      menu_name: rawMenu.menu_name || rawMenu.menuName,
-      description: typeof rawMenu.description === 'string' ? rawMenu.description : '',
-      selection_mode: rawMenu.selection_mode || rawMenu.selectionMode || 'single',
-      required: typeof (rawMenu.required ?? rawMenu.obrigatorio) === 'boolean' ? (rawMenu.required ?? rawMenu.obrigatorio) : false,
-      options: getOptions(rawMenu),
-    };
-  }
-
-  return menu;
-}
-
-function sanitizeMenuDefinition(definition: unknown): unknown {
-  const normalized = normalizeMenuDefinition(definition);
-  if (!isObject(normalized)) return normalized;
-  const menu = normalized as RawMenuDefinition;
-  
-  // Pick only allowed fields to satisfy .strict() schema
-  return {
-    menu_id: menu.menu_id,
-    menu_name: menu.menu_name,
-    description: menu.description || '',
-    selection_mode: menu.selection_mode || 'single',
-    required: !!menu.required,
-    options: Array.isArray(menu.options) 
-      ? menu.options.map((opt: RawMenuOption) => ({
-          value: opt.value,
-          label: opt.label,
-          description: opt.description || '',
-          sub_options: Array.isArray(opt.sub_options)
-            ? opt.sub_options.map((sub: RawMenuSubOption) => ({
-                value: sub.value,
-                label: sub.label,
-                description: sub.description || '',
-              }))
-            : []
-        }))
-      : []
-  };
-}
+// Use shared utilities from @/utils/menuValidation
 
 function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
   const summary = getPromptSummaryFields(promptPayload);
@@ -184,89 +78,43 @@ function buildPromptRecord(promptPayload: PromptContract, categoryId: number): O
   };
 }
 
-function definitionToContextMenu(definition: unknown): Omit<ContextMenu, 'id'> {
-  const sanitized = sanitizeMenuDefinition(definition);
-  const parsed = MenuDefinitionSchema.parse(sanitized);
-  const now = new Date();
-
-  return {
-    menuId: parsed.menu_id,
-    menuName: parsed.menu_name,
-    description: parsed.description,
-    selectionMode: parsed.selection_mode,
-    options: parsed.options.map((option) => ({
-      value: option.value,
-      label: option.label,
-      subOptions: option.sub_options.map((subOption) => ({
-        value: subOption.value,
-        label: subOption.label,
-      })),
-    })),
-    createdAt: now,
-    updatedAt: now,
-  };
-}
+// definitionToContextMenu moved to @/utils/menuValidation — use normalizeAndValidateMenu
 
 async function importMenuDefinitions(
   menuDefinitions: unknown[],
   errors: ImportError[],
   warnings: string[]
-): Promise<number> {
-  let count = 0;
+): Promise<any[]> {
+  // ⚡ Use shared normalizeMenuBatch for consistent validation across all import paths
+  const { valid, parsed, errors: batchErrors } = normalizeMenuBatch(menuDefinitions);
+
+  for (const batchError of batchErrors) {
+    errors.push({
+      type: 'processing',
+      field: 'menu_definition',
+      message: batchError.error,
+      data: batchError.input,
+    });
+  }
+
+  if (valid.length === 0) return [];
 
   const existingMenus = await db.contextMenus.toArray();
   const existingMenuIds = new Set(existingMenus.map((m) => m.menuId));
-  const menusToPut: ContextMenu[] = [];
 
-  for (const definition of menuDefinitions) {
-    try {
-      const contextMenu = definitionToContextMenu(definition);
-      if (existingMenuIds.has(contextMenu.menuId)) {
-        continue;
-      }
+  const menusToPut = valid
+    .filter((m) => !existingMenuIds.has(m.menuId))
+    .map((m) => ({ ...m, syncStatus: 'pending' as const })) as ContextMenu[];
 
-      menusToPut.push({
-        ...contextMenu,
-        syncStatus: 'pending',
-      } as ContextMenu);
-      existingMenuIds.add(contextMenu.menuId);
-    } catch (e: unknown) {
-      const error = e as Error;
-      errors.push({
-        type: 'processing',
-        field: 'menu_definition',
-        message: error.message || 'Falha ao importar definição de menu',
-        data: definition,
-      });
-    }
-  }
-
-  // ⚡ Bolt Optimization: Use bulkPut to avoid N+1 database writes in Dexie.js
+  // ⚡ Bulk: single Dexie write for all new menus
   if (menusToPut.length > 0) {
-    const localIds = await db.contextMenus.bulkPut(menusToPut, { allKeys: true });
-
-    // Maintain immediate Supabase synchronization
-    for (let i = 0; i < menusToPut.length; i++) {
-      const contextMenu = menusToPut[i];
-      const localId = localIds[i] as number | undefined;
-
-      try {
-        const savedRemote = await saveMenuToSupabase(contextMenu);
-        if (localId) {
-          await db.contextMenus.update(localId, {
-            remoteId: savedRemote.id,
-            syncStatus: 'synced',
-          });
-        }
-      } catch {
-        warnings.push(`Menu "${contextMenu.menuName}" salvo localmente. Sincronize ao fazer login.`);
-      }
-      count++;
-    }
+    await db.contextMenus.bulkPut(menusToPut);
+    warnings.push('Menus importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
   }
 
-  return count;
+  return parsed;
 }
+
 
 async function ensureImportCategory(warnings: string[]): Promise<number> {
   const existingCategory = await db.categories.where('name').equals('Importados').first();
@@ -383,20 +231,14 @@ export async function importFromJsonText(
 
     if (isBulkExport(parsed)) {
       pushUniqueWarning(warnings, getBulkExportWarning(parsed.version || '0.0.0'));
-      const menuDefinitions = Array.isArray(parsed.menuDefinitions)
-        ? parsed.menuDefinitions.map(normalizeMenuDefinition)
+      const rawMenuDefinitions = Array.isArray(parsed.menuDefinitions)
+        ? parsed.menuDefinitions
         : Array.isArray(parsed.contextMenus)
-          ? parsed.contextMenus.map(normalizeMenuDefinition)
+          ? parsed.contextMenus
           : [];
-      const parsedMenuDefinitions = menuDefinitions.flatMap((definition) => {
-        const sanitized = sanitizeMenuDefinition(definition);
-        const parsedDefinition = MenuDefinitionSchema.safeParse(sanitized);
-        return parsedDefinition.success ? [parsedDefinition.data] : [];
-      });
 
-      if (menuDefinitions.length > 0) {
-        await importMenuDefinitions(menuDefinitions, errors, warnings);
-      }
+      // ⚡ Import menus and get validated snake_case definitions for prompt sync
+      const parsedMenuDefinitions = await importMenuDefinitions(rawMenuDefinitions, errors, warnings);
 
       // ⚡ Bolt Optimization:
       // Pre-fetch categories used in this bulk import to eliminate N+1 query problem.

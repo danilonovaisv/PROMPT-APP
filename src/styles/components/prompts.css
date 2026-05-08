@@ -1,0 +1,51 @@
+/* --- Prompt List --- */
+.prompt-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.prompt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.prompt-item:hover {
+  border-color: var(--color-border-active);
+  background-color: var(--color-surface-2);
+}
+
+.prompt-item__title {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.prompt-item__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.prompt-item__actions {
+  display: flex;
+  gap: var(--space-2);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.prompt-item:hover .prompt-item__actions {
+  opacity: 1;
+}
+
+/* A11y Audit Fix #08: Always show actions on touch devices (no hover) */
+@media (hover: none), (max-width: 768px) {
+  .prompt-item__actions {
+    opacity: 1;
+  }
+}

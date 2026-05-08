@@ -1,0 +1,81 @@
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.4;
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-accent));
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--primary:hover {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.btn--secondary {
+  background-color: var(--color-surface-2);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-surface-3);
+  border-color: var(--color-border-active);
+}
+
+.btn--ghost {
+  color: var(--color-text-secondary);
+}
+
+.btn--ghost:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.btn--danger {
+  background-color: rgba(255, 68, 102, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 68, 102, 0.2);
+}
+
+.btn--danger:hover {
+  background-color: rgba(255, 68, 102, 0.2);
+}
+
+.btn--sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.btn--lg {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-md);
+}
+
+/* A11y Audit Fix #05: Touch target minimum 44x44px (WCAG AAA) */
+.btn--icon {
+  padding: var(--space-2);
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

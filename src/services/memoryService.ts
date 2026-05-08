@@ -1,38 +1,23 @@
 import { supabase } from '@/lib/supabase';
+import { db } from '@/db/database';
 import type { MemoryMap } from '@/models/memory';
-
-const LOCAL_STORAGE_KEY_PREFIX = '@prompt-app:fixed_memory:';
-
-/**
- * Lê a memória fixa salva localmente (fallback offline/deslogado).
- */
-function getLocalMemory(templateId: string): MemoryMap {
-  try {
-    const data = localStorage.getItem(`${LOCAL_STORAGE_KEY_PREFIX}${templateId}`);
-    return data ? JSON.parse(data) : {};
-  } catch (err) {
-    console.error('Erro ao ler memória local:', err);
-    return {};
-  }
-}
-
-/**
- * Salva a memória fixa localmente.
- */
-function setLocalMemory(templateId: string, memory: MemoryMap): void {
-  try {
-    localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${templateId}`, JSON.stringify(memory));
-  } catch (err) {
-    console.error('Erro ao salvar memória local:', err);
-  }
-}
+import { 
+    getDexieMemory, 
+    setDexieMemory, 
+    deleteDexieMemory, 
+    saveDexieMemoryMap, 
+    migrateLegacyMemory 
+} from './storage/dexieMemory';
 
 /**
  * Busca todas as entradas de memória do usuário atual para um template específico,
  * com fallback para LocalStorage (estratégia local-first).
  */
 export async function fetchMemory(templateId: string): Promise<MemoryMap> {
-  const localMemory = getLocalMemory(templateId);
+  // Inicializa migração se necessário
+  await migrateLegacyMemory();
+  
+  const localMemory = await getDexieMemory(templateId);
   
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -55,8 +40,10 @@ export async function fetchMemory(templateId: string): Promise<MemoryMap> {
     }, {});
 
     // Sincroniza local com remoto (remoto prevalece em caso de conflito)
+    // Nota: O merge agora é mais complexo, mas saveDexieMemoryMap lida com isso.
+    // Porém, fetchMemory retorna o mapa ATIVO.
     const merged = { ...localMemory, ...remoteMemory };
-    setLocalMemory(templateId, merged);
+    await saveDexieMemoryMap(templateId, merged, 'synced');
     return merged;
   } catch (error) {
     console.warn(`Falha na sincronização da memória fixa para ${templateId}. Retornando dados locais.`, error);
@@ -70,9 +57,7 @@ export async function fetchMemory(templateId: string): Promise<MemoryMap> {
  */
 export async function saveMemory(templateId: string, key: string, value: string): Promise<void> {
   // 1. Persistência local imediata (optimistic)
-  const localMemory = getLocalMemory(templateId);
-  localMemory[key] = value;
-  setLocalMemory(templateId, localMemory);
+  await setDexieMemory(templateId, key, value, 'pending');
 
   try {
     // 2. Tenta sincronizar com Supabase
@@ -82,9 +67,22 @@ export async function saveMemory(templateId: string, key: string, value: string)
     const { error } = await supabase
       .from('prompt_memory_context')
       .upsert(
-        { user_id: user.id, template_id: templateId, key, value },
+        { 
+          user_id: user.id, 
+          template_id: templateId, 
+          key, 
+          value, 
+          is_deleted: false, 
+          deleted_at: null,
+          updated_at: new Date().toISOString()
+        },
         { onConflict: 'user_id,template_id,key' }
       );
+
+    if (!error) {
+      // Atualiza status para sincronizado
+      await setDexieMemory(templateId, key, value, 'synced');
+    }
 
     if (error) {
       console.error(`Erro ao salvar memória remota (${key}):`, error);
@@ -101,9 +99,7 @@ export async function saveMemory(templateId: string, key: string, value: string)
  */
 export async function deleteMemory(templateId: string, key: string): Promise<void> {
   // 1. Remove localmente
-  const localMemory = getLocalMemory(templateId);
-  delete localMemory[key];
-  setLocalMemory(templateId, localMemory);
+  await deleteDexieMemory(templateId, key);
 
   try {
     // 2. Tenta remover no Supabase
@@ -112,7 +108,11 @@ export async function deleteMemory(templateId: string, key: string): Promise<voi
 
     const { error } = await supabase
       .from('prompt_memory_context')
-      .delete()
+      .update({ 
+        is_deleted: true, 
+        deleted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
       .eq('user_id', user.id)
       .eq('template_id', templateId)
       .eq('key', key);
@@ -128,36 +128,51 @@ export async function deleteMemory(templateId: string, key: string): Promise<voi
 
 /**
  * Sincroniza todo o mapa de memória para um template, removendo o que não estiver no mapa.
+ * Utiliza operações em lote para maior eficiência.
  */
 export async function syncMemory(templateId: string, memory: MemoryMap): Promise<void> {
-  // 1. Persistência local
-  setLocalMemory(templateId, memory);
+  // 1. Persistência local imediata
+  await saveDexieMemoryMap(templateId, memory, 'pending');
 
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // Busca chaves atuais no remoto
-    const { data: remoteEntries } = await supabase
-      .from('prompt_memory_context')
-      .select('key')
-      .eq('user_id', user.id)
-      .eq('template_id', templateId);
 
-    const remoteKeys = new Set((remoteEntries || []).map(e => e.key));
-    const localKeys = Object.keys(memory);
+    // 3. Upsert em lote (local para remoto) - Incluindo marcados para exclusão
+    const allLocalRecords = await db.promptMemory
+      .where('templateId')
+      .equals(templateId)
+      .toArray();
 
-    // Upsert local para remoto
-    for (const key of localKeys) {
-      await saveMemory(templateId, key, memory[key]);
-      remoteKeys.delete(key);
+    if (allLocalRecords.length > 0) {
+      const upsertPayload = allLocalRecords.map(record => ({
+        user_id: user.id,
+        template_id: templateId,
+        key: record.key,
+        value: record.value,
+        is_deleted: !!record.isDeleted,
+        deleted_at: record.isDeleted ? record.updatedAt.toISOString() : null,
+        updated_at: record.updatedAt.toISOString()
+      }));
+
+      const { error: upsertError } = await supabase
+        .from('prompt_memory_context')
+        .upsert(upsertPayload, { onConflict: 'user_id,template_id,key' });
+
+      if (upsertError) throw upsertError;
+      
+      // Atualiza local para 'synced'
+      const ids = allLocalRecords.map(r => r.id!).filter(id => id !== undefined);
+      await db.promptMemory.bulkUpdate(ids.map(id => ({
+        key: id,
+        changes: { syncStatus: 'synced' }
+      })));
     }
 
-    // Delete o que sobrou no remoto
-    for (const key of remoteKeys) {
-      await deleteMemory(templateId, key);
-    }
+    console.log(`✅ Memória sincronizada para template: ${templateId}`);
   } catch (error) {
-    console.warn(`Erro na sincronização completa da memória para ${templateId}`, error);
+    console.error(`❌ Erro na sincronização completa da memória para ${templateId}:`, error);
+    throw error;
   }
 }

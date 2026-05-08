@@ -58,6 +58,34 @@ jest.mock('@/services/contextMenuSync', () => ({
   persistContextMenuRecord: jest.fn(),
 }));
 
+// Mock sync sub-modules so tests run without real I/O
+jest.mock('@/services/sync/categorySync', () => ({
+  syncCategories: jest.fn().mockResolvedValue(new Map()),
+  downloadCategories: jest.fn().mockResolvedValue(new Map()),
+}));
+
+jest.mock('@/services/sync/menuSync', () => ({
+  syncMenus: jest.fn().mockResolvedValue(undefined),
+  downloadMenus: jest.fn().mockResolvedValue(new Map()),
+}));
+
+jest.mock('@/services/sync/promptSync', () => ({
+  syncPrompts: jest.fn().mockResolvedValue(undefined),
+  downloadPrompts: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('@/services/sync/memorySync', () => ({
+  syncMemoryToCloud: jest.fn().mockResolvedValue(undefined),
+  downloadMemoryFromCloud: jest.fn().mockResolvedValue(undefined),
+}));
+
+import { syncMemoryToCloud } from '@/services/sync/memorySync';
+
+// Re-import mocked sub-module functions for per-test assertions
+import { syncCategories, downloadCategories } from '@/services/sync/categorySync';
+import { syncMenus, downloadMenus } from '@/services/sync/menuSync';
+import { syncPrompts, downloadPrompts } from '@/services/sync/promptSync';
+
 describe('syncToCloud', () => {
   const mockUserId = 'user-123';
 
@@ -91,380 +119,80 @@ describe('syncToCloud', () => {
     await expect(syncToCloud()).rejects.toThrow('Usuário não autenticado');
   });
 
-  test('successfully synchronizes a new category (insert)', async () => {
-    const mockCategory = {
-      id: 1,
-      name: 'Work',
-      icon: '💼',
-      color: '#000000',
-      syncStatus: 'pending'
-    };
-
-    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [mockCategory],
-        contextMenus: [],
-        prompts: []
-      }
-    });
-
-    const mockSingle = jest.fn().mockResolvedValue({ data: { id: 101 }, error: null });
-    const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
-    const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
-
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'categories') {
-        return { insert: mockInsert };
-      }
-      return {};
-    });
-
+  test('calls all 4 sync phases and returns true on success', async () => {
     const result = await syncToCloud();
 
     expect(result).toBe(true);
-    expect(supabase.from).toHaveBeenCalledWith('categories');
-    expect(db.categories.update).toHaveBeenCalledWith(1, { remoteId: 101, syncStatus: 'synced' });
+    expect(syncCategories).toHaveBeenCalledTimes(1);
+    expect(syncMenus).toHaveBeenCalledTimes(1);
+    expect(syncPrompts).toHaveBeenCalledTimes(1);
   });
 
-  test('handles error when syncing a category and updates status to error', async () => {
-    const mockCategory = {
-      id: 3,
-      name: 'ErrorCat',
-      icon: '❌',
-      color: '#ff0000',
-      syncStatus: 'pending'
-    };
+  test('passes snapshot data to each phase', async () => {
+    const mockCategory = { id: 1, name: 'Work', syncStatus: 'pending' };
+    const mockMenu = { id: 2, menuId: 'tone', syncStatus: 'pending' };
+    const mockPrompt = { id: 3, title: 'Fix', syncStatus: 'pending' };
 
     (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [mockCategory],
-        contextMenus: [],
-        prompts: []
-      }
+      data: { categories: [mockCategory], contextMenus: [mockMenu], prompts: [mockPrompt] },
     });
 
-    const mockSingle = jest.fn().mockResolvedValue({ data: null, error: new Error('Network error') });
-    const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
-    const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
+    await syncToCloud();
 
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'categories') {
-        return { insert: mockInsert };
-      }
-      return {};
-    });
+    expect(syncCategories).toHaveBeenCalledWith(mockUserId, [mockCategory]);
+    expect(syncMenus).toHaveBeenCalledWith(mockUserId, [mockMenu]);
+  });
 
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  test('returns true on partial success (one phase fails)', async () => {
+    (syncCategories as unknown as jest.Mock).mockRejectedValueOnce(new Error('cats down'));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const result = await syncToCloud();
 
+    // Partial success: remaining phases still ran
     expect(result).toBe(true);
-    expect(db.categories.update).toHaveBeenCalledWith(3, { syncStatus: 'error' });
-
-    consoleSpy.mockRestore();
-    consoleLogSpy.mockRestore();
+    expect(syncMenus).toHaveBeenCalledTimes(1);
+    expect(syncPrompts).toHaveBeenCalledTimes(1);
   });
 
-  test('successfully synchronizes menus', async () => {
-    const mockMenu = {
-      id: 1,
-      menuId: 'tone',
-      menuName: 'Tone',
-      description: 'Set tone',
-      selectionMode: 'single',
-      options: [],
-      syncStatus: 'pending'
-    };
+  test('throws when all phases fail', async () => {
+    (syncCategories as unknown as jest.Mock).mockRejectedValueOnce(new Error('a'));
+    (syncMenus as unknown as jest.Mock).mockRejectedValueOnce(new Error('b'));
+    (syncPrompts as unknown as jest.Mock).mockRejectedValueOnce(new Error('c'));
+    (syncMemoryToCloud as unknown as jest.Mock).mockRejectedValueOnce(new Error('d'));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [],
-        contextMenus: [mockMenu],
-        prompts: []
-      }
-    });
-
-    (persistContextMenuRecord as unknown as jest.Mock).mockResolvedValue({ id: 303 });
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    const result = await syncToCloud();
-
-    expect(result).toBe(true);
-    expect(db.contextMenus.update).toHaveBeenCalledWith(1, { remoteId: 303, syncStatus: 'synced' });
-
-    consoleLogSpy.mockRestore();
+    await expect(syncToCloud()).rejects.toThrow('Sincronização falhou em todas as fases');
   });
 
-  test('successfully synchronizes a prompt', async () => {
-    const mockCategory = {
-      id: 1,
-      remoteId: 101,
-      syncStatus: 'synced'
-    };
-
-    // Construct a perfectly valid TemplatePayload based on schema
-    const promptPayload = createEmptyPromptPayload();
-    promptPayload.meta.template_id = 'mock-prompt-1';
-    promptPayload.meta.template_name = 'Fix grammar';
-
-    const selectionPayload = createEmptyUserSelection('mock-prompt-1');
-    const compiledPayload = { final_prompt: 'Fix this text', missing_variables: [], is_ready: true };
-
-    const mockPrompt = {
-      id: 1,
-      categoryId: 1,
-      title: 'Fix grammar',
-      promptPayload,
-      selectionPayload,
-      compiledPayload,
-      syncStatus: 'pending'
-    };
-
-    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [mockCategory],
-        contextMenus: [],
-        prompts: [mockPrompt]
-      }
-    });
-
-    const mockSingle = jest.fn().mockResolvedValue({ data: { id: 404 }, error: null });
-    const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
-    const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
-
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'prompts') {
-        return { insert: mockInsert };
-      }
-      return {};
-    });
-
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    const result = await syncToCloud();
+  test('downloadFromCloud calls all 4 download phases and returns true', async () => {
+    const result = await downloadFromCloud();
 
     expect(result).toBe(true);
-    expect(supabase.from).toHaveBeenCalledWith('prompts');
-    expect(db.prompts.update).toHaveBeenCalledWith(1, { remoteId: 404, syncStatus: 'synced' });
-
-    consoleLogSpy.mockRestore();
+    expect(downloadCategories).toHaveBeenCalledTimes(1);
+    expect(downloadMenus).toHaveBeenCalledTimes(1);
+    expect(downloadPrompts).toHaveBeenCalledTimes(1);
   });
 
-  test('handles error when syncing a prompt and updates status to error', async () => {
-    const promptPayload = createEmptyPromptPayload();
-    promptPayload.meta.template_id = 'mock-prompt-2';
-    promptPayload.meta.template_name = 'Fail Prompt';
-
-    const selectionPayload = createEmptyUserSelection('mock-prompt-2');
-    const compiledPayload = { final_prompt: 'Fail', missing_variables: [], is_ready: true };
-
-    const mockPrompt = {
-      id: 2,
-      categoryId: 1,
-      title: 'Fail Prompt',
-      promptPayload,
-      selectionPayload,
-      compiledPayload,
-      syncStatus: 'pending'
-    };
-
-    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [],
-        contextMenus: [],
-        prompts: [mockPrompt]
-      }
+  test('downloadFromCloud throws if session missing', async () => {
+    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
+      data: { session: null },
     });
 
-    const mockSingle = jest.fn().mockResolvedValue({ data: null, error: new Error('DB Error') });
-    const mockSelect = jest.fn().mockReturnValue({ single: mockSingle });
-    const mockInsert = jest.fn().mockReturnValue({ select: mockSelect });
-
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'prompts') {
-        return { insert: mockInsert };
-      }
-      return {};
-    });
-
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    const result = await syncToCloud();
-
-    expect(result).toBe(true);
-    expect(db.prompts.update).toHaveBeenCalledWith(2, { syncStatus: 'error' });
-
-    consoleSpy.mockRestore();
-    consoleLogSpy.mockRestore();
+    await expect(downloadFromCloud()).rejects.toThrow('Usuário não autenticado');
   });
 
-  test('skips pushing a prompt when the remote version is newer', async () => {
-    const promptPayload = createEmptyPromptPayload('Stale local prompt');
-    promptPayload.meta.template_id = 'stale-template';
-    promptPayload.meta.template_name = 'Stale local prompt';
-
-    const selectionPayload = createEmptyUserSelection('stale-template');
-    const localPrompt = {
-      id: 9,
-      remoteId: 101,
-      categoryId: 1,
-      title: 'Stale local prompt',
-      promptPayload,
-      selectionPayload,
-      compiledPayload: {
-        template_id: 'stale-template',
-        meta: {
-          template_name: 'Stale local prompt',
-          template_type: 'prompt',
-          schema_version: '1.0.0',
-          language: 'pt-BR',
-        },
-        compiled_context: {
-          menu_interpretation: {},
-          free_inputs: {},
-        },
-        prompt_definition: promptPayload.prompt_definition,
-        output_contract: promptPayload.output_contract,
-      },
-      schemaVersion: '1.0.0',
-      language: 'pt-BR',
-      outputFormat: 'markdown',
-      fewShotExamples: [],
-      createdAt: new Date('2026-04-01T00:00:00.000Z'),
-      updatedAt: new Date('2026-04-01T00:00:00.000Z'),
-      syncStatus: 'pending',
-    };
-
-    (createSnapshot as unknown as jest.Mock).mockResolvedValue({
-      data: {
-        categories: [],
-        contextMenus: [],
-        prompts: [localPrompt],
-      },
-    });
-
-    const remoteUpdatedAt = '2026-04-08T12:00:00.000Z';
-    const mockSingle = jest.fn().mockResolvedValue({
-      data: { updated_at: remoteUpdatedAt },
-      error: null,
-    });
-    const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
-    const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
-    const mockUpsert = jest.fn();
-    const mockInsert = jest.fn();
-
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'prompts') {
-        return { select: mockSelect, upsert: mockUpsert, insert: mockInsert };
-      }
-      return {};
-    });
-
-    const result = await syncToCloud();
-
-    expect(result).toBe(true);
-    expect(mockSelect).toHaveBeenCalledWith('updated_at');
-    expect(mockUpsert).not.toHaveBeenCalled();
-    expect(mockInsert).not.toHaveBeenCalled();
-    expect(db.prompts.update).not.toHaveBeenCalledWith(9, expect.anything());
-  });
-
-  test('downloads remote prompt state without dropping selection and compiled payloads', async () => {
-    const promptPayload = createEmptyPromptPayload('Remote prompt');
-    promptPayload.meta.template_id = 'remote-template';
-    promptPayload.meta.template_name = 'Remote prompt';
-
-    const selectionPayload = createEmptyUserSelection('remote-template');
-    selectionPayload.selected_menus = [
-      {
-        menu_id: 'tone',
-        selected_options: [{ option_value: 'formal', selected_sub_options: [] }],
-      },
-    ];
-
-    const compiledPayload = {
-      template_id: 'remote-template',
-      meta: {
-        template_name: 'Remote prompt',
-        template_type: 'prompt',
-        schema_version: '1.0.0',
-        language: 'pt-BR',
-      },
-      compiled_context: {
-        menu_interpretation: {
-          tone: {
-            selected_options: ['formal'],
-            selected_sub_options: [],
-            selections: [],
-          },
-        },
-        free_inputs: {},
-      },
-      prompt_definition: promptPayload.prompt_definition,
-      output_contract: promptPayload.output_contract,
-    };
-
-    const remotePrompt = {
-      id: 404,
-      category_id: 1,
-      title: 'Remote prompt',
-      prompt_payload_jsonb: promptPayload,
-      selection_payload_jsonb: selectionPayload,
-      compiled_payload_jsonb: compiledPayload,
-      selected_menu_ids: ['tone'],
-      enabled_menu_ids: ['tone'],
-      constraints: [],
-      negative_prompt: [],
-      output_schema: { formato: 'markdown', estrutura: '' },
-      reference_url: 'https://example.com',
-      language: 'pt-BR',
-      schema_version: '1.0.0',
-      output_format: 'markdown',
-      few_shot_examples: [],
-      created_at: '2026-04-08T00:00:00.000Z',
-      updated_at: '2026-04-08T00:00:00.000Z',
-      is_deleted: false,
-    };
-
-    (supabase.from as unknown as jest.Mock).mockImplementation((table) => {
-      if (table === 'categories' || table === 'context_menus' || table === 'prompts') {
-        // .select().eq().range() chain used by fetchAllPages in downloadFromCloud
-        const range = jest.fn().mockResolvedValue({
-          data: table === 'prompts' ? [remotePrompt] : [],
-          error: null,
-        });
-        const eq = jest.fn().mockReturnValue({ range });
-        return {
-          select: jest.fn().mockReturnValue({ eq }),
-        };
-      }
-      return {};
-    });
-
-    (db.categories.toArray as unknown as jest.Mock).mockResolvedValue([]);
-    (db.contextMenus.toArray as unknown as jest.Mock).mockResolvedValue([]);
-    (db.prompts.toArray as unknown as jest.Mock).mockResolvedValue([]);
-    (db.categories.bulkPut as unknown as jest.Mock).mockResolvedValue([1]);
-    (db.prompts.bulkPut as unknown as jest.Mock).mockResolvedValue([1]);
-    (db.contextMenus.bulkPut as unknown as jest.Mock).mockResolvedValue([]);
+  test('downloadFromCloud returns true on partial phase failure', async () => {
+    (downloadCategories as unknown as jest.Mock).mockRejectedValueOnce(new Error('cats'));
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const result = await downloadFromCloud();
 
     expect(result).toBe(true);
-    expect(db.prompts.bulkPut).toHaveBeenCalledTimes(1);
-
-    const payloads = (db.prompts.bulkPut as unknown as jest.Mock).mock.calls[0][0];
-    expect(payloads).toHaveLength(1);
-    expect(payloads[0]).toEqual(
-      expect.objectContaining({
-        remoteId: 404,
-        title: 'Remote prompt',
-        selectedMenuIds: ['tone'],
-        selectionPayload,
-        compiledPayload,
-      }),
-    );
+    expect(downloadMenus).toHaveBeenCalledTimes(1);
+    expect(downloadPrompts).toHaveBeenCalledTimes(1);
   });
 });

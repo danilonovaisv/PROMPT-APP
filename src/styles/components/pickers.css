@@ -1,0 +1,87 @@
+/* --- Color Picker Grid --- */
+.color-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+}
+
+.color-picker-grid.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--color-border);
+}
+
+.color-picker-grid__swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition-premium);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.color-picker-grid__swatch:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.color-picker-grid__swatch--selected {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 12px var(--color-primary);
+  transform: scale(1.1);
+}
+
+/* --- Icon Picker Grid --- */
+.icon-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.icon-picker-grid.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--color-border);
+}
+
+.icon-picker-grid__item {
+  font-size: 1.5rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-2);
+  transition: all var(--transition-premium);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.icon-picker-grid__item:hover {
+  background-color: var(--color-surface-3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  border-color: var(--color-primary-light);
+}
+
+.icon-picker-grid__item--selected {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-glow);
+  box-shadow: 0 0 12px var(--color-primary-glow);
+  transform: translateY(-2px);
+}
+
+.icon-picker-grid__emoji {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}

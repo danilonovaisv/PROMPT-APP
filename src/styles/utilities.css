@@ -1,0 +1,61 @@
+/* --- Utility Classes --- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Skip Link --- */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 12px;
+  z-index: 1000;
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+.skip-link:focus {
+  left: 12px;
+}
+
+/* --- Motion & Transitions --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.motion-entry {
+  animation: fadeInUp var(--transition-fast) forwards;
+}
+
+/* --- Glassmorphism --- */
+.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.js .seo-fallback,
+.js .seo-fallback-link {
+  display: none;
+}

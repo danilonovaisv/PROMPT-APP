@@ -4,43 +4,56 @@
    ====================================================== */
 
 import { db } from '@/db/database';
-import { saveMenuToSupabase } from '@/services/supabaseMenus';
+import { saveMenusToSupabaseBulk } from '@/services/supabaseMenus';
 import type { ContextMenu } from '@/models/types';
 
 /* -------------------------------------------------------
    ETAPA 1 — Schema de Importação
    ------------------------------------------------------- */
 
-/** Sub-opção no schema de importação */
-export interface ImportSubOption {
-    label: string;
-    value: string;
-}
-
-/** Opção principal no schema de importação */
-export interface ImportOption {
-    label: string;
-    value: string;
-    sub_options?: ImportSubOption[];
-}
-
-/** Menu individual no schema de importação */
-export interface ImportMenu {
-    menu_id: string;
-    menu_name: string;
-    description: string;
-    selection_mode?: 'single' | 'multiple';
-    options: ImportOption[];
-}
-
-/** Schema raiz do arquivo de importação */
-export interface MenuImportSchema {
-    version: string;
-    menus: ImportMenu[];
-}
+import { z } from 'zod';
 
 /* -------------------------------------------------------
-   ETAPA 2 — Validação Estrita
+   ETAPA 1 — Schema de Importação (Zod)
+   ------------------------------------------------------- */
+
+const SubOptionSchema = z.object({
+    label: z.string().min(1, "label é obrigatório e deve ser string não-vazia"),
+    value: z.string().min(1, "value é obrigatório e deve ser string não-vazia")
+});
+
+const OptionSchema = z.object({
+    label: z.string().min(1, "label é obrigatório e deve ser string não-vazia"),
+    value: z.string().min(1, "value é obrigatório e deve ser string não-vazia"),
+    sub_options: z.array(SubOptionSchema).optional()
+});
+
+const ImportMenuSchema = z.object({
+    menu_id: z.string().min(1, "menu_id é obrigatório e deve ser string não-vazia"),
+    menu_name: z.string().min(1, "menu_name é obrigatório e deve ser string não-vazia"),
+    description: z.string().catch(""),
+    selection_mode: z.enum(['single', 'multiple']).optional().default('single'),
+    options: z.array(OptionSchema).min(1, "options é obrigatório e deve ser um array não-vazio")
+});
+
+const MenuImportSchemaZod = z.object({
+    version: z.string().min(1, "Campo \"version\" é obrigatório (ex: \"1.0\")"),
+    menus: z.array(ImportMenuSchema).min(1, "O array \"menus\" não pode estar vazio")
+}).refine(data => {
+    const ids = data.menus.map(m => m.menu_id);
+    return new Set(ids).size === ids.length;
+}, {
+    message: "Existem menu_ids duplicados no arquivo",
+    path: ["menus"]
+});
+
+export type ImportSubOption = z.infer<typeof SubOptionSchema>;
+export type ImportOption = z.infer<typeof OptionSchema>;
+export type ImportMenu = z.infer<typeof ImportMenuSchema>;
+export type MenuImportSchema = z.infer<typeof MenuImportSchemaZod>;
+
+/* -------------------------------------------------------
+   ETAPA 2 — Validação via Zod
    ------------------------------------------------------- */
 
 export interface ValidationError {
@@ -54,131 +67,27 @@ export interface ValidationResult {
     data: MenuImportSchema | null;
 }
 
-/** Verifica se um valor é um objeto não-nulo */
-function isObject(val: unknown): val is Record<string, unknown> {
-    return val !== null && typeof val === 'object' && !Array.isArray(val);
-}
-
-/** Valida uma sub-opção individual */
-function validateSubOption(sub: unknown, path: string): ValidationError[] {
-    const errors: ValidationError[] = [];
-    if (!isObject(sub)) {
-        errors.push({ field: path, message: 'Sub-opção deve ser um objeto' });
-        return errors;
-    }
-    if (typeof sub.label !== 'string' || !sub.label.trim()) {
-        errors.push({ field: `${path}.label`, message: 'label é obrigatório e deve ser string não-vazia' });
-    }
-    if (typeof sub.value !== 'string' || !sub.value.trim()) {
-        errors.push({ field: `${path}.value`, message: 'value é obrigatório e deve ser string não-vazia' });
-    }
-    return errors;
-}
-
-/** Valida uma opção individual */
-function validateOption(opt: unknown, path: string): ValidationError[] {
-    const errors: ValidationError[] = [];
-    if (!isObject(opt)) {
-        errors.push({ field: path, message: 'Opção deve ser um objeto' });
-        return errors;
-    }
-    if (typeof opt.label !== 'string' || !opt.label.trim()) {
-        errors.push({ field: `${path}.label`, message: 'label é obrigatório e deve ser string não-vazia' });
-    }
-    if (typeof opt.value !== 'string' || !opt.value.trim()) {
-        errors.push({ field: `${path}.value`, message: 'value é obrigatório e deve ser string não-vazia' });
-    }
-    if (opt.sub_options !== undefined) {
-        if (!Array.isArray(opt.sub_options)) {
-            errors.push({ field: `${path}.sub_options`, message: 'sub_options deve ser um array' });
-        } else {
-            for (let i = 0; i < opt.sub_options.length; i++) {
-                errors.push(...validateSubOption(opt.sub_options[i], `${path}.sub_options[${i}]`));
-            }
-        }
-    }
-    return errors;
-}
-
-/** Valida um menu individual */
-function validateMenu(menu: unknown, path: string, seenIds: Set<string>): ValidationError[] {
-    const errors: ValidationError[] = [];
-    if (!isObject(menu)) {
-        errors.push({ field: path, message: 'Menu deve ser um objeto' });
-        return errors;
-    }
-
-    if (typeof menu.menu_id !== 'string' || !menu.menu_id.trim()) {
-        errors.push({ field: `${path}.menu_id`, message: 'menu_id é obrigatório e deve ser string não-vazia' });
-    } else if (seenIds.has(menu.menu_id as string)) {
-        errors.push({ field: `${path}.menu_id`, message: `menu_id "${menu.menu_id}" duplicado no arquivo` });
-    } else {
-        seenIds.add(menu.menu_id as string);
-    }
-
-    if (typeof menu.menu_name !== 'string' || !menu.menu_name.trim()) {
-        errors.push({ field: `${path}.menu_name`, message: 'menu_name é obrigatório e deve ser string não-vazia' });
-    }
-
-    if (typeof menu.description !== 'string') {
-        errors.push({ field: `${path}.description`, message: 'description é obrigatório e deve ser string' });
-    }
-
-    if (menu.selection_mode !== undefined && menu.selection_mode !== 'single' && menu.selection_mode !== 'multiple') {
-        errors.push({
-            field: `${path}.selection_mode`,
-            message: 'selection_mode deve ser "single" ou "multiple"',
-        });
-    }
-
-    if (!Array.isArray(menu.options)) {
-        errors.push({ field: `${path}.options`, message: 'options é obrigatório e deve ser um array' });
-    } else {
-        for (let i = 0; i < menu.options.length; i++) {
-            errors.push(...validateOption(menu.options[i], `${path}.options[${i}]`));
-        }
-    }
-
-    return errors;
-}
-
-/** Valida o JSON completo contra o schema de importação */
+/** Valida o JSON completo contra o schema de importação usando Zod */
 export function validateMenuImportFile(raw: unknown): ValidationResult {
-    const errors: ValidationError[] = [];
+    const result = MenuImportSchemaZod.safeParse(raw);
 
-    if (!isObject(raw)) {
+    if (!result.success) {
+        const errors: ValidationError[] = result.error.issues.map(issue => ({
+            field: issue.path.join('.'),
+            message: issue.message
+        }));
         return {
             valid: false,
-            errors: [{ field: 'root', message: 'O arquivo deve conter um objeto JSON' }],
-            data: null,
+            errors,
+            data: null
         };
     }
 
-    /* version (obrigatório) */
-    if (typeof raw.version !== 'string' || !raw.version.trim()) {
-        errors.push({ field: 'version', message: 'Campo "version" é obrigatório (ex: "1.0")' });
-    }
-
-    /* menus (obrigatório, array) */
-    if (!Array.isArray(raw.menus)) {
-        errors.push({ field: 'menus', message: 'Campo "menus" é obrigatório e deve ser um array' });
-        return { valid: false, errors, data: null };
-    }
-
-    if (raw.menus.length === 0) {
-        errors.push({ field: 'menus', message: 'O array "menus" não pode estar vazio' });
-    }
-
-    const seenIds = new Set<string>();
-    for (let i = 0; i < raw.menus.length; i++) {
-        errors.push(...validateMenu(raw.menus[i], `menus[${i}]`, seenIds));
-    }
-
-    if (errors.length > 0) {
-        return { valid: false, errors, data: null };
-    }
-
-    return { valid: true, errors: [], data: raw as unknown as MenuImportSchema };
+    return {
+        valid: true,
+        errors: [],
+        data: result.data
+    };
 }
 
 /** Verifica conflitos com menus existentes no banco */
@@ -324,7 +233,7 @@ export async function importMenusFromFile(
     }
 
     try {
-        const enrichedMenus: Partial<ContextMenu>[] = [];
+        const menusToEnrich: Partial<ContextMenu>[] = [];
         for (const menu of menusToImport) {
             const contextMenu = toContextMenu(menu) as Partial<ContextMenu>;
             const existingMenu = existingMenusById.get(menu.menu_id);
@@ -336,22 +245,30 @@ export async function importMenusFromFile(
                 contextMenu.updatedAt = new Date();
                 contextMenu.isDeleted = false;
             }
+            menusToEnrich.push(contextMenu);
+        }
 
-            try {
-                const savedRemote = await saveMenuToSupabase(contextMenu);
-                contextMenu.remoteId = savedRemote.id;
-                contextMenu.syncStatus = 'synced';
-            } catch (err) {
-                console.error("Erro importando menu no Supabase", err);
+        try {
+            const savedRemotes = await saveMenusToSupabaseBulk(menusToEnrich);
+            if (savedRemotes) {
+                for (const contextMenu of menusToEnrich) {
+                    const savedRemote = savedRemotes.find((r: any) => r.menu_id === contextMenu.menuId);
+                    if (savedRemote) {
+                        contextMenu.remoteId = savedRemote.id;
+                        contextMenu.syncStatus = 'synced';
+                    }
+                }
             }
-            enrichedMenus.push(contextMenu);
+        } catch (err) {
+            console.error("Erro importando menus em lote no Supabase", err);
+            // Continua para salvar localmente como 'pending' se falhar o sync
         }
 
         await db.transaction('rw', db.contextMenus, async () => {
             if (staleDeletedLocalIds.length > 0) {
                 await db.contextMenus.bulkDelete(staleDeletedLocalIds);
             }
-            await db.contextMenus.bulkPut(enrichedMenus as ContextMenu[]);
+            await db.contextMenus.bulkPut(menusToEnrich as ContextMenu[]);
         });
 
         log.push(`[${timestamp}] SUCESSO: ${menusToImport.length} menu(s) importado(s)`);

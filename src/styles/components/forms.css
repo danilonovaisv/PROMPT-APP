@@ -1,0 +1,208 @@
+/* --- Form --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.form-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-label__hint {
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.form-section {
+  margin-bottom: var(--space-8);
+}
+
+.form-section__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.multi-select {
+  position: relative;
+  width: 100%;
+}
+
+.multi-select__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-2);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.multi-select__trigger:hover,
+.multi-select__trigger--open {
+  border-color: var(--color-border-active);
+  background-color: var(--color-surface-3);
+}
+
+.multi-select__trigger-label {
+  text-align: left;
+}
+
+.multi-select__chevron {
+  transition: transform var(--transition-fast);
+  color: var(--color-text-muted);
+}
+
+.multi-select__chevron--open {
+  transform: rotate(180deg);
+}
+
+.multi-select__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.multi-select__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-glow);
+  color: var(--color-primary-light);
+  border: 1px solid rgba(0, 72, 255, 0.24);
+}
+
+.multi-select__chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-select__chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.multi-select__hint {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.multi-select__dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: 120;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-1);
+  box-shadow: var(--shadow-lg);
+}
+
+.multi-select__options {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.multi-select__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.multi-select__option:last-child {
+  border-bottom: none;
+}
+
+.multi-select__option:hover,
+.multi-select__option--selected {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.multi-select__option-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.multi-select__option-label {
+  font-weight: var(--font-weight-medium);
+}
+
+.multi-select__option-description,
+.multi-select__option-state,
+.multi-select__footer,
+.multi-select__empty {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.multi-select__footer,
+.multi-select__empty {
+  padding: var(--space-3) var(--space-4);
+}
+
+/* --- Dynamic List --- */
+.dynamic-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dynamic-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dynamic-list__item input {
+  flex: 1;
+}
+
+.dynamic-list__add {
+  margin-top: var(--space-2);
+}
+
+.few-shot-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-8) !important; /* Espaço para o botão de deletar */
+}

@@ -46,6 +46,37 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     }
 }
 
+export async function saveMenusToSupabaseBulk(inputs: Partial<ContextMenu>[]) {
+    if (inputs.length === 0) return [];
+
+    const { data: auth, error: authError } = await supabase.auth.getUser();
+    if (authError) throw authError;
+
+    const user = auth?.user;
+    if (!user) throw new Error("Usuário não autenticado");
+
+    const payloads = inputs.map(input => ({
+        ...(input.remoteId ? { id: input.remoteId } : {}),
+        user_id: user.id,
+        menu_id: input.menuId,
+        menu_name: input.menuName,
+        description: input.description,
+        selection_mode: input.selectionMode || "single",
+        options: normalizeContextMenuOptions(input.options),
+        is_deleted: false,
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+    }));
+
+    const { data, error } = await supabase
+        .from('context_menus')
+        .upsert(payloads, { onConflict: 'user_id,menu_id' })
+        .select();
+
+    if (error) throw error;
+    return data;
+}
+
 /**
  * Soft Delete — marca o menu de contexto como excluído no Supabase.
  * Em vez de um DELETE real, executa UPDATE SET is_deleted = true.

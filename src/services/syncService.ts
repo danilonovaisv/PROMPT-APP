@@ -1,664 +1,157 @@
 import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
-import { db } from "@/db/database";
 import { createSnapshot } from "@/utils/backupManager";
-import { Category, ContextMenu, Prompt, RemoteCategory, RemoteContextMenu, RemotePrompt } from "@/models/types";
+import { syncCategories } from "./sync/categorySync";
+import { syncMenus } from "./sync/menuSync";
+import { syncPrompts } from "./sync/promptSync";
+import { syncMemoryToCloud, downloadMemoryFromCloud } from "./sync/memorySync";
+import { downloadCategories } from "./sync/categorySync";
+import { downloadMenus } from "./sync/menuSync";
+import { downloadPrompts } from "./sync/promptSync";
 
-/** Shape returned by Supabase when selecting only the timestamp column. */
-interface SupabaseTimestamp {
-  updated_at: string;
+/** Phase result for aggregated reporting. */
+interface PhaseResult {
+  name: string;
+  success: boolean;
+  durationMs: number;
+  error?: string;
 }
 
-/** Minimal shape of a Supabase operation result used for category/prompt writes. */
-interface SupabaseResult<T> {
-  data: T | null;
-  error: { message: string } | null;
+/** Aggregate result for a full sync or download cycle. */
+export interface SyncCycleResult {
+  success: boolean;
+  phases: PhaseResult[];
 }
-import {
-  type ContextMenuCloudPayload,
-  type ContextMenuSyncRepository,
-  persistContextMenuRecord,
-} from "@/services/contextMenuSync";
-import {
-  compilePromptPayload,
-  createEmptyUserSelection,
-  getLegacyPromptColumns,
-  getPrimaryReferenceUrl,
-  getPromptSummaryFields,
-  parsePromptPayload,
-  parseUserSelection,
-} from "@/models/promptSchema";
-import { normalizeContextMenuOptions } from "@/utils/contextMenuOptions";
 
-async function withRetry<T>(
-  fn: () => Promise<T> | PromiseLike<T>,
-  retries = 3,
-  backoff = 1000,
-): Promise<T> {
+/**
+ * Runs a single sync phase with timing and error capture.
+ * Returns a PhaseResult instead of throwing — allows all phases to run.
+ */
+async function runPhase(
+  name: string,
+  fn: () => Promise<unknown>
+): Promise<PhaseResult> {
+  const start = Date.now();
   try {
-    return await fn();
-  } catch (err) {
-    if (retries <= 0) throw err;
-    await new Promise((res) => setTimeout(res, backoff));
-    return withRetry(fn, retries - 1, backoff * 2);
+    console.time(`☁️  ${name}`);
+    await fn();
+    console.timeEnd(`☁️  ${name}`);
+    return { name, success: true, durationMs: Date.now() - start };
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e.message : String(e);
+    console.timeEnd(`☁️  ${name}`);
+    console.error(`❌ Fase "${name}" falhou:`, error);
+    return { name, success: false, durationMs: Date.now() - start, error };
   }
 }
 
-const contextMenuRepository: ContextMenuSyncRepository = {
-  async findRemoteIdByUserAndMenuId(userId, menuId) {
-    const { data, error } = await supabase
-      .from("context_menus")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("menu_id", menuId)
-      .eq("is_deleted", false)
-      .maybeSingle();
-
-    if (error) {
-      throw error;
-    }
-
-    return data?.id ?? null;
-  },
-  async insert(payload) {
-    const { data, error } = await supabase
-      .from("context_menus")
-      .insert(payload)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return { id: data.id };
-  },
-  async updateById(id, payload) {
-    const { data, error } = await supabase
-      .from("context_menus")
-      .upsert({ id, ...payload }, { onConflict: "id" })
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return { id: data.id };
-  },
-};
-
-export const syncToCloud = async () => {
+export const syncToCloud = async (): Promise<boolean> => {
   assertSupabaseConfigured();
 
-  // refreshSession() verifica o JWT com o servidor e renova se necessário,
-  // garantindo que syncs longos não falhem por token expirado.
   const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
   if (refreshError || !refreshData.session) {
     throw new Error("Usuário não autenticado ou sessão expirada");
   }
   const session = refreshData.session;
+  const userId = session.user.id;
 
   const snapshot = await createSnapshot();
-  const userId = session.user.id;
-  const localToRemoteCategoryMap = new Map<number, number>();
+  const phases: PhaseResult[] = [];
+
+  // A ordem é CRÍTICA devido às chaves estrangeiras (IDs):
+  // Categorias → Menus → Prompts → Memória
 
   // 1. Sincronizar Categorias
-  console.log("☁️ Sincronizando Categorias...");
-  const allCategories = snapshot.data.categories;
-  for (const cat of allCategories) {
-    if (cat.id && cat.remoteId) {
-      localToRemoteCategoryMap.set(cat.id, cat.remoteId);
-    }
-  }
-
-  // Propagar soft-deletes pendentes ANTES de sincronizar categorias ativas.
-  const categoriesToDeleteRemotely = allCategories.filter(
-    (c) => c.isDeleted === true && c.remoteId && c.syncStatus !== "synced"
-  );
-  for (const cat of categoriesToDeleteRemotely) {
-    try {
-      await withRetry(() =>
-        supabase
-          .from("categories")
-          .update({ is_deleted: true, updated_at: new Date().toISOString() })
-          .eq("id", cat.remoteId!)
-          .eq("user_id", userId)
-      );
-      console.log(`✅ Categoria soft-delete sincronizada: ${cat.name}`);
-    } catch (e) {
-      console.error("Falha ao sincronizar delete de categoria:", cat.name, e);
-      if (cat.id) await db.categories.update(cat.id, { syncStatus: "error" });
-    }
-  }
-  // bulkDelete: remove em lote todas as categorias sincronizadas ou sem remoteId
-  const catLocalIdsToDelete = [
-    ...categoriesToDeleteRemotely.filter((c) => c.syncStatus !== "error"),
-    ...allCategories.filter((c) => c.isDeleted === true && !c.remoteId),
-  ]
-    .map((c) => c.id)
-    .filter((id): id is number => id !== undefined);
-  if (catLocalIdsToDelete.length > 0) {
-    await db.categories.bulkDelete(catLocalIdsToDelete);
-  }
-
-  // Sincronizar categorias ativas não sincronizadas
-  const categoriesToSync = allCategories.filter(
-    (c) => !c.isDeleted && c.syncStatus !== "synced"
-  );
-  for (const cat of categoriesToSync) {
-    const { id, remoteId, ...data } = cat as Category;
-
-    const payload = {
-      user_id: userId,
-      name: data.name,
-      icon: data.icon,
-      color: data.color,
-      is_deleted: false,
-      deleted_at: null,
-    };
-
-    let result;
-    if (remoteId) {
-      const { data: remoteData } = await withRetry(() =>
-        supabase
-          .from("categories")
-          .select("updated_at")
-          .eq("id", remoteId)
-          .eq("is_deleted", false)
-          .maybeSingle()
-      );
-      const remoteTs = remoteData?.updated_at
-        ? Math.floor(new Date(remoteData.updated_at).getTime() / 1000)
-        : 0;
-      const localTs = Math.floor(cat.updatedAt?.getTime() || 0) / 1000;
-      if (remoteTs > localTs) {
-        console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.name}`);
-        continue;
-      }
-
-      result = await withRetry(() =>
-        supabase.from("categories").upsert({ id: remoteId, ...payload }).select().single()
-      );
-    } else {
-      result = await withRetry(() =>
-        supabase.from("categories").insert(payload).select().single()
-      );
-    }
-
-    if (result.error) {
-      console.error(`❌ Erro ao sincronizar categoria "${data.name}":`, result.error);
-      if (id) {
-        await db.categories.update(id, { syncStatus: "error" });
-      }
-    } else if (result.data) {
-      if (id && result.data.id !== remoteId) {
-        await db.categories.update(id, { remoteId: result.data.id, syncStatus: "synced" });
-      }
-      if (id && result.data.id === remoteId) {
-        await db.categories.update(id, { syncStatus: "synced" });
-      }
-      if (id) localToRemoteCategoryMap.set(id, result.data.id);
-    }
-  }
+  let categoryMap: Map<number, number> = new Map();
+  const catPhase = await runPhase("Categorias", async () => {
+    categoryMap = await syncCategories(userId, snapshot.data.categories);
+  });
+  phases.push(catPhase);
 
   // 2. Sincronizar Menus de Contexto
-  console.log("☁️ Sincronizando Menus...");
-  const menusToDeleteRemotely = snapshot.data.contextMenus.filter(
-    (menu) => menu.isDeleted === true && menu.remoteId && menu.syncStatus !== "synced"
+  phases.push(
+    await runPhase("Menus", () => syncMenus(userId, snapshot.data.contextMenus))
   );
-  for (const menu of menusToDeleteRemotely) {
-    try {
-      await withRetry(() =>
-        supabase
-          .from("context_menus")
-          .update({
-            is_deleted: true,
-            deleted_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", menu.remoteId!)
-          .eq("user_id", userId)
-      );
-      console.log(`✅ Menu soft-delete sincronizado: ${menu.menuName}`);
-    } catch (error) {
-      console.error("Falha ao sincronizar delete de menu:", menu.menuName, error);
-      if (menu.id) {
-        await db.contextMenus.update(menu.id, { syncStatus: "error" });
-      }
-    }
-  }
-  // bulkDelete: remove em lote todos os menus sincronizados ou sem remoteId
-  const menuLocalIdsToDelete = [
-    ...menusToDeleteRemotely.filter((m) => m.syncStatus !== "error"),
-    ...snapshot.data.contextMenus.filter((m) => m.isDeleted === true && !m.remoteId),
-  ]
-    .map((m) => m.id)
-    .filter((id): id is number => id !== undefined);
-  if (menuLocalIdsToDelete.length > 0) {
-    await db.contextMenus.bulkDelete(menuLocalIdsToDelete);
-  }
 
-  const menusToSync = snapshot.data.contextMenus.filter(
-    (m) => m.syncStatus !== "synced" && m.isDeleted !== true
+  // 3. Sincronizar Prompts (depende do categoryMap da fase 1)
+  phases.push(
+    await runPhase("Prompts", () => syncPrompts(userId, snapshot.data.prompts, categoryMap))
   );
-  for (const menu of menusToSync) {
-    const { id, remoteId, ...data } = menu as ContextMenu;
 
-    const payload: ContextMenuCloudPayload = {
-      user_id: userId,
-      menu_id: data.menuId,
-      menu_name: data.menuName,
-      description: data.description,
-      selection_mode: data.selectionMode || "single",
-      options: normalizeContextMenuOptions(data.options),
-      is_deleted: false,
-    };
-
-    try {
-      const result = await persistContextMenuRecord(
-        contextMenuRepository,
-        payload,
-        remoteId,
-      );
-
-      if (id && result.id !== remoteId) {
-        await db.contextMenus.update(id, { remoteId: result.id, syncStatus: "synced" });
-      }
-      if (id && result.id === remoteId) {
-        await db.contextMenus.update(id, { syncStatus: "synced" });
-      }
-    } catch (error) {
-      console.error(`❌ Erro ao sincronizar menu "${data.menuName}":`, error);
-      if (id) {
-        await db.contextMenus.update(id, { syncStatus: "error" });
-      }
-    }
-  }
-
-  // 3. Sincronizar Prompts
-  console.log("☁️ Sincronizando Prompts...");
-  const promptsToDeleteRemotely = snapshot.data.prompts.filter(
-    (prompt) => prompt.isDeleted === true && prompt.remoteId && prompt.syncStatus !== "synced"
+  // 4. Sincronizar Memória Fixa
+  phases.push(
+    await runPhase("Memória Fixa", () => syncMemoryToCloud(userId))
   );
-  for (const prompt of promptsToDeleteRemotely) {
-    try {
-      await withRetry(() =>
-        supabase
-          .from("prompts")
-          .update({
-            is_deleted: true,
-            deleted_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", prompt.remoteId!)
-          .eq("user_id", userId)
-      );
-      console.log(`✅ Prompt soft-delete sincronizado: ${prompt.title}`);
-    } catch (error) {
-      console.error("Falha ao sincronizar delete de prompt:", prompt.title, error);
-      if (prompt.id) {
-        await db.prompts.update(prompt.id, { syncStatus: "error" });
-      }
+
+  // Resumo
+  const failed = phases.filter((p) => !p.success);
+  const totalMs = phases.reduce((acc, p) => acc + p.durationMs, 0);
+
+  if (failed.length === 0) {
+    console.log(`✅ Sincronização concluída em ${totalMs}ms (${phases.length} fases OK)`);
+    return true;
+  } else {
+    const names = failed.map((p) => p.name).join(", ");
+    console.warn(`⚠️ Sincronização parcial: ${failed.length} fase(s) com erro — ${names}`);
+    // Throw only if ALL phases failed
+    if (failed.length === phases.length) {
+      throw new Error(`Sincronização falhou em todas as fases: ${names}`);
     }
+    return true; // Partial success — let caller decide via console warnings
   }
-  // bulkDelete: remove em lote todos os prompts sincronizados ou sem remoteId
-  const promptLocalIdsToDelete = [
-    ...promptsToDeleteRemotely.filter((p) => p.syncStatus !== "error"),
-    ...snapshot.data.prompts.filter((p) => p.isDeleted === true && !p.remoteId),
-  ]
-    .map((p) => p.id)
-    .filter((id): id is number => id !== undefined);
-  if (promptLocalIdsToDelete.length > 0) {
-    await db.prompts.bulkDelete(promptLocalIdsToDelete);
-  }
-
-  const promptsToSync = snapshot.data.prompts.filter(
-    (p) => p.syncStatus !== "synced" && p.isDeleted !== true
-  );
-  for (const prompt of promptsToSync) {
-    const { id, remoteId, ...data } = prompt as Prompt;
-
-    const remoteCategoryId = localToRemoteCategoryMap.get(data.categoryId);
-
-    const summary = getPromptSummaryFields(data.promptPayload);
-    const legacyColumns = getLegacyPromptColumns(
-      data.promptPayload,
-      data.selectionPayload,
-      data.compiledPayload,
-    );
-
-    const payload = {
-      user_id: userId,
-      category_id: remoteCategoryId || null,
-      title: summary.title,
-      prompt_payload_jsonb: data.promptPayload,
-      selected_menu_ids: data.selectedMenuIds || [],
-      schema_version: summary.schemaVersion,
-      output_format: summary.outputFormat,
-      language: summary.language,
-      reference_url: getPrimaryReferenceUrl(data.promptPayload),
-      few_shot_examples: data.fewShotExamples || [],
-      is_deleted: false,
-      ...legacyColumns,
-    };
-
-    let result: SupabaseResult<{ id: number }>;
-    if (remoteId) {
-      const { data: remoteData } = await withRetry<SupabaseResult<SupabaseTimestamp>>(() =>
-        supabase.from("prompts").select("updated_at").eq("id", remoteId).single()
-      );
-      if (
-        remoteData &&
-        Math.floor(new Date(remoteData.updated_at).getTime() / 1000) >
-          Math.floor(prompt.updatedAt?.getTime() || 0) / 1000
-      ) {
-        console.log(`⏳ Pulando sync (nuvem é mais recente) para: ${data.title}`);
-        continue;
-      }
-
-      result = await withRetry(() =>
-        supabase.from("prompts").upsert({ id: remoteId, ...payload }).select().single()
-      );
-    } else {
-      result = await withRetry(() =>
-        supabase.from("prompts").insert(payload).select().single()
-      );
-    }
-
-    if (result.error) {
-      console.error(`❌ Erro ao sincronizar prompt "${data.title}":`, result.error);
-      if (id) {
-        await db.prompts.update(id, { syncStatus: "error" });
-      }
-    } else if (result.data) {
-      if (id && result.data.id !== remoteId) {
-        await db.prompts.update(id, { remoteId: result.data.id, syncStatus: "synced" });
-      }
-      if (id && result.data.id === remoteId) {
-        await db.prompts.update(id, { syncStatus: "synced" });
-      }
-    }
-  }
-
-  console.log("✅ Sincronização concluída!");
-  return true;
 };
 
-/** Busca todas as páginas de uma tabela usando paginação por range (1 000 linhas/página). */
-async function fetchAllPages<T>(
-  query: (range: [number, number]) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
-  pageSize = 1000,
-): Promise<T[]> {
-  const all: T[] = [];
-  let from = 0;
-   
-  while (true) {
-    const { data, error } = await query([from, from + pageSize - 1]);
-    if (error) throw new Error(error.message);
-    if (!data || data.length === 0) break;
-    all.push(...data);
-    if (data.length < pageSize) break; // última página
-    from += pageSize;
-  }
-  return all;
-}
-
-export const downloadFromCloud = async () => {
+export const downloadFromCloud = async (): Promise<boolean> => {
   assertSupabaseConfigured();
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Usuário não autenticado");
 
-  // Paginação: busca todas as linhas em páginas de 1 000 para suportar
-  // coleções com mais de 1 000 itens (limite padrão do Supabase).
-  const [catData, menuData, promptData] = await Promise.all([
-    fetchAllPages((r) =>
-      supabase.from("categories").select("*").eq("is_deleted", false).range(r[0], r[1])
-    ),
-    fetchAllPages((r) =>
-      supabase.from("context_menus").select("*").eq("is_deleted", false).range(r[0], r[1])
-    ),
-    fetchAllPages((r) =>
-      supabase.from("prompts").select("*").eq("is_deleted", false).range(r[0], r[1])
-    ),
-  ]);
+  console.log("☁️ Iniciando Download Atômico (Nuvem → Local)...");
 
-  // Mantém a forma esperada pelo restante da função
-  const catRes = { data: catData, error: null };
-  const menuRes = { data: menuData, error: null };
-  const promptRes = { data: promptData, error: null };
+  const phases: PhaseResult[] = [];
 
-  console.log("☁️ Iniciando Smart Merge (Nuvem -> Local)...");
+  // A ordem é CRÍTICA devido às chaves estrangeiras (IDs)
+  let remoteToLocalCatMap: Map<number, number> = new Map();
+  let remoteToLocalMenuMap: Map<number, number> = new Map();
 
-  await db.transaction("rw", [db.categories, db.prompts, db.contextMenus], async () => {
-    // ⚡ Bolt Optimization: Avoid fetching entire tables into memory to eliminate N+1 memory bottlenecks.
-    // Ensure that remoteId and menuId are valid IndexedDB indexes before using .where()
-    const remoteCatIds = (catRes.data || []).map((c: RemoteCategory) => c.id);
-    const remoteMenuIds = (menuRes.data || []).map((m: RemoteContextMenu) => m.id);
-    const remoteMenuSlugs = (menuRes.data || []).map((m: RemoteContextMenu) => m.menu_id);
-    const remotePromptIds = (promptRes.data || []).map((p: RemotePrompt) => p.id);
+  // 1. Categorias
+  phases.push(
+    await runPhase("Download Categorias", async () => {
+      remoteToLocalCatMap = await downloadCategories();
+    })
+  );
 
-    const [
-      localCategoriesByRemoteId,
-      localMenusByRemoteId,
-      localMenusBySlug,
-      localPromptsByRemoteId
-    ] = await Promise.all([
-      remoteCatIds.length > 0 ? db.categories.where('remoteId').anyOf(remoteCatIds).toArray() : Promise.resolve([]),
-      remoteMenuIds.length > 0 ? db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray() : Promise.resolve([]),
-      remoteMenuSlugs.length > 0 ? db.contextMenus.where('menuId').anyOf(remoteMenuSlugs).toArray() : Promise.resolve([]),
-      remotePromptIds.length > 0 ? db.prompts.where('remoteId').anyOf(remotePromptIds).toArray() : Promise.resolve([]),
-    ]);
+  // 2. Menus
+  phases.push(
+    await runPhase("Download Menus", async () => {
+      remoteToLocalMenuMap = await downloadMenus();
+    })
+  );
 
-    const allRelevantLocalMenus = [...localMenusByRemoteId];
-    const existingMenuIds = new Set(localMenusByRemoteId.map((m) => m.id));
-    for (const menu of localMenusBySlug) {
-      if (!existingMenuIds.has(menu.id)) {
-        allRelevantLocalMenus.push(menu);
-      }
+  // 3. Prompts (usa mapas para traduzir IDs)
+  phases.push(
+    await runPhase("Download Prompts", () =>
+      downloadPrompts(remoteToLocalCatMap, remoteToLocalMenuMap)
+    )
+  );
+
+  // 4. Memória Fixa
+  phases.push(
+    await runPhase("Download Memória Fixa", () => downloadMemoryFromCloud())
+  );
+
+  const failed = phases.filter((p) => !p.success);
+  const totalMs = phases.reduce((acc, p) => acc + p.durationMs, 0);
+
+  if (failed.length === 0) {
+    console.log(`✅ Download concluído em ${totalMs}ms (${phases.length} fases OK)`);
+  } else {
+    const names = failed.map((p) => p.name).join(", ");
+    console.warn(`⚠️ Download parcial: ${failed.length} fase(s) com erro — ${names}`);
+    if (failed.length === phases.length) {
+      throw new Error(`Download falhou em todas as fases: ${names}`);
     }
+  }
 
-    const categoriesByRemoteId = new Map(
-      localCategoriesByRemoteId.filter((c) => c.remoteId).map((c) => [c.remoteId, c])
-    );
-    const menusByRemoteId = new Map(
-      allRelevantLocalMenus.filter((m) => m.remoteId).map((m) => [m.remoteId, m])
-    );
-    const menusByMenuId = new Map(allRelevantLocalMenus.map((m) => [m.menuId, m]));
-    const promptsByRemoteId = new Map(
-      localPromptsByRemoteId.filter((p) => p.remoteId).map((p) => [p.remoteId, p])
-    );
-
-    // --- A. Sincronizar Categorias ---
-    const remoteToLocalCatMap = new Map<number, number>();
-
-    if (catRes.data) {
-      const categoriesToPut: Category[] = [];
-      const remoteIdsForPut: number[] = [];
-
-      for (const c of catRes.data) {
-        if (c.is_deleted === true) continue;
-
-        const existing = categoriesByRemoteId.get(c.id) as Category | undefined;
-        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
-          continue;
-        }
-
-        const catData: Category = {
-          id: existing?.id,
-          remoteId: c.id,
-          name: c.name,
-          icon: c.icon,
-          color: c.color,
-          createdAt: new Date(c.created_at),
-          updatedAt: new Date(c.updated_at),
-          syncStatus: "synced",
-        };
-
-        categoriesToPut.push(catData);
-        remoteIdsForPut.push(c.id);
-      }
-
-      if (categoriesToPut.length > 0) {
-        const ids = await db.categories.bulkPut(categoriesToPut, { allKeys: true });
-        ids.forEach((id, index) => {
-          const remoteId = remoteIdsForPut[index];
-          if (remoteId !== undefined && typeof id === "number") {
-            remoteToLocalCatMap.set(remoteId, id);
-          }
-        });
-      }
-    }
-
-    // --- B. Sincronizar Menus ---
-    if (menuRes.data) {
-      const menusToPut: ContextMenu[] = [];
-
-      for (const m of menuRes.data) {
-        if (m.is_deleted === true) {
-          const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
-          const existingBySlug = (!existing
-            ? menusByMenuId.get(m.menu_id)
-            : null) as ContextMenu | undefined;
-          const targetId = existing?.id || existingBySlug?.id;
-          if (targetId) {
-            await db.contextMenus.delete(targetId);
-            console.log(`🗑️ Menu excluído localmente (is_deleted=true): ${m.menu_name}`);
-          }
-          continue;
-        }
-
-        const existing = menusByRemoteId.get(m.id) as ContextMenu | undefined;
-        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
-          continue;
-        }
-        const existingBySlug = (!existing
-          ? menusByMenuId.get(m.menu_id)
-          : null) as ContextMenu | undefined;
-
-        if (existingBySlug?.isDeleted === true && existingBySlug.syncStatus !== "synced") {
-          continue;
-        }
-
-        const targetId = existing?.id || existingBySlug?.id;
-
-        const menuData: ContextMenu = {
-          id: targetId,
-          remoteId: m.id,
-          menuId: m.menu_id,
-          menuName: m.menu_name,
-          description: m.description,
-          selectionMode: m.selection_mode || "single",
-          options: normalizeContextMenuOptions(m.options),
-          createdAt: new Date(m.created_at),
-          updatedAt: new Date(m.updated_at),
-          syncStatus: "synced",
-        };
-
-        menusToPut.push(menuData);
-      }
-
-      if (menusToPut.length > 0) {
-        await db.contextMenus.bulkPut(menusToPut);
-      }
-    }
-
-    // --- C. Sincronizar Prompts ---
-    if (promptRes.data) {
-      const promptsToPut: Prompt[] = [];
-
-      for (const p of promptRes.data) {
-        if (p.is_deleted === true) {
-          const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
-          if (existing && existing.id) {
-            await db.prompts.delete(existing.id);
-            console.log(`🗑️ Prompt excluído localmente (is_deleted=true): ${p.title}`);
-          }
-          continue;
-        }
-
-        const existing = promptsByRemoteId.get(p.id) as Prompt | undefined;
-        if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
-          continue;
-        }
-
-        if (
-          existing?.id &&
-          existing.updatedAt &&
-          Math.floor(new Date(p.updated_at).getTime() / 1000) <
-            Math.floor(existing.updatedAt.getTime() / 1000)
-        ) {
-          continue;
-        }
-
-        let localCategoryId = 0;
-        if (p.category_id && remoteToLocalCatMap.has(p.category_id)) {
-          localCategoryId = remoteToLocalCatMap.get(p.category_id)!;
-        }
-
-        const promptData: Prompt = {
-          id: existing?.id,
-          promptPayload: parsePromptPayload(p.prompt_payload_jsonb, {
-            title: p.title,
-            systemRole: p.system_role,
-            task: p.task,
-            context: p.context,
-            contextMenus: p.context_menus,
-            enabledMenuIds: p.enabled_menu_ids,
-            constraints: p.constraints,
-            negativePrompt: p.negative_prompt,
-            outputSchema: p.output_schema,
-            referenceUrl: p.reference_url,
-            language: p.language,
-            schemaVersion: p.schema_version,
-          }),
-          selectionPayload: undefined,
-          compiledPayload: undefined,
-          remoteId: p.id,
-          categoryId: localCategoryId,
-          title: p.title,
-          selectedMenuIds: p.selected_menu_ids || [],
-          schemaVersion: p.schema_version || "1.0.0",
-          language: p.language || "pt-BR",
-          outputFormat: p.output_format || "markdown",
-          referenceUrl: p.reference_url || undefined,
-          fewShotExamples: p.few_shot_examples || [],
-          createdAt: new Date(p.created_at),
-          updatedAt: new Date(p.updated_at),
-          syncStatus: "synced",
-        };
-
-        promptData.selectionPayload = p.selection_payload_jsonb
-          ? (p.selection_payload_jsonb as Prompt["selectionPayload"])
-          : parseUserSelection(
-              p.selection_payload_jsonb,
-              promptData.promptPayload.meta.template_id,
-              {
-                title: p.title,
-                schemaVersion: p.schema_version,
-                language: p.language,
-                contextMenus: p.context_menus,
-                enabledMenuIds: p.enabled_menu_ids,
-              },
-            );
-
-        promptData.compiledPayload = p.compiled_payload_jsonb
-          ? (p.compiled_payload_jsonb as Prompt["compiledPayload"])
-          : compilePromptPayload(
-              promptData.promptPayload,
-              promptData.selectionPayload ??
-                createEmptyUserSelection(promptData.promptPayload.meta.template_id),
-            );
-
-        promptsToPut.push(promptData);
-      }
-
-      if (promptsToPut.length > 0) {
-        await db.prompts.bulkPut(promptsToPut);
-      }
-    }
-  });
-
-  console.log("✅ Smart Merge concluído!");
   return true;
 };

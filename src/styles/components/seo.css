@@ -1,0 +1,50 @@
+/* --- SEO Fallback (no-JS) --- */
+.seo-fallback {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.seo-fallback__header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  margin-bottom: var(--space-3);
+}
+
+.seo-fallback__byline {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-6);
+}
+
+.seo-fallback__section {
+  margin-bottom: var(--space-8);
+}
+
+.seo-fallback__section h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-3);
+}
+
+.seo-fallback__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.seo-fallback__nav a {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.seo-fallback__list {
+  padding-left: 1.25rem;
+  margin-top: var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+}

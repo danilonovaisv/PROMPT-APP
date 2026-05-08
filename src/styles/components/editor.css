@@ -1,0 +1,89 @@
+/* --- Editor Utilities --- */
+.editor-form--constrained {
+  max-width: 800px;
+}
+
+.editor-menus-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.editor-footer {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-8);
+}
+
+/* --- JSON Preview --- */
+.json-preview {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  color: var(--color-text-secondary);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.json-preview .json-key {
+  color: var(--color-primary-light);
+}
+
+.json-preview .json-string {
+  color: var(--color-success);
+}
+
+.json-preview .json-number {
+  color: var(--color-warning);
+}
+
+/* --- Dynamic List --- */
+.dynamic-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dynamic-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dynamic-list__item input {
+  flex: 1;
+}
+
+.dynamic-list__add {
+  margin-top: var(--space-2);
+}
+
+.few-shot-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-8) !important;
+}
+
+.few-shot-delete {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  color: var(--color-error);
+}
+
+.few-shot-delete:hover {
+  background-color: rgba(255, 68, 102, 0.1);
+}

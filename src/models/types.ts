@@ -146,7 +146,40 @@ export interface RemoteContextMenu extends BaseRemoteEntity {
 }
 
 export interface RemotePrompt extends BaseRemoteEntity {
-  category_id: number;
+  user_id: string;
+  category_id: number | null;
   title: string;
-  payload: TemplatePayload;
+  prompt_payload_jsonb: TemplatePayload;
+  selected_menu_ids: number[];
+  schema_version: string;
+  output_format: string;
+  language: string;
+  reference_url: string | null;
+  few_shot_examples: FewShotExample[];
+  selection_payload_jsonb?: UserSelection;
+  compiled_payload_jsonb?: CompiledPromptPayload;
+}
+
+export interface PromptMemory {
+  id?: number;
+  remoteId?: string;
+  syncStatus?: SyncStatus;
+  isDeleted?: boolean;
+  key: string;
+  value: string;
+  templateId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RemotePromptMemory {
+  id: string;
+  user_id: string;
+  key: string;
+  value: string;
+  template_id: string;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
 }

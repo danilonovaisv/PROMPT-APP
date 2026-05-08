@@ -3,7 +3,7 @@
    ====================================================== */
 
 import Dexie, { type EntityTable } from 'dexie';
-import type { Category, Prompt, MenuOption, ContextMenu } from '@/models/types';
+import type { Category, Prompt, MenuOption, ContextMenu, PromptMemory } from '@/models/types';
 import {
     createPromptPayloadFromLegacyRecord,
     getPromptSummaryFields,
@@ -15,6 +15,7 @@ const db = new Dexie('PromptAppDB') as Dexie & {
     prompts: EntityTable<Prompt, 'id'>;
     menuOptions: EntityTable<MenuOption, 'id'>;
     contextMenus: EntityTable<ContextMenu, 'id'>;
+    promptMemory: EntityTable<PromptMemory, 'id'>;
 };
 
 /* --- Schema v1 → v2 migration --- */
@@ -216,6 +217,29 @@ db.version(10).stores({
     await prompts.toCollection().modify((prompt: Record<string, unknown>) => {
         if (!Array.isArray(prompt.selectedMenuIds)) {
             prompt.selectedMenuIds = [];
+        }
+    });
+});
+
+db.version(11).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+    promptMemory: '++id, key, templateId, remoteId, syncStatus',
+});
+
+db.version(12).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+    promptMemory: '++id, key, templateId, remoteId, syncStatus, isDeleted',
+}).upgrade(async (tx) => {
+    const promptMemory = tx.table('promptMemory');
+    await promptMemory.toCollection().modify((memory: Record<string, unknown>) => {
+        if (memory.isDeleted === undefined) {
+            memory.isDeleted = false;
         }
     });
 });
