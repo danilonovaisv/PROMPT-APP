@@ -1,7 +1,5 @@
 import { jest } from '@jest/globals';
 import { createEmptyPromptPayload } from '@/models/promptSchema';
-import { supabase } from '@/lib/supabase';
-import { db } from '@/db/database';
 
 type RealtimePayload = {
   eventType: 'INSERT' | 'UPDATE' | 'DELETE';
@@ -69,12 +67,12 @@ describe('realtime payload parsing', () => {
     channelCallbacks.prompts = undefined;
     channelCallbacks.context_menus = undefined;
 
-    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as any;
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock } } };
     mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
 
-    const { db: mockedDb } = (await import('@/db/database')) as any;
+    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { categories: { where: jest.Mock }, prompts: { where: jest.Mock }, contextMenus: { where: jest.Mock } } };
     mockedDb.categories.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => ({ id: 11 })),

@@ -4,7 +4,9 @@ import {
   resolveSupabaseConfig,
 } from "@/lib/supabaseConfig";
 
-const resolvedSupabaseConfig = resolveSupabaseConfig(import.meta.env);
+// @ts-expect-error - import.meta.env is provided by Vite, but causes issues in Jest/ts-jest
+const env = (import.meta as unknown as { env: Record<string, string | undefined> }).env || process.env;
+const resolvedSupabaseConfig = resolveSupabaseConfig(env);
 
 export const isSupabaseConfigured = resolvedSupabaseConfig.isConfigured;
 export const missingSupabaseVars = resolvedSupabaseConfig.missingVars;

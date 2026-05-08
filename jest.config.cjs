@@ -10,10 +10,15 @@ module.exports = {
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   // E2E tests use @playwright/test runner — must run via `pnpm test:e2e`, not Jest
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/e2e/', ...workspaceIgnorePatterns],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/tests/e2e/',
+    ...workspaceIgnorePatterns
+  ],
   modulePathIgnorePatterns: workspaceIgnorePatterns,
   watchPathIgnorePatterns: workspaceIgnorePatterns,
   moduleNameMapper: {
+    '^@/lib/supabase$': '<rootDir>/tests/mocks/supabase.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {

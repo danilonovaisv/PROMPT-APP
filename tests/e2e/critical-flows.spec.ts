@@ -8,7 +8,7 @@ test.describe('Ghost System PROMPT-APP: Critical Flows & A11y', () => {
     await expect(page.getByRole('heading', { name: 'Início', exact: true })).toBeVisible({ timeout: 10000 });
     
     // Verificar acessibilidade na página inicial (Dashboard)
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+    await new AxeBuilder({ page }).analyze();
     // expect(accessibilityScanResults.violations).toEqual([]);
     
     // Assegurar que os elementos críticos renderizaram com base em HomePage.tsx
@@ -26,11 +26,10 @@ test.describe('Ghost System PROMPT-APP: Critical Flows & A11y', () => {
     await expect(page).toHaveURL(/\/editor\/novo/);
     
     // Esperar um elemento do formulário para garantir que ele renderizou
-    const formElement = page.locator('form');
     await expect(page.getByRole("heading", { name: "Novo Template" }).first()).toBeVisible({ timeout: 10000 });
 
     // Auditar acessibilidade no formulário do editor
-    const results = await new AxeBuilder({ page }).analyze();
+    await new AxeBuilder({ page }).analyze();
     // expect(results.violations).toEqual([]);
     
     // Checar se as labels geradas têm o aria-describedby corretamente acoplado

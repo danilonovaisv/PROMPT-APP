@@ -118,16 +118,17 @@ export function getLocalBackupInfo() {
 }
 
 /** Valida se um objeto segue a interface AppSnapshot */
-function isValidSnapshot(obj: any): obj is AppSnapshot {
+function isValidSnapshot(obj: unknown): obj is AppSnapshot {
+    if (!obj || typeof obj !== 'object') return false;
+    const candidate = obj as Record<string, unknown>;
+    
     return (
-        obj &&
-        typeof obj === 'object' &&
-        typeof obj.version === 'string' &&
-        typeof obj.timestamp === 'string' &&
-        obj.data &&
-        typeof obj.data === 'object' &&
-        Array.isArray(obj.data.categories) &&
-        Array.isArray(obj.data.prompts) &&
-        Array.isArray(obj.data.contextMenus)
+        typeof candidate.version === 'string' &&
+        typeof candidate.timestamp === 'string' &&
+        candidate.data !== null &&
+        typeof candidate.data === 'object' &&
+        Array.isArray(candidate.data && (candidate.data as Record<string, unknown>).categories) &&
+        Array.isArray(candidate.data && (candidate.data as Record<string, unknown>).prompts) &&
+        Array.isArray(candidate.data && (candidate.data as Record<string, unknown>).contextMenus)
     );
 }

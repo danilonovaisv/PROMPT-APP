@@ -1,4 +1,9 @@
-import { TemplatePayloadSchema, type TemplatePayload } from '@/models/promptSchema';
+import {
+  TemplatePayloadSchema,
+  type TemplatePayload,
+  type MenuDefinition,
+  type FewShotExample,
+} from '@/models/promptSchema';
 import {
   CURRENT_PROMPT_SCHEMA_VERSION,
   getPromptSchemaWarning,
@@ -45,22 +50,22 @@ export function migrateTemplateToCurrentSchema(template: TemplatePayload): Templ
       user_scene_description: template.prompt_definition?.user_scene_description || '',
       constraints: template.prompt_definition?.constraints || [],
       negative_prompt: template.prompt_definition?.negative_prompt || [],
-      few_shot_examples: (template.prompt_definition?.few_shot_examples || []).map((ex: any) => ({
+      few_shot_examples: (template.prompt_definition?.few_shot_examples || []).map((ex: FewShotExample) => ({
         input: ex.input || '',
         output: ex.output || '',
       })),
     },
-    menu_definitions: (template.menu_definitions || []).map((menu: any) => ({
+    menu_definitions: (template.menu_definitions || []).map((menu: MenuDefinition) => ({
       menu_id: menu.menu_id,
       menu_name: menu.menu_name,
       description: menu.description || '',
       selection_mode: menu.selection_mode || 'single',
       required: !!menu.required,
-      options: (menu.options || []).map((opt: any) => ({
+      options: (menu.options || []).map((opt) => ({
         value: opt.value,
         label: opt.label,
         description: opt.description || '',
-        sub_options: (opt.sub_options || []).map((sub: any) => ({
+        sub_options: (opt.sub_options || []).map((sub) => ({
           value: sub.value,
           label: sub.label,
           description: sub.description || '',
@@ -69,7 +74,7 @@ export function migrateTemplateToCurrentSchema(template: TemplatePayload): Templ
     })),
     menu_ids: uniqueStrings([
       ...(template.menu_ids || []),
-      ...(template.menu_definitions || []).map((menu: any) => menu.menu_id),
+      ...(template.menu_definitions || []).map((menu: MenuDefinition) => menu.menu_id),
     ]),
     output_contract: {
       format: template.output_contract?.format || 'markdown',

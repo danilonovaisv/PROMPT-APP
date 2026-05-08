@@ -15,6 +15,38 @@ import { syncTemplateWithMenuDefinitions } from '@/utils/promptArtifacts';
 import { getBulkExportWarning, getPromptSchemaWarning } from '@/utils/schemaCompatibility';
 import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
 
+interface RawMenuSubOption {
+  value?: string;
+  valor?: string;
+  label?: string;
+  rotulo?: string;
+  description?: string;
+}
+
+interface RawMenuOption {
+  value?: string;
+  valor?: string;
+  label?: string;
+  rotulo?: string;
+  description?: string;
+  sub_options?: RawMenuSubOption[];
+  subOptions?: RawMenuSubOption[];
+}
+
+interface RawMenuDefinition {
+  menu_id?: string;
+  menuId?: string;
+  menu_name?: string;
+  menuName?: string;
+  description?: string;
+  selection_mode?: string;
+  selectionMode?: string;
+  required?: boolean;
+  obrigatorio?: boolean;
+  options?: RawMenuOption[];
+  menu_options?: RawMenuOption[];
+}
+
 export interface ImportError {
   type: 'validation' | 'processing' | 'network' | 'conflict';
   field: string;
@@ -59,11 +91,12 @@ function parsePromptContract(value: unknown): PromptContract {
 
 function normalizeMenuDefinition(menu: unknown): unknown {
   if (!isObject(menu)) return menu;
+  const rawMenu = menu as RawMenuDefinition;
 
-  const getSubOptions = (opt: any) => {
+  const getSubOptions = (opt: RawMenuOption) => {
     const raw = opt.sub_options || opt.subOptions;
     if (!Array.isArray(raw)) return [];
-    return raw.map((sub: any) => {
+    return raw.map((sub: RawMenuSubOption) => {
       if (!isObject(sub)) return sub;
       return {
         value: typeof (sub.value ?? sub.valor) === 'string' ? (sub.value ?? sub.valor) : '',
@@ -73,10 +106,10 @@ function normalizeMenuDefinition(menu: unknown): unknown {
     });
   };
 
-  const getOptions = (m: any) => {
+  const getOptions = (m: RawMenuDefinition) => {
     const raw = m.options || m.menu_options;
     if (!Array.isArray(raw)) return [];
-    return raw.map((opt: any) => {
+    return raw.map((opt: RawMenuOption) => {
       if (!isObject(opt)) return opt;
       return {
         value: typeof (opt.value ?? opt.valor) === 'string' ? (opt.value ?? opt.valor) : '',
@@ -88,40 +121,41 @@ function normalizeMenuDefinition(menu: unknown): unknown {
   };
 
   if (
-    (typeof menu.menu_id === 'string' && typeof menu.menu_name === 'string') ||
-    (typeof menu.menuId === 'string' && typeof menu.menuName === 'string')
+    (typeof rawMenu.menu_id === 'string' && typeof rawMenu.menu_name === 'string') ||
+    (typeof rawMenu.menuId === 'string' && typeof rawMenu.menuName === 'string')
   ) {
     return {
-      menu_id: menu.menu_id || menu.menuId,
-      menu_name: menu.menu_name || menu.menuName,
-      description: typeof menu.description === 'string' ? menu.description : '',
-      selection_mode: menu.selection_mode || menu.selectionMode || 'single',
-      required: typeof (menu.required ?? menu.obrigatorio) === 'boolean' ? (menu.required ?? menu.obrigatorio) : false,
-      options: getOptions(menu),
+      menu_id: rawMenu.menu_id || rawMenu.menuId,
+      menu_name: rawMenu.menu_name || rawMenu.menuName,
+      description: typeof rawMenu.description === 'string' ? rawMenu.description : '',
+      selection_mode: rawMenu.selection_mode || rawMenu.selectionMode || 'single',
+      required: typeof (rawMenu.required ?? rawMenu.obrigatorio) === 'boolean' ? (rawMenu.required ?? rawMenu.obrigatorio) : false,
+      options: getOptions(rawMenu),
     };
   }
 
   return menu;
 }
 
-function sanitizeMenuDefinition(definition: unknown): any {
+function sanitizeMenuDefinition(definition: unknown): unknown {
   const normalized = normalizeMenuDefinition(definition);
   if (!isObject(normalized)) return normalized;
+  const menu = normalized as RawMenuDefinition;
   
   // Pick only allowed fields to satisfy .strict() schema
   return {
-    menu_id: normalized.menu_id,
-    menu_name: normalized.menu_name,
-    description: normalized.description || '',
-    selection_mode: normalized.selection_mode || 'single',
-    required: !!normalized.required,
-    options: Array.isArray(normalized.options) 
-      ? normalized.options.map((opt: any) => ({
+    menu_id: menu.menu_id,
+    menu_name: menu.menu_name,
+    description: menu.description || '',
+    selection_mode: menu.selection_mode || 'single',
+    required: !!menu.required,
+    options: Array.isArray(menu.options) 
+      ? menu.options.map((opt: RawMenuOption) => ({
           value: opt.value,
           label: opt.label,
           description: opt.description || '',
           sub_options: Array.isArray(opt.sub_options)
-            ? opt.sub_options.map((sub: any) => ({
+            ? opt.sub_options.map((sub: RawMenuSubOption) => ({
                 value: sub.value,
                 label: sub.label,
                 description: sub.description || '',
@@ -414,7 +448,7 @@ export async function importFromJsonText(
         // Replaced N+1 individual db.prompts.add() calls with a single bulkAdd() operation.
         // Cloud synchronization is deferred to the background syncService by setting syncStatus to 'pending',
         // preventing blocking network requests and rate limits during bulk import.
-        await db.prompts.bulkAdd(promptsToInsert as any);
+        await db.prompts.bulkAdd(promptsToInsert as Prompt[]);
         count += promptsToInsert.length;
         warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }

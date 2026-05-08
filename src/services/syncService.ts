@@ -1,7 +1,7 @@
 import { assertSupabaseConfigured, supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import { createSnapshot } from "@/utils/backupManager";
-import { Category, ContextMenu, Prompt } from "@/models/types";
+import { Category, ContextMenu, Prompt, RemoteCategory, RemoteContextMenu, RemotePrompt } from "@/models/types";
 
 /** Shape returned by Supabase when selecting only the timestamp column. */
 interface SupabaseTimestamp {
@@ -433,10 +433,10 @@ export const downloadFromCloud = async () => {
   await db.transaction("rw", [db.categories, db.prompts, db.contextMenus], async () => {
     // ⚡ Bolt Optimization: Avoid fetching entire tables into memory to eliminate N+1 memory bottlenecks.
     // Ensure that remoteId and menuId are valid IndexedDB indexes before using .where()
-    const remoteCatIds = (catRes.data || []).map((c: any) => c.id);
-    const remoteMenuIds = (menuRes.data || []).map((m: any) => m.id);
-    const remoteMenuSlugs = (menuRes.data || []).map((m: any) => m.menu_id);
-    const remotePromptIds = (promptRes.data || []).map((p: any) => p.id);
+    const remoteCatIds = (catRes.data || []).map((c: RemoteCategory) => c.id);
+    const remoteMenuIds = (menuRes.data || []).map((m: RemoteContextMenu) => m.id);
+    const remoteMenuSlugs = (menuRes.data || []).map((m: RemoteContextMenu) => m.menu_id);
+    const remotePromptIds = (promptRes.data || []).map((p: RemotePrompt) => p.id);
 
     const [
       localCategoriesByRemoteId,

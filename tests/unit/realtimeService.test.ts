@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { supabase } from '@/lib/supabase';
+
 
 type MockSubscription = {
   unsubscribe: jest.Mock;
@@ -37,11 +37,11 @@ describe('realtimeService', () => {
     channelNames.length = 0;
     subscriptions.length = 0;
 
-    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as any;
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock }, channel: jest.Mock } };
     mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
-    mockedSupabase.channel.mockImplementation((name: any) => {
+    mockedSupabase.channel.mockImplementation((name: unknown) => {
       channelNames.push(name);
       const subscription = { unsubscribe: jest.fn() };
       subscriptions.push(subscription);

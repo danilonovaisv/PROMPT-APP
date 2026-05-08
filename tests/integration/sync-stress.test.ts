@@ -1,6 +1,7 @@
 import { db } from '@/db/database';
 import { syncToCloud, downloadFromCloud } from '@/services/syncService';
 import { supabase } from '@/lib/supabase';
+import { Prompt } from '@/models/types';
 
 // Mock Supabase
 jest.mock('@/lib/supabase', () => {
@@ -44,7 +45,7 @@ jest.mock('@/models/promptSchema', () => ({
     createEmptyUserSelection: jest.fn((p) => p),
     getPromptSummaryFields: jest.fn((p) => ({ ...p })),
     getLegacyPromptColumns: jest.fn((p) => ({ ...p })),
-    getPrimaryReferenceUrl: jest.fn((p) => ""),
+    getPrimaryReferenceUrl: jest.fn((_p) => ""),
     CompiledPromptPayloadSchema: { parse: jest.fn((p) => p) }
 }));
 
@@ -87,7 +88,7 @@ describe('Sync Stress Test', () => {
             syncStatus: 'synced' as const,
             createdAt: new Date(Date.now() - 20000), // 20s ago
             updatedAt: new Date(Date.now() - 10000), // 10s ago
-        })) as any[];
+        })) as Prompt[];
         await db.prompts.bulkAdd(prompts);
 
         // 2. Simulate Stress - 50 concurrent updates to different and same records
@@ -160,7 +161,7 @@ describe('Sync Stress Test', () => {
                     })),
                 })),
                 upsert: jest.fn(() => Promise.resolve({ data: null, error: null })),
-            } as any;
+            } as unknown as ReturnType<typeof supabase.from>;
         });
 
         // 2. Run Smart Merge

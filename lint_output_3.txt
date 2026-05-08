@@ -1,0 +1,45 @@
+
+> prompt-app@2.0.0 lint
+> eslint .
+
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/e2e/critical-flows.spec.ts
+  11:11  warning  'accessibilityScanResults' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:11  warning  'formElement' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  33:11  warning  'results' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/integration/sync-stress.test.ts
+   47:38  warning  'p' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+   90:16  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  163:18  warning  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/mocks/supabase.ts
+  10:83  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/unit/importService.validation.test.ts
+  41:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/unit/realtimePayloadParsing.test.ts
+   3:10  warning  'supabase' is defined but never used      @typescript-eslint/no-unused-vars
+   4:10  warning  'db' is defined but never used            @typescript-eslint/no-unused-vars
+  72:78  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/unit/realtimeService.cleanup.test.ts
+  40:78  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/PROJETOS DEV/PROMPT-APP/tests/unit/realtimeService.test.ts
+  40:78  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 24 problems (0 errors, 24 warnings)
+

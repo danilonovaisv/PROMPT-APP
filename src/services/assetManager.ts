@@ -15,7 +15,7 @@ import {
   parseUserSelection,
   type LegacyContextMenuSelection,
 } from "@/models/promptSchema";
-import type { Category, ContextMenu, Prompt, FewShotExample } from "@/models/types";
+import type { Category, ContextMenu, Prompt, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt } from "@/models/types";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -54,10 +54,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar categorias
     const remoteCategories = catRes.data || [];
-    // ⚡ Bolt Optimization: Avoid fetching the entire table into memory (O(n) where n = all rows).
-    // Instead, extract remote IDs from the payload and fetch only the relevant local records using .anyOf()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const remoteCatIds = remoteCategories.map((c: any) => c.id);
+    const remoteCatIds = remoteCategories.map((c: RemoteCategory) => c.id);
     const localCategories = remoteCatIds.length > 0
       ? await db.categories.where('remoteId').anyOf(remoteCatIds).toArray()
       : [];
@@ -87,9 +84,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
     // Verificar prompts (similar para menus)
     const remotePrompts = promptRes.data || [];
-    // ⚡ Bolt Optimization: Avoid fetching the entire prompts table (large JSON payloads) into memory.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const remotePromptIds = remotePrompts.map((p: any) => p.id);
+    const remotePromptIds = remotePrompts.map((p: RemotePrompt) => p.id);
     const localPrompts = remotePromptIds.length > 0
       ? await db.prompts.where('remoteId').anyOf(remotePromptIds).toArray()
       : [];
@@ -479,7 +474,7 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
   ]);
 
   const pullItems = async <T extends SyncableEntity>(
-    remoteItems: any[] | null,
+    remoteItems: (RemoteCategory | RemotePrompt | RemoteContextMenu)[] | null,
     localTable: Table<T, number>,
     type: AssetUpdate["type"],
   ) => {
@@ -512,12 +507,9 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await pullItems(catRes.data, db.categories as any, "category");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await pullItems(promptRes.data, db.prompts as any, "prompt");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await pullItems(menuRes.data, db.contextMenus as any, "menu");
+  await pullItems(catRes.data as RemoteCategory[], db.categories as Table<SyncableEntity, number>, "category");
+  await pullItems(promptRes.data as RemotePrompt[], db.prompts as Table<SyncableEntity, number>, "prompt");
+  await pullItems(menuRes.data as RemoteContextMenu[], db.contextMenus as Table<SyncableEntity, number>, "menu");
 
   return { pulled: pulledCount };
 }
@@ -536,7 +528,7 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
     table: Table<T, number>,
     type: AssetUpdate["type"],
   ) => {
-    const pending = await (table as any).where("syncStatus").equals("pending")
+    const pending = await table.where("syncStatus").equals("pending")
       .toArray();
     for (const item of pending) {
       await pushLocalChanges({
@@ -550,12 +542,9 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await findPending(db.categories as any, "category");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await findPending(db.prompts as any, "prompt");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await findPending(db.contextMenus as any, "menu");
+  await findPending(db.categories as Table<SyncableEntity, number>, "category");
+  await findPending(db.prompts as Table<SyncableEntity, number>, "prompt");
+  await findPending(db.contextMenus as Table<SyncableEntity, number>, "menu");
 
   return { pushed: pushedCount };
 }
