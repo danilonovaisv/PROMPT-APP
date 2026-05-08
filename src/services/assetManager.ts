@@ -15,7 +15,7 @@ import {
   parseUserSelection,
   type LegacyContextMenuSelection,
 } from "@/models/promptSchema";
-import type { Category, ContextMenu, Prompt, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt } from "@/models/types";
+import type { Category, ContextMenu, Prompt, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt, BaseRemoteEntity } from "@/models/types";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -495,12 +495,13 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     for (const remote of remoteItems) {
       const exists = existingRemoteIds.has(remote.id);
       if (!exists) {
+        const baseRemote = remote as unknown as BaseRemoteEntity;
         await applyRemoteChanges({
           type,
           id: 0, // Novo item
           action: "created",
-          timestamp: new Date((remote.created_at || new Date().toISOString()) as string),
-          data: remote,
+          timestamp: new Date((baseRemote.created_at || new Date().toISOString()) as string),
+          data: remote as unknown as Record<string, unknown>,
         });
         pulledCount++;
       }
@@ -536,7 +537,7 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
         id: item.id!,
         action: item.remoteId ? "updated" : "created",
         timestamp: new Date(),
-        data: item,
+        data: item as unknown as Record<string, unknown>,
       });
       pushedCount++;
     }

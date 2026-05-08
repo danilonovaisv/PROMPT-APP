@@ -124,31 +124,29 @@ export interface BulkExport {
 export type PromptMenuSelection = UserSelection;
 export type SyncStatus = 'pending' | 'synced' | 'error';
 
-export interface RemoteCategory {
+export interface BaseRemoteEntity {
   id: number;
-  name: string;
-  icon: string;
-  color: string;
+  created_at: string;
   updated_at: string;
   is_deleted: boolean;
 }
 
-export interface RemoteContextMenu {
-  id: number;
+export interface RemoteCategory extends BaseRemoteEntity {
+  name: string;
+  icon: string;
+  color: string;
+}
+
+export interface RemoteContextMenu extends BaseRemoteEntity {
   menu_id: string;
   menu_name: string;
   description: string;
   selection_mode: MenuSelectionMode;
   options: ContextMenuOption[];
-  updated_at: string;
-  is_deleted: boolean;
 }
 
-export interface RemotePrompt {
-  id: number;
+export interface RemotePrompt extends BaseRemoteEntity {
   category_id: number;
   title: string;
   payload: TemplatePayload;
-  updated_at: string;
-  is_deleted: boolean;
 }

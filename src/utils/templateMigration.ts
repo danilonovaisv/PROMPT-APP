@@ -2,8 +2,10 @@ import {
   TemplatePayloadSchema,
   type TemplatePayload,
   type MenuDefinition,
-  type FewShotExample,
 } from '@/models/promptSchema';
+import {
+  type FewShotExample,
+} from '@/models/types';
 import {
   CURRENT_PROMPT_SCHEMA_VERSION,
   getPromptSchemaWarning,
