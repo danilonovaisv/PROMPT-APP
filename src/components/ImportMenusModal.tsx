@@ -270,7 +270,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                         </strong>
                                     </div>
                                     <p className="import-warning-text">
-                                        Os seguintes menu_id(s) já existem: <strong>{conflicts.join(', ')}</strong>
+                                        Os seguintes menu_id(s) já existem: <strong>{conflicts.join(', ')}</strong>. Se continuar sem marcar a opção abaixo, eles serão atualizados com os dados do arquivo.
                                     </p>
                                     <label className="import-skip-label" htmlFor="skip-conflicts-checkbox">
                                         <input
@@ -371,7 +371,7 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
                                 <button
                                     className="btn btn--primary"
                                     onClick={handleConfirmImport}
-                                    disabled={importing || (conflicts.length > 0 && !skipConflicts && conflicts.length === parsedData.menus.length)}
+                                    disabled={importing}
                                 >
                                     {importing ? (
                                         'Importando...'

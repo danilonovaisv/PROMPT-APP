@@ -208,6 +208,7 @@ export interface ImportResult {
 type ExistingMenuState = {
     activeConflicts: string[];
     staleDeletedLocalIds: number[];
+    existingMenusById: Map<string, ContextMenu>;
 };
 
 /** Converte ImportMenu → ContextMenu (modelo interno) */
@@ -235,7 +236,7 @@ function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
 
 async function getExistingMenuState(menuIds: string[]): Promise<ExistingMenuState> {
     if (menuIds.length === 0) {
-        return { activeConflicts: [], staleDeletedLocalIds: [] };
+        return { activeConflicts: [], staleDeletedLocalIds: [], existingMenusById: new Map() };
     }
 
     const existingMenus = await db.contextMenus.where('menuId').anyOf(menuIds).toArray();
@@ -245,6 +246,7 @@ async function getExistingMenuState(menuIds: string[]): Promise<ExistingMenuStat
         staleDeletedLocalIds: existingMenus
             .filter((menu): menu is ContextMenu & { id: number } => menu.isDeleted === true && typeof menu.id === 'number')
             .map((menu) => menu.id),
+        existingMenusById: new Map(existingMenus.map((menu) => [menu.menuId, menu])),
     };
 }
 
@@ -303,21 +305,7 @@ export async function importMenusFromFile(
 
     /* 3. Verificar conflitos de menu_id */
     const menuIds = data.menus.map((m) => m.menu_id);
-    const { activeConflicts: conflicts, staleDeletedLocalIds } = await getExistingMenuState(menuIds);
-
-    if (conflicts.length > 0 && !skipConflicts) {
-        log.push(`[${timestamp}] CONFLITO: menu_id(s) já existente(s): ${conflicts.join(', ')}`);
-        return {
-            success: false,
-            imported: 0,
-            errors: conflicts.map((id) => ({
-                field: `menus[menu_id="${id}"]`,
-                message: `Menu com ID "${id}" já existe no sistema`,
-            })),
-            conflicts,
-            log,
-        };
-    }
+    const { activeConflicts: conflicts, staleDeletedLocalIds, existingMenusById } = await getExistingMenuState(menuIds);
 
     /* 4. Importação atômica — transação Dexie */
     const menusToImport = skipConflicts
@@ -339,6 +327,16 @@ export async function importMenusFromFile(
         const enrichedMenus: Partial<ContextMenu>[] = [];
         for (const menu of menusToImport) {
             const contextMenu = toContextMenu(menu) as Partial<ContextMenu>;
+            const existingMenu = existingMenusById.get(menu.menu_id);
+
+            if (existingMenu) {
+                contextMenu.id = existingMenu.id;
+                contextMenu.remoteId = existingMenu.remoteId;
+                contextMenu.createdAt = existingMenu.createdAt || contextMenu.createdAt;
+                contextMenu.updatedAt = new Date();
+                contextMenu.isDeleted = false;
+            }
+
             try {
                 const savedRemote = await saveMenuToSupabase(contextMenu);
                 contextMenu.remoteId = savedRemote.id;
@@ -357,6 +355,9 @@ export async function importMenusFromFile(
         });
 
         log.push(`[${timestamp}] SUCESSO: ${menusToImport.length} menu(s) importado(s)`);
+        if (conflicts.length > 0 && !skipConflicts) {
+            log.push(`[${timestamp}] ATUALIZAÇÃO: ${conflicts.length} menu(s) existente(s) foram atualizados pelo menu_id`);
+        }
         for (const menu of menusToImport) {
             const optCount = menu.options.length;
             const subCount = menu.options.reduce((acc, o) => acc + (o.sub_options?.length ?? 0), 0);

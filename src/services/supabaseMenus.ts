@@ -37,7 +37,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         payload.created_at = new Date().toISOString();
         const { data, error } = await supabase
             .from('context_menus')
-            .insert(payload)
+            .upsert(payload, { onConflict: 'user_id,menu_id' })
             .select()
             .single();
 

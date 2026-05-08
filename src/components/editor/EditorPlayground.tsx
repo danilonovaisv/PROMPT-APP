@@ -54,6 +54,7 @@ export function EditorPlayground({
       : [];
 
   const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyValue, setNewKeyValue] = useState('');
   const [isAddingKey, setIsAddingKey] = useState(false);
   const memoryKeys = Object.keys(fixedMemory);
   const memoryHelpId = 'fixed-memory-help';
@@ -63,7 +64,9 @@ export function EditorPlayground({
     const trimmedKey = newKeyName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '_');
     if (trimmedKey && onAddMemoryKey) {
       onAddMemoryKey(trimmedKey);
+      onSaveMemory?.(trimmedKey, newKeyValue);
       setNewKeyName('');
+      setNewKeyValue('');
       setIsAddingKey(false);
     }
   };
@@ -137,7 +140,7 @@ export function EditorPlayground({
                 );
               })}
 
-              {isAddingKey ? (
+              {isAddingKey || memoryKeys.length === 0 ? (
                 <div className="card memory-card memory-card--add animate-fade-in">
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label" style={{ fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -155,10 +158,18 @@ export function EditorPlayground({
                         placeholder="EX: BRAND_VOICE"
                         style={{ textTransform: 'uppercase' }}
                       />
+                      <textarea
+                        className="form-input"
+                        value={newKeyValue}
+                        onChange={(e) => setNewKeyValue(e.target.value)}
+                        rows={2}
+                        aria-label="Valor da nova chave fixa"
+                        placeholder="Valor inicial da chave..."
+                      />
                       <button className="btn btn--primary btn--sm" type="button" onClick={handleConfirmAddKey} aria-label="Confirmar nova chave fixa">
                         <Check size={14} />
                       </button>
-                      <button className="btn btn--ghost btn--sm" type="button" onClick={() => setIsAddingKey(false)} aria-label="Cancelar criação da chave fixa">
+                      <button className="btn btn--ghost btn--sm" type="button" onClick={() => { setIsAddingKey(false); setNewKeyName(''); setNewKeyValue(''); }} aria-label="Cancelar criação da chave fixa">
                         <X size={14} />
                       </button>
                     </div>
