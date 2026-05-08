@@ -24,7 +24,7 @@ ignore = "bash -c 'if [ -z \"$CACHED_COMMIT_REF\" ]; then exit 1; fi; CHANGED=\"
 functions = "/Users/PROJETOS DEV/PROMPT-APP/netlify/functions"
 
 [build.environment]
-NODE_VERSION = "20"
+NODE_VERSION = "22"
 CI = "true"
 
 [build.processing]
