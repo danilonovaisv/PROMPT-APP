@@ -28,6 +28,9 @@
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "*"
+    ],
     "overrides": {
       "underscore": ">=1.13.8",
       "underscore.string": ">=3.3.5",
