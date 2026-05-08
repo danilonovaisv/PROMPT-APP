@@ -4,6 +4,7 @@
 
 import { db } from "@/db/database";
 import type { Category, ContextMenu, Prompt } from "@/models/types";
+import { checkMenuIdConflicts, exportMenusToJson } from "@/utils/importMenusJson";
 
 describe("Database Integration Tests", () => {
   it("should expose Dexie schema version 10", () => {
@@ -285,6 +286,69 @@ describe("Database Integration Tests", () => {
 
       const updated = await db.contextMenus.get(id);
       expect(updated?.options[0].label).toBe("New Option");
+    });
+
+    it("should ignore soft-deleted menus when checking import conflicts", async () => {
+      await db.contextMenus.add({
+        menuId: "deleted_menu",
+        menuName: "Deleted Menu",
+        description: "Soft deleted",
+        selectionMode: "single",
+        options: [],
+        isDeleted: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as ContextMenu);
+
+      await db.contextMenus.add({
+        menuId: "active_menu",
+        menuName: "Active Menu",
+        description: "Active",
+        selectionMode: "single",
+        options: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as ContextMenu);
+
+      await expect(checkMenuIdConflicts(["deleted_menu", "active_menu"])).resolves.toEqual(["active_menu"]);
+    });
+
+    it("should export only active menus", async () => {
+      await db.contextMenus.add({
+        menuId: "active_export",
+        menuName: "Active Export",
+        description: "Visible menu",
+        selectionMode: "multiple",
+        options: [
+          {
+            label: "Formal",
+            value: "formal",
+            subOptions: [{ label: "Corporativo", value: "corporativo" }],
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as ContextMenu);
+
+      await db.contextMenus.add({
+        menuId: "deleted_export",
+        menuName: "Deleted Export",
+        description: "Hidden menu",
+        selectionMode: "single",
+        options: [],
+        isDeleted: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as ContextMenu);
+
+      const exported = await exportMenusToJson();
+
+      expect(exported.menus).toHaveLength(1);
+      expect(exported.menus[0]).toMatchObject({
+        menu_id: "active_export",
+        menu_name: "Active Export",
+        selection_mode: "multiple",
+      });
     });
   });
 

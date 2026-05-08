@@ -183,11 +183,14 @@ export function validateMenuImportFile(raw: unknown): ValidationResult {
 
 /** Verifica conflitos com menus existentes no banco */
 export async function checkMenuIdConflicts(menuIds: string[]): Promise<string[]> {
-    // ⚡ Bolt: Used .anyOf().toArray() to batch query for existing records
-    // instead of querying one by one (.first()) inside a loop.
-    // This avoids an N+1 query problem, significantly reducing database roundtrips.
+    if (menuIds.length === 0) {
+        return [];
+    }
+
+    // Conflito real é apenas o menu ainda ativo.
+    // Entradas soft-deleted não devem bloquear uma nova importação do mesmo menu.
     const existingMenus = await db.contextMenus.where('menuId').anyOf(menuIds).toArray();
-    return existingMenus.map(m => m.menuId);
+    return existingMenus.filter((menu) => !menu.isDeleted).map((menu) => menu.menuId);
 }
 
 /* -------------------------------------------------------
@@ -201,6 +204,11 @@ export interface ImportResult {
     conflicts: string[];
     log: string[];
 }
+
+type ExistingMenuState = {
+    activeConflicts: string[];
+    staleDeletedLocalIds: number[];
+};
 
 /** Converte ImportMenu → ContextMenu (modelo interno) */
 function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
@@ -220,6 +228,23 @@ function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
         })),
         createdAt: now,
         updatedAt: now,
+        isDeleted: false,
+        syncStatus: 'pending',
+    };
+}
+
+async function getExistingMenuState(menuIds: string[]): Promise<ExistingMenuState> {
+    if (menuIds.length === 0) {
+        return { activeConflicts: [], staleDeletedLocalIds: [] };
+    }
+
+    const existingMenus = await db.contextMenus.where('menuId').anyOf(menuIds).toArray();
+
+    return {
+        activeConflicts: existingMenus.filter((menu) => !menu.isDeleted).map((menu) => menu.menuId),
+        staleDeletedLocalIds: existingMenus
+            .filter((menu): menu is ContextMenu & { id: number } => menu.isDeleted === true && typeof menu.id === 'number')
+            .map((menu) => menu.id),
     };
 }
 
@@ -278,7 +303,7 @@ export async function importMenusFromFile(
 
     /* 3. Verificar conflitos de menu_id */
     const menuIds = data.menus.map((m) => m.menu_id);
-    const conflicts = await checkMenuIdConflicts(menuIds);
+    const { activeConflicts: conflicts, staleDeletedLocalIds } = await getExistingMenuState(menuIds);
 
     if (conflicts.length > 0 && !skipConflicts) {
         log.push(`[${timestamp}] CONFLITO: menu_id(s) já existente(s): ${conflicts.join(', ')}`);
@@ -317,6 +342,7 @@ export async function importMenusFromFile(
             try {
                 const savedRemote = await saveMenuToSupabase(contextMenu);
                 contextMenu.remoteId = savedRemote.id;
+                contextMenu.syncStatus = 'synced';
             } catch (err) {
                 console.error("Erro importando menu no Supabase", err);
             }
@@ -324,6 +350,9 @@ export async function importMenusFromFile(
         }
 
         await db.transaction('rw', db.contextMenus, async () => {
+            if (staleDeletedLocalIds.length > 0) {
+                await db.contextMenus.bulkDelete(staleDeletedLocalIds);
+            }
             await db.contextMenus.bulkPut(enrichedMenus as ContextMenu[]);
         });
 
@@ -359,7 +388,7 @@ export async function importMenusFromFile(
  * Permite exportar menus para reutilização em outros projetos.
  */
 export async function exportMenusToJson(): Promise<MenuImportSchema> {
-    const menus = await db.contextMenus.toArray();
+    const menus = await db.contextMenus.filter((menu) => !menu.isDeleted).toArray();
 
     return {
         version: '1.0',
@@ -368,7 +397,7 @@ export async function exportMenusToJson(): Promise<MenuImportSchema> {
             menu_name: m.menuName,
             description: m.description,
             selection_mode: m.selectionMode,
-            options: m.options.map((opt) => ({
+            options: (m.options || []).map((opt) => ({
                 label: opt.label,
                 value: opt.value,
                 sub_options: (opt.subOptions || []).length > 0

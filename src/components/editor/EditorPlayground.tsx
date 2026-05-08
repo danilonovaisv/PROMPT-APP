@@ -27,6 +27,7 @@ type EditorPlaygroundProps = {
 };
 
 export function EditorPlayground({
+  template,
   selection,
   freeInputs,
   fixedMemory = {},
@@ -54,6 +55,9 @@ export function EditorPlayground({
 
   const [newKeyName, setNewKeyName] = useState('');
   const [isAddingKey, setIsAddingKey] = useState(false);
+  const memoryKeys = Object.keys(fixedMemory);
+  const memoryHelpId = 'fixed-memory-help';
+  const templateLabel = template.meta.template_name.trim() || 'este template';
 
   const handleConfirmAddKey = () => {
     const trimmedKey = newKeyName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '_');
@@ -70,57 +74,62 @@ export function EditorPlayground({
         <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
           <h4 className="form-section__title" style={{ margin: 0 }}>Memória Fixa</h4>
           {isSavingMemory && (
-            <div className="memory-status memory-status--saving">
+            <div className="memory-status memory-status--saving" role="status" aria-live="polite">
               <div className="loading-spinner loading-spinner--xs" />
               Salvando...
             </div>
           )}
-          {!isSavingMemory && Object.keys(fixedMemory).length > 0 && (
-            <div className="memory-status memory-status--saved">
+          {!isSavingMemory && memoryKeys.length > 0 && (
+            <div className="memory-status memory-status--saved" role="status" aria-live="polite">
               <Check size={12} /> Salvo
             </div>
           )}
         </div>
         
-        <p className="form-label__hint" style={{ marginBottom: 'var(--space-4)' }}>
-          Estes valores são salvos na sua conta e preenchem automaticamente variáveis globais (ex: <code>JSON_WORKFLOW_ATUAL</code>, <code>FOCO_DA_MELHORIA</code>).
+        <p id={memoryHelpId} className="form-label__hint" style={{ marginBottom: 'var(--space-4)' }}>
+          Estes valores ficam vinculados ao template <strong>{templateLabel}</strong> e preenchem variáveis fixas sempre que este template for usado. Eles não são globais entre templates.
         </p>
         
         {isMemoryLoading ? (
           <div className="skeleton-block" style={{ height: '100px', marginBottom: '1rem', width: '100%' }} />
         ) : (
           <>
-            {Object.keys(fixedMemory).length === 0 && !isAddingKey && (
+            {memoryKeys.length === 0 && !isAddingKey && (
               <div className="empty-state-hint" style={{ marginBottom: 'var(--space-4)', padding: 'var(--space-4)', border: '1px dashed var(--color-border)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-sm)', margin: 0 }}>
-                  Nenhuma chave de memória definida. Adicione chaves para persistir contextos globais.
+                  Nenhuma chave fixa definida para este template. Adicione apenas os campos que precisam ser preenchidos sempre neste contexto.
                 </p>
               </div>
             )}
             <div className="memory-grid">
-              {Object.keys(fixedMemory).map((key) => {
+              {memoryKeys.map((key) => {
                 const value = fixedMemory[key] || '';
+                const fieldId = `fixed-memory-${key.toLowerCase()}`;
                 return (
                   <div key={key} className="card memory-card">
                     <div className="flex-row-center" style={{ justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                      <label className="form-label" style={{ marginBottom: 0, fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-light)' }}>
+                      <label htmlFor={fieldId} className="form-label" style={{ marginBottom: 0, fontWeight: 'var(--font-weight-bold)', color: 'var(--color-primary-light)' }}>
                         {key}
                       </label>
                       <button 
                         className="btn btn--ghost btn--icon btn--xs" 
+                        type="button"
                         onClick={() => onDeleteMemory?.(key)}
-                        title="Remover chave permanente"
+                        aria-label={`Remover chave fixa ${key}`}
+                        title="Remover chave fixa"
                       >
                         <Trash2 size={12} />
                       </button>
                     </div>
                     <div className="form-group">
                       <textarea
+                        id={fieldId}
                         value={value}
                         onChange={(e) => onSaveMemory?.(key, e.target.value)}
                         rows={2}
                         placeholder={`Valor para ${key}...`}
                         className="form-input"
+                        aria-describedby={memoryHelpId}
                         style={{ fontSize: 'var(--font-size-sm)' }}
                       />
                     </div>
@@ -132,7 +141,7 @@ export function EditorPlayground({
                 <div className="card memory-card memory-card--add animate-fade-in">
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label" style={{ fontSize: 'var(--font-size-xs)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Nova Chave Permanente
+                      Nova Chave Fixa do Template
                     </label>
                     <div className="flex-row-center" style={{ gap: 'var(--space-2)' }}>
                       <input
@@ -142,13 +151,14 @@ export function EditorPlayground({
                         onChange={(e) => setNewKeyName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleConfirmAddKey()}
                         onBlur={(e) => !e.target.value && setIsAddingKey(false)}
+                        aria-label="Nome da nova chave fixa"
                         placeholder="EX: BRAND_VOICE"
                         style={{ textTransform: 'uppercase' }}
                       />
-                      <button className="btn btn--primary btn--sm" onClick={handleConfirmAddKey}>
+                      <button className="btn btn--primary btn--sm" type="button" onClick={handleConfirmAddKey} aria-label="Confirmar nova chave fixa">
                         <Check size={14} />
                       </button>
-                      <button className="btn btn--ghost btn--sm" onClick={() => setIsAddingKey(false)}>
+                      <button className="btn btn--ghost btn--sm" type="button" onClick={() => setIsAddingKey(false)} aria-label="Cancelar criação da chave fixa">
                         <X size={14} />
                       </button>
                     </div>
@@ -157,9 +167,11 @@ export function EditorPlayground({
               ) : (
                 <button 
                   className="btn btn--ghost btn--sm memory-grid__add" 
+                  type="button"
+                  aria-describedby={memoryHelpId}
                   onClick={() => setIsAddingKey(true)}
                 >
-                  <Plus size={14} /> Adicionar Chave Permanente
+                  <Plus size={14} /> Adicionar Chave Fixa
                 </button>
               )}
             </div>
@@ -187,6 +199,7 @@ export function EditorPlayground({
                 value={entry.key}
                 onChange={(event) => onUpdateFreeInput(index, { ...entry, key: event.target.value })}
                 placeholder="user_scene_description"
+                className="form-input"
               />
             </div>
 
@@ -197,11 +210,13 @@ export function EditorPlayground({
                 onChange={(event) => onUpdateFreeInput(index, { ...entry, value: event.target.value })}
                 rows={3}
                 placeholder="Descreva o input livre"
+                className="form-input"
               />
             </div>
 
             <button
               className="btn btn--ghost btn--icon"
+              type="button"
               onClick={() => onRemoveFreeInput(index)}
               aria-label="Remover input livre"
             >
@@ -210,7 +225,7 @@ export function EditorPlayground({
           </div>
         ))}
 
-        <button className="btn btn--ghost btn--sm dynamic-list__add" onClick={onAddFreeInput}>
+        <button className="btn btn--ghost btn--sm dynamic-list__add" type="button" onClick={onAddFreeInput}>
           <Plus size={14} /> Novo input livre
         </button>
       </div>
@@ -240,6 +255,7 @@ export function EditorPlayground({
                       key={option.value}
                       type="button"
                       className={`menu-tag ${optionSelection ? 'menu-tag--selected' : ''}`}
+                      aria-pressed={optionSelection ? 'true' : 'false'}
                       onClick={() => onToggleOption(menu.menuId, menu.selectionMode, option.value)}
                     >
                       {option.label}
@@ -270,6 +286,7 @@ export function EditorPlayground({
                               key={subOption.value}
                               type="button"
                               className={`menu-tag menu-tag--sub ${isSelected ? 'menu-tag--selected' : ''}`}
+                              aria-pressed={isSelected ? 'true' : 'false'}
                               onClick={() => onToggleSubOption(menu.menuId, optionDefinition.value, subOption.value)}
                             >
                               {subOption.label}

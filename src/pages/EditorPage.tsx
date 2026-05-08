@@ -241,6 +241,7 @@ export default function EditorPage() {
   const [form, setForm] = useState<TemplateFormState>(buildInitialFormState());
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [fixedMemory, setFixedMemory] = useState<Record<string, string>>({});
+  const [loadedMemoryTemplateId, setLoadedMemoryTemplateId] = useState('');
   const [isMemoryLoading, setIsMemoryLoading] = useState(false);
   const [isSavingMemory, setIsSavingMemory] = useState(false);
 
@@ -277,17 +278,32 @@ export default function EditorPage() {
   useEffect(() => {
     if (!form.template.meta.template_id) return;
 
+    let isCancelled = false;
+
     (async () => {
       try {
         setIsMemoryLoading(true);
         const memory = await fetchMemory(form.template.meta.template_id);
-        setFixedMemory(memory);
+        if (!isCancelled) {
+          setFixedMemory(memory);
+          setLoadedMemoryTemplateId(form.template.meta.template_id);
+        }
       } catch (error) {
         console.error('Erro ao carregar memória fixa:', error);
+        if (!isCancelled) {
+          setFixedMemory({});
+          setLoadedMemoryTemplateId(form.template.meta.template_id);
+        }
       } finally {
-        setIsMemoryLoading(false);
+        if (!isCancelled) {
+          setIsMemoryLoading(false);
+        }
       }
     })();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [form.template.meta.template_id]);
 
   // Autosave da Memória Fixa (Debounced)
@@ -405,7 +421,9 @@ export default function EditorPage() {
     setTimeout(() => setLastSaved(now), 0);
   }, [debouncedForm, id, loaded]);
 
-  const clearDraft = () => localStorage.removeItem(`template_draft_${id}`);
+  const clearDraft = useCallback(() => {
+    localStorage.removeItem(`template_draft_${id}`);
+  }, [id]);
 
   const handleSave = useCallback(async () => {
     if (!form.template.meta.template_name.trim()) {
@@ -715,11 +733,14 @@ export default function EditorPage() {
   };
 
   if (!loaded) return null;
+  const pageTitle = isNew ? 'Novo Template' : (form.template.meta.template_name || 'Editar Template');
+  const visibleFixedMemory =
+    loadedMemoryTemplateId === form.template.meta.template_id ? fixedMemory : {};
 
   return (
     <>
       <SEO
-        title={isNew ? 'Novo Template' : (form.template.meta.template_name || 'Editar Template')}
+        title={pageTitle}
         description={
           isNew
             ? 'Crie um novo template estruturado com categorias, menus vinculados e output contract.'
@@ -731,12 +752,7 @@ export default function EditorPage() {
           <button className="btn btn--ghost btn--icon" onClick={() => navigate(-1)} aria-label="Voltar" title="Voltar">
             <ArrowLeft size={18} />
           </button>
-          <h1 className="app-header__title mobile-hide">{isNew ? 'Novo Template' : 'Editar Template'}</h1>
-          {!isNew && (
-             <div className="app-header__title-mobile mobile-only">
-                {form.template.meta.template_name || 'Editar Template'}
-             </div>
-          )}
+          <h1 className="app-header__title">{pageTitle}</h1>
         </div>
         <div className="app-header__actions mobile-hide">
           {lastSaved && (
@@ -774,6 +790,8 @@ export default function EditorPage() {
                 className="btn btn--ghost btn--icon" 
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
                 aria-label="Playground"
+                aria-expanded={isSidebarOpen}
+                aria-controls="editor-playground-panel"
                 data-tooltip="Playground"
              >
                 <Settings2 size={20} />
@@ -827,6 +845,7 @@ export default function EditorPage() {
         <aside
           id="editor-playground-panel"
           className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}
+          aria-label="Painel lateral do playground"
           aria-hidden={!isSidebarOpen}
         >
           <div className="editor-floating-sidebar__header">
@@ -842,7 +861,7 @@ export default function EditorPage() {
               template={form.template}
               selection={form.selection}
               freeInputs={form.freeInputs}
-              fixedMemory={fixedMemory}
+              fixedMemory={visibleFixedMemory}
               isMemoryLoading={isMemoryLoading}
               isSavingMemory={isSavingMemory}
               onSaveMemory={handleSaveMemory}
