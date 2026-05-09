@@ -9,6 +9,8 @@ import { Plus, Sparkles, FolderPlus } from 'lucide-react';
 import SEO from '@/components/SEO';
 import CategoryCard from '@/components/CategoryCard';
 import { useMemo, useCallback } from 'react';
+import { Header } from '@/components/layout/Header';
+import { Header } from '@/components/layout/Header';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -51,15 +53,15 @@ export default function HomePage() {
                 title="Início"
                 description="Organize seus templates de prompt com menus independentes e exportação estruturada."
             />
-            <header className="app-header">
-                <h2 className="app-header__title">Início</h2>
-                <div className="app-header__actions">
-                    <button className="btn btn--primary" onClick={() => navigate('/editor/novo')}>
+<Header
+                title="Início"
+                actions={
+                    <button className="btn btn--primary stagger-1" onClick={() => navigate('/editor/novo')}>
                         <Plus size={16} />
                         Novo Template
                     </button>
-                </div>
-            </header>
+                }
+            />
 
             <div className="app-content">
                 {/* Hero */}

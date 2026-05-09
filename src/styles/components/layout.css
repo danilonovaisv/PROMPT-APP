@@ -238,3 +238,43 @@
   opacity: 0.9;
   background: var(--color-surface-hover);
 }
+
+/* --- Header Refactor --- */
+.app-header--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header--scrolled {
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Staggered animation classes (placeholder for future use) */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+
+/* --- Header Refactor --- */
+.app-header--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header--scrolled {
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Staggered animation classes (placeholder for future use) */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
