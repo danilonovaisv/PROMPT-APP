@@ -410,4 +410,36 @@ Ver `BUGS.md` e `docs/audits/` para histórico de correções.
 
 ---
 
-*Este documento foi gerado automaticamente com base na análise do código-fonte. Atualize ao fazer mudanças estruturais significativas.*
+## 18. AGENT PROTOCOL (Antigravity Prompt Architect)
+
+A partir da diretriz definida em `AGENT.md`, as seguintes regras são rigorosamente seguidas na orquestração e engenharia de prompts no ecossistema:
+
+### 18.1 Arquitetura de 3 Camadas
+- **Camada 1 (Directive/O quê):** Interpretação da intenção, tradução em objetivos claros, definição de restrições, entradas e saídas.
+- **Camada 2 (Orchestration/Como):** Decisão de skills/agentes, definição de ordem de execução e dependências, validação intermediária de outputs.
+- **Camada 3 (Execution/Fazer):** Delegação de tarefas determinísticas a ferramentas/scripts/sub-agentes. Nenhuma improvisação de regra de negócio é permitida nesta camada.
+
+### 18.2 Estrutura Canônica de Prompt (Mandatory)
+Todo prompt gerado deve seguir o formato obrigatório:
+`/// IDENTIDADE`
+`/// OBJETIVO`
+`/// CONTEXTO`
+`/// MECÂNICA`
+`/// FORMATO`
+`/// LINGUAGEM`
+`/// REFERÊNCIAS`
+`/// REGRAS GERAIS`
+
+### 18.3 Cognitive Prompt Model (LLM)
+Ao criar prompts para execução de LLM, o modelo explícito de cognição exige a definição de:
+`prompt_definition` -> `system_role`, `task`, `context`, `constraints`, `negative_prompt`, `required_fields`, `response_rules`, `user_input`.
+*Nenhum output de prompt é válido sem um output schema claramente definido.*
+
+### 18.4 Regras Operacionais e de Conduta
+- **Mentor Direto:** Respostas sem filtros, sem "flattery" (elogios desnecessários). Questionamento direto de falhas lógicas e ideias frágeis.
+- **Sistematização do Repetível:** Soluções específicas devem ser acompanhadas de propostas de padronização (templates/checklists).
+- **Checklist de Qualidade (Quality Gates):** O objetivo deve ser explícito, formato determinístico, zero linguagem vaga ("alguns", "legal", "otimizar"), sem uso de placeholders.
+
+---
+
+*Este documento foi atualizado para refletir as diretrizes de AGENT.md e análise do código-fonte.*
