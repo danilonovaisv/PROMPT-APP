@@ -1,3 +1,4 @@
+import React, { useActionState } from 'react';
 import type { TemplatePayload } from '@/models/promptSchema';
 import type { Category } from '@/models/types';
 
@@ -9,18 +10,27 @@ type EditorMetaFormProps = {
   onCategoryChange: (categoryId: number) => void;
 };
 
-// A11y Audit Fix #6 — aria-required, aria-describedby, aria-invalid para campos críticos
+// Simulated save action for React 19 form action pattern
+const saveMetaAction = async (prevState: { message: string, status: 'idle' | 'saving' | 'success' | 'error' }, formData: FormData) => {
+  await new Promise(resolve => setTimeout(resolve, 300));
+  return { message: 'Salvo com sucesso', status: 'success' as const };
+};
+
 export function EditorMetaForm({ template, categoryId, categories, updateMetaField, onCategoryChange }: EditorMetaFormProps) {
+  const [state, formAction, isPending] = useActionState(saveMetaAction, { message: '', status: 'idle' });
   const nameEmpty = !template.meta.template_name.trim();
   const categoryMissing = !categoryId;
 
   return (
-    <div className="form-section">
-      <h3 className="form-section__title">
-        Metadados do Template
-      </h3>
+    <form action={formAction} className="form-section">
+      <div className="form-section__header flex-row-center justify-between">
+        <h3 className="form-section__title mb-0">
+          Metadados do Template
+        </h3>
+        {isPending && <span className="text-sm text-primary animate-pulse">Salvando...</span>}
+        {state.status === 'success' && !isPending && <span className="text-sm text-success fade-out-text">Salvo</span>}
+      </div>
 
-      {/* Campo obrigatório: Nome */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-name">
           Nome do template
@@ -28,6 +38,7 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         </label>
         <input
           id="template-name"
+          name="template_name"
           value={template.meta.template_name}
           onChange={(event) => updateMetaField('template_name', event.target.value)}
           placeholder="Ex: Gerador de Cenas Publicitárias"
@@ -46,13 +57,13 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         )}
       </div>
 
-      {/* Campo: ID */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-id">
           ID do template
         </label>
         <input
           id="template-id"
+          name="template_id"
           value={template.meta.template_id}
           onChange={(event) => updateMetaField('template_id', event.target.value)}
           placeholder="scene_generator_v1"
@@ -63,18 +74,17 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         </span>
       </div>
 
-      {/* Campo: Tipo */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-type">Tipo</label>
         <input
           id="template-type"
+          name="template_type"
           value={template.meta.template_type}
           onChange={(event) => updateMetaField('template_type', event.target.value)}
           placeholder="scene_generation"
         />
       </div>
 
-      {/* Campo obrigatório: Categoria */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-category">
           Categoria
@@ -82,6 +92,7 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         </label>
         <select
           id="template-category"
+          name="category_id"
           value={categoryId}
           onChange={(event) => onCategoryChange(Number(event.target.value))}
           aria-required="true"
@@ -105,11 +116,11 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         )}
       </div>
 
-      {/* Campo: Idioma */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-language">Idioma</label>
         <input
           id="template-language"
+          name="language"
           value={template.meta.language}
           onChange={(event) => updateMetaField('language', event.target.value)}
           placeholder="pt-BR"
@@ -120,22 +131,22 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
         </span>
       </div>
 
-      {/* Campo: Schema version */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-schema-version">Schema version</label>
         <input
           id="template-schema-version"
+          name="schema_version"
           value={template.meta.schema_version}
           onChange={(event) => updateMetaField('schema_version', event.target.value)}
           placeholder="1.0.0"
         />
       </div>
 
-      {/* Campo: Status */}
       <div className="form-group">
         <label className="form-label" htmlFor="template-status">Status</label>
         <select
           id="template-status"
+          name="status"
           value={template.meta.status}
           onChange={(event) => updateMetaField('status', event.target.value as TemplatePayload['meta']['status'])}
         >
@@ -144,6 +155,8 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
           <option value="archived">archived</option>
         </select>
       </div>
-    </div>
+
+      <button type="submit" style={{ display: 'none' }} aria-hidden="true">Submit</button>
+    </form>
   );
 }
