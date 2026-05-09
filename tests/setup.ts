@@ -18,7 +18,7 @@ if (typeof global.TextDecoder === "undefined") {
 }
 
 // Polyfill Blob.prototype.text for JSDOM
-if (typeof Blob.prototype.text === "undefined") {
+if (typeof (Blob.prototype as any).text === "undefined") {
   Object.defineProperty(Blob.prototype, "text", {
     value: function (this: Blob): Promise<string> {
       return new Promise((resolve, reject) => {

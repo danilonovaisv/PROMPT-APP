@@ -151,6 +151,9 @@ describe('setupAutoSync', () => {
     // allow microtasks to flush
     await Promise.resolve();
     await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
 
     expect(supabase.auth.getSession).toHaveBeenCalled();
     expect(syncToCloud).toHaveBeenCalled();

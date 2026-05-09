@@ -31,14 +31,14 @@ function uniqueStrings(values: string[]): string[] {
   if (!Array.isArray(values)) return [];
   return Array.from(
     new Set(
-      values
-        .map((value) => {
-          if (typeof value !== "string") {
-            throw new Error(`Tipo inválido encontrado em lista de strings: ${typeof value}`);
-          }
-          return value.trim();
-        })
-        .filter(Boolean),
+      values.map((value) => {
+        if (typeof value !== "string") {
+          throw new Error(
+            `Item inválido em lista de strings: esperado string, recebido ${typeof value}`,
+          );
+        }
+        return value.trim();
+      }).filter(Boolean),
     ),
   );
 }
@@ -286,8 +286,10 @@ type LegacyPromptRecord = Partial<{
 }>;
 
 function normalizeOutputFormat(raw: unknown): PromptOutputFormat {
-  const value = typeof raw === "string" ? raw : String(raw || "");
-  const normalized = value.trim().toLowerCase();
+  if (typeof raw !== "string" && typeof raw !== "number") {
+    return "markdown";
+  }
+  const normalized = String(raw).trim().toLowerCase();
   if (normalized === "texto") return "text";
   if (normalized === "imagem") return "image";
   if (PROMPT_OUTPUT_FORMATS.includes(normalized as PromptOutputFormat)) {

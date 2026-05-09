@@ -328,7 +328,6 @@ export async function importFromJsonText(
       processingTime: Date.now() - startTime,
     };
   } catch (e: unknown) {
-    const error = e as Error;
     return {
       success: false,
       count: 0,
@@ -336,7 +335,7 @@ export async function importFromJsonText(
         {
           type: 'processing',
           field: 'general',
-          message: error instanceof Error ? error.message : 'Erro desconhecido durante a importação',
+          message: e instanceof Error ? e.message : 'Erro desconhecido durante a importação',
         },
       ],
       warnings,
