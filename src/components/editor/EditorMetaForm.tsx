@@ -1,4 +1,4 @@
-import React, { useActionState, useEffect } from 'react';
+import React, { useActionState } from 'react';
 import type { TemplatePayload } from '@/models/promptSchema';
 import type { Category } from '@/models/types';
 
