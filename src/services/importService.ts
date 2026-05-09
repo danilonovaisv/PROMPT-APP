@@ -171,11 +171,11 @@ function buildPromptRecordFromRaw(
       syncStatus: 'pending',
     };
   } catch (e: unknown) {
-    const error = e as Error;
+    const errorMessage = e instanceof Error ? e.message : 'Formato de prompt inválido';
     errors.push({
       type: 'validation',
       field: 'prompt',
-      message: error.message || 'Formato de prompt inválido',
+      message: errorMessage,
       data: rawPrompt,
     });
     return null;
@@ -336,7 +336,7 @@ export async function importFromJsonText(
         {
           type: 'processing',
           field: 'general',
-          message: error.message || 'Erro desconhecido durante a importação',
+          message: error instanceof Error ? error.message : 'Erro desconhecido durante a importação',
         },
       ],
       warnings,

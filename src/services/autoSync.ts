@@ -1,6 +1,5 @@
 import { db } from '@/db/database';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-import { syncToCloud } from './syncService';
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 let autoSyncInstalled = false;
@@ -12,6 +11,7 @@ async function runAutoSyncIfAuthenticated() {
         return;
     }
 
+    const { syncToCloud } = await import('./syncService');
     await syncToCloud();
 }
 

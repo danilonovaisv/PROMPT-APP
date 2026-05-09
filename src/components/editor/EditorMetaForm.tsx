@@ -1,4 +1,4 @@
-import React, { useActionState } from 'react';
+import { useActionState } from 'react';
 import type { TemplatePayload } from '@/models/promptSchema';
 import type { Category } from '@/models/types';
 
@@ -10,14 +10,18 @@ type EditorMetaFormProps = {
   onCategoryChange: (categoryId: number) => void;
 };
 
+type ActionState = { message: string; status: 'idle' | 'saving' | 'success' | 'error' };
+
 // Simulated save action for React 19 form action pattern
-const saveMetaAction = async (prevState: { message: string, status: 'idle' | 'saving' | 'success' | 'error' }, formData: FormData) => {
+const saveMetaAction = async (_prevState: ActionState, _formData: FormData): Promise<ActionState> => {
   await new Promise(resolve => setTimeout(resolve, 300));
-  return { message: 'Salvo com sucesso', status: 'success' as const };
+  return { message: 'Salvo com sucesso', status: 'success' };
 };
 
+const initialState: ActionState = { message: '', status: 'idle' };
+
 export function EditorMetaForm({ template, categoryId, categories, updateMetaField, onCategoryChange }: EditorMetaFormProps) {
-  const [state, formAction, isPending] = useActionState(saveMetaAction, { message: '', status: 'idle' });
+  const [state, formAction, isPending] = useActionState(saveMetaAction, initialState);
   const nameEmpty = !template.meta.template_name.trim();
   const categoryMissing = !categoryId;
 

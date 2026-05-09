@@ -4,7 +4,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
-import { downloadFromCloud } from '@/services/syncService';
 import { smartSync, checkForUpdates } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
 import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User, KeyRound } from 'lucide-react';
@@ -32,7 +31,12 @@ export default function CloudSyncItem() {
         console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
         setLoading(true);
         try {
+            try {
+            const { downloadFromCloud } = await import('@/services/syncService');
             await downloadFromCloud();
+        } catch (error) {
+            console.error('Erro no sync inicial:', error);
+        }
             showToast('Sincronizado com a nuvem', 'success');
         } catch (err) {
             console.error('Auto-sync failed:', err);
@@ -159,8 +163,8 @@ export default function CloudSyncItem() {
             showToast(message, 'success');
             setHasUpdates(false);
         } catch (e: unknown) {
-        const err = e as Error;
-            showToast('Erro no sync inteligente: ' + err.message, 'error');
+            const errorMessage = e instanceof Error ? e.message : 'Erro desconhecido';
+            showToast('Erro no sync inteligente: ' + errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -172,12 +176,13 @@ export default function CloudSyncItem() {
 
         setLoading(true);
         try {
+            const { downloadFromCloud } = await import('@/services/syncService');
             await downloadFromCloud();
             showToast('Dados restaurados da nuvem!', 'success');
             window.location.reload();
         } catch (e: unknown) {
-        const err = e as Error;
-            showToast('Erro ao restaurar: ' + err.message, 'error');
+            const errorMessage = e instanceof Error ? e.message : 'Erro desconhecido';
+            showToast('Erro ao restaurar: ' + errorMessage, 'error');
         } finally {
             setLoading(false);
         }
