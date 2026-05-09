@@ -10,7 +10,6 @@ import SEO from '@/components/SEO';
 import CategoryCard from '@/components/CategoryCard';
 import { useMemo, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
-import { Header } from '@/components/layout/Header';
 
 export default function HomePage() {
     const navigate = useNavigate();
