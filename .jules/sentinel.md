@@ -20,7 +20,8 @@
 **Vulnerability:** N/A (CI Build Fix)
 **Learning:** Referencing a column (like `is_deleted`) in an RLS policy before the column is created in the table schema causes the entire database migration to crash with `column does not exist`. Migration script chronological order is critical.
 **Prevention:** If an RLS policy refers to a new column, ensure the `ALTER TABLE ... ADD COLUMN` statement happens *before* the `CREATE POLICY` statement within the same script or an earlier script in the chronological migration timeline.
-## YYYY-MM-DD - Fix pnpm Node.js deprecation warning
-**Vulnerability:** CI used node 20 with action pnpm/action-setup@v3 causing failures
-**Learning:** We need to keep action setups for node and pnpm up to date, specifically upgrading node to v22 and pnpm setup to v4.
-**Prevention:** Hardcode Node.js 22 and pnpm/action-setup@v4 for future CI runs.
+
+## 2026-05-11 - Backup Local não Criptografado no LocalStorage
+**Vulnerability:** Backups completos do banco de dados (prompts, categorias, menus) eram armazenados no LocalStorage em texto plano (JSON stringify). Qualquer pessoa ou script malicioso com acesso ao navegador poderia ler dados sensíveis dos usuários.
+**Learning:** O uso de LocalStorage para backups de emergência é útil para resiliência local-first, mas expõe dados se não houver uma camada de proteção em repouso.
+**Prevention:** Implementar criptografia autenticada (AES-GCM) para todos os dados sensíveis armazenados em mecanismos de persistência do navegador como LocalStorage.

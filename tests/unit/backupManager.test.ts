@@ -8,12 +8,12 @@ describe('backupManager', () => {
             localStorage.clear();
         });
 
-        it('should return null when no backup exists', () => {
-            const result = getLocalBackupInfo();
+        it('should return null when no backup exists', async () => {
+            const result = await getLocalBackupInfo();
             expect(result).toBeNull();
         });
 
-        it('should return parsed backup info when valid backup exists', () => {
+        it('should return parsed backup info when valid backup exists', async () => {
             const mockSnapshot = {
                 version: '2.0.0',
                 timestamp: '2023-01-01T12:00:00.000Z',
@@ -26,7 +26,7 @@ describe('backupManager', () => {
 
             localStorage.setItem('prompt_app_global_backup', JSON.stringify(mockSnapshot));
 
-            const result = getLocalBackupInfo();
+            const result = await getLocalBackupInfo();
 
             expect(result).toEqual({
                 timestamp: '2023-01-01T12:00:00.000Z',
@@ -37,10 +37,10 @@ describe('backupManager', () => {
             });
         });
 
-        it('should return null when backup data is invalid JSON', () => {
+        it('should return null when backup data is invalid JSON', async () => {
             localStorage.setItem('prompt_app_global_backup', 'invalid-json');
 
-            const result = getLocalBackupInfo();
+            const result = await getLocalBackupInfo();
 
             expect(result).toBeNull();
         });

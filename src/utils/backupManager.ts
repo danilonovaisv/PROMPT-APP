@@ -4,6 +4,7 @@
 
 import { db } from '@/db/database';
 import type { Category, Prompt, ContextMenu } from '@/models/types';
+import { encrypt, decrypt } from './crypto';
 
 export interface AppSnapshot {
     version: string;
@@ -34,19 +35,29 @@ export async function createSnapshot(): Promise<AppSnapshot> {
     };
 }
 
-/** Salva o snapshot no localStorage como backup de emergência */
+/** Salva o snapshot no localStorage como backup de emergência (criptografado) */
 export async function saveLocalBackup() {
     try {
         const snapshot = await createSnapshot();
 
         // Verificação de segurança: Não sobrescrever um backup que tem dados com um vazio 
-        // a menos que o usuário explicitamente delete tudo ou seja o primeiro backup.
         const existingRaw = localStorage.getItem(BACKUP_KEY);
         if (existingRaw) {
             try {
-                const parsed = JSON.parse(existingRaw);
-                if (isValidSnapshot(parsed)) {
-                    const hasExistingData = parsed.data.prompts.length > 0 || parsed.data.categories.length > 6; // 6 é o seed padrão
+                // Tentar descriptografar se for um backup novo, ou usar direto se for legado (JSON)
+                let existingSnapshot: AppSnapshot | null = null;
+
+                if (existingRaw.startsWith('{')) {
+                    existingSnapshot = JSON.parse(existingRaw);
+                } else {
+                    const decrypted = await decrypt(existingRaw);
+                    if (decrypted) {
+                        existingSnapshot = JSON.parse(decrypted);
+                    }
+                }
+
+                if (existingSnapshot && isValidSnapshot(existingSnapshot)) {
+                    const hasExistingData = existingSnapshot.data.prompts.length > 0 || existingSnapshot.data.categories.length > 6; // 6 é o seed padrão
                     const isNewEmpty = snapshot.data.prompts.length === 0 && snapshot.data.categories.length <= 6;
 
                     if (hasExistingData && isNewEmpty) {
@@ -61,7 +72,9 @@ export async function saveLocalBackup() {
             }
         }
 
-        localStorage.setItem(BACKUP_KEY, JSON.stringify(snapshot));
+        const snapshotJson = JSON.stringify(snapshot);
+        const encrypted = await encrypt(snapshotJson);
+        localStorage.setItem(BACKUP_KEY, encrypted);
         console.log('✅ Backup local atualizado em:', snapshot.timestamp);
     } catch (error) {
         console.error('❌ Erro ao realizar backup local:', error);
@@ -97,24 +110,42 @@ export async function restoreFromSnapshot(snapshot: AppSnapshot) {
     }
 }
 
-/** Verifica se existe um backup local e retorna a data */
-export function getLocalBackupInfo() {
+/** Carrega e descriptografa o backup local se existir */
+export async function loadLocalBackup(): Promise<AppSnapshot | null> {
     const raw = localStorage.getItem(BACKUP_KEY);
     if (!raw) return null;
     try {
-        const parsed = JSON.parse(raw);
-        if (!isValidSnapshot(parsed)) return null;
-
-        return {
-            timestamp: parsed.timestamp,
-            count: {
-                prompts: parsed.data.prompts.length,
-                categories: parsed.data.categories.length
+        let snapshot: AppSnapshot | null = null;
+        if (raw.startsWith('{')) {
+            snapshot = JSON.parse(raw);
+        } else {
+            const decrypted = await decrypt(raw);
+            if (decrypted) {
+                snapshot = JSON.parse(decrypted);
             }
-        };
-    } catch {
-        return null;
+        }
+
+        if (snapshot && isValidSnapshot(snapshot)) {
+            return snapshot;
+        }
+    } catch (e) {
+        console.error('❌ Erro ao carregar backup local:', e);
     }
+    return null;
+}
+
+/** Verifica se existe um backup local e retorna metadados */
+export async function getLocalBackupInfo() {
+    const snapshot = await loadLocalBackup();
+    if (!snapshot) return null;
+
+    return {
+        timestamp: snapshot.timestamp,
+        count: {
+            prompts: snapshot.data.prompts.length,
+            categories: snapshot.data.categories.length
+        }
+    };
 }
 
 /** Valida se um objeto segue a interface AppSnapshot */
