@@ -14,11 +14,13 @@ export declare function createSnapshot(): Promise<AppSnapshot>;
 export declare function saveLocalBackup(): Promise<void>;
 /** Restaura o banco a partir de um snapshot */
 export declare function restoreFromSnapshot(snapshot: AppSnapshot): Promise<boolean>;
-/** Verifica se existe um backup local e retorna a data */
-export declare function getLocalBackupInfo(): {
+/** Carrega e descriptografa o backup local se existir */
+export declare function loadLocalBackup(): Promise<AppSnapshot | null>;
+/** Verifica se existe um backup local e retorna metadados */
+export declare function getLocalBackupInfo(): Promise<{
     timestamp: string;
     count: {
         prompts: number;
         categories: number;
     };
-} | null;
+} | null>;
