@@ -75,6 +75,7 @@ export function getTemplateFile(): Blob {
       system_role: "",
       task: "",
       context: "",
+      user_scene_description: "",
       constraints: [],
       negative_prompt: [],
       few_shot_examples: [],
