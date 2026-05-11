@@ -252,7 +252,7 @@ export async function importMenusFromFile(
             const savedRemotes = await saveMenusToSupabaseBulk(menusToEnrich);
             if (savedRemotes) {
                 for (const contextMenu of menusToEnrich) {
-                    const savedRemote = savedRemotes.find((r: any) => r.menu_id === contextMenu.menuId);
+                    const savedRemote = savedRemotes.find((r: { menu_id: string; id: number }) => r.menu_id === contextMenu.menuId);
                     if (savedRemote) {
                         contextMenu.remoteId = savedRemote.id;
                         contextMenu.syncStatus = 'synced';

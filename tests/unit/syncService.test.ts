@@ -1,9 +1,4 @@
-import { createEmptyPromptPayload, createEmptyUserSelection } from '@/models/promptSchema';
-import { downloadFromCloud, syncToCloud } from '@/services/syncService';
-import { supabase } from '@/lib/supabase';
-import { db } from '@/db/database';
-import { createSnapshot } from '@/utils/backupManager';
-import { persistContextMenuRecord } from '@/services/contextMenuSync';
+import { syncCategories } from '@/services/sync/categorySync';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({

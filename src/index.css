@@ -17,6 +17,7 @@
 @import './styles/components/toasts.css';
 @import './styles/components/pickers.css';
 @import './styles/components/editor.css';
+@import './styles/components/breadcrumb.css';
 
 /* 5. Feature Specific Styles */
 @import './styles/menus.css';

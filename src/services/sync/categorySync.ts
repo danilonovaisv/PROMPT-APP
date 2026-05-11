@@ -63,12 +63,12 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
           .eq("is_deleted", false)
       );
       
-      remoteData?.forEach((r: any) => {
+      remoteData?.forEach((r: { id: number; updated_at: string }) => {
         remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
       });
     }
 
-    const payloads: any[] = [];
+    const payloads: Record<string, unknown>[] = [];
     const categoriesForBulk: Category[] = [];
 
     for (const cat of categoriesToSync) {
@@ -107,7 +107,7 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
       } else if (result.data) {
         // Mapear resultados de volta para o ID local
         for (const cat of categoriesForBulk) {
-          const remoteRecord = result.data.find((r: any) => r.name === cat.name);
+          const remoteRecord = result.data.find((r: { name: string; id: number }) => r.name === cat.name);
           if (remoteRecord && cat.id) {
             await db.categories.update(cat.id, { 
               remoteId: remoteRecord.id, 

@@ -52,6 +52,7 @@ export function EditorDefinitionForm({
     systemRole: `${formId}-system-role-hint`,
     task: `${formId}-task-hint`,
     context: `${formId}-context-hint`,
+    userSceneDescription: `${formId}-user-scene-description-hint`,
     constraints: `${formId}-constraints-hint`,
     negativePrompt: `${formId}-negative-prompt-hint`,
     outputFormat: `${formId}-output-format-hint`,
@@ -102,6 +103,21 @@ export function EditorDefinitionForm({
           </div>
 
           <div className="form-group">
+            <label className="form-label" htmlFor={`${formId}-user-scene-description`}>User Scene Description</label>
+            <textarea
+              id={`${formId}-user-scene-description`}
+              value={template.prompt_definition.user_scene_description}
+              onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
+              rows={4}
+              placeholder="Descreva a cena de usuário"
+              aria-describedby={fieldHints.userSceneDescription}
+            />
+            <span id={fieldHints.userSceneDescription} className="form-label__hint">
+              Descreva brevemente o cenário do usuário em que o template será usado.
+            </span>
+          </div>
+
+          <div className="form-group">
             <label className="form-label" htmlFor={`${formId}-context`}>Context</label>
             <textarea
               id={`${formId}-context`}
@@ -113,6 +129,20 @@ export function EditorDefinitionForm({
             />
             <span id={fieldHints.context} className="form-label__hint">
               Registre premissas, cenário de uso e informações de apoio para a resposta.
+            </span>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor={`${formId}-scene-description`}>Scene description</label>
+            <textarea
+              id={`${formId}-scene-description`}
+              value={template.prompt_definition.user_scene_description}
+              onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
+              rows={4}
+              placeholder="Descreva a cena ou cenário de uso padrão"
+            />
+            <span className="form-label__hint">
+              Este campo serve como base para a variável de descrição da cena no playground.
             </span>
           </div>
         </div>

@@ -1,0 +1,90 @@
+{
+  "instruction": "Guia de Estrutura JSON para Importação de Templates de Prompt",
+  "app_version": "2.0.0",
+  "schema_version": "1.0.0",
+  "formats": [
+    {
+      "type": "Standard V3 (Recomendado)",
+      "description": "Formato completo com suporte a menus dinâmicos e contratos de saída.",
+      "structure": {
+        "meta": {
+          "template_id": "string (único)",
+          "template_name": "string (nome amigável)",
+          "template_type": "string (ex: coding, creative, analysis)",
+          "schema_version": "1.0.0",
+          "language": "string (ex: pt-BR, en-US)",
+          "status": "draft | published"
+        },
+        "prompt_definition": {
+          "system_role": "string (persona da IA)",
+          "task": "string (o que a IA deve fazer)",
+          "context": "string (detalhes adicionais do projeto)",
+          "user_scene_description": "string (opcional)",
+          "constraints": ["array de strings (regras/limites)"],
+          "negative_prompt": ["array de strings (o que não fazer)"],
+          "few_shot_examples": [
+            {
+              "input": "string",
+              "output": "string"
+            }
+          ]
+        },
+        "menu_definitions": [
+          {
+            "menu_id": "string",
+            "menu_name": "string",
+            "selection_mode": "single | multiple",
+            "options": [
+              { "label": "string", "value": "string" }
+            ]
+          }
+        ],
+        "fixed_variables": {
+          "NOME_VARIAVEL": "valor inicial (opcional)"
+        }
+      }
+    },
+    {
+      "type": "Placeholders (Memória Fixa)",
+      "description": "Como injetar variáveis dinâmicas no corpo do prompt.",
+      "usage": "Use o padrão {{NOME_DA_VARIAVEL}} em qualquer campo de texto (task, system_role, etc).",
+      "example": "Atue como um especialista em {{TECNOLOGIA}}."
+    }
+  ],
+  "field_definitions": {
+    "meta": "Contém metadados básicos sobre o template (ID, nome, versão).",
+    "prompt_definition": "Define a persona (role), tarefa (task), contexto e restrições.",
+    "menu_definitions": "Lista de menus interativos para seleção de opções pelo usuário.",
+    "output_contract": "Define as regras de resposta e formato (markdown, json, etc)."
+  },
+  "example_complete": {
+    "meta": {
+      "template_id": "expert-coder-react",
+      "template_name": "Expert React Coder",
+      "template_type": "Coding",
+      "schema_version": "1.0.0",
+      "language": "en-US",
+      "status": "published"
+    },
+    "prompt_definition": {
+      "system_role": "You are a senior developer expert in {{TECH_STACK}}.",
+      "task": "Refactor the following code focused on {{FOCUS_AREA}}.",
+      "context": "Project using React 19 and local-first architecture.",
+      "constraints": ["Keep it clean", "Follow SOLID"],
+      "few_shot_examples": []
+    },
+    "fixed_variables": {
+      "TECH_STACK": "React & TypeScript",
+      "FOCUS_AREA": "Performance and Accessibility"
+    },
+    "menu_definitions": [],
+    "output_contract": {
+      "format": "markdown",
+      "language": "en-US",
+      "strict_mode": true,
+      "required_fields": ["code", "explanation"],
+      "response_rules": []
+    }
+  }
+}
+

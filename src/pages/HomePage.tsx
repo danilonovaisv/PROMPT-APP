@@ -15,26 +15,24 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     // ⚡ Bolt Optimization:
-    // Avoid fetching all full prompt objects (which can be very large due to JSON payloads)
-    // into memory just to count them. Instead, fetch only the categories and use Dexie's
-    // optimized .count() to compute totals directly via IndexedDB indexes.
+    // Avoid fetching all full prompt objects into memory just to count them.
+    // Instead of multiple sequential DB calls per category (O(N)), we perform a single
+    // cursor-based pass (O(1) database passes) to calculate both total and per-category
+    // counts, preventing memory bottlenecks.
     const { categories, countsMap, totalPrompts } = useLiveQuery(async () => {
         const allCategories = await db.categories.filter(c => !c.isDeleted).toArray();
         const map: Record<number, number> = {};
+        allCategories.forEach(cat => { if (cat.id) map[cat.id] = 0; });
 
-        await Promise.all(
-            allCategories.map(async (cat) => {
-                if (cat.id) {
-                    map[cat.id] = await db.prompts
-                        .where('categoryId')
-                        .equals(cat.id)
-                        .filter(p => !p.isDeleted)
-                        .count();
+        let total = 0;
+        await db.prompts
+            .filter(p => !p.isDeleted)
+            .each(p => {
+                total++;
+                if (p.categoryId && map[p.categoryId] !== undefined) {
+                    map[p.categoryId]++;
                 }
-            })
-        );
-
-        const total = await db.prompts.filter((prompt) => !prompt.isDeleted).count();
+            });
 
         return { categories: allCategories, countsMap: map, totalPrompts: total };
     }, []) ?? { categories: [], countsMap: {}, totalPrompts: 0 };

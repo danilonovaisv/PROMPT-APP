@@ -34,6 +34,6 @@ describe('promptArtifacts - Fixed Memory Injection', () => {
     // Deve listar explicitamente o input livre injetado
     expect(renderedPrompt).toContain('- user_input: Contexto Global de Teste');
     // Deve conter a tarefa formatada
-    expect(renderedPrompt).toContain('Task:\nEscreva um resumo de {{user_input}}');
+    expect(renderedPrompt).toContain('Task:\nEscreva um resumo de Contexto Global de Teste');
   });
 });

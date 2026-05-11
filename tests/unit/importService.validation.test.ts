@@ -188,7 +188,7 @@ describe('importService validation', () => {
             few_shot_examples: fewShotExamples,
           }),
         }),
-      }) as any
+      })
     );
   });
 });

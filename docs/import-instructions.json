@@ -1,0 +1,74 @@
+{
+  "project": "PROMPT-APP",
+  "version": "1.0.0",
+  "instruction": "Este arquivo descreve a estrutura necessária para importar novos templates de prompt para o aplicativo. O arquivo final de importação deve ser um array de objetos seguindo o schema abaixo.",
+  "import_format": {
+    "type": "array",
+    "items": "TemplatePayload"
+  },
+  "schema_definition": {
+    "meta": {
+      "template_id": "string (único, slugified)",
+      "template_name": "string (nome amigável)",
+      "template_type": "generic_prompt | specialized_agent",
+      "schema_version": "v1 (padrão)",
+      "language": "pt-BR | en-US",
+      "status": "draft | published"
+    },
+    "prompt_definition": {
+      "system_role": "string (instruções do sistema)",
+      "task": "string (objetivo principal)",
+      "context": "string (contexto base)",
+      "constraints": "string[] (lista de restrições)",
+      "negative_prompt": "string[] (o que não fazer)",
+      "few_shot_examples": [
+        {
+          "input": "string",
+          "output": "string"
+        }
+      ]
+    },
+    "menu_definitions": "array (opcional, definições de menus de contexto embutidos)",
+    "menu_ids": "string[] (IDs de menus globais vinculados)",
+    "output_contract": {
+      "format": "markdown | text | json | html | code",
+      "language": "string",
+      "strict_mode": "boolean",
+      "required_fields": "string[]",
+      "response_rules": "string[]"
+    }
+  },
+  "fixed_memory_instruction": "Para adicionar memória fixa a um template importado, use o sistema de 'Fixed Variables' no editor após a importação, ou inclua as variáveis no corpo das instruções usando a sintaxe {{NOME_DA_VARIAVEL}}.",
+  "example": {
+    "meta": {
+      "template_id": "meu-novo-prompt",
+      "template_name": "Meu Novo Prompt",
+      "template_type": "generic_prompt",
+      "schema_version": "v1",
+      "language": "pt-BR",
+      "status": "published"
+    },
+    "prompt_definition": {
+      "system_role": "Você é um assistente especializado em {{ESPECIALIDADE}}.",
+      "task": "Escreva um texto sobre {{ASSUNTO}}.",
+      "context": "O público alvo é {{PUBLICO}}.",
+      "constraints": [
+        "Use um tom profissional",
+        "Máximo de 500 palavras"
+      ],
+      "negative_prompt": [
+        "Não use gírias",
+        "Não mencione concorrentes"
+      ],
+      "few_shot_examples": []
+    },
+    "menu_ids": [],
+    "output_contract": {
+      "format": "markdown",
+      "language": "pt-BR",
+      "strict_mode": true,
+      "required_fields": [],
+      "response_rules": []
+    }
+  }
+}
