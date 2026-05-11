@@ -20,3 +20,7 @@
 **Vulnerability:** N/A (CI Build Fix)
 **Learning:** Referencing a column (like `is_deleted`) in an RLS policy before the column is created in the table schema causes the entire database migration to crash with `column does not exist`. Migration script chronological order is critical.
 **Prevention:** If an RLS policy refers to a new column, ensure the `ALTER TABLE ... ADD COLUMN` statement happens *before* the `CREATE POLICY` statement within the same script or an earlier script in the chronological migration timeline.
+## YYYY-MM-DD - Fix pnpm Node.js deprecation warning
+**Vulnerability:** CI used node 20 with action pnpm/action-setup@v3 causing failures
+**Learning:** We need to keep action setups for node and pnpm up to date, specifically upgrading node to v22 and pnpm setup to v4.
+**Prevention:** Hardcode Node.js 22 and pnpm/action-setup@v4 for future CI runs.
