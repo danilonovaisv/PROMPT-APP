@@ -4,7 +4,7 @@
  * Used by both importService.ts (bulk import) and importMenusJson.ts (file import).
  */
 
-import { MenuDefinitionSchema } from '@/models/promptSchema';
+import { MenuDefinitionSchema, type MenuDefinition } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 
 /* -------------------------------------------------------
@@ -99,7 +99,7 @@ export function normalizeRawMenu(menu: unknown): unknown {
 export interface MenuValidationSuccess {
   success: true;
   data: Omit<ContextMenu, 'id'>;
-  parsed: any; // We can use any or import MenuDefinition if needed
+  parsed: MenuDefinition;
 }
 
 export interface MenuValidationFailure {
@@ -146,7 +146,7 @@ export function normalizeAndValidateMenu(raw: unknown): MenuValidationResult {
 
 export interface MenuBatchResult {
   valid: Omit<ContextMenu, 'id'>[];
-  parsed: any[]; // snake_case definitions
+  parsed: MenuDefinition[]; // snake_case definitions
   errors: Array<{ input: unknown; error: string }>;
 }
 
@@ -156,7 +156,7 @@ export interface MenuBatchResult {
  */
 export function normalizeMenuBatch(definitions: unknown[]): MenuBatchResult {
   const valid: Omit<ContextMenu, 'id'>[] = [];
-  const parsed: any[] = [];
+  const parsed: MenuDefinition[] = [];
   const errors: Array<{ input: unknown; error: string }> = [];
 
   for (const definition of definitions) {

@@ -5,7 +5,7 @@ import { ConfirmProvider } from '@/context/ConfirmProvider';
 import Layout from '@/components/Layout';
 import ImportExportModal from '@/components/ImportExportModal';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { SkeletonEditor } from '@/components/SkeletonLoader';
+import { SkeletonEditor, SkeletonCategoryGrid, SkeletonPromptList } from '@/components/SkeletonLoader';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 
 // Lazy-loaded pages for code splitting
@@ -17,12 +17,6 @@ const MenuManagerPage = lazy(() => import('@/pages/MenuManagerPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
-
-// Fix #10: Suspense fallback contextual usando SkeletonEditor ao invés de spinner genérico
-// Páginas individuais usam SkeletonCategoryGrid/SkeletonPromptList diretamente
-function LoadingFallback() {
-  return <SkeletonEditor />;
-}
 
 export default function App() {
   const [showImportExport, setShowImportExport] = useState(false);
@@ -88,18 +82,16 @@ export default function App() {
         <ConfirmProvider>
           <ErrorBoundary>
           <Layout onOpenImportExport={() => setShowImportExport(true)}>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/sobre" element={<AboutPage />} />
-                <Route path="/contato" element={<ContactPage />} />
-                <Route path="/privacidade" element={<PrivacyPage />} />
-                <Route path="/categoria/:id" element={<CategoryPage />} />
-                <Route path="/categorias" element={<CategoryManagerPage />} />
-                <Route path="/editor/:id" element={<EditorPage />} />
-                <Route path="/menus" element={<MenuManagerPage />} />
-              </Routes>
-            </Suspense>
+            <Routes>
+              <Route path="/" element={<Suspense fallback={<SkeletonCategoryGrid />}><HomePage /></Suspense>} />
+              <Route path="/sobre" element={<Suspense fallback={<SkeletonEditor />}><AboutPage /></Suspense>} />
+              <Route path="/contato" element={<Suspense fallback={<SkeletonEditor />}><ContactPage /></Suspense>} />
+              <Route path="/privacidade" element={<Suspense fallback={<SkeletonEditor />}><PrivacyPage /></Suspense>} />
+              <Route path="/categoria/:id" element={<Suspense fallback={<SkeletonPromptList />}><CategoryPage /></Suspense>} />
+              <Route path="/categorias" element={<Suspense fallback={<SkeletonCategoryGrid />}><CategoryManagerPage /></Suspense>} />
+              <Route path="/editor/:id" element={<Suspense fallback={<SkeletonEditor />}><EditorPage /></Suspense>} />
+              <Route path="/menus" element={<Suspense fallback={<SkeletonEditor />}><MenuManagerPage /></Suspense>} />
+            </Routes>
           </Layout>
           <ImportExportModal
             isOpen={showImportExport}

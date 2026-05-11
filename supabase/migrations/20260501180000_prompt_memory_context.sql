@@ -23,12 +23,12 @@ CREATE POLICY "Users can manage their own memory context"
 
 -- Trigger for updated_at
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
-RETURNS TRIGGER AS 55647
+RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = now();
     RETURN NEW;
 END;
-55647 language 'plpgsql';
+$$ language 'plpgsql';
 
 DROP TRIGGER IF EXISTS on_prompt_memory_context_updated ON public.prompt_memory_context;
 CREATE TRIGGER on_prompt_memory_context_updated

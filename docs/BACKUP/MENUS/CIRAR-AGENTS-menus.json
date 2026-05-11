@@ -3,158 +3,271 @@
   "menus": [
     {
       "menu_id": "tipo_agente",
-      "menu_name": "AGENT-GOOGLE & ANTIGRAVITY - Tipo de Agente",
-      "description": "Define a especialidade principal do agente a ser criado para o Antigravity.",
+      "menu_name": "AGENTS - Tipo de Agente",
+      "description": "Define a especialidade principal do agente ou sistema multiagente que será projetado.",
+      "selection_mode": "single",
+      "required": true,
       "options": [
         {
           "label": "Orquestrador Multiagente",
           "value": "orquestrador_multiagente",
+          "description": "Coordena subagentes, workflows, skills, regras e servidores MCP em tarefas complexas.",
           "sub_options": []
         },
         {
           "label": "Frontend Engineer",
           "value": "frontend_engineer",
+          "description": "Projeta agentes para scaffolds, rotas, componentes, design systems, estados de UI e integrações frontend.",
           "sub_options": [
             {
               "label": "Next.js App Router",
-              "value": "nextjs_app_router"
+              "value": "nextjs_app_router",
+              "description": "Prioriza rotas, layouts, server components, client components e organização por segmentos."
             },
             {
               "label": "Design System",
-              "value": "design_system"
+              "value": "design_system",
+              "description": "Prioriza tokens, componentes reutilizáveis, acessibilidade, responsividade e consistência visual."
             }
           ]
         },
         {
           "label": "Backend e Banco de Dados",
           "value": "backend_database",
+          "description": "Projeta agentes para APIs, autenticação, banco de dados, storage, permissões e integrações MCP.",
           "sub_options": [
             {
               "label": "Supabase",
-              "value": "supabase"
+              "value": "supabase",
+              "description": "Prioriza Auth, Database, Storage, RLS, Realtime e edge functions quando aplicável."
             },
             {
               "label": "Firebase",
-              "value": "firebase"
+              "value": "firebase",
+              "description": "Prioriza Auth, Firestore, Storage, Functions, segurança por regras e integração client/server."
             }
           ]
         },
         {
           "label": "QA e Testes",
           "value": "qa_testes",
+          "description": "Projeta agentes para testes, automação de navegador, validação visual, relatórios e critérios de aceitação.",
           "sub_options": []
         },
         {
           "label": "Segurança e Governança",
           "value": "seguranca_governanca",
+          "description": "Projeta agentes para políticas de permissão, allowlists, auditoria, revisão humana e mitigação de riscos.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "nivel_autonomia",
-      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Nível de Autonomia",
-      "description": "Define quanto o agente pode planejar e executar antes de solicitar revisão humana.",
+      "menu_name": "AGENTS - Nível de Autonomia",
+      "description": "Define quanto o agente pode planejar, executar e chamar ferramentas antes de solicitar revisão humana.",
+      "selection_mode": "single",
+      "required": true,
       "options": [
         {
           "label": "Conservador",
           "value": "conservador",
+          "description": "Gera plano antes de executar e exige revisão humana para terminal, browser, escrita em arquivos e MCPs.",
           "sub_options": []
         },
         {
           "label": "Assistido",
           "value": "assistido",
+          "description": "Executa ações seguras e reversíveis, mas solicita aprovação para alterações estruturais ou chamadas externas sensíveis.",
           "sub_options": []
         },
         {
           "label": "Autônomo Controlado",
           "value": "autonomo_controlado",
+          "description": "Executa rotinas repetíveis em allowlist explícita, mantendo logs, checkpoints, validações e plano de rollback.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "mcp_alvo",
-      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - MCP Alvo",
-      "description": "Seleciona o tipo de servidor MCP externo que o agente deve considerar na arquitetura.",
+      "menu_name": "AGENTS - MCP Alvo",
+      "description": "Seleciona os servidores MCP que a arquitetura deve considerar, com escopo, permissões e placeholders seguros.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Supabase MCP",
           "value": "supabase_mcp",
+          "description": "Integração com schema, queries, Auth, Storage, RLS e operações de banco com revisão para escrita.",
           "sub_options": []
         },
         {
           "label": "GitHub MCP",
           "value": "github_mcp",
+          "description": "Integração com issues, branches, pull requests, arquivos, revisão de código e auditoria de mudanças.",
           "sub_options": []
         },
         {
           "label": "TestSprite ou QA MCP",
           "value": "testsprite_qa_mcp",
+          "description": "Integração com suites de teste, automação de QA, relatórios e critérios de aceite.",
           "sub_options": []
         },
         {
           "label": "Browser Automation MCP",
           "value": "browser_automation_mcp",
+          "description": "Integração com navegação controlada, captura de estado, validação visual e allowlist de domínios.",
+          "sub_options": []
+        },
+        {
+          "label": "Context7 MCP",
+          "value": "context7_mcp",
+          "description": "Consulta documentação atualizada de bibliotecas, frameworks, SDKs e APIs antes de fixar instruções técnicas.",
           "sub_options": []
         },
         {
           "label": "Custom API MCP",
           "value": "custom_api_mcp",
+          "description": "Integração com APIs internas usando ferramentas MCP customizadas, contratos explícitos e variáveis de ambiente.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "artefatos_gerados",
-      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Artefatos Gerados",
-      "description": "Define quais arquivos e blocos operacionais o prompt deve produzir.",
+      "menu_name": "AGENTS - Artefatos Gerados",
+      "description": "Define quais arquivos, blocos e políticas o prompt deve produzir na resposta final.",
+      "selection_mode": "multiple",
+      "required": true,
       "options": [
         {
           "label": "GEMINI.md ou Rules",
           "value": "rules_gemini",
+          "description": "Gera regras globais, guardrails do projeto e limites de execução sempre ativos.",
           "sub_options": []
         },
         {
           "label": "SKILL.md",
           "value": "skill_md",
+          "description": "Gera skill com frontmatter YAML, instruções progressivas, recursos sob demanda e critérios de ativação.",
           "sub_options": []
         },
         {
           "label": "Workflow Markdown",
           "value": "workflow_md",
+          "description": "Gera workflow acionável por comando, com pré-condições, passos, validações e rollback.",
           "sub_options": []
         },
         {
           "label": "Configuração MCP JSON",
           "value": "mcp_config_json",
+          "description": "Gera configuração MCP com command, args, env placeholders, escopo de uso e política de permissão.",
           "sub_options": []
         },
         {
           "label": "Política de Permissões",
           "value": "permissions_policy",
+          "description": "Gera regras allow, ask e deny para terminal, browser, escrita de arquivos, banco de dados e MCPs.",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist de Validação",
+          "value": "checklist_validacao",
+          "description": "Gera validações de JSON, conexão MCP, dry run, testes, auditoria de logs e rollback.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "profundidade_saida",
-      "menu_name": "AGENT - GOOGLE & ANTIGRAVITY - Profundidade da Saída",
-      "description": "Define o nível de detalhe técnico esperado no resultado.",
+      "menu_name": "AGENTS - Profundidade da Saída",
+      "description": "Define o nível de detalhe técnico, governança e operacionalidade esperado no resultado.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Essencial",
           "value": "essencial",
+          "description": "Entrega arquitetura mínima, instruções diretas e exemplos compactos.",
           "sub_options": []
         },
         {
           "label": "Operacional",
           "value": "operacional",
+          "description": "Entrega arquivos, passos, decisões de arquitetura, critérios de validação e comandos sugeridos.",
           "sub_options": []
         },
         {
           "label": "Enterprise",
           "value": "enterprise",
+          "description": "Entrega governança completa, segurança, observabilidade, fallback, auditoria, rollback e matriz de riscos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_frontend",
+      "menu_name": "AGENTS - Stack Frontend",
+      "description": "Define a stack frontend padrão quando o agente tiver escopo de interface, produto web ou integração visual.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "nextjs_app_router",
+          "description": "Usar estrutura app/, layouts, páginas, server/client components e organização por rotas.",
+          "sub_options": []
+        },
+        {
+          "label": "React e TypeScript",
+          "value": "react_typescript",
+          "description": "Usar componentes tipados, props explícitas, composição previsível e separação de responsabilidades.",
+          "sub_options": []
+        },
+        {
+          "label": "Tailwind CSS",
+          "value": "tailwind_css",
+          "description": "Usar tokens, utilitários, responsividade e consistência visual com classes organizadas.",
+          "sub_options": []
+        },
+        {
+          "label": "Framer Motion",
+          "value": "framer_motion",
+          "description": "Usar animações intencionais, microinterações e transições respeitando performance e acessibilidade.",
+          "sub_options": []
+        },
+        {
+          "label": "React Three Fiber",
+          "value": "react_three_fiber",
+          "description": "Usar cenas 3D quando fizer sentido, com fallback, carregamento progressivo e atenção à performance.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "AGENTS - Backend Preferido",
+      "description": "Define o backend padrão quando o agente precisar propor autenticação, banco, storage ou funções server-side.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "description": "Prioriza Postgres, Auth, RLS, Storage, Realtime e edge functions.",
+          "sub_options": []
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "description": "Prioriza Auth, Firestore, Storage, Functions e regras de segurança.",
+          "sub_options": []
+        },
+        {
+          "label": "Sem backend definido",
+          "value": "sem_backend_definido",
+          "description": "Mantém integrações condicionais e solicita decisão antes de fixar SDKs ou arquitetura persistente.",
           "sub_options": []
         }
       ]
