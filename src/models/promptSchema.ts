@@ -182,6 +182,7 @@ export const UserSelectionSchema = z
       .default([])
       .superRefine(uniqueArrayBy((item) => item.menu_id, "Selected menu id")),
     free_inputs: z.record(z.string(), z.string()).default({}),
+    fixed_variables: z.record(z.string(), z.string()).default({}),
   })
   .strict();
 
@@ -230,6 +231,7 @@ export const CompiledPromptPayloadSchema = z
             .strict(),
         ),
         free_inputs: z.record(z.string(), z.string()).default({}),
+        fixed_variables: z.record(z.string(), z.string()).default({}),
       })
       .strict(),
     prompt_definition: PromptDefinitionSchema,
@@ -394,6 +396,7 @@ export function createEmptyUserSelection(templateId: string): UserSelection {
     template_id: templateId,
     selected_menus: [],
     free_inputs: {},
+    fixed_variables: {},
   });
 }
 
@@ -534,7 +537,13 @@ export function sanitizeUserSelection(
         return [safeKey, safeValue];
       }),
     ),
-
+    fixed_variables: Object.fromEntries(
+      Object.entries(rawSelection.fixed_variables || {}).map(([key, value]) => {
+        const safeKey = typeof key === "string" ? key.trim() : String(key);
+        const safeValue = typeof value === "string" ? value.trim() : String(value || "");
+        return [safeKey, safeValue];
+      }),
+    ),
   });
 }
 
@@ -835,6 +844,7 @@ export function parseUserSelection(
       fallback?.enabledMenuIds,
     ),
     free_inputs: {},
+    fixed_variables: {},
   });
 }
 
@@ -900,6 +910,7 @@ export function compilePromptPayload(
     compiled_context: {
       menu_interpretation: menuInterpretation,
       free_inputs: selection.free_inputs,
+      fixed_variables: selection.fixed_variables || {},
     },
     prompt_definition: template.prompt_definition,
     output_contract: template.output_contract,

@@ -9,6 +9,7 @@ import {
     getPromptSummaryFields,
 } from '@/models/promptSchema';
 import { getDuplicateIds, getMissingSeedRecords } from '@/db/seedHelpers';
+import { DEFAULT_PROMPTS } from './defaultPrompts';
 
 const db = new Dexie('PromptAppDB') as Dexie & {
     categories: EntityTable<Category, 'id'>;
@@ -487,6 +488,42 @@ export async function seedDatabase() {
                 if (missingContextMenus.length > 0) {
                     console.log(`🌱 Seed: Criando ${missingContextMenus.length} menus hierárquicos padrão...`);
                     await db.contextMenus.bulkAdd(missingContextMenus);
+                }
+
+                // --- Seed de Prompts Padrão ---
+                const categoriesAfterSeed = await db.categories.toArray();
+                const existingPrompts = await db.prompts.toArray();
+
+                for (const defaultPrompt of DEFAULT_PROMPTS) {
+                    const category = categoriesAfterSeed.find(
+                        (c) => normalizeKey(c.name) === normalizeKey(defaultPrompt.category)
+                    );
+
+                    if (category?.id) {
+                        const exists = existingPrompts.some(
+                            (p) => normalizeKey(p.title) === normalizeKey(defaultPrompt.title)
+                        );
+
+                        if (!exists) {
+                            console.log(`🌱 Seed: Criando prompt padrão "${defaultPrompt.title}"...`);
+                            const payload = defaultPrompt.payload;
+                            const now = new Date();
+                            await db.prompts.add({
+                                categoryId: category.id,
+                                title: defaultPrompt.title,
+                                promptPayload: payload,
+                                schemaVersion: payload.meta.schema_version,
+                                language: payload.meta.language,
+                                outputFormat: payload.output_contract.format,
+                                fewShotExamples: payload.prompt_definition.few_shot_examples,
+                                createdAt: now,
+                                updatedAt: now,
+                                syncStatus: 'pending',
+                                isDeleted: false,
+                                selectedMenuIds: []
+                            });
+                        }
+                    }
                 }
             });
 

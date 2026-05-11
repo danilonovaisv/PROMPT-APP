@@ -200,10 +200,8 @@ function buildPersistedArtifacts(
   const rawSelection = UserSelectionSchema.parse({
     ...form.selection,
     template_id: syncedTemplate.meta.template_id,
-    free_inputs: {
-      ...fixedMemory,
-      ...fromFreeInputEntries(form.freeInputs),
-    },
+    free_inputs: fromFreeInputEntries(form.freeInputs),
+    fixed_variables: fixedMemory,
   });
 
   const normalizedSelection = sanitizeUserSelection(syncedTemplate, rawSelection);
