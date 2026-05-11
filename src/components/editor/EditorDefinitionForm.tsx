@@ -52,6 +52,7 @@ export function EditorDefinitionForm({
     systemRole: `${formId}-system-role-hint`,
     task: `${formId}-task-hint`,
     context: `${formId}-context-hint`,
+    userSceneDescription: `${formId}-user-scene-description-hint`,
     constraints: `${formId}-constraints-hint`,
     negativePrompt: `${formId}-negative-prompt-hint`,
     outputFormat: `${formId}-output-format-hint`,
@@ -98,6 +99,21 @@ export function EditorDefinitionForm({
             />
             <span id={fieldHints.task} className="form-label__hint">
               Explique a entrega principal esperada para o template.
+            </span>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor={`${formId}-user-scene-description`}>User Scene Description</label>
+            <textarea
+              id={`${formId}-user-scene-description`}
+              value={template.prompt_definition.user_scene_description}
+              onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
+              rows={4}
+              placeholder="Descreva a cena de usuário"
+              aria-describedby={fieldHints.userSceneDescription}
+            />
+            <span id={fieldHints.userSceneDescription} className="form-label__hint">
+              Descreva brevemente o cenário do usuário em que o template será usado.
             </span>
           </div>
 
