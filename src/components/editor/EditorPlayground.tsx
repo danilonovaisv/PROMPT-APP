@@ -73,7 +73,58 @@ export function EditorPlayground({
 
   return (
     <div className="form-section">
-      <div className="form-section">
+      <div className="page-header">
+        <div>
+          <h3 className="form-section__title">
+            Inputs Livres
+          </h3>
+          <p className="page-header__subtitle">
+            Variáveis específicas para este teste.
+          </p>
+        </div>
+      </div>
+
+      <div className="dynamic-list">
+        {freeInputs.map((entry, index) => (
+          <div key={`free-input-${index}`} className="card">
+            <div className="form-group">
+              <label className="form-label">Chave</label>
+              <input
+                value={entry.key}
+                onChange={(event) => onUpdateFreeInput(index, { ...entry, key: event.target.value })}
+                placeholder="user_scene_description"
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Valor</label>
+              <textarea
+                value={entry.value}
+                onChange={(event) => onUpdateFreeInput(index, { ...entry, value: event.target.value })}
+                rows={3}
+                placeholder="Descreva o input livre"
+                className="form-input"
+              />
+            </div>
+
+            <button
+              className="btn btn--ghost btn--icon"
+              type="button"
+              onClick={() => onRemoveFreeInput(index)}
+              aria-label="Remover input livre"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+
+        <button className="btn btn--ghost btn--sm dynamic-list__add" type="button" onClick={onAddFreeInput}>
+          <Plus size={14} /> Novo input livre
+        </button>
+      </div>
+
+      <div className="form-section memory-section-container">
         <div className="flex-row-center memory-section-header">
           <h4 className="form-section__title memory-section-title">Memória Fixa</h4>
           {isSavingMemory && (
@@ -164,12 +215,14 @@ export function EditorPlayground({
                         aria-label="Valor da nova chave fixa"
                         placeholder="Valor inicial da chave..."
                       />
-                      <button className="btn btn--primary btn--sm" type="button" onClick={handleConfirmAddKey} aria-label="Confirmar nova chave fixa">
-                        <Check size={14} />
-                      </button>
-                      <button className="btn btn--ghost btn--sm" type="button" onClick={() => { setIsAddingKey(false); setNewKeyName(''); setNewKeyValue(''); }} aria-label="Cancelar criação da chave fixa">
-                        <X size={14} />
-                      </button>
+                      <div className="flex-row-center">
+                        <button className="btn btn--primary btn--sm" type="button" onClick={handleConfirmAddKey} aria-label="Confirmar nova chave fixa">
+                          <Check size={14} />
+                        </button>
+                        <button className="btn btn--ghost btn--sm" type="button" onClick={() => { setIsAddingKey(false); setNewKeyName(''); setNewKeyValue(''); }} aria-label="Cancelar criação da chave fixa">
+                          <X size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -186,57 +239,6 @@ export function EditorPlayground({
             </div>
           </>
         )}
-      </div>
-
-      <div className="page-header">
-        <div>
-          <h3 className="form-section__title">
-            Inputs Livres
-          </h3>
-          <p className="page-header__subtitle">
-            Variáveis específicas para este teste.
-          </p>
-        </div>
-      </div>
-
-      <div className="dynamic-list">
-        {freeInputs.map((entry, index) => (
-          <div key={`free-input-${index}`} className="card">
-            <div className="form-group">
-              <label className="form-label">Chave</label>
-              <input
-                value={entry.key}
-                onChange={(event) => onUpdateFreeInput(index, { ...entry, key: event.target.value })}
-                placeholder="user_scene_description"
-                className="form-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Valor</label>
-              <textarea
-                value={entry.value}
-                onChange={(event) => onUpdateFreeInput(index, { ...entry, value: event.target.value })}
-                rows={3}
-                placeholder="Descreva o input livre"
-                className="form-input"
-              />
-            </div>
-
-            <button
-              className="btn btn--ghost btn--icon"
-              type="button"
-              onClick={() => onRemoveFreeInput(index)}
-              aria-label="Remover input livre"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
-
-        <button className="btn btn--ghost btn--sm dynamic-list__add" type="button" onClick={onAddFreeInput}>
-          <Plus size={14} /> Novo input livre
-        </button>
       </div>
 
       {displayContextMenus.length === 0 ? (

@@ -1,6 +1,5 @@
 import { importFromJsonText } from '@/services/importService';
 import { db } from '@/db/database';
-import { supabase } from '@/lib/supabase';
 
 jest.mock('@/lib/supabase', () => ({
   supabase: {

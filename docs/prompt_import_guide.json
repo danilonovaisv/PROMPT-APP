@@ -1,0 +1,118 @@
+{
+  "title": "Instruções para Importação de Template de Prompt",
+  "description": "Este guia descreve a estrutura necessária para criar um arquivo JSON compatível com o sistema de importação do PROMPT-APP.",
+  "schema_version": "1.0.0",
+  "required_structure": {
+    "meta": {
+      "template_id": "ID único em snake_case (ex: meu_prompt_expert)",
+      "template_name": "Nome visível do template",
+      "template_type": "generic_prompt",
+      "schema_version": "1.0.0",
+      "language": "pt-BR",
+      "status": "active | draft | archived"
+    },
+    "prompt_definition": {
+      "system_role": "Definição do papel do sistema (suporta {{VAR}})",
+      "task": "A tarefa principal a ser executada (suporta {{VAR}})",
+      "context": "Contexto adicional para a IA (suporta {{VAR}})",
+      "user_scene_description": "Descrição opcional do cenário",
+      "constraints": [
+        "Lista de restrições (ex: 'Não use jargão')",
+        "Suporta {{VAR}}"
+      ],
+      "negative_prompt": [
+        "Lista do que deve ser evitado"
+      ],
+      "few_shot_examples": [
+        {
+          "input": "Exemplo de entrada",
+          "output": "Exemplo de saída esperada"
+        }
+      ]
+    },
+    "menu_definitions": [
+      {
+        "menu_id": "id_do_menu",
+        "menu_name": "Nome do Menu (ex: Tom de Voz)",
+        "description": "Explicação opcional",
+        "selection_mode": "single | multiple",
+        "required": true,
+        "options": [
+          {
+            "label": "Rótulo visível",
+            "value": "valor_tecnico",
+            "description": "Dica de uso",
+            "sub_options": []
+          }
+        ]
+      }
+    ],
+    "output_contract": {
+      "format": "text | markdown | json | image | code",
+      "language": "pt-BR",
+      "strict_mode": true,
+      "required_fields": ["campo1", "campo2"],
+      "response_rules": ["Regra 1", "Regra 2"]
+    }
+  },
+  "variable_injection": {
+    "syntax": "{{NOME_DA_VARIAVEL}}",
+    "placement": "Pode ser usado em system_role, task, context, constraints e few_shot_examples.",
+    "types": [
+      "free_inputs: Inputs preenchidos pelo usuário no momento da geração.",
+      "fixed_variables: Variáveis persistentes do template (Memória Fixa)."
+    ],
+    "how_to_import_fixed_memory": {
+      "field": "fixed_variables",
+      "type": "Objeto chave-valor (Record<string, string>)",
+      "description": "Adicione este objeto na raiz do JSON para importar variáveis pré-definidas para a Memória Fixa."
+    }
+  },
+  "example_complete": {
+    "meta": {
+      "template_id": "copywriter_expert",
+      "template_name": "Copywriter Expert",
+      "template_type": "marketing",
+      "status": "active"
+    },
+    "fixed_variables": {
+      "PUBLICO_ALVO": "Empreendedores de tecnologia",
+      "TOM_VOZ": "Profissional e Persuasivo"
+    },
+    "prompt_definition": {
+      "system_role": "Você é um copywriter expert focado em {{PUBLICO_ALVO}}.",
+      "task": "Escreva um anúncio com tom {{TOM_VOZ}} sobre {{PRODUTO}}.",
+      "constraints": [
+        "Use o framework AIDA",
+        "Máximo 500 caracteres"
+      ]
+    },
+    "output_contract": {
+      "format": "markdown"
+    }
+  },
+  "example_minimal": {
+    "meta": {
+      "template_id": "hello_world",
+      "template_name": "Hello World",
+      "template_type": "generic_prompt",
+      "status": "active"
+    },
+    "prompt_definition": {
+      "task": "Diga olá para {{NOME}} no estilo {{ESTILO}}."
+    },
+    "menu_definitions": [
+      {
+        "menu_id": "estilo",
+        "menu_name": "Estilo",
+        "options": [
+          {"label": "Formal", "value": "formal"},
+          {"label": "Informal", "value": "informal"}
+        ]
+      }
+    ],
+    "output_contract": {
+      "format": "text"
+    }
+  }
+}

@@ -1,6 +1,5 @@
 import { db } from '@/db/database';
-import { syncToCloud, downloadFromCloud } from '@/services/syncService';
-import { supabase } from '@/lib/supabase';
+import { syncToCloud } from '@/services/syncService';
 import { Prompt } from '@/models/types';
 
 // Mock Supabase
