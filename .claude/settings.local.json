@@ -15,7 +15,9 @@
       "Bash(ls .env*)",
       "Bash(cat .env.example)",
       "Bash(git push *)",
-      "Bash(pnpm audit *)"
+      "Bash(pnpm audit *)",
+      "Bash(netlify api *)",
+      "mcp__claude_ai_Netlify__netlify-deploy-services-updater"
     ]
   },
   "enableAllProjectMcpServers": true,
