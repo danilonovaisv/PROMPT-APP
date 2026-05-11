@@ -3,6 +3,7 @@
    ====================================================== */
 
 import SEO from '@/components/SEO';
+import { Breadcrumb } from '@/components/Breadcrumb';
 
 export default function PrivacyPage() {
     return (
@@ -17,6 +18,14 @@ export default function PrivacyPage() {
             </header>
 
             <div className="app-content info-page">
+                {/* A11y Audit Fix #09: Breadcrumbs */}
+                <Breadcrumb
+                    items={[
+                        { label: 'Início', href: '/' },
+                        { label: 'Privacidade' },
+                    ]}
+                />
+
                 <h2 className="info-page__title">Política de Privacidade</h2>
                 <p className="info-page__meta">
                     Vigente a partir de 22 de fevereiro de 2026.

@@ -1,9 +1,73 @@
-import { formatPromptAsMarkdown, getTemplateFile } from "@/utils/exportJson";
+import { toExportFormat, formatPromptAsMarkdown, getTemplateFile } from "@/utils/exportJson";
 import {
   type CompiledPromptPayload,
   PromptContractSchema,
   type TemplatePayload,
 } from "@/models/promptSchema";
+import { Prompt } from "@/models/types";
+
+describe("toExportFormat", () => {
+  const mockTemplatePayload: TemplatePayload = {
+    meta: {
+      template_id: 'test_prompt',
+      template_name: 'Test Prompt',
+      template_type: 'generic_prompt',
+      schema_version: '1.0.0',
+      language: 'pt-BR',
+      status: 'active',
+    },
+    prompt_definition: {
+      system_role: 'System Role',
+      task: 'Task',
+      context: 'Context',
+      user_scene_description: '',
+      constraints: ['Constraint 1'],
+      negative_prompt: ['Negative 1'],
+      few_shot_examples: [],
+    },
+    menu_definitions: [],
+    output_contract: {
+      format: 'markdown',
+      language: 'pt-BR',
+      strict_mode: true,
+      required_fields: [],
+      response_rules: [],
+    },
+  };
+
+  const mockPrompt: Prompt = {
+    id: 1,
+    categoryId: 1,
+    title: 'Test Prompt',
+    promptPayload: mockTemplatePayload,
+    schemaVersion: '1.0.0',
+    language: 'pt-BR',
+    outputFormat: 'markdown',
+    fewShotExamples: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  it('should correctly transform a valid Prompt into a PromptContract', () => {
+    const result = toExportFormat(mockPrompt);
+    expect(result).toEqual(mockTemplatePayload);
+  });
+
+  it('should throw an error if the promptPayload is invalid', () => {
+    const invalidPrompt = {
+      ...mockPrompt,
+      promptPayload: {
+        ...mockTemplatePayload,
+        meta: {
+          ...mockTemplatePayload.meta,
+          template_id: '', // Invalid: min(1)
+        },
+      },
+    } as unknown as Prompt;
+
+    expect(() => toExportFormat(invalidPrompt)).toThrow();
+  });
+});
 
 describe("getTemplateFile", () => {
   it("returns a Blob with valid JSON content matching PromptContractSchema", async () => {
@@ -199,5 +263,42 @@ describe("formatPromptAsMarkdown", () => {
     );
 
     expect(result).toContain("- **Language**: TypeScript (Strict)");
+  });
+
+  it('should include few-shot examples if present', () => {
+    const template: Partial<TemplatePayload> = {
+      prompt_definition: {
+        system_role: "Assistant",
+        task: "Task",
+        context: "",
+        user_scene_description: "",
+        constraints: [],
+        negative_prompt: [],
+        few_shot_examples: [
+          { input: 'Hello', output: 'Olá' }
+        ],
+      },
+      menu_definitions: [],
+      output_contract: {
+        format: "markdown",
+        language: "pt-BR",
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
+    };
+
+    const compiledPayload: Partial<CompiledPromptPayload> = {
+      compiled_context: {
+        menu_interpretation: {},
+        free_inputs: {},
+      },
+    };
+
+    const result = formatPromptAsMarkdown(template as TemplatePayload, compiledPayload as CompiledPromptPayload);
+    expect(result).toContain('## 4. FEW-SHOT EXAMPLES');
+    expect(result).toContain('### Example 1:');
+    expect(result).toContain('INPUT: Hello');
+    expect(result).toContain('OUTPUT: Olá');
   });
 });
