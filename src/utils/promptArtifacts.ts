@@ -94,6 +94,17 @@ function buildListBlock(title: string, items: string[]): string[] {
   return [title, ...items.map((item) => `- ${item}`)];
 }
 
+function applyReplacements(text: string, variables: Record<string, string>): string {
+  let result = text;
+  Object.entries(variables).forEach(([key, value]) => {
+    // Escapa a chave para uso em regex (embora chaves geralmente sejam seguras A-Z0-9_)
+    const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`{{${escapedKey}}}`, 'g');
+    result = result.replace(regex, value);
+  });
+  return result;
+}
+
 export function renderFinalPromptText(
   template: TemplatePayload,
   compiledPayload: CompiledPromptPayload
@@ -101,17 +112,32 @@ export function renderFinalPromptText(
   const sections: string[] = [];
   const promptDefinition = template.prompt_definition;
   const outputContract = template.output_contract;
+  
+  // Coletar todas as variáveis para substituição
+  const allVariables = {
+    ...(compiledPayload.compiled_context.fixed_variables || {}),
+    ...(compiledPayload.compiled_context.free_inputs || {}),
+  };
 
-  if (promptDefinition.system_role.trim()) {
-    sections.push(`# ROLE: ${promptDefinition.system_role.trim()}`);
+  const systemRole = applyReplacements(promptDefinition.system_role.trim(), allVariables);
+  if (systemRole) {
+    sections.push(`# ROLE: ${systemRole}`);
   }
 
   const contextParts: string[] = [];
-  if (promptDefinition.task.trim()) {
-    contextParts.push(`Task:\n${promptDefinition.task.trim()}`);
+  const task = applyReplacements(promptDefinition.task.trim(), allVariables);
+  if (task) {
+    contextParts.push(`Task:\n${task}`);
   }
-  if (promptDefinition.context.trim()) {
-    contextParts.push(`Contexto base:\n${promptDefinition.context.trim()}`);
+  
+  const baseContext = applyReplacements(promptDefinition.context.trim(), allVariables);
+  if (baseContext) {
+    contextParts.push(`Contexto base:\n${baseContext}`);
+  }
+  
+  const sceneDescription = applyReplacements(promptDefinition.user_scene_description.trim(), allVariables);
+  if (sceneDescription) {
+    contextParts.push(`Descrição da cena:\n${sceneDescription}`);
   }
 
   const menuLines = buildMenuLines(template, compiledPayload);
@@ -119,11 +145,16 @@ export function renderFinalPromptText(
     contextParts.push(['Menus selecionados:', ...menuLines].join('\n'));
   }
 
-  const freeInputs = Object.entries(compiledPayload.compiled_context.free_inputs || {}).map(
+  // Filtrar inputs livres que já foram usados no find-and-replace se desejar,
+  // ou manter a lista completa para referência. 
+  // O usuário pediu para atualizar o render final. 
+  // Geralmente, se a variável foi substituída, não precisamos dela na lista de inputs.
+  // No entanto, para evitar confusão, vamos listar apenas os free_inputs (não as fixed_variables).
+  const freeInputsList = Object.entries(compiledPayload.compiled_context.free_inputs || {}).map(
     ([key, value]) => `${key}: ${value}`
   );
-  if (freeInputs.length > 0) {
-    contextParts.push(['Inputs livres:', ...freeInputs.map((item) => `- ${item}`)].join('\n'));
+  if (freeInputsList.length > 0) {
+    contextParts.push(['Inputs livres:', ...freeInputsList.map((item) => `- ${item}`)].join('\n'));
   }
 
   if (contextParts.length > 0) {
@@ -131,26 +162,34 @@ export function renderFinalPromptText(
   }
 
   const constraintsAndRules: string[] = [];
-  const constraintBlock = buildListBlock('Restrições:', promptDefinition.constraints);
+  const constraints = promptDefinition.constraints.map(c => applyReplacements(c, allVariables));
+  const constraintBlock = buildListBlock('Restrições:', constraints);
   if (constraintBlock.length > 0) {
     constraintsAndRules.push(constraintBlock.join('\n'));
   }
-  const negativeBlock = buildListBlock('Evitar:', promptDefinition.negative_prompt);
+  
+  const negativePrompt = promptDefinition.negative_prompt.map(p => applyReplacements(p, allVariables));
+  const negativeBlock = buildListBlock('Evitar:', negativePrompt);
   if (negativeBlock.length > 0) {
     constraintsAndRules.push(negativeBlock.join('\n'));
   }
+  
   if (outputContract.response_rules.length > 0) {
-    const rulesBlock = buildListBlock('Regras de resposta:', outputContract.response_rules);
+    const rules = outputContract.response_rules.map(r => applyReplacements(r, allVariables));
+    const rulesBlock = buildListBlock('Regras de resposta:', rules);
     constraintsAndRules.push(rulesBlock.join('\n'));
   }
+  
   if (constraintsAndRules.length > 0) {
     sections.push(`## CONSTRAINTS\n${constraintsAndRules.join('\n\n')}`);
   }
 
   if (promptDefinition.few_shot_examples && promptDefinition.few_shot_examples.length > 0) {
-    const exampleLines = promptDefinition.few_shot_examples.map((example, index) => 
-      `### Exemplo ${index + 1}:\nENTRADA: ${example.input}\nSAÍDA: ${example.output}`
-    );
+    const exampleLines = promptDefinition.few_shot_examples.map((example, index) => {
+      const input = applyReplacements(example.input, allVariables);
+      const output = applyReplacements(example.output, allVariables);
+      return `### Exemplo ${index + 1}:\nENTRADA: ${input}\nSAÍDA: ${output}`;
+    });
     sections.push(`## FEW-SHOT EXAMPLES\n${exampleLines.join('\n\n')}`);
   }
 

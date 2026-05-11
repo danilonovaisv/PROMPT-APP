@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
 import { withRetry, fetchAllPages } from "./utils";
+import { PromptMemory } from "@/models/types";
 
 /**
  * Sincroniza a memória fixa do usuário (Upload).
@@ -125,10 +126,10 @@ export const downloadMemoryFromCloud = async () => {
     // 4. ⚡ Aplicar em transação única
     await db.transaction('rw', db.promptMemory, async () => {
       if (toAdd.length > 0) {
-        await db.promptMemory.bulkAdd(toAdd as any);
+        await db.promptMemory.bulkAdd(toAdd as PromptMemory[]);
       }
       if (toUpdate.length > 0) {
-        await db.promptMemory.bulkUpdate(toUpdate as any);
+        await db.promptMemory.bulkUpdate(toUpdate);
       }
     });
 

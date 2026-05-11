@@ -1,11 +1,12 @@
 import { supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
-import { Prompt } from "@/models/types";
+import { Prompt, RemotePrompt } from "@/models/types";
 import { withRetry, fetchAllPages } from "./utils";
 import { 
   getPromptSummaryFields, 
   getLegacyPromptColumns, 
-  getPrimaryReferenceUrl 
+  getPrimaryReferenceUrl,
+  type PromptOutputFormat
 } from "@/models/promptSchema";
 
 export const syncPrompts = async (
@@ -72,16 +73,16 @@ export const syncPrompts = async (
           .select("id, updated_at")
           .in("id", remoteIdsToCheck)
       );
-      remoteData?.forEach((r: any) => {
+      remoteData?.forEach((r: { id: number; updated_at: string }) => {
         remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
       });
     }
 
-    const payloads: any[] = [];
+    const payloads: Record<string, unknown>[] = [];
     const promptsForBulk: Prompt[] = [];
 
     for (const prompt of promptsToSync) {
-      const { id, remoteId, ...data } = prompt;
+      const { id: _unusedId, remoteId, ...data } = prompt;
       const remoteCategoryId = localToRemoteCategoryMap.get(data.categoryId);
 
       // Verificar timestamp se já existe remotamente
@@ -135,7 +136,7 @@ export const syncPrompts = async (
         // Mapear resultados de volta para o ID local e atualizar status
         for (const prompt of promptsForBulk) {
           // Usamos o título como chave secundária para mapeamento em caso de novos registros
-          const remoteRecord = result.data.find((r: any) => r.title === prompt.title);
+          const remoteRecord = result.data.find((r: { title: string; id: number }) => r.title === prompt.title);
           if (remoteRecord && prompt.id) {
             await db.prompts.update(prompt.id, { 
               remoteId: remoteRecord.id, 
@@ -157,7 +158,7 @@ export const downloadPrompts = async (
   remoteToLocalCatMap: Map<number, number>,
   remoteToLocalMenuMap: Map<number, number>
 ): Promise<void> => {
-  const promptData = await fetchAllPages<any>((r) =>
+  const promptData = await fetchAllPages<RemotePrompt>((r) =>
     supabase.from("prompts").select("*").eq("is_deleted", false).range(r[0], r[1])
   );
 
@@ -196,7 +197,7 @@ export const downloadPrompts = async (
       compiledPayload: p.compiled_payload_jsonb,
       schemaVersion: p.schema_version,
       language: p.language,
-      outputFormat: p.output_format as any,
+      outputFormat: p.output_format as PromptOutputFormat,
       referenceUrl: p.reference_url || undefined,
       fewShotExamples: p.few_shot_examples,
       createdAt: new Date(p.created_at),

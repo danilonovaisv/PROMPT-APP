@@ -131,6 +131,20 @@ export function EditorDefinitionForm({
               Registre premissas, cenário de uso e informações de apoio para a resposta.
             </span>
           </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor={`${formId}-scene-description`}>Scene description</label>
+            <textarea
+              id={`${formId}-scene-description`}
+              value={template.prompt_definition.user_scene_description}
+              onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
+              rows={4}
+              placeholder="Descreva a cena ou cenário de uso padrão"
+            />
+            <span className="form-label__hint">
+              Este campo serve como base para a variável de descrição da cena no playground.
+            </span>
+          </div>
         </div>
 
         <div className="form-section--grouped">

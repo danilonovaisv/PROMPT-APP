@@ -79,7 +79,7 @@ export const syncMenus = async (userId: string, contextMenus: ContextMenu[]) => 
 
       if (results) {
         for (const menu of menusToSync) {
-          const remoteRecord = results.find((r: any) => r.menu_id === menu.menuId);
+          const remoteRecord = results.find((r: { menu_id: string; id: number }) => r.menu_id === menu.menuId);
           if (remoteRecord && menu.id) {
             await db.contextMenus.update(menu.id, { 
               remoteId: remoteRecord.id, 
