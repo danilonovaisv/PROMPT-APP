@@ -16,6 +16,7 @@ import {
 import SEO from '@/components/SEO';
 import PromptCard from '@/components/PromptCard';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { SkeletonPromptList } from '@/components/SkeletonLoader';
 import { useCallback, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSearchFilter } from '@/hooks/useSearchFilter';
@@ -30,12 +31,12 @@ export default function CategoryPage() {
     const [rawSearch, setRawSearch] = useState('');
     const searchTerm = useDebounce(rawSearch, 300);
 
-    const category = useLiveQuery(
-        () => db.categories.get(categoryId),
+    const categoryResult = useLiveQuery(
+        async () => (await db.categories.get(categoryId)) ?? null,
         [categoryId]
     );
 
-    const prompts = useLiveQuery(
+    const promptResults = useLiveQuery(
         async () => {
             return await db.prompts
                 .where('categoryId')
@@ -44,7 +45,11 @@ export default function CategoryPage() {
                 .toArray();
         },
         [categoryId]
-    ) ?? [];
+    );
+
+    const category = categoryResult ?? null;
+    const prompts = promptResults ?? [];
+    const isLoading = categoryResult === undefined || promptResults === undefined;
 
     const filteredPrompts = useSearchFilter(prompts, searchTerm);
 
@@ -118,6 +123,17 @@ export default function CategoryPage() {
             year: 'numeric',
         });
     }, []);
+
+    if (isLoading) {
+        return (
+            <>
+                <SEO title="Carregando categoria" />
+                <div className="app-content">
+                    <SkeletonPromptList />
+                </div>
+            </>
+        );
+    }
 
     if (!category || category.isDeleted) {
         return (

@@ -10,6 +10,7 @@ import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import SEO from '@/components/SEO';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { SkeletonCategoryGrid } from '@/components/SkeletonLoader';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
@@ -41,11 +42,13 @@ export default function CategoryManagerPage() {
     const { showToast } = useToast();
     const confirm = useConfirm();
     // Filtrar categorias soft-deleted localmente — nunca exibir itens com isDeleted: true
-    const categories = useLiveQuery(
+    const categoryResults = useLiveQuery(
         async () => {
             return await db.categories.filter((c) => !c.isDeleted).toArray();
         }
-    ) ?? [];
+    );
+    const categories = categoryResults ?? [];
+    const isLoading = categoryResults === undefined;
 
     const [isEditing, setIsEditing] = useState<number | null>(null);
     const [isCreating, setIsCreating] = useState(false);
@@ -241,6 +244,10 @@ export default function CategoryManagerPage() {
                     ]}
                 />
 
+                {isLoading ? (
+                    <SkeletonCategoryGrid />
+                ) : (
+                    <>
                 {/* Formulário de criação/edição */}
                 {(isCreating || isEditing !== null) && (
                     <div className="card card--active glass motion-entry">
@@ -383,6 +390,8 @@ export default function CategoryManagerPage() {
                             </div>
                         ))}
                     </div>
+                )}
+                    </>
                 )}
             </div>
         </>

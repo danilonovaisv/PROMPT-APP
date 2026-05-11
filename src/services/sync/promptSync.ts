@@ -78,10 +78,12 @@ export const syncPrompts = async (
       });
     }
 
-    const payloads: Record<string, unknown>[] = [];
-    const promptsForBulk: Prompt[] = [];
+    const promptsWithRemoteId = promptsToSync.filter((prompt) => !!prompt.remoteId);
+    const promptsWithoutRemoteId = promptsToSync.filter((prompt) => !prompt.remoteId);
 
-    for (const prompt of promptsToSync) {
+    const payloads: Record<string, unknown>[] = [];
+
+    for (const prompt of promptsWithRemoteId) {
       const { id: _unusedId, remoteId, ...data } = prompt;
       const remoteCategoryId = localToRemoteCategoryMap.get(data.categoryId);
 
@@ -119,30 +121,76 @@ export const syncPrompts = async (
         updated_at: new Date().toISOString(),
         ...legacyColumns,
       });
-      promptsForBulk.push(prompt);
     }
 
     if (payloads.length > 0) {
       const result = await withRetry(() =>
-        supabase.from("prompts").upsert(payloads).select("id, title")
+        supabase.from("prompts").upsert(payloads).select("id")
       );
 
       if (result.error) {
         console.error("❌ Erro no bulk upsert de prompts:", result.error);
-        for (const prompt of promptsForBulk) {
+        for (const prompt of promptsWithRemoteId) {
           if (prompt.id) await db.prompts.update(prompt.id, { syncStatus: "error" });
         }
       } else if (result.data) {
-        // Mapear resultados de volta para o ID local e atualizar status
-        for (const prompt of promptsForBulk) {
-          // Usamos o título como chave secundária para mapeamento em caso de novos registros
-          const remoteRecord = result.data.find((r: { title: string; id: number }) => r.title === prompt.title);
-          if (remoteRecord && prompt.id) {
-            await db.prompts.update(prompt.id, { 
-              remoteId: remoteRecord.id, 
-              syncStatus: "synced" 
+        for (const prompt of promptsWithRemoteId) {
+          if (prompt.id && prompt.remoteId) {
+            await db.prompts.update(prompt.id, {
+              remoteId: prompt.remoteId,
+              syncStatus: "synced"
             });
           }
+        }
+      }
+    }
+
+    for (const prompt of promptsWithoutRemoteId) {
+      const remoteCategoryId = localToRemoteCategoryMap.get(prompt.categoryId);
+      const summary = getPromptSummaryFields(prompt.promptPayload);
+      const legacyColumns = getLegacyPromptColumns(
+        prompt.promptPayload,
+        prompt.selectionPayload,
+        prompt.compiledPayload,
+      );
+
+      try {
+        const result = await withRetry(() =>
+          supabase
+            .from("prompts")
+            .insert({
+              user_id: userId,
+              category_id: remoteCategoryId || null,
+              title: summary.title,
+              prompt_payload_jsonb: prompt.promptPayload,
+              selected_menu_ids: prompt.selectedMenuIds || [],
+              schema_version: summary.schemaVersion,
+              output_format: summary.outputFormat,
+              language: summary.language,
+              reference_url: getPrimaryReferenceUrl(prompt.promptPayload),
+              few_shot_examples: prompt.fewShotExamples || [],
+              is_deleted: false,
+              updated_at: new Date().toISOString(),
+              ...legacyColumns,
+            })
+            .select("id")
+            .single()
+        );
+
+        if (result.error || !result.data) {
+          throw result.error ?? new Error("Prompt criado sem ID remoto.");
+        }
+
+        if (prompt.id) {
+          await db.prompts.update(prompt.id, {
+            remoteId: result.data.id,
+            syncStatus: "synced",
+          });
+        }
+      } catch (error) {
+        console.error("❌ Erro ao inserir prompt novo:", error);
+        if (prompt.id) {
+          await db.prompts.update(prompt.id, { syncStatus: "error" });
         }
       }
     }

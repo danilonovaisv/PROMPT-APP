@@ -1,4 +1,7 @@
 import { syncCategories } from '@/services/sync/categorySync';
+import { supabase } from '@/lib/supabase';
+import { createSnapshot } from '@/utils/backupManager';
+import { syncToCloud, downloadFromCloud } from '@/services/syncService';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({

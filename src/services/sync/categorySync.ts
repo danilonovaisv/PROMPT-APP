@@ -68,10 +68,12 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
       });
     }
 
-    const payloads: Record<string, unknown>[] = [];
-    const categoriesForBulk: Category[] = [];
+    const categoriesWithRemoteId = categoriesToSync.filter((cat) => !!cat.remoteId);
+    const categoriesWithoutRemoteId = categoriesToSync.filter((cat) => !cat.remoteId);
 
-    for (const cat of categoriesToSync) {
+    const payloads: Record<string, unknown>[] = [];
+
+    for (const cat of categoriesWithRemoteId) {
       const remoteTs = remoteTimestampMap.get(cat.remoteId!) || 0;
       const localTs = Math.floor(cat.updatedAt?.getTime() || 0) / 1000;
 
@@ -91,30 +93,64 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
         deleted_at: null,
         updated_at: new Date().toISOString(),
       });
-      categoriesForBulk.push(cat);
     }
 
     if (payloads.length > 0) {
       const result = await withRetry(() =>
-        supabase.from("categories").upsert(payloads).select("id, name")
+        supabase.from("categories").upsert(payloads).select("id")
       );
 
       if (result.error) {
         console.error("❌ Erro no bulk upsert de categorias:", result.error);
-        for (const cat of categoriesForBulk) {
+        for (const cat of categoriesWithRemoteId) {
           if (cat.id) await db.categories.update(cat.id, { syncStatus: "error" });
         }
       } else if (result.data) {
-        // Mapear resultados de volta para o ID local
-        for (const cat of categoriesForBulk) {
-          const remoteRecord = result.data.find((r: { name: string; id: number }) => r.name === cat.name);
-          if (remoteRecord && cat.id) {
-            await db.categories.update(cat.id, { 
-              remoteId: remoteRecord.id, 
-              syncStatus: "synced" 
+        for (const cat of categoriesWithRemoteId) {
+          if (cat.id && cat.remoteId) {
+            await db.categories.update(cat.id, {
+              remoteId: cat.remoteId,
+              syncStatus: "synced"
             });
-            localToRemoteCategoryMap.set(cat.id, remoteRecord.id);
+            localToRemoteCategoryMap.set(cat.id, cat.remoteId);
           }
+        }
+      }
+    }
+
+    for (const cat of categoriesWithoutRemoteId) {
+      try {
+        const result = await withRetry(() =>
+          supabase
+            .from("categories")
+            .insert({
+              user_id: userId,
+              name: cat.name,
+              icon: cat.icon,
+              color: cat.color,
+              is_deleted: false,
+              deleted_at: null,
+              updated_at: new Date().toISOString(),
+            })
+            .select("id")
+            .single()
+        );
+
+        if (result.error || !result.data) {
+          throw result.error ?? new Error("Categoria criada sem ID remoto.");
+        }
+
+        if (cat.id) {
+          await db.categories.update(cat.id, {
+            remoteId: result.data.id,
+            syncStatus: "synced",
+          });
+          localToRemoteCategoryMap.set(cat.id, result.data.id);
+        }
+      } catch (error) {
+        console.error("❌ Erro ao inserir categoria nova:", error);
+        if (cat.id) {
+          await db.categories.update(cat.id, { syncStatus: "error" });
         }
       }
     }

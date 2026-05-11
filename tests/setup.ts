@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
 import { jest } from "@jest/globals";
 import { TextDecoder, TextEncoder } from "util";
+import { webcrypto } from "crypto";
 
 // Polyfill structuredClone for older Node.js versions and test environments
 if (typeof global.structuredClone === "undefined") {
@@ -15,6 +16,20 @@ if (typeof global.TextEncoder === "undefined") {
 
 if (typeof global.TextDecoder === "undefined") {
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
+}
+
+if (typeof global.crypto === "undefined") {
+  Object.defineProperty(global, "crypto", {
+    value: webcrypto,
+    configurable: true,
+  });
+}
+
+if (typeof window !== "undefined" && (!window.crypto || !window.crypto.subtle)) {
+  Object.defineProperty(window, "crypto", {
+    value: webcrypto,
+    configurable: true,
+  });
 }
 
 // Polyfill Blob.prototype.text for JSDOM

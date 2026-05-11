@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
@@ -42,6 +42,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const titleId = useId();
+    const emailInputId = useId();
+    const passwordInputId = useId();
 
     useAccessibleModal({
         isOpen,
@@ -108,11 +111,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 style={{ maxWidth: '400px' }}
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="auth-modal-title"
+                aria-labelledby={titleId}
                 tabIndex={-1}
             >
                 <div className="modal__header">
-                    <h2 id="auth-modal-title">
+                    <h2 id={titleId}>
                         {mode === 'login' ? 'Login' : mode === 'register' ? 'Criar Conta' : mode === 'update-password' ? 'Atualizar Senha' : 'Recuperar Senha'}
                     </h2>
                     <button
@@ -129,10 +132,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     <form onSubmit={handleSubmit} className="form-section">
                         {mode !== 'update-password' && (
                             <div className="form-group">
-                                <label>Email</label>
+                                <label htmlFor={emailInputId}>Email</label>
                                 <div className="input-with-icon">
                                     <Mail size={16} />
                                     <input
+                                        id={emailInputId}
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
@@ -146,12 +150,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
                         {mode !== 'forgot' && (
                             <div className="form-group">
-                                <label>
+                                <label htmlFor={passwordInputId}>
                                     {mode === 'update-password' ? 'Nova Senha' : 'Senha'}
                                 </label>
                                 <div className="input-with-icon">
                                     <Lock size={16} />
                                     <input
+                                        id={passwordInputId}
                                         type="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}

@@ -72,7 +72,7 @@ using (((user_id = ( SELECT auth.uid() AS uid)) AND (is_deleted = false)));
 using (((auth.uid() = user_id) AND (is_deleted = false)));
 
 
-CREATE TRIGGER "Netfly" AFTER INSERT OR DELETE OR UPDATE ON public.prompts FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('https://api.netlify.com/build_hooks/69a3b3ec1ecf120e04816abf', 'POST', '{"Content-type":"application/json"}', '{}', '5000');
+-- Removed in repository: prompt mutations must not trigger Netlify deploy hooks.
 
 drop policy "Allow listening for broadcasts for authenticated users only" on "realtime"."messages";
 
@@ -83,6 +83,5 @@ drop policy "Allow listening for broadcasts for authenticated users only" on "re
   for select
   to authenticated
 using (((topic ~~ 'room:%'::text) OR (topic ~~ 'room:%:messages'::text) OR (extension = 'broadcast'::text)));
-
 
 

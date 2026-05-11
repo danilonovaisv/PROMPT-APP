@@ -50,4 +50,9 @@ export function setupAutoSync() {
     db.contextMenus.hook('creating', () => { scheduleSync(); });
     db.contextMenus.hook('updating', () => { scheduleSync(); });
     db.contextMenus.hook('deleting', () => { scheduleSync(); });
+
+    // Hooks para Memória fixa
+    db.promptMemory.hook('creating', () => { scheduleSync(); });
+    db.promptMemory.hook('updating', () => { scheduleSync(); });
+    db.promptMemory.hook('deleting', () => { scheduleSync(); });
 }

@@ -66,7 +66,7 @@ export async function decrypt(base64: string): Promise<string | null> {
         );
 
         return new TextDecoder().decode(decrypted);
-    } catch (e) {
+    } catch {
         return null;
     }
 }

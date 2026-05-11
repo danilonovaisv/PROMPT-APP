@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import { saveLocalBackup, getLocalBackupInfo } from '@/utils/backupManager';
-import { encrypt, decrypt } from '@/utils/crypto';
+import { decrypt } from '@/utils/crypto';
 import { db } from '@/db/database';
 
 describe('Backup Encryption', () => {

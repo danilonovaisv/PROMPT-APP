@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Copy, Download, X } from 'lucide-react';
 import type { CompiledPromptPayload } from '@/models/promptSchema';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 
 type EditorPreviewModalProps = {
   isOpen: boolean;
@@ -23,6 +24,13 @@ export function EditorPreviewModal({
 }: EditorPreviewModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useAccessibleModal({
+    isOpen,
+    onClose,
+    containerRef: modalRef,
+    initialFocusRef: closeButtonRef,
+  });
 
   if (!isOpen) return null;
 

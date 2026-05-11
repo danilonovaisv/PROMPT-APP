@@ -2,121 +2,40 @@
    Componente de Sincronização em Nuvem (Supabase)
    ====================================================== */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
-import { smartSync, checkForUpdates } from '@/services/assetManager';
+import { smartSync } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
 import { Cloud, CloudOff, RefreshCw, LogIn, LogOut, User, KeyRound } from 'lucide-react';
-import type { Session } from '@supabase/supabase-js';
 import AuthModal from './AuthModal';
+import { useConfirm } from '@/hooks/useConfirm';
+import { useCloudSync } from '@/hooks/useCloudSync';
 
 export default function CloudSyncItem() {
-    const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(false);
-    const [hasUpdates, setHasUpdates] = useState(false);
-    const [realtimeActive, setRealtimeActive] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [authModalMode, setAuthModalMode] = useState<'login' | 'update-password'>('login');
-    const [isOffline, setIsOffline] = useState(() =>
-        typeof navigator !== 'undefined' ? !navigator.onLine : false
-    );
-    const [sessionNotice, setSessionNotice] = useState<string | null>(null);
     const { showToast } = useToast();
+    const confirm = useConfirm();
+    const {
+        session,
+        hasUpdates,
+        isOffline,
+        realtimeActive,
+        sessionNotice,
+        refreshUpdates,
+        clearUpdates,
+        registerManualLogout,
+    } = useCloudSync();
     const configHintId = 'cloud-sync-config-hint';
-    const manualLogoutRef = useRef(false);
-
-    // Declarações ANTES dos useEffects para evitar TDZ nos closures
-    // (const não são hoisted; devem aparecer antes do primeiro uso no código-fonte)
-    const triggerAutoSync = useCallback(async () => {
-        console.log("🔄 Auto-Sync: Iniciando sincronização inteligente...");
-        setLoading(true);
-        try {
-            try {
-            const { downloadFromCloud } = await import('@/services/syncService');
-            await downloadFromCloud();
-        } catch (error) {
-            console.error('Erro no sync inicial:', error);
-        }
-            showToast('Sincronizado com a nuvem', 'success');
-        } catch (err) {
-            console.error('Auto-sync failed:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [showToast]);
 
     const checkForUpdatesStatus = useCallback(async () => {
         try {
-            const updatesAvailable = await checkForUpdates();
-            setHasUpdates(updatesAvailable);
+            await refreshUpdates();
         } catch (error) {
             console.error('Erro ao verificar atualizações:', error);
         }
-    }, []);
-
-    useEffect(() => {
-        if (!isSupabaseConfigured) {
-            return;
-        }
-
-        // 1. Check session on mount
-        supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-            setSession(currentSession);
-            if (currentSession) {
-                triggerAutoSync();
-                checkForUpdatesStatus();
-            }
-        });
-
-        // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, newSession: Session | null) => {
-            setSession((currentSession) => {
-                if (!newSession && currentSession && !manualLogoutRef.current && event !== 'INITIAL_SESSION') {
-                    setSessionNotice('Sua sessão expirou. Faça login novamente para continuar sincronizando.');
-                }
-                if (newSession) {
-                    setSessionNotice(null);
-                }
-                if (!newSession && manualLogoutRef.current) {
-                    manualLogoutRef.current = false;
-                }
-                return newSession;
-            });
-            // Se acabou de logar (newSession exists), trigger sync
-            if (newSession && !session) {
-                triggerAutoSync();
-                checkForUpdatesStatus();
-            }
-            setRealtimeActive(!!newSession);
-        });
-
-        return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    useEffect(() => {
-        const handleOffline = () => setIsOffline(true);
-        const handleOnline = () => setIsOffline(false);
-
-        window.addEventListener('offline', handleOffline);
-        window.addEventListener('online', handleOnline);
-
-        return () => {
-            window.removeEventListener('offline', handleOffline);
-            window.removeEventListener('online', handleOnline);
-        };
-    }, []);
-
-    // Verificar periodicamente se há atualizações
-    useEffect(() => {
-        if (!session) return;
-
-        const interval = setInterval(() => {
-            checkForUpdatesStatus();
-        }, 30000); // Checar a cada 30 segundos
-
-        return () => clearInterval(interval);
-    }, [session, checkForUpdatesStatus]);
+    }, [refreshUpdates]);
 
     if (!isSupabaseConfigured) {
         return (
@@ -143,8 +62,7 @@ export default function CloudSyncItem() {
     };
 
     const handleLogout = async () => {
-        manualLogoutRef.current = true;
-        setSessionNotice(null);
+        registerManualLogout();
         await supabase.auth.signOut();
         showToast('Logout realizado');
     };
@@ -161,7 +79,8 @@ export default function CloudSyncItem() {
             const result = await smartSync();
             const message = `Sync inteligente concluído! Recebidos: ${result.pulled}, Enviados: ${result.pushed}, Conflitos: ${result.conflicts}`;
             showToast(message, 'success');
-            setHasUpdates(false);
+            clearUpdates();
+            await checkForUpdatesStatus();
         } catch (e: unknown) {
             const errorMessage = e instanceof Error ? e.message : 'Erro desconhecido';
             showToast('Erro no sync inteligente: ' + errorMessage, 'error');
@@ -172,13 +91,21 @@ export default function CloudSyncItem() {
 
     const handleRestore = async () => {
         if (!session) return;
-        if (!confirm('Isso irá substituir todos os dados locais pelos dados da nuvem. Continuar?')) return;
+        const shouldRestore = await confirm({
+            title: 'Substituir dados locais',
+            message: 'Isso irá substituir todos os dados locais pelos dados da nuvem. Continuar?',
+            confirmLabel: 'Substituir',
+            cancelLabel: 'Cancelar',
+            variant: 'danger',
+        });
+        if (!shouldRestore) return;
 
         setLoading(true);
         try {
             const { downloadFromCloud } = await import('@/services/syncService');
             await downloadFromCloud();
             showToast('Dados restaurados da nuvem!', 'success');
+            await checkForUpdatesStatus();
             window.location.reload();
         } catch (e: unknown) {
             const errorMessage = e instanceof Error ? e.message : 'Erro desconhecido';
@@ -217,13 +144,6 @@ export default function CloudSyncItem() {
                     <span>Nuvem Desconectada</span>
                     <LogIn size={14} className="app-sidebar__nav-item-icon--suffix" />
                 </button>
-                {isAuthModalOpen && (
-                    <AuthModal
-                        isOpen={isAuthModalOpen}
-                        onClose={() => setIsAuthModalOpen(false)}
-                        initialMode={authModalMode}
-                    />
-                )}
             </>
         );
     }
@@ -239,13 +159,6 @@ export default function CloudSyncItem() {
                 >
                     {statusBanner.message}
                 </div>
-            )}
-            {isAuthModalOpen && (
-                <AuthModal
-                    isOpen={isAuthModalOpen}
-                    onClose={() => setIsAuthModalOpen(false)}
-                    initialMode={authModalMode}
-                />
             )}
             <div className="cloud-sync-box__user">
                 <User size={14} />
@@ -294,6 +207,7 @@ export default function CloudSyncItem() {
         </div>
         {isAuthModalOpen && (
             <AuthModal
+                key={authModalMode}
                 isOpen={isAuthModalOpen}
                 onClose={() => setIsAuthModalOpen(false)}
                 initialMode={authModalMode}

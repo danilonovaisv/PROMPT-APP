@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getRouteMetadata } from '@/utils/routeMetadata';
 
 interface SEOProps {
     title?: string;
@@ -25,7 +26,10 @@ export default function SEO({
     url,
     twitterCard = DEFAULT_TWITTER_CARD,
 }: SEOProps) {
-    const siteTitle = title ? `${title} | ${name}` : DEFAULT_TITLE;
+    const routeMetadata = typeof window !== 'undefined' ? getRouteMetadata(window.location.pathname) : null;
+    const resolvedTitle = title ?? routeMetadata?.title;
+    const resolvedDescription = description ?? routeMetadata?.description ?? DEFAULT_DESC;
+    const siteTitle = resolvedTitle ? `${resolvedTitle} | ${name}` : DEFAULT_TITLE;
 
     const ensureMeta = (selector: string, attrs: Record<string, string>) => {
         let element = document.head.querySelector(selector);
@@ -52,12 +56,12 @@ export default function SEO({
     useEffect(() => {
         const resolvedUrl = url || `${window.location.origin}${window.location.pathname}`;
         document.title = siteTitle;
-        ensureMeta('meta[name="description"]', { name: 'description', content: description });
+        ensureMeta('meta[name="description"]', { name: 'description', content: resolvedDescription });
         ensureMeta('meta[property="og:type"]', { property: 'og:type', content: type });
         ensureMeta('meta[property="og:title"]', { property: 'og:title', content: siteTitle });
         ensureMeta('meta[property="og:description"]', {
             property: 'og:description',
-            content: description,
+            content: resolvedDescription,
         });
         ensureMeta('meta[property="og:image"]', { property: 'og:image', content: image });
         ensureMeta('meta[property="og:url"]', { property: 'og:url', content: resolvedUrl });
@@ -66,13 +70,13 @@ export default function SEO({
         ensureMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: siteTitle });
         ensureMeta('meta[name="twitter:description"]', {
             name: 'twitter:description',
-            content: description,
+            content: resolvedDescription,
         });
         ensureMeta('meta[name="twitter:image"]', {
             name: 'twitter:image',
             content: image,
         });
-    }, [description, image, siteTitle, twitterCard, type, url]);
+    }, [image, resolvedDescription, siteTitle, twitterCard, type, url]);
 
     return null;
 }

@@ -5,6 +5,7 @@ jest.mock('@/db/database', () => ({
     prompts: { hook: jest.fn() },
     categories: { hook: jest.fn() },
     contextMenus: { hook: jest.fn() },
+    promptMemory: { hook: jest.fn() },
   },
 }));
 
@@ -39,7 +40,7 @@ describe('setupAutoSync', () => {
     jest.useRealTimers();
   });
 
-  test('installs hooks on prompts, categories, and contextMenus tables', async () => {
+  test('installs hooks on prompts, categories, contextMenus, and promptMemory tables', async () => {
     const { setupAutoSync } = await import('@/services/autoSync');
     const { db } = await import('@/db/database');
     setupAutoSync();
@@ -55,6 +56,10 @@ describe('setupAutoSync', () => {
     expect(db.contextMenus.hook).toHaveBeenCalledWith('creating', expect.any(Function));
     expect(db.contextMenus.hook).toHaveBeenCalledWith('updating', expect.any(Function));
     expect(db.contextMenus.hook).toHaveBeenCalledWith('deleting', expect.any(Function));
+
+    expect(db.promptMemory.hook).toHaveBeenCalledWith('creating', expect.any(Function));
+    expect(db.promptMemory.hook).toHaveBeenCalledWith('updating', expect.any(Function));
+    expect(db.promptMemory.hook).toHaveBeenCalledWith('deleting', expect.any(Function));
   });
 
   test('only installs hooks once', async () => {
@@ -67,6 +72,7 @@ describe('setupAutoSync', () => {
     expect(db.prompts.hook).toHaveBeenCalledTimes(3);
     expect(db.categories.hook).toHaveBeenCalledTimes(3);
     expect(db.contextMenus.hook).toHaveBeenCalledTimes(3);
+    expect(db.promptMemory.hook).toHaveBeenCalledTimes(3);
   });
 
   test('schedules sync when a hook is triggered', async () => {

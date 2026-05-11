@@ -7,11 +7,12 @@ import {
   useState,
   useCallback,
   useRef,
-  useEffect,
+  useId,
   type ReactNode,
 } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { ConfirmContext, type ConfirmOptions } from './ConfirmContext';
+import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 
 interface ConfirmState extends ConfirmOptions {
   resolve: (value: boolean) => void;
@@ -19,8 +20,11 @@ interface ConfirmState extends ConfirmOptions {
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ConfirmState | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const titleId = useId();
+  const messageId = useId();
 
   const confirm = useCallback((opts: ConfirmOptions): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -41,17 +45,12 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     [state],
   );
 
-  // Focus trap + Escape key
-  useEffect(() => {
-    if (!state) return;
-    setTimeout(() => confirmBtnRef.current?.focus(), 0);
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleResponse(false);
-    };
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [state, handleResponse]);
+  useAccessibleModal({
+    isOpen: state !== null,
+    onClose: () => handleResponse(false),
+    containerRef: dialogRef,
+    initialFocusRef: confirmBtnRef,
+  });
 
   return (
     <ConfirmContext.Provider value={{ confirm }}>
@@ -63,11 +62,13 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
           aria-hidden="false"
         >
           <div
+            ref={dialogRef}
             className="modal confirm-modal"
             role="alertdialog"
             aria-modal="true"
-            aria-labelledby="confirm-title"
-            aria-describedby="confirm-message"
+            aria-labelledby={titleId}
+            aria-describedby={messageId}
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal__header">
@@ -77,14 +78,14 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                   className={`confirm-modal__icon confirm-modal__icon--${state.variant ?? 'danger'}`}
                   aria-hidden="true"
                 />
-                <h2 id="confirm-title" className="modal__title">
+                <h2 id={titleId} className="modal__title">
                   {state.title ?? 'Confirmar ação'}
                 </h2>
               </div>
             </div>
 
             <div className="modal__body">
-              <p id="confirm-message" className="confirm-modal__message">
+              <p id={messageId} className="confirm-modal__message">
                 {state.message}
               </p>
             </div>

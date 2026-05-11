@@ -11,6 +11,7 @@ import ImportMenusModal from '@/components/ImportMenusModal';
 import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
 import SEO from '@/components/SEO';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { SkeletonEditor } from '@/components/SkeletonLoader';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
 
@@ -38,9 +39,11 @@ export default function MenuManagerPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const confirm = useConfirm();
-  const menus = useLiveQuery(async () => {
+  const menuResults = useLiveQuery(async () => {
     return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
-  }) ?? [];
+  });
+  const menus = menuResults ?? [];
+  const isLoading = menuResults === undefined;
 
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -318,6 +321,10 @@ export default function MenuManagerPage() {
           ]}
         />
 
+        {isLoading ? (
+          <SkeletonEditor />
+        ) : (
+          <>
         {(isCreating || isEditing !== null) && (
           <MenuForm
             form={form}
@@ -357,6 +364,8 @@ export default function MenuManagerPage() {
               />
             ))}
           </div>
+        )}
+          </>
         )}
       </div>
 

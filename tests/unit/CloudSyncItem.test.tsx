@@ -32,6 +32,23 @@ jest.mock('@/services/assetManager', () => ({
   checkForUpdates: jest.fn(),
 }));
 
+jest.mock('@/hooks/useConfirm', () => ({
+  useConfirm: () => jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock('@/hooks/useCloudSync', () => ({
+  useCloudSync: () => ({
+    session: null,
+    hasUpdates: false,
+    isOffline: false,
+    realtimeActive: false,
+    sessionNotice: null,
+    refreshUpdates: jest.fn(),
+    clearUpdates: jest.fn(),
+    registerManualLogout: jest.fn(),
+  }),
+}));
+
 describe('CloudSyncItem', () => {
   beforeEach(() => {
     showToast.mockClear();

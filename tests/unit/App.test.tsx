@@ -1,8 +1,6 @@
-import { act, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import App from '@/App';
-import { supabase } from '@/lib/supabase';
-import { setupRealtimeListeners, cleanupRealtimeListeners } from '@/services/realtimeService';
-import { syncToCloud } from '@/services/syncService';
+import { setupAutoSync } from '@/services/autoSync';
 
 jest.mock('@/context/ToastContext', () => ({
   ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -11,6 +9,10 @@ jest.mock('@/context/ToastContext', () => ({
 
 jest.mock('@/context/ConfirmProvider', () => ({
   ConfirmProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+jest.mock('@/context/CloudSyncContext', () => ({
+  CloudSyncProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('@/components/ErrorBoundary', () => ({
@@ -37,30 +39,12 @@ jest.mock('@/services/autoSync', () => ({
   setupAutoSync: jest.fn(),
 }));
 
-jest.mock('@/services/realtimeService', () => ({
-  setupRealtimeListeners: jest.fn().mockResolvedValue(undefined),
-  cleanupRealtimeListeners: jest.fn(),
-}));
-
-jest.mock('@/services/syncService', () => ({
-  syncToCloud: jest.fn().mockResolvedValue(true),
-}));
-
 jest.mock('@/utils/backupManager', () => ({
   saveLocalBackup: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('@/db/database', () => ({
   seedDatabase: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock('@/lib/supabase', () => ({
-  isSupabaseConfigured: true,
-  supabase: {
-    auth: {
-      onAuthStateChange: jest.fn(),
-    },
-  },
 }));
 
 jest.mock('@/pages/HomePage', () => ({ __esModule: true, default: () => <div>Home</div> }));
@@ -72,13 +56,10 @@ jest.mock('@/pages/AboutPage', () => ({ __esModule: true, default: () => <div>Ab
 jest.mock('@/pages/ContactPage', () => ({ __esModule: true, default: () => <div>Contact</div> }));
 jest.mock('@/pages/PrivacyPage', () => ({ __esModule: true, default: () => <div>Privacy</div> }));
 
-describe('App auth-state listener', () => {
+describe('App bootstrap', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    (supabase.auth.onAuthStateChange as jest.Mock).mockReturnValue({
-      data: { subscription: { unsubscribe: jest.fn() } },
-    });
   });
 
   afterEach(() => {
@@ -86,39 +67,9 @@ describe('App auth-state listener', () => {
     jest.useRealTimers();
   });
 
-  test('reinstalls realtime listeners and syncs again when auth changes to signed in', async () => {
+  test('initializes local app services on mount', async () => {
     render(<App />);
 
-    await waitFor(() => expect(supabase.auth.onAuthStateChange).toHaveBeenCalledTimes(1));
-    await waitFor(() => expect(setupRealtimeListeners).toHaveBeenCalledTimes(1));
-
-    const authCallback = (supabase.auth.onAuthStateChange as jest.Mock).mock.calls[0][0] as (
-      event: string,
-      session: { user: { id: string } } | null,
-    ) => Promise<void> | void;
-
-    await act(async () => {
-      await authCallback('SIGNED_IN', { user: { id: 'user-123' } });
-    });
-
-    await waitFor(() => expect(setupRealtimeListeners).toHaveBeenCalledTimes(2));
-    expect(syncToCloud).toHaveBeenCalledTimes(1);
-  });
-
-  test('cleans up realtime listeners when auth changes to signed out', async () => {
-    render(<App />);
-
-    await waitFor(() => expect(supabase.auth.onAuthStateChange).toHaveBeenCalledTimes(1));
-
-    const authCallback = (supabase.auth.onAuthStateChange as jest.Mock).mock.calls[0][0] as (
-      event: string,
-      session: { user: { id: string } } | null,
-    ) => Promise<void> | void;
-
-    await act(async () => {
-      await authCallback('SIGNED_OUT', null);
-    });
-
-    expect(cleanupRealtimeListeners).toHaveBeenCalled();
+    await waitFor(() => expect(setupAutoSync).toHaveBeenCalledTimes(1));
   });
 });

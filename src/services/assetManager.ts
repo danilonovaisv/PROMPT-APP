@@ -46,10 +46,10 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
   try {
     // Buscar dados remotos
-    const [catRes, promptRes] = await Promise.all([
+    const [catRes, promptRes, menuRes] = await Promise.all([
       supabase.from("categories").select("*").eq("user_id", session.user.id),
       supabase.from("prompts").select("*").eq("user_id", session.user.id),
-      // supabase.from('context_menus').select('*').eq('user_id', session.user.id),
+      supabase.from("context_menus").select("*").eq("user_id", session.user.id),
     ]);
 
     // Verificar categorias
@@ -82,7 +82,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       }
     }
 
-    // Verificar prompts (similar para menus)
+    // Verificar prompts
     const remotePrompts = promptRes.data || [];
     const remotePromptIds = remotePrompts.map((p: RemotePrompt) => p.id);
     const localPrompts = remotePromptIds.length > 0
@@ -102,6 +102,33 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
         if (remoteUpdated > localUpdated) {
           conflicts.push({
             type: "prompt",
+            id: local.id!,
+            remoteId: remote.id,
+            action: "updated",
+            timestamp: remoteUpdated,
+            data: remote,
+          });
+        }
+      }
+    }
+
+    const remoteMenus = menuRes.data || [];
+    const remoteMenuIds = remoteMenus.map((m: RemoteContextMenu) => m.id);
+    const localMenus = remoteMenuIds.length > 0
+      ? await db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray()
+      : [];
+
+    const localMenusMap = new Map(localMenus.filter((menu) => menu.remoteId != null).map((menu) => [menu.remoteId!, menu]));
+
+    for (const remote of remoteMenus) {
+      const local = localMenusMap.get(remote.id);
+      if (local) {
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const localUpdated = new Date(local.updatedAt || local.createdAt);
+
+        if (remoteUpdated > localUpdated) {
+          conflicts.push({
+            type: "menu",
             id: local.id!,
             remoteId: remote.id,
             action: "updated",

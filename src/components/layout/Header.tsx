@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useEffectEvent } from 'react';
 
 interface HeaderProps {
     title: string;
@@ -8,20 +8,16 @@ interface HeaderProps {
 
 export function Header({ title, actions, isSticky = true }: HeaderProps) {
     const [scrolled, setScrolled] = useState(false);
+    const handleScroll = useEffectEvent(() => {
+        setScrolled(window.scrollY > 10);
+    });
 
     useEffect(() => {
         if (!isSticky) return;
 
-        const handleScroll = () => {
-            const isScrolled = window.scrollY > 10;
-            if (isScrolled !== scrolled) {
-                setScrolled(isScrolled);
-            }
-        };
-
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [scrolled, isSticky]);
+    }, [isSticky]);
 
     const headerClass = `app-header ${isSticky ? 'app-header--sticky' : ''} ${
         scrolled ? 'app-header--scrolled' : ''

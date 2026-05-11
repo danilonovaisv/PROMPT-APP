@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, Copy, Download, Eye, Save, PanelRightClose, PanelRightOpen, X, Settings2 } from 'lucide-react';
 
 import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
-import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { useDebounce } from '@/hooks/useDebounce';
 import type { ContextMenu, Prompt } from '@/models/types';
 import {
@@ -225,7 +224,6 @@ export default function EditorPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const previewModalRef = useRef<HTMLDivElement>(null);
   const draftAppliedRef = useRef(false);
   const isNew = id === 'novo';
 
@@ -392,13 +390,8 @@ export default function EditorPage() {
           // Mark draft as applied BEFORE calling setForm so the menu-sync
           // effect that may fire afterwards knows to preserve selectedMenuIds.
           draftAppliedRef.current = true;
-          // startTransition evita o warning "setState within an effect":
-          // o React adia esta atualização para depois do commit em curso,
-          // quebrando a cadeia síncrona de renderizações.
-          import('react').then(({ startTransition }) => {
-            startTransition(() => {
-              setForm((current) => ({ ...current, ...draftData }));
-            });
+          startTransition(() => {
+            setForm((current) => ({ ...current, ...draftData }));
           });
           showToast('Rascunho recuperado automaticamente!', 'info');
         }
@@ -547,8 +540,6 @@ export default function EditorPage() {
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
     }
   }, [availableContextMenus, debouncedForm, fixedMemory]);
-
-  useAccessibleModal({ isOpen: showPreview, onClose: () => setShowPreview(false), containerRef: previewModalRef });
 
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
     setForm((current) => {

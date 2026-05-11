@@ -10,6 +10,7 @@ import SEO from '@/components/SEO';
 import CategoryCard from '@/components/CategoryCard';
 import { useMemo, useCallback } from 'react';
 import { Header } from '@/components/layout/Header';
+import { SkeletonCategoryGrid } from '@/components/SkeletonLoader';
 
 export default function HomePage() {
     const navigate = useNavigate();
@@ -19,7 +20,7 @@ export default function HomePage() {
     // Instead of multiple sequential DB calls per category (O(N)), we perform a single
     // cursor-based pass (O(1) database passes) to calculate both total and per-category
     // counts, preventing memory bottlenecks.
-    const { categories, countsMap, totalPrompts } = useLiveQuery(async () => {
+    const homeData = useLiveQuery(async () => {
         const allCategories = await db.categories.filter(c => !c.isDeleted).toArray();
         const map: Record<number, number> = {};
         allCategories.forEach(cat => { if (cat.id) map[cat.id] = 0; });
@@ -35,7 +36,10 @@ export default function HomePage() {
             });
 
         return { categories: allCategories, countsMap: map, totalPrompts: total };
-    }, []) ?? { categories: [], countsMap: {}, totalPrompts: 0 };
+    }, []);
+
+    const { categories, countsMap, totalPrompts } = homeData ?? { categories: [], countsMap: {}, totalPrompts: 0 };
+    const isLoading = homeData === undefined;
 
     const stats = useMemo(() => [
         { label: 'Categorias', value: categories.length, color: '#0048ff' },
@@ -105,7 +109,9 @@ export default function HomePage() {
                     </button>
                 </div>
 
-                {categories.length === 0 ? (
+                {isLoading ? (
+                    <SkeletonCategoryGrid />
+                ) : categories.length === 0 ? (
                     <div className="empty-state">
                         <div className="empty-state__icon">📂</div>
                         <h3 className="empty-state__title">Nenhuma categoria</h3>
