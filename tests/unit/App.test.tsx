@@ -18,7 +18,9 @@ jest.mock('@/components/ErrorBoundary', () => ({
 }));
 
 jest.mock('@/components/SkeletonLoader', () => ({
-  SkeletonEditor: () => <div>Loading</div>,
+  SkeletonEditor: () => <div>Loading Editor</div>,
+  SkeletonCategoryGrid: () => <div>Loading Category Grid</div>,
+  SkeletonPromptList: () => <div>Loading Prompt List</div>,
 }));
 
 jest.mock('@/components/Layout', () => ({
