@@ -124,6 +124,9 @@ describe("formatPromptAsMarkdown", () => {
 
     const compiledPayload: Partial<CompiledPromptPayload> = {
       compiled_context: {
+        fixed_variables: {
+          Infrastructure: 'Netlify Edge',
+        },
         menu_interpretation: {},
         free_inputs: {},
       },
@@ -138,6 +141,7 @@ describe("formatPromptAsMarkdown", () => {
     expect(result).toContain("## 1. CONTEXT & TASK");
     expect(result).toContain("Summarize the text");
     expect(result).toContain("## 2. DYNAMIC PARAMETERS");
+    expect(result).toContain("- **Infrastructure**: Netlify Edge (from project context)");
     expect(result).toContain("## 3. RULES & CONSTRAINTS");
   });
 
@@ -186,6 +190,9 @@ describe("formatPromptAsMarkdown", () => {
             selected_sub_options: [],
           },
         },
+        fixed_variables: {
+          Runtime: 'Supabase Realtime',
+        },
         free_inputs: {
           Username: "Jules",
         },
@@ -201,6 +208,7 @@ describe("formatPromptAsMarkdown", () => {
     expect(result).toContain("Project Alpha");
     expect(result).toContain("Write a function");
     expect(result).toContain("- **Language**: TypeScript (Strict)");
+    expect(result).toContain("- **Runtime**: Supabase Realtime (from project context)");
     expect(result).toContain("- **Username**: Jules");
     expect(result).toContain("- Use TypeScript");
     expect(result).toContain("- No classes");
@@ -264,6 +272,7 @@ describe("formatPromptAsMarkdown", () => {
     );
 
     expect(result).toContain("- **Language**: TypeScript (Strict)");
+    expect(result).toContain("- **Runtime**: Supabase Realtime (from project context)");
   });
 
   it('should include few-shot examples if present', () => {
@@ -291,6 +300,9 @@ describe("formatPromptAsMarkdown", () => {
 
     const compiledPayload: Partial<CompiledPromptPayload> = {
       compiled_context: {
+        fixed_variables: {
+          Infrastructure: 'Netlify Edge',
+        },
         menu_interpretation: {},
         free_inputs: {},
       },
