@@ -26,6 +26,7 @@ describe("toExportFormat", () => {
       few_shot_examples: [],
     },
     menu_definitions: [],
+    menu_ids: [],
     output_contract: {
       format: 'markdown',
       language: 'pt-BR',

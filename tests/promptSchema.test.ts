@@ -351,6 +351,7 @@ describe("compilePromptPayload", () => {
           user_scene_description: "Produto em close sobre mesa de café",
           scene_type: "lifestyle",
         },
+        fixed_variables: {},
       },
       prompt_definition: {
         system_role: "Você é um diretor criativo",

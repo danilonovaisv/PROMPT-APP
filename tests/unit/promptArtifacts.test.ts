@@ -156,4 +156,34 @@ describe("renderFinalPromptText", () => {
     expect(rendered).toContain("Formato: markdown");
     expect(rendered).toContain("Campos obrigatórios: titulo, corpo");
   });
+
+  test("injeta variáveis de memória fixa e inputs livres no texto final", () => {
+    const template = createEmptyPromptPayload("Template com Variáveis");
+    template.prompt_definition.system_role = "Você é um especialista em {{TOPICO}}.";
+    template.prompt_definition.task = "Ajudar com {{DEMANDA}}.";
+
+    const rendered = renderFinalPromptText(template, {
+      template_id: template.meta.template_id,
+      meta: {
+        template_name: template.meta.template_name,
+        template_type: template.meta.template_type,
+        schema_version: template.meta.schema_version,
+        language: template.meta.language,
+      },
+      compiled_context: {
+        menu_interpretation: {},
+        free_inputs: {
+          DEMANDA: "escrita criativa",
+        },
+        fixed_variables: {
+          TOPICO: "literatura",
+        },
+      },
+      prompt_definition: template.prompt_definition,
+      output_contract: template.output_contract,
+    });
+
+    expect(rendered).toContain("Você é um especialista em literatura.");
+    expect(rendered).toContain("Ajudar com escrita criativa.");
+  });
 });

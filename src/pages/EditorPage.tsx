@@ -7,7 +7,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { useDebounce } from '@/hooks/useDebounce';
-import type { Category, ContextMenu, Prompt } from '@/models/types';
+import type { ContextMenu, Prompt } from '@/models/types';
 import {
   CompiledPromptPayload,
   PromptOutputContract,
@@ -229,8 +229,15 @@ export default function EditorPage() {
   const draftAppliedRef = useRef(false);
   const isNew = id === 'novo';
 
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const categoriesLive = useLiveQuery(
+    async () => {
+      const list = await db.categories.filter((c) => !c.isDeleted).toArray();
+      return list.sort((a, b) => a.name.localeCompare(b.name));
+    },
+    []
+  );
+  const categories = useMemo(() => categoriesLive ?? [], [categoriesLive]);
   const [showPreview, setShowPreview] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
     typeof window !== 'undefined' ? !window.matchMedia('(max-width: 768px)').matches : true
@@ -255,12 +262,6 @@ export default function EditorPage() {
     [contextMenus]
   );
 
-  useEffect(() => {
-    (async () => {
-      const categoryList = await db.categories.filter((c) => !c.isDeleted).toArray();
-      setCategories(categoryList.sort((a, b) => a.name.localeCompare(b.name)));
-    })();
-  }, []);
 
   useEffect(() => {
     if (isFocusMode) {
@@ -327,13 +328,14 @@ export default function EditorPage() {
   }, [debouncedFixedMemory, loaded, form.template.meta.template_id, showToast]);
 
   useEffect(() => {
-    if (!loaded && isNew && categories.length > 0) {
-      const categoryFromQuery = Number(searchParams.get('categoria') || categories[0]?.id || 0);
+    if (!loaded && isNew && categoriesLive !== undefined) {
+      const firstCatId = categories.length > 0 ? categories[0]?.id : 0;
+      const categoryFromQuery = Number(searchParams.get('categoria') || firstCatId || 0);
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm(buildInitialFormState(categoryFromQuery));
       setLoaded(true);
     }
-  }, [categories, isNew, loaded, searchParams]);
+  }, [categories, categoriesLive, isNew, loaded, searchParams]);
 
   useEffect(() => {
     if (isNew || loaded) return;
@@ -788,7 +790,7 @@ export default function EditorPage() {
                 className="btn btn--ghost btn--icon" 
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
                 aria-label="Playground"
-                aria-expanded={isSidebarOpen}
+                aria-expanded={isSidebarOpen ? "true" : "false"}
                 aria-controls="editor-playground-panel"
                 data-tooltip="Playground"
              >
@@ -844,7 +846,7 @@ export default function EditorPage() {
           id="editor-playground-panel"
           className={`editor-floating-sidebar ${isSidebarOpen ? 'editor-floating-sidebar--open' : ''}`}
           aria-label="Painel lateral do playground"
-          aria-hidden={!isSidebarOpen}
+          aria-hidden={!isSidebarOpen ? "true" : "false"}
         >
           <div className="editor-floating-sidebar__header">
             <h3 className="form-section__title editor-floating-sidebar__title">
@@ -882,7 +884,7 @@ export default function EditorPage() {
           className={`editor-floating-toggle mobile-hide ${isSidebarOpen ? 'editor-floating-toggle--active' : ''}`}
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           aria-label="Alternar Playground"
-          aria-expanded={isSidebarOpen}
+          aria-expanded={isSidebarOpen ? "true" : "false"}
           aria-controls="editor-playground-panel"
         >
           {isSidebarOpen ? <PanelRightClose size={24} /> : <PanelRightOpen size={24} />}

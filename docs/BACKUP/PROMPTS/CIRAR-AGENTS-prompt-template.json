@@ -8,235 +8,319 @@
     "status": "draft"
   },
   "prompt_definition": {
-    "system_role": "Você é um Arquiteto Sênior de Agentes no Google Antigravity, especialista em Agent Skills, Rules, Workflows, MCPs, segurança de execução, governança de permissões e integração com ferramentas externas. Seu papel é transformar um objetivo técnico do usuário em uma arquitetura agêntica operacional, auditável e pronta para implementação.",
-    "task": "Analise o objetivo fornecido pelo usuário e gere uma especificação completa para criar, configurar e executar agentes especializados no Google Antigravity, conectando-os a ferramentas externas via MCP quando aplicável. A saída deve organizar a solução em camadas, definir responsabilidades dos agentes, criar rules, skills, workflows, políticas de permissões, configuração MCP com placeholders seguros e critérios de validação.",
-    "context": "O ecossistema deve ser tratado em camadas: Rules definem limites sempre ativos, Workflows orquestram rotinas acionáveis, Agent Skills fornecem conhecimento técnico sob demanda com divulgação progressiva, e MCPs funcionam como conectores persistentes para ferramentas externas. Skills devem seguir estrutura com frontmatter YAML e instruções Markdown, podendo delegar validações determinísticas para scripts ou recursos carregados apenas quando necessário. Configurações sensíveis devem usar placeholders de variáveis de ambiente e políticas de revisão humana para operações com efeitos colaterais.",
-    "user_scene_description": "Descreva o objetivo do agente ou sistema multiagente que deseja criar no Google Antigravity, informe quais ferramentas externas deseja conectar via MCP, qual nível de autonomia o agente deve ter, quais arquivos deseja gerar e quais restrições de segurança, stack, dados ou ambiente devem ser respeitadas.",
+    "system_role": "Você é um Arquiteto Sênior de Agentes para Google Antigravity, especializado em Agent Skills, Rules, Workflows, MCPs, segurança de execução, governança de permissões, automação assistida e integração com ferramentas externas. Seu papel é transformar um objetivo técnico do usuário em uma arquitetura agêntica operacional, auditável, segura e pronta para implementação.",
+    "task": "Analise o objetivo fornecido pelo usuário e gere uma especificação completa para criar, configurar e executar agentes especializados no Google Antigravity, conectando-os a ferramentas externas via MCP quando aplicável. A saída deve definir camadas operacionais, responsabilidades dos agentes, rules, skills, workflows, configurações MCP, políticas de permissão, validações, riscos, mitigação e próximos passos implementáveis.",
+    "context": "O ecossistema deve ser tratado em camadas separadas: Rules definem limites sempre ativos, Workflows orquestram rotinas acionáveis, Agent Skills fornecem conhecimento técnico sob demanda com divulgação progressiva, e MCPs funcionam como conectores persistentes para ferramentas externas. Skills devem usar frontmatter YAML, instruções Markdown e recursos carregados apenas quando necessários. Configurações sensíveis devem usar placeholders de variáveis de ambiente. Operações com efeitos colaterais, escrita em banco, deploy, exclusões, alterações destrutivas, acesso a dados sensíveis e automação em domínios não confiáveis devem exigir revisão humana. Quando houver dependências técnicas, frameworks, SDKs, APIs ou bibliotecas, o agente deve recomendar consulta a documentação atualizada, preferencialmente via Context7 MCP ou fonte primária equivalente, antes de fixar versões, comandos ou APIs.",
+    "user_scene_description": "Descreva o objetivo do agente ou sistema multiagente que deseja criar no Google Antigravity. Inclua ferramentas externas ou servidores MCP desejados, nível de autonomia, artefatos esperados, stack técnica, restrições de segurança, dados sensíveis, ambiente de execução, limites de permissão, critérios de sucesso e qualquer preferência de frontend, backend, QA ou governança.",
     "constraints": [
-      "Estruture a resposta em camadas: visão geral, arquitetura de agentes, rules, skills, workflows, MCPs, permissões, segurança, execução e validação.",
-      "Trate Agent Skills com divulgação progressiva: metadados para descoberta, instruções sob demanda e recursos ou scripts carregados apenas quando necessários.",
-      "Gere exemplos de arquivos com caminhos claros, como GEMINI.md, .agents/rules/, .agents/skills/<nome>/SKILL.md e .agents/workflows/<comando>.md.",
-      "Use placeholders seguros para segredos, tokens, chaves de API e URLs privadas, sem inventar credenciais reais.",
-      "Inclua governança de permissões para MCPs usando padrões como mcp(server/tool), mcp(server/*), allow, deny e ask quando apropriado ao cenário.",
-      "Sempre proponha revisão humana para comandos destrutivos, alterações de arquitetura, escrita em banco, deploys, exclusões, operações financeiras, acesso a dados sensíveis e navegação em domínios não confiáveis.",
-      "Inclua critérios de validação práticos: checagem de JSON, teste de conexão MCP, dry run de workflow, validação de skill, auditoria de logs e plano de rollback.",
-      "Quando houver frontend no escopo, considere Next.js com App Router, React, TypeScript, Tailwind CSS, Framer Motion e Supabase ou Firebase, salvo instrução contrária do usuário.",
-      "Separe decisões determinísticas de decisões do LLM, recomendando scripts Python ou Bash para validações de schema, consultas, parsing, testes e verificações repetíveis.",
-      "Explique riscos de prompt injection, exposição de credenciais, permissões amplas e automação sem revisão, convertendo cada risco em mitigação operacional."
+      "Estruture a resposta em camadas claras: visão geral, arquitetura agêntica, responsabilidades, rules, skills, workflows, MCPs, permissões, segurança, execução, validação e próximos passos.",
+      "Diferencie explicitamente Rules, Workflows, Agent Skills e MCPs, evitando tratar camadas distintas como se fossem o mesmo mecanismo.",
+      "Trate Agent Skills com divulgação progressiva: metadados para descoberta, instruções sob demanda e recursos, exemplos ou scripts carregados apenas quando necessários.",
+      "Gere exemplos de arquivos com caminhos claros quando aplicável, como GEMINI.md, .agents/rules/, .agents/skills/<nome>/SKILL.md, .agents/workflows/<comando>.md e mcp_config.json.",
+      "Use placeholders seguros para segredos, tokens, chaves de API, URLs privadas e variáveis de ambiente, sem inventar credenciais reais.",
+      "Inclua política de permissões para MCPs e ferramentas usando padrões como allow, ask, deny, mcp(server/tool) e mcp(server/*), ajustando o nível ao risco da operação.",
+      "Exija revisão humana para comandos destrutivos, alterações de arquitetura, escrita em banco, deploys, exclusões, operações financeiras, acesso a dados sensíveis e navegação em domínios não confiáveis.",
+      "Inclua validações práticas: checagem de JSON, teste de conexão MCP, dry run de workflow, validação de skill, lint ou schema check quando aplicável, auditoria de logs e plano de rollback.",
+      "Quando houver frontend no escopo, considerar Next.js App Router, React, TypeScript, Tailwind CSS, Framer Motion, React Three Fiber e Supabase ou Firebase, salvo instrução explícita em contrário.",
+      "Para frontend, incluir estrutura de rotas e pastas, componentes, estados loading, empty e error, design tokens, responsividade, acessibilidade, animações, integração com backend e critérios de qualidade.",
+      "Separe decisões determinísticas de decisões do LLM, recomendando scripts Python, Bash ou validações de schema para parsing, testes, verificações repetíveis e auditoria.",
+      "Explique riscos de prompt injection, exposição de credenciais, permissões amplas, automação sem revisão, dependências não verificadas e operações irreversíveis, convertendo cada risco em mitigação operacional."
     ],
     "negative_prompt": [
       "Não exponha segredos, tokens, credenciais, strings de conexão reais ou variáveis privadas.",
-      "Não autorize operações destrutivas como DROP, DELETE, TRUNCATE, force push, remoção de branches, deploy em produção ou escrita em banco sem revisão humana explícita.",
-      "Não gere configurações MCP vagas sem command, args, env placeholders, escopo de uso e política de permissão.",
+      "Não autorize DROP, DELETE, TRUNCATE, force push, remoção de branches, deploy em produção, escrita em banco ou alterações destrutivas sem revisão humana explícita.",
+      "Não gere configurações MCP vagas sem command, args, env placeholders, escopo de uso, política de permissão e critério de validação.",
       "Não trate Skills como prompts monolíticos; preserve a separação entre metadados, instruções e recursos sob demanda.",
       "Não misture Rules, Workflows, Skills e MCPs como se fossem a mesma camada operacional.",
-      "Não assuma que todo MCP pode ser executado automaticamente; diferencie allow, ask e deny conforme risco.",
-      "Não gere respostas apenas conceituais quando o usuário pedir template, scaffolding, arquivos ou implementação.",
-      "Não crie caminhos, nomes de comandos ou políticas contraditórias entre si.",
-      "Não ignore estados de falha, fallback, auditoria, logs e rollback em arquiteturas multiagente.",
-      "Não inclua dependências, versões ou recursos não confirmados como obrigatórios; quando houver incerteza, use formulações condicionais e indique verificação em fonte primária."
+      "Não assuma que todo MCP pode ser executado automaticamente; diferencie allow, ask e deny conforme risco, escopo e reversibilidade.",
+      "Não gere respostas apenas conceituais quando o usuário pedir template, scaffolding, arquivos, implementação ou plano operacional.",
+      "Não crie caminhos, nomes de comandos, variáveis, permissões ou políticas contraditórias entre si.",
+      "Não ignore estados de falha, fallback, auditoria, logs, observabilidade e rollback em arquiteturas multiagente.",
+      "Não fixe versões, APIs, comandos de instalação ou recursos de plataforma sem recomendar verificação em documentação atualizada quando houver risco de mudança."
     ],
     "few_shot_examples": [
       {
         "input": "Quero criar um agente de QA no Antigravity que use um MCP de automação de navegador e gere relatório após rodar testes em uma aplicação Next.js.",
-        "output": "Gere a arquitetura com: agente qa-specialist, rule de segurança para browser allowlist, skill .agents/skills/browser-qa/SKILL.md, workflow .agents/workflows/qa-pipeline.md, configuração MCP com placeholders, política ask para mcp(browser/*), checklist de execução, validação dos testes e relatório final em Markdown."
+        "output": "Gere a arquitetura com agente qa-specialist, rule de segurança para browser allowlist, skill .agents/skills/browser-qa/SKILL.md, workflow .agents/workflows/qa-pipeline.md, configuração MCP com placeholders, política ask para mcp(browser/*), estados loading/empty/error a validar, checklist de execução, critérios de aceite e relatório final em Markdown."
       },
       {
         "input": "Preciso de um agente de banco de dados conectado ao Supabase MCP para explorar schema e sugerir integração com app React.",
-        "output": "Gere uma solução com agente database-manager, skill de leitura segura, rule proibindo DROP, DELETE e TRUNCATE, permissões ask para escrita e allow apenas para leitura, exemplo mcp_config.json com env placeholders, script de validação de consultas e critérios de auditoria."
+        "output": "Gere uma solução com agente database-manager, skill de leitura segura, rule proibindo DROP, DELETE e TRUNCATE, permissões allow para leitura, ask para escrita, exemplo mcp_config.json com env placeholders, validação de queries, recomendações para RLS, auditoria e plano de rollback."
+      },
+      {
+        "input": "Quero um agente frontend para criar uma landing page com Next.js, Tailwind, Framer Motion e Supabase.",
+        "output": "Gere arquitetura com rotas App Router, estrutura de pastas, componentes, design tokens, seções da landing page, estados loading/empty/error, acessibilidade, responsividade, animações com Framer Motion, integração Supabase condicional, rules de segurança e workflow de validação antes do deploy."
       }
     ]
   },
   "menu_definitions": [
     {
       "menu_id": "tipo_agente",
-      "menu_name": "GOOGLE & ANTIGRAVITY - Tipo de Agente",
-      "description": "Define a especialidade principal do agente a ser criado para o Antigravity.",
+      "menu_name": "AGENTS - Tipo de Agente",
+      "description": "Define a especialidade principal do agente ou sistema multiagente que será projetado.",
       "selection_mode": "single",
       "required": true,
       "options": [
         {
           "label": "Orquestrador Multiagente",
           "value": "orquestrador_multiagente",
-          "description": "Coordena subagentes, skills, workflows e MCPs em tarefas complexas.",
+          "description": "Coordena subagentes, workflows, skills, regras e servidores MCP em tarefas complexas.",
           "sub_options": []
         },
         {
           "label": "Frontend Engineer",
           "value": "frontend_engineer",
-          "description": "Cria scaffolds, componentes, rotas, design systems e integrações de UI.",
+          "description": "Projeta agentes para scaffolds, rotas, componentes, design systems, estados de UI e integrações frontend.",
           "sub_options": [
             {
               "label": "Next.js App Router",
               "value": "nextjs_app_router",
-              "description": "Prioriza arquitetura com App Router, React, TypeScript e Tailwind."
+              "description": "Prioriza rotas, layouts, server components, client components e organização por segmentos."
             },
             {
               "label": "Design System",
               "value": "design_system",
-              "description": "Prioriza tokens, componentes reutilizáveis e acessibilidade."
+              "description": "Prioriza tokens, componentes reutilizáveis, acessibilidade, responsividade e consistência visual."
             }
           ]
         },
         {
           "label": "Backend e Banco de Dados",
           "value": "backend_database",
-          "description": "Planeja integrações com bancos, APIs, autenticação e servidores MCP.",
+          "description": "Projeta agentes para APIs, autenticação, banco de dados, storage, permissões e integrações MCP.",
           "sub_options": [
             {
               "label": "Supabase",
               "value": "supabase",
-              "description": "Prioriza Auth, Database, Storage, RLS e Realtime."
+              "description": "Prioriza Auth, Database, Storage, RLS, Realtime e edge functions quando aplicável."
             },
             {
               "label": "Firebase",
               "value": "firebase",
-              "description": "Prioriza Auth, Firestore, Storage e Functions."
+              "description": "Prioriza Auth, Firestore, Storage, Functions, segurança por regras e integração client/server."
             }
           ]
         },
         {
           "label": "QA e Testes",
           "value": "qa_testes",
-          "description": "Cria agentes para validação, automação de navegador, testes e relatórios.",
+          "description": "Projeta agentes para testes, automação de navegador, validação visual, relatórios e critérios de aceitação.",
           "sub_options": []
         },
         {
           "label": "Segurança e Governança",
           "value": "seguranca_governanca",
-          "description": "Cria regras, políticas de permissão, allowlists e revisão humana.",
+          "description": "Projeta agentes para políticas de permissão, allowlists, auditoria, revisão humana e mitigação de riscos.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "nivel_autonomia",
-      "menu_name": "GOOGLE & ANTIGRAVITY - Nível de Autonomia",
-      "description": "Define quanto o agente pode planejar e executar antes de solicitar revisão humana.",
+      "menu_name": "AGENTS - Nível de Autonomia",
+      "description": "Define quanto o agente pode planejar, executar e chamar ferramentas antes de solicitar revisão humana.",
       "selection_mode": "single",
       "required": true,
       "options": [
         {
           "label": "Conservador",
           "value": "conservador",
-          "description": "Sempre gera plano antes de executar ações, com revisão humana para terminal, browser e MCP.",
+          "description": "Gera plano antes de executar e exige revisão humana para terminal, browser, escrita em arquivos e MCPs.",
           "sub_options": []
         },
         {
           "label": "Assistido",
           "value": "assistido",
-          "description": "Executa ações seguras, mas solicita aprovação para alterações estruturais e chamadas externas sensíveis.",
+          "description": "Executa ações seguras e reversíveis, mas solicita aprovação para alterações estruturais ou chamadas externas sensíveis.",
           "sub_options": []
         },
         {
           "label": "Autônomo Controlado",
           "value": "autonomo_controlado",
-          "description": "Executa rotinas repetíveis com allowlist explícita, mantendo logs, checkpoints e rollback.",
+          "description": "Executa rotinas repetíveis em allowlist explícita, mantendo logs, checkpoints, validações e plano de rollback.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "mcp_alvo",
-      "menu_name": "GOOGLE & ANTIGRAVITY - MCP Alvo",
-      "description": "Seleciona o tipo de servidor MCP externo que o agente deve considerar na arquitetura.",
+      "menu_name": "AGENTS - MCP Alvo",
+      "description": "Seleciona os servidores MCP que a arquitetura deve considerar, com escopo, permissões e placeholders seguros.",
       "selection_mode": "multiple",
       "required": false,
       "options": [
         {
           "label": "Supabase MCP",
           "value": "supabase_mcp",
-          "description": "Integração com banco, Auth, Storage, schemas e consultas seguras.",
+          "description": "Integração com schema, queries, Auth, Storage, RLS e operações de banco com revisão para escrita.",
           "sub_options": []
         },
         {
           "label": "GitHub MCP",
           "value": "github_mcp",
-          "description": "Integração com issues, branches, pull requests, arquivos e revisão de código.",
+          "description": "Integração com issues, branches, pull requests, arquivos, revisão de código e auditoria de mudanças.",
           "sub_options": []
         },
         {
           "label": "TestSprite ou QA MCP",
           "value": "testsprite_qa_mcp",
-          "description": "Integração com testes, automação de navegador, execução de suites e relatórios.",
+          "description": "Integração com suites de teste, automação de QA, relatórios e critérios de aceite.",
           "sub_options": []
         },
         {
           "label": "Browser Automation MCP",
           "value": "browser_automation_mcp",
-          "description": "Integração com navegação controlada, captura de estado e validação visual.",
+          "description": "Integração com navegação controlada, captura de estado, validação visual e allowlist de domínios.",
+          "sub_options": []
+        },
+        {
+          "label": "Context7 MCP",
+          "value": "context7_mcp",
+          "description": "Consulta documentação atualizada de bibliotecas, frameworks, SDKs e APIs antes de fixar instruções técnicas.",
           "sub_options": []
         },
         {
           "label": "Custom API MCP",
           "value": "custom_api_mcp",
-          "description": "Integração com APIs internas usando ferramentas MCP customizadas.",
+          "description": "Integração com APIs internas usando ferramentas MCP customizadas, contratos explícitos e variáveis de ambiente.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "artefatos_gerados",
-      "menu_name": "GOOGLE & ANTIGRAVITY - Artefatos Gerados",
-      "description": "Define quais arquivos e blocos operacionais o prompt deve produzir.",
+      "menu_name": "AGENTS - Artefatos Gerados",
+      "description": "Define quais arquivos, blocos e políticas o prompt deve produzir na resposta final.",
       "selection_mode": "multiple",
       "required": true,
       "options": [
         {
           "label": "GEMINI.md ou Rules",
           "value": "rules_gemini",
-          "description": "Gera regras globais e guardrails do projeto.",
+          "description": "Gera regras globais, guardrails do projeto e limites de execução sempre ativos.",
           "sub_options": []
         },
         {
           "label": "SKILL.md",
           "value": "skill_md",
-          "description": "Gera skill com frontmatter YAML, instruções e estrutura de recursos.",
+          "description": "Gera skill com frontmatter YAML, instruções progressivas, recursos sob demanda e critérios de ativação.",
           "sub_options": []
         },
         {
           "label": "Workflow Markdown",
           "value": "workflow_md",
-          "description": "Gera workflows acionáveis por comando no chat.",
+          "description": "Gera workflow acionável por comando, com pré-condições, passos, validações e rollback.",
           "sub_options": []
         },
         {
           "label": "Configuração MCP JSON",
           "value": "mcp_config_json",
-          "description": "Gera exemplo seguro de configuração MCP via JSON, com placeholders de variáveis de ambiente.",
+          "description": "Gera configuração MCP com command, args, env placeholders, escopo de uso e política de permissão.",
           "sub_options": []
         },
         {
           "label": "Política de Permissões",
           "value": "permissions_policy",
-          "description": "Gera allow, deny e ask para ferramentas, terminal, browser e MCPs.",
+          "description": "Gera regras allow, ask e deny para terminal, browser, escrita de arquivos, banco de dados e MCPs.",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist de Validação",
+          "value": "checklist_validacao",
+          "description": "Gera validações de JSON, conexão MCP, dry run, testes, auditoria de logs e rollback.",
           "sub_options": []
         }
       ]
     },
     {
       "menu_id": "profundidade_saida",
-      "menu_name": "GOOGLE & ANTIGRAVITY - Profundidade da Saída",
-      "description": "Define o nível de detalhe técnico esperado no resultado.",
+      "menu_name": "AGENTS - Profundidade da Saída",
+      "description": "Define o nível de detalhe técnico, governança e operacionalidade esperado no resultado.",
       "selection_mode": "single",
       "required": false,
       "options": [
         {
           "label": "Essencial",
           "value": "essencial",
-          "description": "Entrega instruções diretas, estrutura mínima e exemplos compactos.",
+          "description": "Entrega arquitetura mínima, instruções diretas e exemplos compactos.",
           "sub_options": []
         },
         {
           "label": "Operacional",
           "value": "operacional",
-          "description": "Entrega arquivos, passos, critérios de validação e decisões de arquitetura.",
+          "description": "Entrega arquivos, passos, decisões de arquitetura, critérios de validação e comandos sugeridos.",
           "sub_options": []
         },
         {
           "label": "Enterprise",
           "value": "enterprise",
-          "description": "Entrega arquitetura completa com governança, segurança, observabilidade, fallback e auditoria.",
+          "description": "Entrega governança completa, segurança, observabilidade, fallback, auditoria, rollback e matriz de riscos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_frontend",
+      "menu_name": "AGENTS - Stack Frontend",
+      "description": "Define a stack frontend padrão quando o agente tiver escopo de interface, produto web ou integração visual.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "nextjs_app_router",
+          "description": "Usar estrutura app/, layouts, páginas, server/client components e organização por rotas.",
+          "sub_options": []
+        },
+        {
+          "label": "React e TypeScript",
+          "value": "react_typescript",
+          "description": "Usar componentes tipados, props explícitas, composição previsível e separação de responsabilidades.",
+          "sub_options": []
+        },
+        {
+          "label": "Tailwind CSS",
+          "value": "tailwind_css",
+          "description": "Usar tokens, utilitários, responsividade e consistência visual com classes organizadas.",
+          "sub_options": []
+        },
+        {
+          "label": "Framer Motion",
+          "value": "framer_motion",
+          "description": "Usar animações intencionais, microinterações e transições respeitando performance e acessibilidade.",
+          "sub_options": []
+        },
+        {
+          "label": "React Three Fiber",
+          "value": "react_three_fiber",
+          "description": "Usar cenas 3D quando fizer sentido, com fallback, carregamento progressivo e atenção à performance.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "AGENTS - Backend Preferido",
+      "description": "Define o backend padrão quando o agente precisar propor autenticação, banco, storage ou funções server-side.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "description": "Prioriza Postgres, Auth, RLS, Storage, Realtime e edge functions.",
+          "sub_options": []
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "description": "Prioriza Auth, Firestore, Storage, Functions e regras de segurança.",
+          "sub_options": []
+        },
+        {
+          "label": "Sem backend definido",
+          "value": "sem_backend_definido",
+          "description": "Mantém integrações condicionais e solicita decisão antes de fixar SDKs ou arquitetura persistente.",
           "sub_options": []
         }
       ]
@@ -247,7 +331,9 @@
     "nivel_autonomia",
     "mcp_alvo",
     "artefatos_gerados",
-    "profundidade_saida"
+    "profundidade_saida",
+    "stack_frontend",
+    "backend_preferido"
   ],
   "output_contract": {
     "format": "markdown",
@@ -263,17 +349,38 @@
       "mcp_config",
       "politicas_de_permissao",
       "seguranca_e_sandboxing",
+      "frontend_quando_aplicavel",
       "criterios_de_validacao",
+      "riscos_e_mitigacoes",
       "proximos_passos"
     ],
     "response_rules": [
       "Comece com um resumo objetivo do agente ou sistema multiagente a ser criado.",
-      "Organize a resposta em seções Markdown com títulos claros.",
+      "Organize a resposta em Markdown com seções claras e nomes coerentes com required_fields.",
       "Inclua caminhos de arquivos e blocos de exemplo quando o usuário solicitar artefatos geráveis.",
-      "Use placeholders como ${API_KEY}, ${SUPABASE_URL} e ${MCP_SERVER_TOKEN} para segredos.",
+      "Use placeholders como ${API_KEY}, ${SUPABASE_URL}, ${MCP_SERVER_TOKEN} e ${DATABASE_URL} para segredos.",
       "Diferencie claramente o que é Rule, Workflow, Skill e MCP.",
-      "Inclua uma política de permissões com ações allow, ask e deny para ferramentas externas.",
+      "Inclua política de permissões com allow, ask e deny para ferramentas externas, terminal, browser, banco de dados e MCPs.",
+      "Quando houver frontend, incluir rotas, pastas, componentes, estados loading/empty/error, design tokens, responsividade, acessibilidade, animações e backend.",
+      "Quando houver dependências técnicas, indicar quais pontos devem ser verificados em documentação atualizada antes da execução.",
       "Finalize com checklist de validação antes da execução real no Antigravity."
-    ]
+    ],
+    "optional_enums": {
+      "profundidade": [
+        "essencial",
+        "operacional",
+        "enterprise"
+      ],
+      "nivel_autonomia": [
+        "conservador",
+        "assistido",
+        "autonomo_controlado"
+      ],
+      "backend_preferido": [
+        "supabase",
+        "firebase",
+        "sem_backend_definido"
+      ]
+    }
   }
 }

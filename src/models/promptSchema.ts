@@ -159,6 +159,9 @@ export const TemplatePayloadSchema = z
     output_contract: PromptOutputContractSchema,
   })
   .strict();
+  
+export type TemplatePayload = z.infer<typeof TemplatePayloadSchema>;
+export type MenuDefinition = z.infer<typeof MenuDefinitionSchema>;
 
 export const SelectedMenuOptionSchema = z
   .object({
@@ -185,6 +188,8 @@ export const UserSelectionSchema = z
     fixed_variables: z.record(z.string(), z.string()).default({}),
   })
   .strict();
+
+export type UserSelection = z.infer<typeof UserSelectionSchema>;
 
 export const CompiledPromptMenuSelectionSchema = z
   .object({
@@ -239,10 +244,7 @@ export const CompiledPromptPayloadSchema = z
   })
   .strict();
 
-export type MenuDefinition = z.infer<typeof MenuDefinitionSchema>;
 export type SelectedMenu = z.infer<typeof SelectedMenuSchema>;
-export type UserSelection = z.infer<typeof UserSelectionSchema>;
-export type TemplatePayload = z.infer<typeof TemplatePayloadSchema>;
 export type PromptContract = TemplatePayload;
 export type PromptOutputContract = z.infer<typeof PromptOutputContractSchema>;
 export type PromptOutputFormat = z.infer<typeof PromptOutputFormatSchema>;

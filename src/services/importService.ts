@@ -5,6 +5,7 @@ import {
   getPrimaryReferenceUrl,
   getPromptSummaryFields,
   type PromptContract,
+  type MenuDefinition,
 } from '@/models/promptSchema';
 import type { ContextMenu, Prompt } from '@/models/types';
 import { saveCategoryToSupabase } from '@/services/supabaseCategories';
@@ -54,7 +55,8 @@ function parsePromptContract(value: unknown): PromptContract {
   // Strip fixed_variables before validation to avoid strict() errors
   let sanitizedValue = value;
   if (value && typeof value === 'object' && !Array.isArray(value)) {
-    const { fixed_variables, ...rest } = value as any;
+    const rest = { ...(value as Record<string, unknown>) };
+    delete rest.fixed_variables;
     sanitizedValue = rest;
   }
 
@@ -101,7 +103,7 @@ async function importMenuDefinitions(
   menuDefinitions: unknown[],
   errors: ImportError[],
   warnings: string[]
-): Promise<any[]> {
+): Promise<MenuDefinition[]> {
   // ⚡ Use shared normalizeMenuBatch for consistent validation across all import paths
   const { valid, parsed, errors: batchErrors } = normalizeMenuBatch(menuDefinitions);
 
@@ -167,14 +169,14 @@ async function ensureImportCategory(warnings: string[]): Promise<number> {
 }
 
 function buildPromptRecordFromRaw(
-  rawPrompt: any,
+  rawPrompt: Record<string, unknown> | unknown,
   categoryId: number,
   errors: ImportError[],
   warnings: string[],
   importedMenuDefinitions: PromptContract['menu_definitions'] = []
 ): Omit<Prompt, 'id'> | null {
   try {
-    const fixedVariables = (rawPrompt as any)?.fixed_variables || {};
+    const fixedVariables = (rawPrompt as Record<string, unknown>)?.fixed_variables as Record<string, string> || {};
     const migration = migrateTemplateToCurrentSchema(
       syncTemplateWithMenuDefinitions(
         parsePromptContract(rawPrompt),
