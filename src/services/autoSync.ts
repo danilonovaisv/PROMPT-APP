@@ -20,9 +20,7 @@ function scheduleSync() {
     // Só agendar se tiver online (simples checagem)
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
 
-    console.log('⏳ Auto-sync agendado para 10s...');
     timer = setTimeout(() => {
-        console.log('🚀 Executando Auto-sync (Push)...');
         runAutoSyncIfAuthenticated().catch(err => console.error('Erro no auto-sync:', err));
     }, DEBOUNCE_MS);
 }
@@ -52,6 +50,4 @@ export function setupAutoSync() {
     db.contextMenus.hook('creating', () => { scheduleSync(); });
     db.contextMenus.hook('updating', () => { scheduleSync(); });
     db.contextMenus.hook('deleting', () => { scheduleSync(); });
-
-    console.log('✅ Auto-sync hooks instalados.');
 }
