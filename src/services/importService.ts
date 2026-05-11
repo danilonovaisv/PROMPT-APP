@@ -51,16 +51,27 @@ function pushUniqueWarning(warnings: string[], warning: string | null) {
 }
 
 function parsePromptContract(value: unknown): PromptContract {
-  const parsed = PromptContractSchema.safeParse(value);
+  // Strip fixed_variables before validation to avoid strict() errors
+  let sanitizedValue = value;
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const { fixed_variables, ...rest } = value as any;
+    sanitizedValue = rest;
+  }
+
+  const parsed = PromptContractSchema.safeParse(sanitizedValue);
   if (parsed.success) {
     return parsed.data;
   }
-  return parsePromptPayload(value);
+  return parsePromptPayload(sanitizedValue);
 }
 
 // Use shared utilities from @/utils/menuValidation
 
-function buildPromptRecord(promptPayload: PromptContract, categoryId: number): Omit<Prompt, 'id'> {
+function buildPromptRecord(
+  promptPayload: PromptContract, 
+  categoryId: number,
+  fixedVariables: Record<string, string> = {}
+): Omit<Prompt, 'id'> {
   const summary = getPromptSummaryFields(promptPayload);
   const now = new Date();
 
@@ -68,6 +79,12 @@ function buildPromptRecord(promptPayload: PromptContract, categoryId: number): O
     categoryId,
     title: summary.title,
     promptPayload,
+    selectionPayload: {
+      template_id: promptPayload.meta.template_id,
+      selected_menus: [],
+      free_inputs: {},
+      fixed_variables: fixedVariables,
+    },
     schemaVersion: summary.schemaVersion,
     language: summary.language,
     outputFormat: summary.outputFormat,
@@ -150,13 +167,14 @@ async function ensureImportCategory(warnings: string[]): Promise<number> {
 }
 
 function buildPromptRecordFromRaw(
-  rawPrompt: unknown,
+  rawPrompt: any,
   categoryId: number,
   errors: ImportError[],
   warnings: string[],
   importedMenuDefinitions: PromptContract['menu_definitions'] = []
 ): Omit<Prompt, 'id'> | null {
   try {
+    const fixedVariables = (rawPrompt as any)?.fixed_variables || {};
     const migration = migrateTemplateToCurrentSchema(
       syncTemplateWithMenuDefinitions(
         parsePromptContract(rawPrompt),
@@ -167,7 +185,7 @@ function buildPromptRecordFromRaw(
     migration.warnings.forEach((warning) => pushUniqueWarning(warnings, warning));
     pushUniqueWarning(warnings, getPromptSchemaWarning(promptPayload.meta.schema_version));
     return {
-      ...buildPromptRecord(promptPayload, categoryId),
+      ...buildPromptRecord(promptPayload, categoryId, fixedVariables),
       syncStatus: 'pending',
     };
   } catch (e: unknown) {
@@ -291,6 +309,30 @@ export async function importFromJsonText(
         // Cloud synchronization is deferred to the background syncService by setting syncStatus to 'pending',
         // preventing blocking network requests and rate limits during bulk import.
         await db.prompts.bulkAdd(promptsToInsert as Prompt[]);
+
+        // ⚡ Sync Fixed Memory:
+        // For each imported prompt, save its initial fixed variables to the promptMemory table.
+        // This ensures the variables are available in the "Fixed Memory" UI section.
+        for (const prompt of promptsToInsert) {
+          const templateId = prompt.promptPayload.meta.template_id;
+          const fixedVars = prompt.selectionPayload?.fixed_variables || {};
+          const now = new Date();
+          
+          const memoryToInsert = Object.entries(fixedVars).map(([key, value]) => ({
+            templateId,
+            key,
+            value,
+            syncStatus: 'pending' as const,
+            isDeleted: false,
+            createdAt: now,
+            updatedAt: now,
+          }));
+
+          if (memoryToInsert.length > 0) {
+            await db.promptMemory.bulkAdd(memoryToInsert);
+          }
+        }
+
         count += promptsToInsert.length;
         warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
@@ -304,6 +346,28 @@ export async function importFromJsonText(
       }
       if (promptsToInsert.length > 0) {
         await db.prompts.bulkAdd(promptsToInsert as Prompt[]);
+
+        // ⚡ Sync Fixed Memory:
+        for (const prompt of promptsToInsert) {
+          const templateId = prompt.promptPayload.meta.template_id;
+          const fixedVars = prompt.selectionPayload?.fixed_variables || {};
+          const now = new Date();
+          
+          const memoryToInsert = Object.entries(fixedVars).map(([key, value]) => ({
+            templateId,
+            key,
+            value,
+            syncStatus: 'pending' as const,
+            isDeleted: false,
+            createdAt: now,
+            updatedAt: now,
+          }));
+
+          if (memoryToInsert.length > 0) {
+            await db.promptMemory.bulkAdd(memoryToInsert);
+          }
+        }
+
         count += promptsToInsert.length;
         warnings.push('Prompts importados localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
@@ -311,6 +375,26 @@ export async function importFromJsonText(
        const promptRecord = buildPromptRecordFromRaw(parsed, importCategoryId, errors, warnings);
       if (promptRecord) {
         await db.prompts.add(promptRecord as Prompt);
+        
+        // ⚡ Sync Fixed Memory:
+        const templateId = promptRecord.promptPayload.meta.template_id;
+        const fixedVars = promptRecord.selectionPayload?.fixed_variables || {};
+        const now = new Date();
+        
+        const memoryToInsert = Object.entries(fixedVars).map(([key, value]) => ({
+          templateId,
+          key,
+          value,
+          syncStatus: 'pending' as const,
+          isDeleted: false,
+          createdAt: now,
+          updatedAt: now,
+        }));
+
+        if (memoryToInsert.length > 0) {
+          await db.promptMemory.bulkAdd(memoryToInsert);
+        }
+
         count = 1;
         warnings.push('Prompt importado localmente. A sincronização com a nuvem ocorrerá em segundo plano.');
       }
