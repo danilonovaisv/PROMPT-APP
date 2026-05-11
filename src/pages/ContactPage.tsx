@@ -3,6 +3,7 @@
    ====================================================== */
 
 import SEO from '@/components/SEO';
+import { Breadcrumb } from '@/components/Breadcrumb';
 
 export default function ContactPage() {
     return (
@@ -17,6 +18,14 @@ export default function ContactPage() {
             </header>
 
             <div className="app-content info-page">
+                {/* A11y Audit Fix #09: Breadcrumbs */}
+                <Breadcrumb
+                    items={[
+                        { label: 'Início', href: '/' },
+                        { label: 'Contato' },
+                    ]}
+                />
+
                 <h2 className="info-page__title">Fale com o time do Prompt App</h2>
                 <p className="info-page__meta">
                     Atendimento via canais oficiais do projeto.

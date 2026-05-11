@@ -1,0 +1,98 @@
+{
+  "__instruction__": {
+    "title": "Especificação de Importação de Prompts (JSON)",
+    "description": "Este arquivo descreve o formato aceito pelo PROMPT-APP para importação individual ou em massa.",
+    "version": "1.0.0",
+    "last_updated": "2026-05-11"
+  },
+  "format_options": {
+    "individual": {
+      "description": "Importação de um único prompt. O arquivo JSON deve conter diretamente o objeto de TemplatePayload.",
+      "schema": "TemplatePayloadSchema"
+    },
+    "bulk": {
+      "description": "Importação de múltiplos prompts e definições de menu globais.",
+      "root_keys": {
+        "app": "Obrigatório: 'PROMPT-APP'",
+        "version": "Opcional: Versão do esquema de exportação",
+        "prompts": "Array de objetos de prompt",
+        "menuDefinitions": "Array opcional de definições de menus globais"
+      }
+    }
+  },
+  "template_structure": {
+    "meta": {
+      "template_id": "String única (slug)",
+      "template_name": "Nome legível do prompt",
+      "template_type": "Tipo do template (ex: 'expert', 'creative')",
+      "status": "draft | active | archived",
+      "language": "pt-BR | en-US",
+      "schema_version": "1.0.0"
+    },
+    "prompt_definition": {
+      "system_role": "Papel do sistema AI",
+      "task": "Tarefa principal",
+      "context": "Contexto adicional",
+      "user_scene_description": "Cenário de uso",
+      "constraints": ["Array de restrições"],
+      "negative_prompt": ["O que não deve ser incluído"],
+      "few_shot_examples": [
+        { "input": "Exemplo entrada", "output": "Exemplo saída" }
+      ]
+    },
+    "menu_definitions": [
+      {
+        "menu_id": "ID do menu (usado no template)",
+        "menu_name": "Título do menu",
+        "selection_mode": "single | multiple",
+        "options": [
+          {
+            "label": "Nome da opção",
+            "value": "Valor injetado no prompt",
+            "sub_options": []
+          }
+        ]
+      }
+    ],
+    "fixed_variables": {
+      "VARIABLE_NAME": "Valor fixo que será injetado no padrão {{VARIABLE_NAME}}",
+      "MEMORY_VAR": "Exemplo de memória fixa injetada via pipeline"
+    },
+    "output_contract": {
+      "format": "text | markdown | json | image | code",
+      "response_rules": ["Regras de formatação da resposta"]
+    }
+  },
+  "example": {
+    "app": "PROMPT-APP",
+    "version": "2.0.0",
+    "prompts": [
+      {
+        "title": "Arquiteto Ghost",
+        "category": "Arquitetura",
+        "prompt": {
+          "meta": {
+            "template_id": "ghost-architect",
+            "template_name": "Arquiteto Ghost",
+            "template_type": "Expert",
+            "status": "active"
+          },
+          "prompt_definition": {
+            "system_role": "Você é o Ghost Architect...",
+            "task": "Desenvolver sistemas resilientes.",
+            "few_shot_examples": []
+          },
+          "fixed_variables": {
+            "PROJECT_CONTEXT": "Portfolio Danilo Novais",
+            "DESIGN_SYSTEM": "Ghost Era"
+          },
+          "menu_definitions": [],
+          "menu_ids": [],
+          "output_contract": {
+            "format": "markdown"
+          }
+        }
+      }
+    ]
+  }
+}

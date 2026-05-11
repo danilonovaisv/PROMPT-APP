@@ -2,7 +2,7 @@
   "name": "prompt-app",
   "private": true,
   "version": "2.0.0",
-  "packageManager": "pnpm@11.0.8",
+  "packageManager": "pnpm@11.0.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -73,7 +73,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "fake-indexeddb": "^6.2.5",
     "globals": "^17.6.0",
-    "jest": "^30.4.1",
+    "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "jsdom": "^29.1.1",
     "netlify-cli": "^26.0.1",
