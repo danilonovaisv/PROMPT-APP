@@ -61,6 +61,37 @@
   force = true
 
 [[redirects]]
+  # Return 404 for common sitemap probe paths (avoids SPA HTML fallback confusing crawlers)
+  from = "/sitemap_index.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/sitemap-index.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/sitemaps.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/sitemap1.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/post-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
   # SPA fallback para roteamento client-side
   from = "/*"
   to = "/index.html"
