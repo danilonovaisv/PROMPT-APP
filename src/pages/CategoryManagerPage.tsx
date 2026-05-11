@@ -9,6 +9,7 @@ import { db } from '@/db/database';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/hooks/useConfirm';
 import SEO from '@/components/SEO';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import { CATEGORY_ICONS, CATEGORY_COLORS } from '@/utils/constants';
 import { saveLocalBackup } from '@/utils/backupManager';
 import { saveCategoryToSupabase, deleteCategoryFromSupabase } from '@/services/supabaseCategories';
@@ -232,6 +233,14 @@ export default function CategoryManagerPage() {
             </header>
 
             <div className="app-content motion-entry">
+                {/* A11y Audit Fix #09: Breadcrumbs */}
+                <Breadcrumb
+                    items={[
+                        { label: 'Início', href: '/' },
+                        { label: 'Gerenciar Categorias' },
+                    ]}
+                />
+
                 {/* Formulário de criação/edição */}
                 {(isCreating || isEditing !== null) && (
                     <div className="card card--active glass motion-entry">
