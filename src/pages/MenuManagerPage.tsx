@@ -10,6 +10,7 @@ import { saveLocalBackup } from '@/utils/backupManager';
 import ImportMenusModal from '@/components/ImportMenusModal';
 import { saveMenuToSupabase, deleteMenuFromSupabase } from '@/services/supabaseMenus';
 import SEO from '@/components/SEO';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
 import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
 
@@ -309,6 +310,14 @@ export default function MenuManagerPage() {
       </header>
 
       <div className="app-content">
+        {/* A11y Audit Fix #09: Breadcrumbs */}
+        <Breadcrumb
+          items={[
+            { label: 'Início', href: '/' },
+            { label: 'Menus do Template' },
+          ]}
+        />
+
         {(isCreating || isEditing !== null) && (
           <MenuForm
             form={form}
