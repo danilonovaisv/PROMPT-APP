@@ -121,6 +121,10 @@ describe('formatPromptAsMarkdown', () => {
         language: 'pt-BR',
       },
       compiled_context: {
+        fixed_variables: {
+          Infrastructure: 'Netlify Edge',
+          Frontend: 'React 19',
+        },
         menu_interpretation: {
           tone: {
             selected_options: ['formal'],
@@ -143,6 +147,8 @@ describe('formatPromptAsMarkdown', () => {
     expect(markdown).toContain('Projeto premium com foco em clareza e ritmo visual.');
     expect(markdown).toContain('Escrever uma proposta editorial para a landing page.');
     expect(markdown).toContain('## 2. DYNAMIC PARAMETERS');
+    expect(markdown).toContain('- **Infrastructure**: Netlify Edge (from project context)');
+    expect(markdown).toContain('- **Frontend**: React 19 (from project context)');
     expect(markdown).toContain('- **Tom**: Formal (Editorial)');
     expect(markdown).toContain('- **audience**: Diretores de marketing');
     expect(markdown).toContain('## 3. RULES & CONSTRAINTS');
