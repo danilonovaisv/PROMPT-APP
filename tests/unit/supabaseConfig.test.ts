@@ -45,10 +45,24 @@ describe('resolveSupabaseConfig', () => {
     expect(config.missingVars).toEqual([]);
   });
 
+  test('aceita VITE_SUPABASE_PUBLISHABLE_KEY como chave pública atual', () => {
+    const env: SupabaseEnv = {
+      VITE_SUPABASE_URL: 'https://example.supabase.co',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'publishable-key',
+    };
+
+    const config = resolveSupabaseConfig(env);
+
+    expect(config.isConfigured).toBe(true);
+    expect(config.anonKey).toBe('publishable-key');
+    expect(config.missingVars).toEqual([]);
+  });
+
   test('normaliza valores com whitespace e ignora entradas não string', () => {
     const env: SupabaseEnv = {
       VITE_SUPABASE_URL: '  https://example.supabase.co  ',
       VITE_SUPABASE_ANON_KEY: '   ',
+      VITE_SUPABASE_PUBLISHABLE_KEY: '   ',
       VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: '  publishable-key  ',
       SOME_OTHER_VALUE: 123,
     };

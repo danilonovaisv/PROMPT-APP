@@ -2,6 +2,7 @@ export interface SupabaseEnv {
   [key: string]: unknown;
   VITE_SUPABASE_URL?: string;
   VITE_SUPABASE_ANON_KEY?: string;
+  VITE_SUPABASE_PUBLISHABLE_KEY?: string;
   VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY?: string;
 }
 
@@ -18,7 +19,10 @@ function normalize(value: unknown): string {
 
 export function resolveSupabaseConfig(env: SupabaseEnv): SupabaseResolvedConfig {
   const url = normalize(env.VITE_SUPABASE_URL);
-  const anonKey = normalize(env.VITE_SUPABASE_ANON_KEY) || normalize(env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY);
+  const anonKey =
+    normalize(env.VITE_SUPABASE_ANON_KEY) ||
+    normalize(env.VITE_SUPABASE_PUBLISHABLE_KEY) ||
+    normalize(env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY);
 
   const missingVars: string[] = [];
   if (!url) {

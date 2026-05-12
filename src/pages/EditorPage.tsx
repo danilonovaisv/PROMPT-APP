@@ -528,6 +528,7 @@ export default function EditorPage() {
   const previewState = useMemo(() => {
     try {
       const artifacts = buildPersistedArtifacts(debouncedForm, availableContextMenus, fixedMemory);
+      console.log('[PLAYGROUND] output received:', artifacts.renderedPrompt);
       return {
         payload: artifacts.compiledPayload,
         template: artifacts.template,
