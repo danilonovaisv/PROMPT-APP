@@ -468,6 +468,7 @@ export function sanitizeSelectedOptions(
 export function sanitizeUserSelection(
   template: TemplatePayload,
   rawSelection: UserSelection,
+  options: { lenient?: boolean } = {}
 ): UserSelection {
   const definitionMap = new Map(
     template.menu_definitions.map((menu) => [menu.menu_id, menu]),
@@ -522,7 +523,7 @@ export function sanitizeUserSelection(
       menu.required
     )
   ) {
-    if (!selectedMenus.some((menu) => menu.menu_id === requiredMenu.menu_id)) {
+    if (!options.lenient && !selectedMenus.some((menu) => menu.menu_id === requiredMenu.menu_id)) {
       throw new Error(
         `O menu obrigatório "${requiredMenu.menu_name}" precisa de pelo menos uma seleção.`,
       );
@@ -853,8 +854,9 @@ export function parseUserSelection(
 export function compilePromptPayload(
   template: TemplatePayload,
   rawSelection: UserSelection,
+  options: { lenient?: boolean } = {}
 ): CompiledPromptPayload {
-  const selection = sanitizeUserSelection(template, rawSelection);
+  const selection = sanitizeUserSelection(template, rawSelection, options);
   const definitionMap = new Map(
     template.menu_definitions.map((menu) => [menu.menu_id, menu]),
   );

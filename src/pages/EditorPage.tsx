@@ -528,6 +528,7 @@ export default function EditorPage() {
   const previewState = useMemo(() => {
     try {
       const artifacts = buildPersistedArtifacts(debouncedForm, availableContextMenus, fixedMemory);
+      console.log('[PLAYGROUND] output received:', artifacts.renderedPrompt);
       return {
         payload: artifacts.compiledPayload,
         template: artifacts.template,
@@ -536,8 +537,23 @@ export default function EditorPage() {
         error: null,
       };
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
-      return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
+      // Lenient fallback: uses form.template directly (already Zod-validated by form state)
+      // and skips required-menu enforcement so partial/in-progress templates still render.
+      try {
+        const freeInputsMap = fromFreeInputEntries(debouncedForm.freeInputs);
+        const rawSelection = UserSelectionSchema.parse({
+          ...debouncedForm.selection,
+          free_inputs: freeInputsMap,
+          fixed_variables: fixedMemory,
+        });
+        const compiled = compilePromptPayload(debouncedForm.template, rawSelection, { lenient: true });
+        const renderedPrompt = renderFinalPromptText(debouncedForm.template, compiled);
+        console.log('[PLAYGROUND] output received:', renderedPrompt);
+        return { payload: compiled, template: debouncedForm.template, selection: rawSelection, renderedPrompt, error: null };
+      } catch {
+        const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
+        return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
+      }
     }
   }, [availableContextMenus, debouncedForm, fixedMemory]);
 
