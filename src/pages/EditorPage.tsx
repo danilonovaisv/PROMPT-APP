@@ -536,6 +536,7 @@ export default function EditorPage() {
         error: null,
       };
     } catch (e: unknown) {
+      console.error('Erro na compilação do prompt:', e);
       const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
       return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
     }

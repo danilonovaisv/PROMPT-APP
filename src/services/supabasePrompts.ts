@@ -41,7 +41,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
 
     const promptPayload = resolvePromptPayload(input);
     const summary = getPromptSummaryFields(promptPayload);
-    const legacyColumns = getLegacyPromptColumns(promptPayload);
+    const legacyColumns = getLegacyPromptColumns(promptPayload, input.selectionPayload, input.compiledPayload);
 
     const payload: Record<string, unknown> = {
         user_id: user.id,
