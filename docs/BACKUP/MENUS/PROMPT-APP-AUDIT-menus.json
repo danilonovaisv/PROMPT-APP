@@ -1,0 +1,302 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_auditoria",
+      "menu_name": "PROMPT APP - Tipo de Auditoria",
+      "description": "Define o escopo central da auditoria que o agente deve executar no repositório.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Reconhecimento completo",
+          "value": "reconhecimento_completo",
+          "description": "Mapeia stack, diretórios, serviços, modelos de dados, documentação e fluxo de build antes de investigar bugs.",
+          "sub_options": [
+            {
+              "label": "Com inventário de arquivos",
+              "value": "inventario_arquivos",
+              "description": "Inclui lista de arquivos analisados e hipótese de responsabilidade de cada módulo."
+            },
+            {
+              "label": "Com mapa de dependências",
+              "value": "mapa_dependencias",
+              "description": "Inclui dependências internas entre serviços, componentes e modelos."
+            }
+          ]
+        },
+        {
+          "label": "Auditoria de bugs críticos",
+          "value": "auditoria_bugs_criticos",
+          "description": "Foca em Memória Fixa, importação vazia, menus, sync e regressões de Playground.",
+          "sub_options": [
+            {
+              "label": "Com reprodução mínima",
+              "value": "reproducao_minima",
+              "description": "Exige passos reproduzíveis para cada bug antes de propor correção."
+            },
+            {
+              "label": "Com patch plan",
+              "value": "patch_plan",
+              "description": "Exige plano de alterações por arquivo, sem aplicar mudanças cegas."
+            }
+          ]
+        },
+        {
+          "label": "Auditoria production-ready",
+          "value": "auditoria_production_ready",
+          "description": "Valida resiliência, segurança, deploy, DX, acessibilidade, responsividade e integridade de dados.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "alvo_execucao",
+      "menu_name": "PROMPT APP - Alvo de Execução",
+      "description": "Seleciona o tipo de agente ou ambiente onde o prompt será executado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Google Jules",
+          "value": "google_jules",
+          "description": "Orienta o agente a gerar planos por etapa, evidências e alterações com controle de aprovação.",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Code",
+          "value": "claude_code",
+          "description": "Orienta investigação incremental com leitura de arquivos, execução de comandos e artefatos Markdown.",
+          "sub_options": []
+        },
+        {
+          "label": "Cursor Agent",
+          "value": "cursor_agent",
+          "description": "Orienta execução dentro do editor com foco em diffs rastreáveis, testes e validação local.",
+          "sub_options": []
+        },
+        {
+          "label": "Agente genérico com acesso ao repo",
+          "value": "agente_generico_repo",
+          "description": "Mantém instruções independentes de ferramenta para qualquer agente com shell, leitura e edição de arquivos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_auditoria",
+      "menu_name": "PROMPT APP - Profundidade da Auditoria",
+      "description": "Controla o nível de detalhe exigido na investigação e no relatório final.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Rápida",
+          "value": "rapida",
+          "description": "Executa triagem objetiva dos riscos principais, sem refatoração extensa.",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "description": "Executa os sete passos com evidências, logs, validação de schema, testes e plano de correção.",
+          "sub_options": []
+        },
+        {
+          "label": "Forense",
+          "value": "forense",
+          "description": "Exige rastreio de causa raiz, histórico de fluxo de dados, cenários de falha e validação cruzada.",
+          "sub_options": [
+            {
+              "label": "Com matriz de riscos",
+              "value": "matriz_riscos",
+              "description": "Classifica impacto, probabilidade, reversibilidade e dono técnico."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "foco_prioritario",
+      "menu_name": "PROMPT APP - Foco Prioritário",
+      "description": "Permite direcionar o esforço do agente para as áreas com maior impacto no PROMPT-APP.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Memória Fixa",
+          "value": "memoria_fixa",
+          "description": "Investiga campos ausentes, variáveis persistentes, placeholders e fluxo de preenchimento no Playground.",
+          "sub_options": []
+        },
+        {
+          "label": "Importação de templates",
+          "value": "importacao_templates",
+          "description": "Investiga JSONs importados vazios, desalinhamento de schema e validação antes da persistência.",
+          "sub_options": []
+        },
+        {
+          "label": "Sync Dexie e Supabase",
+          "value": "sync_dexie_supabase",
+          "description": "Investiga dirty state, conflitos, filas offline, retry, N+1 queries e integridade local-first.",
+          "sub_options": []
+        },
+        {
+          "label": "Menus vinculados",
+          "value": "menus_vinculados",
+          "description": "Investiga vínculo entre menu_definitions, menu_ids, templates existentes e UI de seleção.",
+          "sub_options": []
+        },
+        {
+          "label": "Netlify e build",
+          "value": "netlify_build",
+          "description": "Investiga redirects, variáveis de ambiente, pipeline de build, deploy estático e edge functions.",
+          "sub_options": []
+        },
+        {
+          "label": "Acessibilidade e responsividade",
+          "value": "acessibilidade_responsividade",
+          "description": "Investiga WCAG AA, navegação por teclado, estados de UI e comportamento mobile-first.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_auditoria",
+      "menu_name": "PROMPT APP - Backend em Auditoria",
+      "description": "Define o backend e camada de persistência que devem receber atenção especial.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "description": "Audita Auth, RLS, chaves públicas, sessão, políticas, queries e isolamento por usuário.",
+          "sub_options": [
+            {
+              "label": "RLS e políticas",
+              "value": "rls_politicas",
+              "description": "Prioriza testes e revisão de políticas de Row Level Security."
+            },
+            {
+              "label": "Auth e sessão",
+              "value": "auth_sessao",
+              "description": "Prioriza persistência de sessão, expiração, anon key e fluxos de autenticação."
+            }
+          ]
+        },
+        {
+          "label": "Dexie IndexedDB",
+          "value": "dexie_indexeddb",
+          "description": "Audita schema local, migrações, índices, transações, dirty state e conflito de sincronização.",
+          "sub_options": []
+        },
+        {
+          "label": "Camada de importação",
+          "value": "camada_importacao",
+          "description": "Audita parse, validação, normalização, versionamento de schema e persistência pós-import.",
+          "sub_options": []
+        },
+        {
+          "label": "Netlify",
+          "value": "netlify",
+          "description": "Audita build, redirects, variáveis públicas, variáveis secretas e configuração de deploy.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_evidencias",
+      "menu_name": "PROMPT APP - Estratégia de Evidências",
+      "description": "Define quais evidências o agente deve capturar antes de concluir a auditoria.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "Logs de console",
+          "value": "logs_console",
+          "description": "Inclui logs relevantes, erros de runtime e stack traces sanitizados.",
+          "sub_options": []
+        },
+        {
+          "label": "Screenshots",
+          "value": "screenshots",
+          "description": "Inclui capturas de UI para bugs de Playground, menus, forms e importação.",
+          "sub_options": []
+        },
+        {
+          "label": "Comandos executados",
+          "value": "comandos_executados",
+          "description": "Registra comandos de teste, build, lint e auditoria com resultado resumido.",
+          "sub_options": []
+        },
+        {
+          "label": "Diffs por arquivo",
+          "value": "diffs_por_arquivo",
+          "description": "Registra alterações propostas ou aplicadas por arquivo, com racional técnico.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_autonomia",
+      "menu_name": "PROMPT APP - Nível de Autonomia",
+      "description": "Controla se o agente apenas audita, propõe alterações ou também implementa correções.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Somente auditoria",
+          "value": "somente_auditoria",
+          "description": "Não altera código; apenas investiga, documenta e recomenda.",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria com plano de fixes",
+          "value": "auditoria_com_plano_fixes",
+          "description": "Investiga e gera roadmap de correção priorizado, sem aplicar patches automaticamente.",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria com implementação controlada",
+          "value": "auditoria_com_implementacao_controlada",
+          "description": "Pode propor patches por etapa, aguardando aprovação antes de mudanças de alto risco.",
+          "sub_options": [
+            {
+              "label": "Bloquear alterações de banco",
+              "value": "bloquear_alteracoes_banco",
+              "description": "Exige aprovação explícita para migrations, RLS e mudanças destrutivas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_relatorio",
+      "menu_name": "PROMPT APP - Formato do Relatório",
+      "description": "Define a estrutura esperada para os artefatos finais da auditoria.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Relatório executivo e técnico",
+          "value": "relatorio_executivo_tecnico",
+          "description": "Combina resumo executivo, evidências, riscos, performance, segurança e plano P0/P1/P2.",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist acionável",
+          "value": "checklist_acionavel",
+          "description": "Entrega lista priorizada de ações, critérios de aceite e arquivos afetados.",
+          "sub_options": []
+        },
+        {
+          "label": "Pacote de artefatos Markdown",
+          "value": "pacote_artefatos_markdown",
+          "description": "Gera arquivos separados por etapa, incluindo recon, bug log, risk matrix e fix plan.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
