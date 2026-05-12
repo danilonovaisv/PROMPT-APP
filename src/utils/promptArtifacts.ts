@@ -95,7 +95,7 @@ function buildListBlock(title: string, items: string[]): string[] {
 }
 
 function applyReplacements(text: string, variables: Record<string, string>): string {
-  let result = text;
+  let result = text || "";
   Object.entries(variables).forEach(([key, value]) => {
     // Escapa a chave para uso em regex (embora chaves geralmente sejam seguras A-Z0-9_)
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
