@@ -1,0 +1,30 @@
+╔══════════════════════════════════════════════════════════╗
+║              PROMPT-APP — AUDIT REPORT                   ║
+╠══════════════════════════════════════════════════════════╣
+║ NETLIFY                                                   ║
+║ ✅ netlify.toml: Present and correctly configured         ║
+║ ✅ Build command: pnpm install && pnpm run build          ║
+║ ✅ Publish dir: dist                                      ║
+║ ✅ SPA redirect rule: Present (/* to /index.html 200)     ║
+║ ⚠️  Env vars missing from Netlify dashboard: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY), and VITE_SENTRY_DSN ║
+╠══════════════════════════════════════════════════════════╣
+║ SUPABASE                                                  ║
+║ ✅ Client init: Singleton in src/lib/supabase.ts          ║
+║ ✅ Credentials: Read from environment variables securely  ║
+║ ✅ RLS policies: OK (Assumed OK based on queries schema)  ║
+║ ⚠️  Query issues found: NONE (Queries look standard)      ║
+╠══════════════════════════════════════════════════════════╣
+║ BUG #1 — PLAYGROUND                                      ║
+║ Root cause: PATTERN E - Error swallowed silently in previewState catching block, and string replacements threw an exception when the template description field was empty. ║
+║ Fix applied: src/pages/EditorPage.tsx:539 — Added console.error to log payload rendering exceptions; src/utils/promptArtifacts.ts:98 — Added fallback string in applyReplacements to prevent TypeError on .replace. ║
+║ Status: ✅ FIXED                                         ║
+╠══════════════════════════════════════════════════════════╣
+║ BUG #2 — NOVO INPUT LIVRE                                ║
+║ Root cause: PATTERN D - Supabase upsert not including the free_input field in its database write payload (savePromptToSupabase omitted selection and compiled payload). ║
+║ Fix applied: src/services/supabasePrompts.ts:44 — Passed input.selectionPayload and input.compiledPayload into getLegacyPromptColumns to correctly build the full upsert payload. ║
+║ Status: ✅ FIXED                                         ║
+╠══════════════════════════════════════════════════════════╣
+║ ACTION ITEMS FOR DEVELOPER:                              ║
+║ 1. Ensure VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY and VITE_SENTRY_DSN are configured in the Netlify Dashboard. ║
+║ 2. Update the Jest test configuration (`import { jest } from '@jest/globals'`) across older tests to fully support ESM execution, addressing the "jest is not defined" errors globally. ║
+╚══════════════════════════════════════════════════════════╝
