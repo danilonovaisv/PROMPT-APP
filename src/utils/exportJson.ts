@@ -119,6 +119,13 @@ export function formatPromptAsMarkdown(
   // ## 2. DYNAMIC PARAMETERS
   lines.push("## 2. DYNAMIC PARAMETERS");
 
+  const fixedVars = compiledPayload.compiled_context.fixed_variables;
+  if (fixedVars && Object.keys(fixedVars).length > 0) {
+    Object.entries(fixedVars).forEach(([key, value]) => {
+      lines.push(`- **${key}**: ${value} (from project context)`);
+    });
+  }
+
   const menuInterpretation =
     compiledPayload.compiled_context.menu_interpretation;
   if (menuInterpretation && Object.keys(menuInterpretation).length > 0) {
@@ -172,12 +179,6 @@ export function formatPromptAsMarkdown(
     });
   }
 
-  const fixedVariables = compiledPayload.compiled_context.fixed_variables;
-  if (fixedVariables && Object.keys(fixedVariables).length > 0) {
-    Object.entries(fixedVariables).forEach(([key, value]) => {
-      lines.push(`- **${key}**: ${value} (from project context)`);
-    });
-  }
 
   const freeInputs = compiledPayload.compiled_context.free_inputs;
   if (freeInputs && Object.keys(freeInputs).length > 0) {

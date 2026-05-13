@@ -145,6 +145,7 @@ export const syncPrompts = async (
       }
     }
 
+    const newPayloads: Record<string, unknown>[] = [];
     for (const prompt of promptsWithoutRemoteId) {
       const remoteCategoryId = localToRemoteCategoryMap.get(prompt.categoryId);
       const summary = getPromptSummaryFields(prompt.promptPayload);
@@ -154,43 +155,46 @@ export const syncPrompts = async (
         prompt.compiledPayload,
       );
 
+      newPayloads.push({
+        user_id: userId,
+        category_id: remoteCategoryId || null,
+        title: summary.title,
+        prompt_payload_jsonb: prompt.promptPayload,
+        selected_menu_ids: prompt.selectedMenuIds || [],
+        schema_version: summary.schemaVersion,
+        output_format: summary.outputFormat,
+        language: summary.language,
+        reference_url: getPrimaryReferenceUrl(prompt.promptPayload),
+        few_shot_examples: prompt.fewShotExamples || [],
+        is_deleted: false,
+        updated_at: new Date().toISOString(),
+        ...legacyColumns,
+      });
+    }
+
+    if (newPayloads.length > 0) {
       try {
         const result = await withRetry(() =>
-          supabase
-            .from("prompts")
-            .insert({
-              user_id: userId,
-              category_id: remoteCategoryId || null,
-              title: summary.title,
-              prompt_payload_jsonb: prompt.promptPayload,
-              selected_menu_ids: prompt.selectedMenuIds || [],
-              schema_version: summary.schemaVersion,
-              output_format: summary.outputFormat,
-              language: summary.language,
-              reference_url: getPrimaryReferenceUrl(prompt.promptPayload),
-              few_shot_examples: prompt.fewShotExamples || [],
-              is_deleted: false,
-              updated_at: new Date().toISOString(),
-              ...legacyColumns,
-            })
-            .select("id")
-            .single()
+          supabase.from("prompts").insert(newPayloads).select("id")
         );
 
         if (result.error || !result.data) {
-          throw result.error ?? new Error("Prompt criado sem ID remoto.");
+          throw result.error ?? new Error("Erro ao criar prompts em lote.");
         }
 
-        if (prompt.id) {
-          await db.prompts.update(prompt.id, {
-            remoteId: result.data.id,
-            syncStatus: "synced",
-          });
+        for (let i = 0; i < result.data.length; i++) {
+          const prompt = promptsWithoutRemoteId[i];
+          if (prompt.id && result.data[i].id) {
+            await db.prompts.update(prompt.id, {
+              remoteId: result.data[i].id,
+              syncStatus: "synced",
+            });
+          }
         }
       } catch (error) {
-        console.error("❌ Erro ao inserir prompt novo:", error);
-        if (prompt.id) {
-          await db.prompts.update(prompt.id, { syncStatus: "error" });
+        console.error("❌ Erro ao inserir novos prompts em lote:", error);
+        for (const prompt of promptsWithoutRemoteId) {
+          if (prompt.id) await db.prompts.update(prompt.id, { syncStatus: "error" });
         }
       }
     }
@@ -222,8 +226,8 @@ export const downloadPrompts = async (
   for (const p of promptData) {
     const existing = localByRemoteId.get(p.id);
     
-    // Se local está marcado como excluído mas ainda não subiu pro cloud, pula o download
-    if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+    // Se local tem alterações não sincronizadas (incluindo exclusão), pula o overwrite pelo cloud
+    if (existing && existing.syncStatus !== "synced") {
       continue;
     }
 

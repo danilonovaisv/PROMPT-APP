@@ -186,6 +186,7 @@ export default function MultiSelect({
                     className={`multi-select__option ${isSelected ? 'multi-select__option--selected' : ''} ${
                       index === activeIndex ? 'multi-select__option--active' : ''
                     }`}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       toggleOption(option.id);
                       setActiveIndex(index);

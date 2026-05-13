@@ -263,6 +263,9 @@ describe("formatPromptAsMarkdown", () => {
           },
         },
         free_inputs: {},
+        fixed_variables: {
+          Runtime: 'Supabase Realtime',
+        },
       },
     };
 

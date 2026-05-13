@@ -1,27 +1,28 @@
-## 2026-03-27 - Unnecessary target=_blank changes\n**Vulnerability:** None originally. Added `target="_blank"` simply to add `rel="noopener noreferrer"`.\n**Learning:** Don't introduce arbitrary UX changes to force a security enhancement. If a link doesn't open in a new tab, it's not vulnerable to reverse tabnabbing, so modifying its UX just to add `noopener noreferrer` is unnecessary.\n**Prevention:** Carefully review if a given element actually requires the security enhancement before modifying it.
+## 2026-03-24 - [Incomplete Data Validation]
+**Vulnerability:** Application crashed with `TypeError: Cannot read properties of undefined` when attempting to load prompts with corrupted `selectionPayload` from legacy database versions.
+**Learning:** Legacy records might contain structural inconsistencies not captured by simple type assertions (`as UserSelection`).
+**Prevention:** Implement custom type guards (like `isValidSnapshot`) or use strict Zod schemas (`UserSelectionSchema.safeParse`) to validate untrusted or legacy data structures retrieved from IndexedDB or `localStorage` before accessing nested properties.
 
-## 2025-02-12 - Insecure Deserialization in LocalStorage
-**Vulnerability:** Application blindly trusted data parsed from `localStorage` (`JSON.parse` cast directly with `as AppSnapshot`).
-**Learning:** `localStorage` is susceptible to tampering by users or malicious scripts. Accessing nested properties on unvalidated deserialized data can cause unhandled `TypeError` crashes or potentially expose logic flaws.
-**Prevention:** Always implement runtime type validation (e.g., a type guard like `isValidSnapshot` or Zod schemas) immediately after `JSON.parse` before asserting types or accessing deeply nested properties.
-## 2026-05-06 - Supabase Linter Security Fixes
-**Vulnerability:** Role mutable search_path in functions (`handle_updated_at`, `set_updated_at`), public execution of `SECURITY DEFINER` function (`rls_auto_enable`), disabled leaked password protection, and duplicate permissive RLS policies.
-**Learning:** Default generated triggers and functions may leave search paths unspecified, making them vulnerable to malicious overriding. Functions intended as internal triggers (like `rls_auto_enable`) should not be publicly executable. Duplicate policies created dynamically or by accident compound performance issues.
-**Prevention:** Always explicitly set `SET search_path = ''` in PostgreSQL function definitions. Use `REVOKE EXECUTE ON FUNCTION... FROM PUBLIC` for internal trigger functions. Regularly audit and configure `password_hibp_enabled` in `config.toml` to improve authentication security.
-## 2026-05-07 - CI Pipeline Fixes for config.toml
-**Vulnerability:** N/A (CI Build Fix)
-**Learning:** Adding unsupported keys (like `password_hibp_enabled` under `[auth]`) to `supabase/config.toml` causes the Supabase CLI parsing to fail, breaking CI builds. Certain advanced security settings are exclusively managed via the Supabase dashboard rather than the standard CLI config files.
-**Prevention:** Verify if a configuration option exists in the Supabase CLI docs before adding it to `config.toml` to prevent pipeline parse errors.
-## 2026-05-07 - CI Pipeline Fixes for Database Migrations
-**Vulnerability:** N/A (CI Build Fix)
-**Learning:** Hardcoding webhooks or using the `supabase_functions` schema in raw database migrations causes `schema "supabase_functions" does not exist` errors in CI and local setups unless the `pg_net` extension and schema are explicitly defined. Environment-specific triggers like build hooks shouldn't be part of the core database schema migrations.
-**Prevention:** Remove or isolate environment-specific triggers (like Netlify build hooks) from standard SQL migrations. Manage webhooks using the Supabase Dashboard or ensure the `pg_net` extension is properly configured in the migration files if local execution is intended.
-## 2026-05-07 - CI Pipeline Fixes for RLS Migration Dependencies
-**Vulnerability:** N/A (CI Build Fix)
-**Learning:** Referencing a column (like `is_deleted`) in an RLS policy before the column is created in the table schema causes the entire database migration to crash with `column does not exist`. Migration script chronological order is critical.
-**Prevention:** If an RLS policy refers to a new column, ensure the `ALTER TABLE ... ADD COLUMN` statement happens *before* the `CREATE POLICY` statement within the same script or an earlier script in the chronological migration timeline.
+## 2026-03-28 - [Over-fetching Data into Memory]
+**Vulnerability:** Synchronizing prompts involved fetching the entire local `categories` table into a JavaScript Map (`await db.categories.toArray()`), which can cause Out-Of-Memory (OOM) crashes on devices with large datasets or low memory availability.
+**Learning:** Pre-fetching entire datasets into memory to solve N+1 query problems trades a CPU/Network bottleneck for a Memory bottleneck.
+**Prevention:** Extract the necessary foreign keys (e.g., `remoteCategoryIds`) from the incoming payload and query only the required subset of records using `.where('remoteId').anyOf(remoteIds).toArray()`.
 
-## 2026-05-11 - Backup Local não Criptografado no LocalStorage
-**Vulnerability:** Backups completos do banco de dados (prompts, categorias, menus) eram armazenados no LocalStorage em texto plano (JSON stringify). Qualquer pessoa ou script malicioso com acesso ao navegador poderia ler dados sensíveis dos usuários.
-**Learning:** O uso de LocalStorage para backups de emergência é útil para resiliência local-first, mas expõe dados se não houver uma camada de proteção em repouso.
-**Prevention:** Implementar criptografia autenticada (AES-GCM) para todos os dados sensíveis armazenados em mecanismos de persistência do navegador como LocalStorage.
+## 2026-10-27 - [Arbitrary Code Execution via Links]
+**Vulnerability:** Anchor tags (`<a target="_blank">`) dynamically generated from user input lacked the `rel="noopener noreferrer"` attributes, potentially allowing newly opened tabs to hijack the original window object via `window.opener`.
+**Learning:** Modern browsers have largely mitigated this by defaulting to `noopener` for `target="_blank"`, but explicitly defining it remains a critical defense-in-depth measure, especially for older clients.
+**Prevention:** Enforce `rel="noopener noreferrer"` on all external links, particularly those rendering user-provided URLs (like references in `PromptCard.tsx`).
+## 2026-04-18 - [Over-fetching Data into Memory]
+**Vulnerability:** Fetching the entire prompts table (`await db.prompts.toArray()`) just to filter out soft-deleted items creates severe memory bottlenecks, especially with large JSON payloads.
+**Learning:** The `isDeleted` field is not indexed, so using a simple `.where('isDeleted').equals(false)` fails. However, fetching the entire table is not the solution.
+**Prevention:** Use Dexie's Collection `.filter()` method (e.g., `db.prompts.filter(p => !p.isDeleted).toArray()`) to evaluate conditions efficiently without loading all objects into the main JavaScript array, or ensure critical query fields are added to the IndexedDB schema.
+
+## 2026-04-24 - [Over-fetching Data into Memory]
+**Vulnerability:** Fetching the entire prompts table (`await db.prompts.toArray()`) just to filter out soft-deleted items creates severe memory bottlenecks, especially with large JSON payloads.
+**Learning:** The `isDeleted` field is not indexed, so using a simple `.where('isDeleted').equals(false)` fails. However, fetching the entire table is not the solution.
+**Prevention:** Use Dexie's Collection `.filter()` method (e.g., `db.prompts.filter(p => !p.isDeleted).toArray()`) to evaluate conditions efficiently without loading all objects into the main JavaScript array, or ensure critical query fields are added to the IndexedDB schema.
+
+## 2026-05-13 - [Sync State Vulnerability]
+**Vulnerability:** Sync methods `downloadCategories` and `downloadPrompts` blindly overwrite local Dexie records with cloud data.
+**Learning:** This caused silent data loss if a user had local unsynced edits (`syncStatus` set to 'pending' or 'error').
+**Prevention:** Always verify `existing?.syncStatus` before updating local IndexedDB records from the cloud.
