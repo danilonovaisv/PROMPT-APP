@@ -91,6 +91,34 @@ function buildInitialFormState(categoryId = 0): TemplateFormState {
   };
 }
 
+function readDraftState(id: string | undefined): Partial<TemplateFormState> | null {
+  if (!id) {
+    return null;
+  }
+
+  const draftKey = `template_draft_${id}`;
+  const savedDraft = localStorage.getItem(draftKey);
+  if (!savedDraft) {
+    return null;
+  }
+
+  try {
+    const rawDraftData = JSON.parse(savedDraft);
+    const parsedDraftResult = TemplateFormStatePartialSchema.safeParse(rawDraftData);
+
+    if (!parsedDraftResult.success) {
+      console.error('Rascunho inválido detectado:', parsedDraftResult.error);
+      localStorage.removeItem(draftKey);
+      return null;
+    }
+
+    return parsedDraftResult.data as Partial<TemplateFormState>;
+  } catch (error) {
+    console.error('Erro ao recuperar rascunho:', error);
+    return null;
+  }
+}
+
 function getLinkedContextMenusFromSelection(
   contextMenus: ContextMenu[],
   selectedMenuIds: number[],
@@ -225,6 +253,7 @@ export default function EditorPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const draftAppliedRef = useRef(false);
+  const initialPromptLoadStartedRef = useRef(false);
   const isNew = id === 'novo';
 
   const [loaded, setLoaded] = useState(false);
@@ -329,19 +358,51 @@ export default function EditorPage() {
     if (!loaded && isNew && categoriesLive !== undefined) {
       const firstCatId = categories.length > 0 ? categories[0]?.id : 0;
       const categoryFromQuery = Number(searchParams.get('categoria') || firstCatId || 0);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setForm(buildInitialFormState(categoryFromQuery));
+      const draftData = readDraftState(id);
+      const baseState = buildInitialFormState(categoryFromQuery);
+
+      if (draftData?.template?.meta?.template_name) {
+        draftAppliedRef.current = true;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setForm({ ...baseState, ...draftData });
+        showToast('Rascunho recuperado automaticamente!', 'info');
+      } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setForm(baseState);
+      }
       setLoaded(true);
     }
-  }, [categories, categoriesLive, isNew, loaded, searchParams]);
+  }, [categories, categoriesLive, id, isNew, loaded, searchParams, showToast]);
 
   useEffect(() => {
-    if (isNew || loaded) return;
+    if (isNew || loaded || initialPromptLoadStartedRef.current) return;
+
+    initialPromptLoadStartedRef.current = true;
+    let isCancelled = false;
+
     db.prompts.get(Number(id)).then((prompt) => {
-      if (prompt) setForm(buildFormStateFromPrompt(prompt, availableContextMenus));
+      if (isCancelled) {
+        return;
+      }
+
+      const draftData = readDraftState(id);
+      if (prompt) {
+        const baseState = buildFormStateFromPrompt(prompt, availableContextMenus);
+        if (draftData?.template?.meta?.template_name) {
+          draftAppliedRef.current = true;
+          setForm({ ...baseState, ...draftData });
+          showToast('Rascunho recuperado automaticamente!', 'info');
+        } else {
+          setForm(baseState);
+        }
+      }
       setLoaded(true);
     });
-  }, [availableContextMenus, id, isNew, loaded]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [availableContextMenus, id, isNew, loaded, showToast]);
 
   useEffect(() => {
     if (!loaded || availableContextMenus.length === 0) {
@@ -376,32 +437,18 @@ export default function EditorPage() {
   }, [availableContextMenus, loaded]);
 
   useEffect(() => {
-    if (!loaded) return;
-    const draftKey = `template_draft_${id}`;
-    const savedDraft = localStorage.getItem(draftKey);
-    if (!savedDraft) return;
-    try {
-      const rawDraftData = JSON.parse(savedDraft);
-      const parsedDraftResult = TemplateFormStatePartialSchema.safeParse(rawDraftData);
+    if (!loaded || draftAppliedRef.current) return;
 
-      if (parsedDraftResult.success) {
-        const draftData = parsedDraftResult.data as Partial<TemplateFormState>;
-        if (draftData.template?.meta?.template_name) {
-          // Mark draft as applied BEFORE calling setForm so the menu-sync
-          // effect that may fire afterwards knows to preserve selectedMenuIds.
-          draftAppliedRef.current = true;
-          startTransition(() => {
-            setForm((current) => ({ ...current, ...draftData }));
-          });
-          showToast('Rascunho recuperado automaticamente!', 'info');
-        }
-      } else {
-        console.error('Rascunho inválido detectado:', parsedDraftResult.error);
-        localStorage.removeItem(draftKey);
-      }
-    } catch (error) {
-      console.error('Erro ao recuperar rascunho:', error);
+    const draftData = readDraftState(id);
+    if (!draftData?.template?.meta?.template_name) {
+      return;
     }
+
+    draftAppliedRef.current = true;
+    startTransition(() => {
+      setForm((current) => ({ ...current, ...draftData }));
+    });
+    showToast('Rascunho recuperado automaticamente!', 'info');
   }, [id, loaded, showToast]);
 
   useEffect(() => {
@@ -537,23 +584,9 @@ export default function EditorPage() {
         error: null,
       };
     } catch (e: unknown) {
-      // Lenient fallback: uses form.template directly (already Zod-validated by form state)
-      // and skips required-menu enforcement so partial/in-progress templates still render.
-      try {
-        const freeInputsMap = fromFreeInputEntries(debouncedForm.freeInputs);
-        const rawSelection = UserSelectionSchema.parse({
-          ...debouncedForm.selection,
-          free_inputs: freeInputsMap,
-          fixed_variables: fixedMemory,
-        });
-        const compiled = compilePromptPayload(debouncedForm.template, rawSelection, { lenient: true });
-        const renderedPrompt = renderFinalPromptText(debouncedForm.template, compiled);
-        console.log('[PLAYGROUND] output received:', renderedPrompt);
-        return { payload: compiled, template: debouncedForm.template, selection: rawSelection, renderedPrompt, error: null };
-      } catch {
-        const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
-        return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
-      }
+      console.error('Erro na compilação do prompt:', e);
+      const errorMessage = e instanceof Error ? e.message : 'Payload inválido';
+      return { payload: null, template: null, selection: null, renderedPrompt: '', error: errorMessage };
     }
   }, [availableContextMenus, debouncedForm, fixedMemory]);
 
