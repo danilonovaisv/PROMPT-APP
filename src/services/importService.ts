@@ -1,6 +1,5 @@
 import { db } from '@/db/database';
 import {
-  PromptContractSchema,
   parsePromptPayload,
   getPrimaryReferenceUrl,
   getPromptSummaryFields,
@@ -52,19 +51,9 @@ function pushUniqueWarning(warnings: string[], warning: string | null) {
 }
 
 function parsePromptContract(value: unknown): PromptContract {
-  // Strip fixed_variables before validation to avoid strict() errors
-  let sanitizedValue = value;
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    const rest = { ...(value as Record<string, unknown>) };
-    delete rest.fixed_variables;
-    sanitizedValue = rest;
-  }
-
-  const parsed = PromptContractSchema.safeParse(sanitizedValue);
-  if (parsed.success) {
-    return parsed.data;
-  }
-  return parsePromptPayload(sanitizedValue);
+  // Skip strict validation at this stage to prevent discarding valid legacy or extended JSON.
+  // TemplatePayloadSchema inside migrateTemplateToCurrentSchema handles normalization safely.
+  return parsePromptPayload(value);
 }
 
 // Use shared utilities from @/utils/menuValidation
@@ -81,6 +70,7 @@ function buildPromptRecord(
     categoryId,
     title: summary.title,
     promptPayload,
+    selectedMenuIds: [], // mapped in importFromJsonText
     selectionPayload: {
       template_id: promptPayload.meta.template_id,
       selected_menus: [],

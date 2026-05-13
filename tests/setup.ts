@@ -75,3 +75,7 @@ const localStorageMock = {
 };
 
 global.localStorage = localStorageMock as unknown as Storage;
+
+// Make jest global
+global.jest = jest;
+globalThis.jest = jest;

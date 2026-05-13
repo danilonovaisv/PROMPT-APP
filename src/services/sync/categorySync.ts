@@ -192,8 +192,8 @@ export const downloadCategories = async (): Promise<Map<number, number>> => {
   for (const c of catData) {
     const existing = localByRemoteId.get(c.id);
     
-    // Se local está marcado como excluído mas ainda não subiu pro cloud, pula o download
-    if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+    // Se local tem alterações não sincronizadas (incluindo exclusão), pula o overwrite pelo cloud
+    if (existing && existing.syncStatus !== "synced") {
       continue;
     }
 
