@@ -20,3 +20,7 @@
 ## 2026-04-24 - Dexie.js Frontend Filtering
 **Learning:** React frontend code commonly loads entire tables into memory just to filter them locally (e.g. `const allPrompts = await db.prompts.toArray(); return allPrompts.filter(...)`). This creates severe memory bottlenecks with large JSON payloads, locking the main thread and slowing down renders.
 **Action:** Always delegate filtering to IndexedDB by replacing `table.toArray().filter(...)` with `.where('field').equals(value).filter(condition).toArray()` or just `.filter(condition).toArray()`. If only a total is needed, replace `.toArray().length` with `.count()`.
+
+## 2026-05-13 - [Sync Bulk Insert Optimization]
+**Learning:** Inserting multiple prompts via a loop containing `.single()` queries causes a massive N+1 bottleneck, slowing down sync operations drastically.
+**Action:** Always extract payloads into an array and use Supabase's `insert(array).select('id')` to batch operations, reducing network overhead to a single request.
