@@ -2,7 +2,7 @@
    Componente de Sincronização em Nuvem (Supabase)
    ====================================================== */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { isSupabaseConfigured, supabase, supabaseConfigErrorMessage } from '@/lib/supabase';
 import { smartSync } from '@/services/assetManager';
 import { useToast } from '@/context/ToastContext';
@@ -127,8 +127,10 @@ export default function CloudSyncItem() {
             }
             : null;
 
+    let content: ReactNode;
+
     if (!session) {
-        return (
+        content = (
             <>
                 {statusBanner && (
                     <div
@@ -146,73 +148,77 @@ export default function CloudSyncItem() {
                 </button>
             </>
         );
+    } else {
+        content = (
+            <div className="cloud-sync-box">
+                {statusBanner && (
+                    <div
+                        className={`cloud-sync-box__banner cloud-sync-box__banner--${statusBanner.tone}`}
+                        role="alert"
+                        aria-live="assertive"
+                    >
+                        {statusBanner.message}
+                    </div>
+                )}
+                <div className="cloud-sync-box__user">
+                    <User size={14} />
+                    <span className="truncate">{session.user.email}</span>
+                    <button onClick={handleChangePassword} title="Mudar Senha" className="btn-logout ml-auto mr-1">
+                        <KeyRound size={12} />
+                    </button>
+                    <button onClick={handleLogout} title="Sair" className="btn-logout">
+                        <LogOut size={12} />
+                    </button>
+                </div>
+
+                <div className="cloud-sync-box__status">
+                    <div className="cloud-sync-box__status-indicator">
+                        <div className={`status-dot ${realtimeActive ? 'status-dot--active' : 'status-dot--inactive'}`}></div>
+                        <span className="status-text">
+                            {realtimeActive ? 'Realtime Ativo' : 'Realtime Inativo'}
+                        </span>
+                    </div>
+                    {hasUpdates && (
+                        <div className="updates-badge">
+                            Atualizações disponíveis
+                        </div>
+                    )}
+                </div>
+
+                <div className="cloud-sync-box__actions">
+                    <button
+                        className="btn btn--secondary btn--sm flex-1"
+                        onClick={handleSmartSync}
+                        disabled={loading}
+                        title="Sincronização inteligente bidirecional"
+                    >
+                        {loading ? <RefreshCw size={12} className="animate-spin" /> : <Cloud size={12} />}
+                        {hasUpdates ? 'Atualizar' : 'Sync'}
+                    </button>
+                    <button
+                        className="btn btn--ghost btn--sm flex-1"
+                        onClick={handleRestore}
+                        disabled={loading}
+                        title="Baixar todos os dados da nuvem"
+                    >
+                        Baixar
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
         <>
-        <div className="cloud-sync-box">
-            {statusBanner && (
-                <div
-                    className={`cloud-sync-box__banner cloud-sync-box__banner--${statusBanner.tone}`}
-                    role="alert"
-                    aria-live="assertive"
-                >
-                    {statusBanner.message}
-                </div>
+            {content}
+            {isAuthModalOpen && (
+                <AuthModal
+                    key={authModalMode}
+                    isOpen={isAuthModalOpen}
+                    onClose={() => setIsAuthModalOpen(false)}
+                    initialMode={authModalMode}
+                />
             )}
-            <div className="cloud-sync-box__user">
-                <User size={14} />
-                <span className="truncate">{session.user.email}</span>
-                <button onClick={handleChangePassword} title="Mudar Senha" className="btn-logout ml-auto mr-1">
-                    <KeyRound size={12} />
-                </button>
-                <button onClick={handleLogout} title="Sair" className="btn-logout">
-                    <LogOut size={12} />
-                </button>
-            </div>
-
-            <div className="cloud-sync-box__status">
-                <div className="cloud-sync-box__status-indicator">
-                    <div className={`status-dot ${realtimeActive ? 'status-dot--active' : 'status-dot--inactive'}`}></div>
-                    <span className="status-text">
-                        {realtimeActive ? 'Realtime Ativo' : 'Realtime Inativo'}
-                    </span>
-                </div>
-                {hasUpdates && (
-                    <div className="updates-badge">
-                        Atualizações disponíveis
-                    </div>
-                )}
-            </div>
-
-            <div className="cloud-sync-box__actions">
-                <button
-                    className="btn btn--secondary btn--sm flex-1"
-                    onClick={handleSmartSync}
-                    disabled={loading}
-                    title="Sincronização inteligente bidirecional"
-                >
-                    {loading ? <RefreshCw size={12} className="animate-spin" /> : <Cloud size={12} />}
-                    {hasUpdates ? 'Atualizar' : 'Sync'}
-                </button>
-                <button
-                    className="btn btn--ghost btn--sm flex-1"
-                    onClick={handleRestore}
-                    disabled={loading}
-                    title="Baixar todos os dados da nuvem"
-                >
-                    Baixar
-                </button>
-            </div>
-        </div>
-        {isAuthModalOpen && (
-            <AuthModal
-                key={authModalMode}
-                isOpen={isAuthModalOpen}
-                onClose={() => setIsAuthModalOpen(false)}
-                initialMode={authModalMode}
-            />
-        )}
         </>
     );
 }
