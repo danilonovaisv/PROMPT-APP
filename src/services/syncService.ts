@@ -47,11 +47,19 @@ async function runPhase(
 export const syncToCloud = async (): Promise<boolean> => {
   assertSupabaseConfigured();
 
-  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-  if (refreshError || !refreshData.session) {
-    throw new Error("Usuário não autenticado ou sessão expirada");
+  const { data: sessionData } = await supabase.auth.getSession();
+  let session = sessionData.session;
+
+  // Avoid hard-failing active users when refresh endpoint is flaky.
+  // Only try refresh if no usable session is available.
+  if (!session) {
+    const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError || !refreshData.session) {
+      throw new Error("Usuário não autenticado ou sessão expirada");
+    }
+    session = refreshData.session;
   }
-  const session = refreshData.session;
+
   const userId = session.user.id;
 
   const snapshot = await createSnapshot();

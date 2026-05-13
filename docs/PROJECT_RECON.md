@@ -1,22 +1,23 @@
-# PROJECT_RECON
+# resumo_executivo
+Saude geral: **boa com riscos pontuais P0/P1**. Stack real confirmada: Vite + React 19 + TypeScript + Dexie/IndexedDB + Supabase + Netlify. Build/lint/test passaram localmente. Problemas criticos encontrados: fluxo de sync dependente de `refreshSession()` (podia bloquear sync com sessao valida), risco operacional por segredos reais em `.env.local`, e sinalizacao de possivel desalinhamento em policy `memory_select` (role `public`, ainda com filtro por `auth.uid()`).
 
-## Resumo executivo
-Estado geral: **saudável com riscos P0 funcionais**. Build e testes passam, porém há inconsistências entre importação, vínculo de menus e UX mobile no Playground que explicam sintomas de templates vazios e fricção na Memória Fixa.
+# escopo_e_premissas
+- Escopo auditado: auth, realtime, local-first sync, import JSON, memoria fixa, menus vinculados, RLS/Supabase, Netlify, UX/performance/a11y.
+- Premissa: auditoria completa com evidencia de codigo + verificacao de comandos + consulta ao projeto Supabase e Netlify conectados.
+- Fato verificado vs hipotese: bugs P0 tratados como hipoteses obrigatorias e rastreados ate evidencias.
 
-## Stack real verificada
-- Frontend: React 19 + TypeScript + Vite.
-- Persistência local-first: Dexie/IndexedDB.
-- Sync cloud: Supabase JS v2.
-- Deploy: Netlify (SPA fallback + headers de segurança).
-
-## Divergências documentação vs implementação
-- README referencia `src/services/supabaseClient.ts`, mas o repositório usa `src/lib/supabase.ts` e `src/lib/supabaseConfig.ts`.
-- README lista versões e estrutura parcialmente desatualizadas frente ao `package.json` atual.
-
-## Arquivos críticos analisados
-- `src/services/importService.ts`: pipeline de importação, migração e persistência.
-- `src/models/promptSchema.ts`: schema e defaults que podem mascarar payload inválido.
-- `src/db/database.ts`: versão do schema Dexie e evolução de registros legados.
-- `src/services/syncService.ts` e `src/services/sync/*`: fases de sincronização e falha parcial tolerada.
-- `src/components/editor/EditorPlayground.tsx`: Memória Fixa e estados de UI.
-- `src/components/editor/EditorContextMenuSelector.tsx`: vinculação de menus e busca.
+# project_reconnaissance
+- Repo: `/Users/PROJETOS-DEV/PROMPT-APP`
+- Stack real (`package.json`): Vite 8, React 19, TS 6, Dexie 4.4, Supabase JS 2.105, `@supabase/ssr` instalado, Netlify plugin.
+- Arquivos-chave auditados:
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/services/syncService.ts` (auth/sync orchestration)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/services/autoSync.ts` (hooks Dexie + debounce)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/services/realtimeService.ts` (listeners Supabase)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/services/importService.ts` (import template bulk/single)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/utils/importMenusJson.ts` (import menus e conflitos)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/components/editor/EditorPlayground.tsx` (Memoria Fixa UI)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/components/editor/EditorContextMenuSelector.tsx` (menus vinculados)
+  - `/Users/PROJETOS-DEV/PROMPT-APP/src/lib/supabase.ts` e `supabaseConfig.ts` (env/frontend key safety)
+- Divergencias docs x implementacao:
+  - README mostra versoes desatualizadas em varios pontos vs `package.json`.
+  - README sugere paradigma, mas codigo atual tem sync cloud ativo e complexo (nao apenas local-first puro).

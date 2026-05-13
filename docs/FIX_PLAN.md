@@ -1,16 +1,16 @@
-# FIX_PLAN
+# fix_plan_p0_p1_p2
 
-## P0
-1. Endurecer validação semântica de importação no `importService` com rejeição explícita para templates semanticamente vazios.
-2. Adicionar normalização com erros padronizados por campo (proposta: `schemaValidation.ts` integrado ao fluxo de import).
-3. Melhorar UX mobile de Memória Fixa, validação de chave duplicada, feedback de erro e hit targets.
+## P0 (integridade de dados e fluxo principal)
+1. Sync auth resiliente (feito): manter `getSession` como caminho primario e refresh como fallback.
+2. Higiene de segredos: remover `SUPABASE_SERVICE_ROLE_KEY` de `.env.local` em ambiente de frontend local compartilhado e garantir `.gitignore`/processo de secrets.
+3. Repro forense de import vazio com fixture real do usuario (arquivo que falhou) e snapshot local antes/depois do import.
 
-## P1
-1. Expor status de sync por fase na UI, não apenas no console.
-2. Validar e documentar RLS por tabela no Supabase, com teste cruzado entre usuários.
-3. Cobrir cenário de rede degradada, retries e reconciliação de conflito com teste automatizado.
+## P1 (sync/supabase/rls)
+1. Realtime de memoria fixa: adicionar listener para `prompt_memory_context` no `realtimeService.ts`.
+2. Policy hardening: trocar role de `memory_select` de `public` para `authenticated` (com aprovacao explicita, por envolver policy).
+3. Garantir playbook offline/conflict: teste de reconexao e reconciliacao com falha de rede simulada.
 
-## P2
-1. Revisar seletor de menus para comportamento consistente em touch.
-2. Mitigar potenciais N+1 em carregamento de categorias e prompts com batching/cache local e memoização seletiva.
-3. Limpar documentação obsoleta para reduzir divergência operacional.
+## P2 (menus/ux/dx/perf)
+1. Otimizar insert de fixed memory no import (acumular tudo e `bulkAdd` unico).
+2. Melhorar UX mobile-first em selector/modais com testes de teclado e foco.
+3. Corrigir warnings do audit web (titulos/descricoes duplicadas, sitemap e conteudo minimo).

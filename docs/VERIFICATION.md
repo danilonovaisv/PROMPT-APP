@@ -1,16 +1,22 @@
-# VERIFICATION
+# verification_results
 
 ## Comandos executados
-- `npm run lint`, resultado: sucesso com 1 warning de diretiva eslint não usada.
-- `npm run test -- --runInBand`, resultado: 37 suites passadas.
-- `npm run build`, resultado: build concluído.
+```bash
+pnpm run lint
+pnpm run build
+pnpm test
+squirrel --version
+squirrel audit https://prompt-app-dan.netlify.app -C surface --format llm
+squirrel audit https://prompt-app-dan.netlify.app -C full --format llm
+```
 
-## Verificações técnicas realizadas
-- Revisão de variáveis públicas Supabase e ausência de SERVICE_ROLE no frontend.
-- Revisão de pipeline de importação JSON, migração e persistência Dexie.
-- Revisão de estados loading/empty na área de Memória Fixa e seletor de menus.
+## Resultados
+- `lint`: PASS
+- `build`: PASS (Vite build concluido)
+- `test`: PASS (37 suites, 151 testes)
+- `squirrel`: PASS tecnico de execucao; score 97/A, com 1 erro de sitemap e warnings de SEO/conteudo/perf.
 
-## Limitações
-- Sem acesso ao projeto Supabase remoto, RLS não foi comprovado por evidência SQL executável.
-- Repositório externo obrigatório `DATABASE_AGENT_NEXT` retornou 404 na consulta direta.
-- Vector store `vs_69520b1fb834819197e445db9aab8d69` não disponível pelos recursos MCP desta sessão.
+## Validacao de seguranca Supabase (plugin)
+- Projeto identificado e auditado (`dpejskjpghoozbpfxkpf`).
+- RLS habilitado nas tabelas criticas.
+- Policies e publication verificadas via SQL.

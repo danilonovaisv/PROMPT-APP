@@ -65,27 +65,29 @@ describe('realtimeService cleanup cycles', () => {
     const { supabase } = await import('@/lib/supabase');
 
     await setupRealtimeListeners();
-    expect(activeSubscriptions()).toBe(3);
+    expect(activeSubscriptions()).toBe(4);
 
     cleanupRealtimeListeners();
     expect(activeSubscriptions()).toBe(0);
 
     await setupRealtimeListeners();
-    expect(activeSubscriptions()).toBe(3);
+    expect(activeSubscriptions()).toBe(4);
 
     cleanupRealtimeListeners();
     expect(activeSubscriptions()).toBe(0);
 
-    expect(supabase.channel).toHaveBeenCalledTimes(6);
+    expect(supabase.channel).toHaveBeenCalledTimes(8);
     expect(channelNames).toEqual([
       'categories_changes',
       'prompts_changes',
       'context_menus_changes',
+      'prompt_memory_changes',
       'categories_changes',
       'prompts_changes',
       'context_menus_changes',
+      'prompt_memory_changes',
     ]);
-    expect(subscriptions).toHaveLength(6);
+    expect(subscriptions).toHaveLength(8);
     expect(subscriptions.every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
   });
 });
