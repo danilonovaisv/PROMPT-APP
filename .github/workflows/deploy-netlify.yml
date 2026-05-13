@@ -65,7 +65,7 @@ jobs:
 
       - name: Pré-build
         run: |
-          pnpm install --frozen-lockfile --prefer-offline
+          pnpm install --prefer-offline
           pnpm run build
 
       - name: Deploy (manual)
