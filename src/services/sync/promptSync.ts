@@ -182,16 +182,7 @@ export const syncPrompts = async (
           throw result.error ?? new Error("Erro ao criar prompts em lote.");
         }
 
-<<<<<<< HEAD
-        for (let i = 0; i < result.data.length; i++) {
-          const prompt = promptsWithoutRemoteId[i];
-          if (prompt.id && result.data[i].id) {
-            await db.prompts.update(prompt.id, {
-              remoteId: result.data[i].id,
-              syncStatus: "synced",
-            });
-          }
-=======
+
         const updatedPrompts = promptsWithoutRemoteId.map((prompt, i) => ({
           ...prompt,
           remoteId: result.data[i].id,
@@ -200,7 +191,6 @@ export const syncPrompts = async (
 
         if (updatedPrompts.length > 0) {
           await db.prompts.bulkPut(updatedPrompts);
->>>>>>> origin/main
         }
       } catch (error) {
         console.error("❌ Erro ao inserir novos prompts em lote:", error);

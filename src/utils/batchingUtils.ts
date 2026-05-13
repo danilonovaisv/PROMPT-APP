@@ -6,7 +6,7 @@ interface BatchRequest<T, R> { key: T; resolve: (value: R) => void; reject: (rea
 
 export function createBatcher<T, R>(fetcher: (keys: T[]) => Promise<Map<T, R>>, options: { maxBatchSize?: number; delayMs?: number } = {}) {
   const { maxBatchSize = 50, delayMs = 10 } = options;
-  let queue: BatchRequest<T, R>[] = [];
+  const queue: BatchRequest<T, R>[] = [];
   let timeout: ReturnType<typeof setTimeout> | null = null;
   async function flush() {
     if (queue.length === 0) return;
@@ -43,19 +43,4 @@ export class LocalCache<K, V> {
   }
   invalidate(key: K): void { this.store.delete(key); }
   invalidateAll(): void { this.store.clear(); }
-}
-
-import { useRef } from 'react';
-export function useStableMemo<T>(factory: () => T, deps: React.DependencyList, isEqual: (a: T, b: T) => boolean = (a, b) => JSON.stringify(a) === JSON.stringify(b)): T {
-  const ref = useRef<{ value: T; deps: React.DependencyList } | null>(null);
-  if (!ref.current) { ref.current = { value: factory(), deps }; }
-  else {
-    const depsChanged = deps.length !== ref.current.deps.length || deps.some((dep, i) => dep !== ref.current!.deps[i]);
-    if (depsChanged) {
-      const newValue = factory();
-      if (!isEqual(newValue, ref.current.value)) { ref.current = { value: newValue, deps }; }
-      else { ref.current.deps = deps; }
-    }
-  }
-  return ref.current.value;
 }

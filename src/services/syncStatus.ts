@@ -57,7 +57,7 @@ function emitState(state: SyncState) {
   listeners.forEach((l) => l(state));
 }
 
-export async function syncToCloudWithPhases(): Promise<any> {
+export async function syncToCloudWithPhases(): Promise<{ success: boolean; phases: SyncPhaseInfo[]; errors: string[] }> {
   const phases: SyncPhaseInfo[] = [];
   const errors: string[] = [];
   const addPhase = (

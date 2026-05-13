@@ -367,7 +367,6 @@ export default function EditorPage() {
         setForm({ ...baseState, ...draftData });
         showToast('Rascunho recuperado automaticamente!', 'info');
       } else {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setForm(baseState);
       }
       setLoaded(true);
