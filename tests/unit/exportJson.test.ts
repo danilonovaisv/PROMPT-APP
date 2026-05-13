@@ -262,10 +262,10 @@ describe("formatPromptAsMarkdown", () => {
             selected_sub_options: ["strict"],
           },
         },
+        free_inputs: {},
         fixed_variables: {
           Runtime: 'Supabase Realtime',
         },
-        free_inputs: {},
       },
     };
 

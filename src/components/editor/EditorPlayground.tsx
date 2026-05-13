@@ -203,7 +203,7 @@ export function EditorPlayground({
                         value={newKeyName}
                         onChange={(e) => setNewKeyName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleConfirmAddKey()}
-                        onBlur={(e) => !e.target.value && setIsAddingKey(false)}
+                        
                         aria-label="Nome da nova chave fixa"
                         placeholder="EX: BRAND_VOICE"
                       />
