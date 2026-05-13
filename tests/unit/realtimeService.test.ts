@@ -63,18 +63,20 @@ describe('realtimeService', () => {
     await setupRealtimeListeners();
     await setupRealtimeListeners();
 
-    expect(supabase.channel).toHaveBeenCalledTimes(6);
+    expect(supabase.channel).toHaveBeenCalledTimes(8);
     expect(channelNames).toEqual([
       'categories_changes',
       'prompts_changes',
       'context_menus_changes',
+      'prompt_memory_changes',
       'categories_changes',
       'prompts_changes',
       'context_menus_changes',
+      'prompt_memory_changes',
     ]);
-    expect(activeSubscriptions()).toBe(3);
-    expect(subscriptions.slice(0, 3).every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
-    expect(subscriptions.slice(3).every((subscription) => subscription.unsubscribe.mock.calls.length === 0)).toBe(true);
+    expect(activeSubscriptions()).toBe(4);
+    expect(subscriptions.slice(0, 4).every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
+    expect(subscriptions.slice(4).every((subscription) => subscription.unsubscribe.mock.calls.length === 0)).toBe(true);
   });
 
   test('cleanupRealtimeListeners unsubscribes all channels and is idempotent', async () => {
@@ -85,7 +87,7 @@ describe('realtimeService', () => {
     cleanupRealtimeListeners();
 
     expect(activeSubscriptions()).toBe(0);
-    expect(subscriptions).toHaveLength(3);
+    expect(subscriptions).toHaveLength(4);
     expect(subscriptions.every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
   });
 });

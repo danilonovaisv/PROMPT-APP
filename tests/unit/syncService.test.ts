@@ -109,6 +109,9 @@ describe('syncToCloud', () => {
   });
 
   test('throws an error if the user is not authenticated', async () => {
+    (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
+      data: { session: null },
+    });
     (supabase.auth.refreshSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: null },
       error: null,

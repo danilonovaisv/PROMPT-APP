@@ -9,6 +9,7 @@ import type {
   ContextMenu,
   Prompt,
   FewShotExample,
+  PromptMemory,
 } from "@/models/types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { saveLocalBackup } from "@/utils/backupManager";
@@ -24,6 +25,7 @@ import type { LegacyContextMenuSelection } from "@/models/promptSchema";
 let categoriesChannel: RealtimeChannel | null = null;
 let promptsChannel: RealtimeChannel | null = null;
 let menusChannel: RealtimeChannel | null = null;
+let memoryChannel: RealtimeChannel | null = null;
 
 let _backupTimeout: ReturnType<typeof setTimeout> | null = null;
 const debouncedSaveLocalBackup = () => {
@@ -110,6 +112,23 @@ export async function setupRealtimeListeners() {
     )
     .subscribe();
 
+  // Canal para Memória Fixa por template
+  memoryChannel = supabase
+    .channel("prompt_memory_changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "prompt_memory_context",
+        filter: `user_id=eq.${userId}`,
+      },
+      async (payload) => {
+        await handleMemoryChange(payload);
+        debouncedSaveLocalBackup();
+      },
+    )
+    .subscribe();
 }
 
 interface RealtimeCategoryPayload {
@@ -464,6 +483,72 @@ async function handleMenuChange(payload: {
   }
 }
 
+interface RealtimeMemoryPayload {
+  id?: string;
+  key: string;
+  value: string;
+  template_id: string;
+  created_at: string;
+  updated_at: string;
+  is_deleted?: boolean;
+}
+
+async function handleMemoryChange(payload: {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown> | null;
+  old: Record<string, unknown> | null;
+}) {
+  const remoteData = payload.new || payload.old;
+  const eventType = payload.eventType;
+
+  if (!remoteData) return;
+
+  const rd = remoteData as unknown as RealtimeMemoryPayload;
+  const remoteUpdatedAt = new Date(rd.updated_at).getTime();
+
+  try {
+    const existing = await db.promptMemory
+      .where("templateId")
+      .equals(rd.template_id)
+      .and((item) => item.key === rd.key)
+      .first();
+
+    if (eventType === "DELETE" || rd.is_deleted) {
+      if (existing?.id) {
+        await db.promptMemory.delete(existing.id);
+      }
+      return;
+    }
+
+    if (existing?.isDeleted === true && existing.syncStatus !== "synced") {
+      return;
+    }
+
+    if (existing?.updatedAt && remoteUpdatedAt <= existing.updatedAt.getTime()) {
+      return;
+    }
+
+    const memoryData: Omit<PromptMemory, "id"> = {
+      remoteId: rd.id,
+      key: rd.key,
+      value: rd.value || "",
+      templateId: rd.template_id,
+      isDeleted: false,
+      syncStatus: "synced",
+      createdAt: new Date(rd.created_at),
+      updatedAt: new Date(rd.updated_at),
+    };
+
+    if (existing?.id) {
+      await db.promptMemory.update(existing.id, memoryData);
+    } else {
+      await db.promptMemory.add(memoryData);
+    }
+  } catch (error) {
+    console.error("❌ Erro ao processar mudança de memória fixa:", error);
+  }
+}
+
 /**
  * Remove todos os listeners de realtime
  */
@@ -481,6 +566,11 @@ export function cleanupRealtimeListeners() {
   if (menusChannel) {
     menusChannel.unsubscribe();
     menusChannel = null;
+  }
+
+  if (memoryChannel) {
+    memoryChannel.unsubscribe();
+    memoryChannel = null;
   }
 
 }
