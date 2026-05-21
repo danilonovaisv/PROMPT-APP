@@ -18,10 +18,10 @@ This checklist validates the Supabase infrastructure against the documented setu
 
 | Variable | Status | Current Value | Notes |
 |----------|--------|---------------|-------|
-| `VITE_SUPABASE_URL` | ✅ Configured | `https://dpejskjpghoozbpfxkpf.supabase.co` | Production URL set |
-| `VITE_SUPABASE_ANON_KEY` | ✅ Configured | Present (JWT token) | Valid anon key configured |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ Configured | `sb_publishable_Lf259HIan8PmB9XjlYPXGQ_vo7L2eWI` | Fallback key present |
-| `VITE_SENTRY_DSN` | ⚠️ Placeholder | `your-sentry-dsn` | **ACTION REQUIRED**: Replace with actual Sentry DSN |
+| `VITE_SUPABASE_URL` | ✅ Configured | Redacted | Production URL set in environment |
+| `VITE_SUPABASE_ANON_KEY` | ✅ Configured | Redacted public client key | Valid anon key configured |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ Configured | Redacted public client key | Fallback key present |
+| `VITE_SENTRY_DSN` | ⚠️ Placeholder | Placeholder only | **ACTION REQUIRED**: Replace with actual Sentry DSN |
 
 **Validation Steps:**
 ```bash
@@ -36,11 +36,11 @@ grep -E "YOUR_" .env.example
 
 | Variable | Status | Notes |
 |----------|--------|-------|
-| `SUPABASE_API_KEY` | ✅ Configured | Present |
-| `SUPABASE_SERVICE_ROLE_KEY` | ✅ Configured | Present (elevated privileges) |
-| `SUPABASE_JWT_SECRET` | ✅ Configured | Present |
-| `NETLIFY_API_TOKEN` | ✅ Configured | Present |
-| `NETLIFY_SITE_ID` | ✅ Configured | `2628e92e-47d5-40bb-abaa-be25612b2d56` |
+| `SUPABASE_API_KEY` | Manual verification required | Do not record value or presence in repo docs |
+| `SUPABASE_SERVICE_ROLE_KEY` | Manual verification required | Keep server-only and rotate if exposed |
+| `SUPABASE_JWT_SECRET` | Manual verification required | Do not record value or presence in repo docs |
+| `NETLIFY_API_TOKEN` | Manual verification required | Keep outside client bundle and rotate if exposed |
+| `NETLIFY_SITE_ID` | ✅ Configured | Non-secret identifier, verify against Netlify project settings |
 
 **⚠️ CRITICAL SECURITY CHECK:**
 - [ ] Verify `.env.local` is listed in `.gitignore`

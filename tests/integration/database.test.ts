@@ -7,8 +7,8 @@ import type { Category, ContextMenu, Prompt } from "@/models/types";
 import { checkMenuIdConflicts, exportMenusToJson } from "@/utils/importMenusJson";
 
 describe("Database Integration Tests", () => {
-  it("should expose Dexie schema version 12", () => {
-    expect(db.verno).toBe(12);
+  it("should expose Dexie schema version 13", () => {
+    expect(db.verno).toBe(13);
   });
 
   beforeEach(async () => {

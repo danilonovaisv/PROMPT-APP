@@ -37,14 +37,24 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setupRealtime = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured) {
+      setRealtimeActive(false);
+      return false;
+    }
 
     try {
-      await setupRealtimeListeners();
-      setRealtimeActive(true);
+      const result = await setupRealtimeListeners();
+      setRealtimeActive(result.success);
+
+      if (!result.success) {
+        console.warn('⚠️ Realtime parcialmente inativo:', result.channels, result.errors);
+      }
+
+      return result.success;
     } catch (error) {
       console.error('❌ Erro ao iniciar realtime:', error);
       setRealtimeActive(false);
+      return false;
     }
   }, []);
 
@@ -59,13 +69,14 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const bootstrapSession = useCallback(async (shouldSync: boolean) => {
-    await setupRealtime();
+    const realtimeReady = await setupRealtime();
 
     if (shouldSync && typeof navigator !== 'undefined' && navigator.onLine) {
       await syncPendingChanges();
     }
 
     await refreshUpdates();
+    return realtimeReady;
   }, [refreshUpdates, setupRealtime, syncPendingChanges]);
 
   useEffect(() => {
@@ -79,10 +90,11 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
       if (cancelled) return;
 
       setSession(currentSession);
-      setRealtimeActive(!!currentSession);
 
       if (currentSession) {
         await bootstrapSession(false);
+      } else {
+        setRealtimeActive(false);
       }
     });
 
@@ -134,8 +146,8 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
 
       void (async () => {
         try {
-          await reconnectRealtime();
-          setRealtimeActive(true);
+          const result = await reconnectRealtime();
+          setRealtimeActive(result.success);
           await syncPendingChanges();
           await refreshUpdates();
         } catch (error) {

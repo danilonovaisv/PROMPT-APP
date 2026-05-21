@@ -1,0 +1,176 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "workflow_scope",
+      "menu_name": "WORKFLOW-CREATOR - Workflow Scope",
+      "description": "Defines how much of the generic workflow must be converted.",
+      "options": [
+        {
+          "label": "Full Workflow Conversion",
+          "value": "full_workflow_conversion",
+          "sub_options": []
+        },
+        {
+          "label": "Feature-Specific Conversion",
+          "value": "feature_specific_conversion",
+          "sub_options": []
+        },
+        {
+          "label": "QA and Verification Workflow",
+          "value": "qa_verification_workflow",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "execution_depth",
+      "menu_name": "WORKFLOW-CREATOR - Execution Depth",
+      "description": "Controls strictness and implementation depth.",
+      "options": [
+        {
+          "label": "Strict Production Workflow",
+          "value": "strict_production_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Balanced Implementation Workflow",
+          "value": "balanced_implementation_workflow",
+          "sub_options": []
+        },
+        {
+          "label": "Exploratory Planning Workflow",
+          "value": "exploratory_planning_workflow",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "artifact_policy",
+      "menu_name": "WORKFLOW-CREATOR - Artifact Policy",
+      "description": "Defines the required Antigravity evidence package.",
+      "options": [
+        {
+          "label": "Full Verification Artifact",
+          "value": "full_verification_artifact",
+          "sub_options": []
+        },
+        {
+          "label": "Standard Evidence Artifact",
+          "value": "standard_evidence_artifact",
+          "sub_options": []
+        },
+        {
+          "label": "Lightweight Artifact",
+          "value": "lightweight_artifact",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "technical_capability_policy",
+      "menu_name": "WORKFLOW-CREATOR - Política de Capacidades Técnicas",
+      "description": "Defines how the workflow handles ambiguous technical capability statements.",
+      "options": [
+        {
+          "label": "Assumir intenção declarada",
+          "value": "assumir_intencao_declarada",
+          "sub_options": []
+        },
+        {
+          "label": "Validar antes de executar",
+          "value": "validar_antes_de_executar",
+          "sub_options": []
+        },
+        {
+          "label": "Modo conservador",
+          "value": "modo_conservador",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "repository_mode",
+      "menu_name": "WORKFLOW-CREATOR - Repository Mode",
+      "description": "Defines whether the target project already exists or must be scaffolded.",
+      "options": [
+        {
+          "label": "Existing Repository Update",
+          "value": "existing_repository_update",
+          "sub_options": []
+        },
+        {
+          "label": "New Project Scaffold",
+          "value": "new_project_scaffold",
+          "sub_options": []
+        },
+        {
+          "label": "Local Workspace Only",
+          "value": "local_workspace_only",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "visual_reference_mode",
+      "menu_name": "WORKFLOW-CREATOR - Visual Reference Mode",
+      "description": "Controls how visual references are used for acceptance.",
+      "options": [
+        {
+          "label": "Absolute Visual Parity",
+          "value": "absolute_visual_parity",
+          "sub_options": []
+        },
+        {
+          "label": "Documented Design Alignment",
+          "value": "documented_design_alignment",
+          "sub_options": []
+        },
+        {
+          "label": "No Visual Reference Available",
+          "value": "no_visual_reference_available",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "output_specificity",
+      "menu_name": "WORKFLOW-CREATOR - Output Specificity",
+      "description": "Controls how detailed the adapted workflow should be.",
+      "options": [
+        {
+          "label": "Concrete File-Level Steps",
+          "value": "concrete_file_level_steps",
+          "sub_options": []
+        },
+        {
+          "label": "Architecture-Level Steps",
+          "value": "architecture_level_steps",
+          "sub_options": []
+        },
+        {
+          "label": "Agent-Brief Style",
+          "value": "agent_brief_style",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "output_language",
+      "menu_name": "WORKFLOW-CREATOR - Output Language",
+      "description": "Defines the language of the generated adapted workflow.",
+      "options": [
+        {
+          "label": "American English",
+          "value": "en_us",
+          "sub_options": []
+        },
+        {
+          "label": "Brazilian Portuguese",
+          "value": "pt_br",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

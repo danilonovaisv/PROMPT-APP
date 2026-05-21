@@ -1,0 +1,392 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_agente",
+      "menu_name": "AGENT-CLAUDE - Tipo de Agente",
+      "description": "Define o papel principal do especialista que será criado ou documentado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Coordenador de especialistas",
+          "value": "coordenador_especialistas",
+          "description": "Orquestra especialistas sem executar implementação diretamente.",
+          "sub_options": []
+        },
+        {
+          "label": "Revisor de código",
+          "value": "revisor_codigo",
+          "description": "Analisa qualidade, segurança, padrões e riscos de alterações.",
+          "sub_options": []
+        },
+        {
+          "label": "Debugger",
+          "value": "debugger",
+          "description": "Investiga erros, logs, testes quebrados e causas raiz.",
+          "sub_options": []
+        },
+        {
+          "label": "Frontend engineer",
+          "value": "frontend_engineer",
+          "description": "Projeta e implementa interfaces modernas com arquitetura de componentes.",
+          "sub_options": []
+        },
+        {
+          "label": "Backend engineer",
+          "value": "backend_engineer",
+          "description": "Projeta APIs, serviços, bancos de dados e integrações server-side.",
+          "sub_options": []
+        },
+        {
+          "label": "QA e testes",
+          "value": "qa_testes",
+          "description": "Planeja, executa e corrige suítes de testes automatizados.",
+          "sub_options": []
+        },
+        {
+          "label": "DevOps e release",
+          "value": "devops_release",
+          "description": "Organiza build, CI, deploy, observabilidade e rotinas de entrega.",
+          "sub_options": []
+        },
+        {
+          "label": "Segurança e compliance",
+          "value": "seguranca_compliance",
+          "description": "Revisa riscos, permissões, segredos, privacidade e requisitos de conformidade.",
+          "sub_options": []
+        },
+        {
+          "label": "Documentação técnica",
+          "value": "documentacao_tecnica",
+          "description": "Cria documentação operacional, guias de uso e registros arquiteturais.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "instalacao_distribuicao",
+      "menu_name": "AGENT-CLAUDE-ESCOPO - Instalação e Distribuição",
+      "description": "Define onde os artefatos gerados devem ser usados.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Projeto versionado",
+          "value": "projeto_versionado",
+          "description": "Cria artefatos específicos do repositório e apropriados para controle de versão.",
+          "sub_options": []
+        },
+        {
+          "label": "Usuário global",
+          "value": "usuario_global",
+          "description": "Cria artefatos pessoais reutilizáveis em múltiplos projetos.",
+          "sub_options": []
+        },
+        {
+          "label": "Sessão CLI temporária",
+          "value": "sessao_cli_temporaria",
+          "description": "Gera configuração efêmera para inicialização por linha de comando.",
+          "sub_options": []
+        },
+        {
+          "label": "Plugin distribuível",
+          "value": "plugin_distribuivel",
+          "description": "Estrutura artefatos para empacotamento e distribuição como plugin.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_acao",
+      "menu_name": "AGENT-CLAUDE-AUTONOMIA - Nível de Autonomia",
+      "description": "Define o grau de ação permitido para os especialistas gerados.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Somente planejamento",
+          "value": "somente_planejamento",
+          "description": "Permite exploração, diagnóstico e plano, sem alterações em arquivos.",
+          "sub_options": []
+        },
+        {
+          "label": "Revisão sem escrita",
+          "value": "revisao_sem_escrita",
+          "description": "Permite leitura, busca e análise, bloqueando edição e escrita.",
+          "sub_options": []
+        },
+        {
+          "label": "Edição assistida",
+          "value": "edicao_assistida",
+          "description": "Permite alterações com pontos de aprovação e explicação de impacto.",
+          "sub_options": []
+        },
+        {
+          "label": "Execução controlada",
+          "value": "execucao_controlada",
+          "description": "Permite comandos e automações com limites de segurança explícitos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ferramentas_permitidas",
+      "menu_name": "AGENT-CLAUDE-TOOLS - Ferramentas Permitidas",
+      "description": "Define quais capacidades devem aparecer nas permissões dos especialistas.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Leitura e busca",
+          "value": "leitura_busca",
+          "description": "Permite inspeção de arquivos, padrões e estrutura do projeto.",
+          "sub_options": []
+        },
+        {
+          "label": "Bash controlado",
+          "value": "bash_controlado",
+          "description": "Permite comandos de terminal seguros e justificados.",
+          "sub_options": []
+        },
+        {
+          "label": "Edição de arquivos",
+          "value": "edicao_arquivos",
+          "description": "Permite modificar arquivos existentes quando aprovado.",
+          "sub_options": []
+        },
+        {
+          "label": "Escrita de arquivos",
+          "value": "escrita_arquivos",
+          "description": "Permite criar novos arquivos quando o escopo exige.",
+          "sub_options": []
+        },
+        {
+          "label": "Busca web",
+          "value": "busca_web",
+          "description": "Permite consultar documentação externa quando a tarefa exigir atualização.",
+          "sub_options": []
+        },
+        {
+          "label": "Delegação para especialistas",
+          "value": "delegacao_especialistas",
+          "description": "Permite chamar especialistas permitidos a partir de uma sessão principal.",
+          "sub_options": []
+        },
+        {
+          "label": "Skills",
+          "value": "skills",
+          "description": "Permite invocar ou pré-carregar procedimentos reutilizáveis.",
+          "sub_options": []
+        },
+        {
+          "label": "MCP",
+          "value": "mcp",
+          "description": "Permite integrar ferramentas, bancos ou APIs externas configuradas.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "preferencia_raciocinio",
+      "menu_name": "AGENT-CLAUDE-MODELO - Modelo do Subagente",
+      "description": "Define a preferência de modelo para o frontmatter ou JSON de inicialização.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Herdar sessão",
+          "value": "inherit",
+          "description": "Usa o mesmo modelo da sessão principal.",
+          "sub_options": []
+        },
+        {
+          "label": "Haiku",
+          "value": "haiku",
+          "description": "Prioriza baixo custo e baixa latência para tarefas simples.",
+          "sub_options": []
+        },
+        {
+          "label": "Sonnet",
+          "value": "sonnet",
+          "description": "Equilibra qualidade, velocidade e custo para tarefas técnicas.",
+          "sub_options": []
+        },
+        {
+          "label": "Opus",
+          "value": "opus",
+          "description": "Prioriza raciocínio e revisão profunda para tarefas críticas.",
+          "sub_options": []
+        },
+        {
+          "label": "ID completo",
+          "value": "id_completo",
+          "description": "Permite instruir o usuário a informar um identificador completo de modelo.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_permissao",
+      "menu_name": "AGENT-CLAUDE-SEGURANCA - Modo de Permissão",
+      "description": "Define o comportamento de aprovação para chamadas de ferramenta.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "default",
+          "value": "default",
+          "description": "Mantém prompts de permissão padrão.",
+          "sub_options": []
+        },
+        {
+          "label": "plan",
+          "value": "plan",
+          "description": "Mantém exploração somente leitura e foco em planejamento.",
+          "sub_options": []
+        },
+        {
+          "label": "dontAsk",
+          "value": "dontAsk",
+          "description": "Nega automaticamente solicitações não permitidas explicitamente.",
+          "sub_options": []
+        },
+        {
+          "label": "acceptEdits",
+          "value": "acceptEdits",
+          "description": "Aceita edições de arquivo e comandos comuns dentro dos limites configurados.",
+          "sub_options": []
+        },
+        {
+          "label": "auto",
+          "value": "auto",
+          "description": "Usa avaliação automática de chamadas de ferramenta conforme a configuração da sessão.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "componentes_complementares",
+      "menu_name": "AGENT-CLAUDE-ARQUITETURA - Componentes Complementares",
+      "description": "Define quais artefatos auxiliares devem acompanhar os especialistas.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "Memória de projeto",
+          "value": "memoria_projeto",
+          "description": "Inclui arquivo persistente de instruções do projeto.",
+          "sub_options": []
+        },
+        {
+          "label": "Configurações de segurança",
+          "value": "configuracoes_seguranca",
+          "description": "Inclui arquivo JSON de permissões e negações.",
+          "sub_options": []
+        },
+        {
+          "label": "Skills reutilizáveis",
+          "value": "skills_reutilizaveis",
+          "description": "Inclui procedimentos acionáveis em pastas próprias.",
+          "sub_options": []
+        },
+        {
+          "label": "Integrações MCP",
+          "value": "integracoes_mcp",
+          "description": "Inclui servidores externos apenas quando justificados.",
+          "sub_options": []
+        },
+        {
+          "label": "Hooks de ciclo de vida",
+          "value": "hooks_ciclo_vida",
+          "description": "Inclui automações de início, parada ou validação.",
+          "sub_options": []
+        },
+        {
+          "label": "Regras por caminho",
+          "value": "regras_por_caminho",
+          "description": "Inclui instruções condicionais por glob de arquivos.",
+          "sub_options": []
+        },
+        {
+          "label": "Script zsh",
+          "value": "script_zsh",
+          "description": "Inclui um script autocontido para criar a estrutura local.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_resultado",
+      "menu_name": "AGENT-CLAUDE-OUTPUT - Tipo de Entrega",
+      "description": "Define quais blocos o resultado final deve conter.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Arquivos markdown de especialistas",
+          "value": "arquivos_markdown_especialistas",
+          "description": "Entrega arquivos completos com frontmatter e prompt de sistema.",
+          "sub_options": []
+        },
+        {
+          "label": "JSON para CLI",
+          "value": "json_cli",
+          "description": "Entrega configuração efêmera para inicialização por linha de comando.",
+          "sub_options": []
+        },
+        {
+          "label": "Plano de implementação",
+          "value": "plano_implementacao",
+          "description": "Entrega diagnóstico, arquitetura e checklist antes de gerar arquivos.",
+          "sub_options": []
+        },
+        {
+          "label": "Script de instalação",
+          "value": "script_instalacao",
+          "description": "Entrega comando zsh único para criar diretórios e arquivos.",
+          "sub_options": []
+        },
+        {
+          "label": "Instruções de uso",
+          "value": "instrucoes_uso",
+          "description": "Entrega comandos e formas de invocação para operação diária.",
+          "sub_options": []
+        },
+        {
+          "label": "Pacote de plugin",
+          "value": "pacote_plugin",
+          "description": "Entrega estrutura compatível com distribuição empacotada.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "detalhe_resposta",
+      "menu_name": "AGENT-CLAUDE-OUTPUT - Profundidade da Saída",
+      "description": "Define o nível de detalhe esperado no resultado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Rápida",
+          "value": "rapida",
+          "description": "Entrega uma versão objetiva com decisões essenciais.",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "description": "Entrega arquitetura, arquivos, justificativas e instruções.",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "description": "Entrega governança, segurança, validação, tradeoffs e checklist rigoroso.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

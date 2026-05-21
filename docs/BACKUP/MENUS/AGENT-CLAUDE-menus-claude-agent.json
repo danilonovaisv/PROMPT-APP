@@ -1,0 +1,302 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_agent_claude",
+      "menu_name": "AGENT-CLAUDE - Tipo de Agent",
+      "description": "Define a função principal do agent Claude.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Auditor Contextual",
+          "value": "auditor_contextual",
+          "description": "Compara código, documentação viva e critérios de qualidade.",
+          "sub_options": []
+        },
+        {
+          "label": "Coding Agent",
+          "value": "coding_agent",
+          "description": "Implementa, refatora, testa e documenta código com fluxo controlado.",
+          "sub_options": []
+        },
+        {
+          "label": "Repository Commander",
+          "value": "repository_commander",
+          "description": "Opera sobre repositórios, issues, PRs e estrutura de projeto.",
+          "sub_options": []
+        },
+        {
+          "label": "MCP Orchestrator",
+          "value": "mcp_orchestrator",
+          "description": "Coordena múltiplos MCP servers e ferramentas externas.",
+          "sub_options": []
+        },
+        {
+          "label": "Site Reliability Agent",
+          "value": "site_reliability_agent",
+          "description": "Audita performance, disponibilidade, SEO, acessibilidade e regressões.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "modelo_claude",
+      "menu_name": "AGENT-CLAUDE - Modelo Claude",
+      "description": "Define o valor de model.id.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Claude Sonnet 4.6",
+          "value": "claude-sonnet-4-6",
+          "description": "Modelo principal para agentes técnicos equilibrados.",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Opus 4.1",
+          "value": "claude-opus-4-1",
+          "description": "Modelo para planejamento profundo e auditorias críticas.",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Haiku 4.5",
+          "value": "claude-haiku-4-5",
+          "description": "Modelo rápido para triagem e tarefas leves.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "velocidade_modelo",
+      "menu_name": "AGENT-CLAUDE - Velocidade do Modelo",
+      "description": "Define o valor de model.speed.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Standard",
+          "value": "standard",
+          "description": "Equilíbrio entre desempenho e consistência.",
+          "sub_options": []
+        },
+        {
+          "label": "Fast",
+          "value": "fast",
+          "description": "Prioriza velocidade.",
+          "sub_options": []
+        },
+        {
+          "label": "Extended",
+          "value": "extended",
+          "description": "Prioriza profundidade.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "mcp_servers",
+      "menu_name": "AGENT-CLAUDE - Servidores MCP",
+      "description": "Seleciona integrações MCP do agent.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "GitHub",
+          "value": "github",
+          "description": "Repositórios, issues, PRs e alterações controladas.",
+          "sub_options": []
+        },
+        {
+          "label": "Slack",
+          "value": "slack",
+          "description": "Notificações, alertas e relatórios operacionais.",
+          "sub_options": []
+        },
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "description": "Banco, auth, storage ou edge functions.",
+          "sub_options": []
+        },
+        {
+          "label": "Figma",
+          "value": "figma",
+          "description": "Design system, tokens e layouts.",
+          "sub_options": []
+        },
+        {
+          "label": "Sentry",
+          "value": "sentry",
+          "description": "Erros, regressões e observabilidade.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "politica_permissao",
+      "menu_name": "AGENT-CLAUDE - Política de Permissão",
+      "description": "Controla permissões de ferramentas.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Aprovação obrigatória para escrita",
+          "value": "approval_required",
+          "description": "Leitura permitida, escrita apenas com aprovação explícita.",
+          "sub_options": []
+        },
+        {
+          "label": "Somente leitura",
+          "value": "read_only",
+          "description": "Analisa e reporta, mas não modifica recursos externos.",
+          "sub_options": []
+        },
+        {
+          "label": "Permitir sempre",
+          "value": "always_allow",
+          "description": "Usar apenas em ambientes controlados e não destrutivos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_operacional",
+      "menu_name": "AGENT-CLAUDE - Escopo Operacional",
+      "description": "Define o escopo de atuação do agent.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Código-fonte",
+          "value": "codigo_fonte",
+          "description": "Auditoria ou modificação de arquivos de aplicação.",
+          "sub_options": []
+        },
+        {
+          "label": "Documentação viva",
+          "value": "documentacao_viva",
+          "description": "Uso de Context Map, CLAUDE.md e regras como fonte de verdade.",
+          "sub_options": []
+        },
+        {
+          "label": "Banco de dados",
+          "value": "banco_dados",
+          "description": "Schema, policies, migrations ou dados autorizados.",
+          "sub_options": []
+        },
+        {
+          "label": "Notificações externas",
+          "value": "notificacoes_externas",
+          "description": "Envio de status, alertas ou relatórios.",
+          "sub_options": []
+        },
+        {
+          "label": "CI/CD",
+          "value": "ci_cd",
+          "description": "Pipelines, deploy e automações.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrutura_system_prompt",
+      "menu_name": "AGENT-CLAUDE - Estrutura do System",
+      "description": "Define como o campo system deve ser organizado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Auditoria com SSOT",
+          "value": "auditoria_ssot",
+          "description": "Prioriza documentação imutável como fonte de verdade.",
+          "sub_options": []
+        },
+        {
+          "label": "Plano e execução com aprovação",
+          "value": "plano_execucao_aprovacao",
+          "description": "Gera plano antes de executar.",
+          "sub_options": []
+        },
+        {
+          "label": "Operação MCP coordenada",
+          "value": "operacao_mcp_coordenada",
+          "description": "Define papéis de cada MCP server.",
+          "sub_options": []
+        },
+        {
+          "label": "Correção técnica segura",
+          "value": "correcao_tecnica_segura",
+          "description": "Foca em testes, rollback e validação.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "regras_seguranca",
+      "menu_name": "AGENT-CLAUDE - Regras de Segurança",
+      "description": "Define regras obrigatórias do system prompt.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Não expor segredos",
+          "value": "nao_expor_segredos",
+          "description": "Proíbe tokens, chaves, senhas, JWTs e credenciais.",
+          "sub_options": []
+        },
+        {
+          "label": "Sem push destrutivo",
+          "value": "sem_push_destrutivo",
+          "description": "Proíbe alterações destrutivas sem autorização explícita.",
+          "sub_options": []
+        },
+        {
+          "label": "Aprovação por palavra-chave",
+          "value": "aprovacao_por_palavra_chave",
+          "description": "Exige APROVADO antes de escrita externa.",
+          "sub_options": []
+        },
+        {
+          "label": "WCAG AA",
+          "value": "wcag_aa",
+          "description": "Exige acessibilidade em mudanças de interface.",
+          "sub_options": []
+        },
+        {
+          "label": "Rollback obrigatório",
+          "value": "rollback_obrigatorio",
+          "description": "Toda mudança relevante deve prever reversão.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_saida_agent",
+      "menu_name": "AGENT-CLAUDE - Formato de Saída do Agent",
+      "description": "Define o tipo de JSON final gerado para instalação.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "JSON instalável completo",
+          "value": "json_instalavel_completo",
+          "description": "Gera name, description, model, system, mcp_servers, tools, skills e metadata.",
+          "sub_options": []
+        },
+        {
+          "label": "JSON mínimo validável",
+          "value": "json_minimo_validavel",
+          "description": "Gera campos essenciais com arrays vazios quando não houver integrações.",
+          "sub_options": []
+        },
+        {
+          "label": "JSON com MCP completo",
+          "value": "json_mcp_completo",
+          "description": "Gera configuração detalhada com toolsets MCP.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

@@ -15,6 +15,7 @@ jest.mock('@/lib/supabase', () => ({
       getSession: jest.fn(),
     },
     channel: jest.fn(),
+    removeChannel: jest.fn(),
   },
 }));
 
@@ -37,10 +38,11 @@ describe('realtimeService cleanup cycles', () => {
     channelNames.length = 0;
     subscriptions.length = 0;
 
-    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock }, channel: jest.Mock } };
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock }, channel: jest.Mock, removeChannel: jest.Mock } };
     mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
+    mockedSupabase.removeChannel.mockResolvedValue('ok');
     mockedSupabase.channel.mockImplementation((name: unknown) => {
       channelNames.push(name);
       const subscription = { unsubscribe: jest.fn() };
@@ -48,7 +50,11 @@ describe('realtimeService cleanup cycles', () => {
 
       return {
         on: jest.fn().mockReturnThis(),
-        subscribe: jest.fn(() => subscription),
+        subscribe: jest.fn((callback?: (status: string) => void) => {
+          callback?.('SUBSCRIBED');
+          return subscription;
+        }),
+        unsubscribe: subscription.unsubscribe,
       };
     });
   });

@@ -36,6 +36,11 @@ enable_request_compression = true
 multi_agent = true
 shell_snapshot = true
 unified_exec = true
+hooks = true
+web_search = true
+web_search_cached = false
+web_search_request = false
+#[features].hooks
 
 [history]
 persistence = "save-all"
@@ -56,17 +61,6 @@ CLAUDE_FLOW_MEMORY_BACKEND = "hybrid"
 CLAUDE_FLOW_MODE = "v3"
 CLAUDE_FLOW_TOPOLOGY = "hierarchical-mesh"
 npm_config_update_notifier = "false"
-
-[mcp_servers.context7]
-args = [
-    "-y",
-    "@upstash/context7-mcp",
-    "--api-key",
-    "ctx7sk-bf901e23-5473-4d9b-82d8-adc0a4b3acea",
-]
-command = "npx"
-startup_timeout_sec = 20.0
-tool_timeout_sec = 90.0
 
 [mcp_servers.exa]
 startup_timeout_sec = 20.0

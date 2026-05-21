@@ -1,0 +1,248 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_template",
+      "menu_name": "PROMPT - Tipo de Template",
+      "description": "Define a natureza principal do template que será criado ou otimizado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Genérico",
+          "value": "generico",
+          "description": "Para tarefas amplas de geração, análise, transformação ou planejamento.",
+          "sub_options": []
+        },
+        {
+          "label": "Frontend e produto digital",
+          "value": "frontend_product",
+          "description": "Para criação de prompts voltados a interfaces, apps web, rotas, componentes e design systems.",
+          "sub_options": []
+        },
+        {
+          "label": "Código e arquitetura técnica",
+          "value": "code_architecture",
+          "description": "Para prompts que geram especificações, código, refatoração ou decisões técnicas.",
+          "sub_options": []
+        },
+        {
+          "label": "Marketing e conteúdo",
+          "value": "marketing_content",
+          "description": "Para prompts de copywriting, campanhas, roteiros, anúncios e conteúdo editorial.",
+          "sub_options": []
+        },
+        {
+          "label": "Análise e estratégia",
+          "value": "analysis_strategy",
+          "description": "Para prompts de diagnóstico, decisão, pesquisa, síntese e planejamento estratégico.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_analise",
+      "menu_name": "PROMPT - Profundidade da Análise",
+      "description": "Controla o nível de diagnóstico feito antes da criação do template.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "description": "Identifica objetivo, público, contexto, requisitos e lacunas principais.",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "description": "Inclui análise de objetivo, público, contexto, requisitos, lacunas, riscos, critérios de sucesso e estrutura recomendada.",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "description": "Inclui análise completa, prevenção de falhas, menus avançados, contrato rigoroso e validação de importação.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_saida",
+      "menu_name": "PROMPT - Modo de Saída",
+      "description": "Define como o agente deve entregar o resultado final ao usuário.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Template importável",
+          "value": "template_importavel",
+          "description": "Entrega JSON Standard V3 pronto para importação no PROMPT-APP.",
+          "sub_options": []
+        },
+        {
+          "label": "Principal documentado",
+          "value": "principal_documentado",
+          "description": "Entrega o prompt principal com instruções, variáveis e menus em formato legível.",
+          "sub_options": []
+        },
+        {
+          "label": "Pacote completo",
+          "value": "pacote_completo",
+          "description": "Entrega análise, prompt principal, menus, variáveis, instruções de uso e JSON importável.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tom_resposta",
+      "menu_name": "PROMPT - Tom da Resposta",
+      "description": "Define o estilo de comunicação usado na entrega do template.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Técnico",
+          "value": "tecnico",
+          "description": "Usa linguagem objetiva, precisa e orientada a implementação.",
+          "sub_options": []
+        },
+        {
+          "label": "Consultivo",
+          "value": "consultivo",
+          "description": "Explica decisões e trade-offs sem perder foco operacional.",
+          "sub_options": []
+        },
+        {
+          "label": "Didático",
+          "value": "didatico",
+          "description": "Facilita entendimento por usuários não técnicos.",
+          "sub_options": []
+        },
+        {
+          "label": "Executivo",
+          "value": "executivo",
+          "description": "Prioriza clareza, síntese e aplicabilidade em contexto profissional.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_resultado",
+      "menu_name": "PROMPT - Formato do Resultado",
+      "description": "Define o formato final que o template gerado deve produzir.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Markdown",
+          "value": "markdown",
+          "description": "Saída textual estruturada com títulos, listas e blocos organizados.",
+          "sub_options": []
+        },
+        {
+          "label": "JSON",
+          "value": "json",
+          "description": "Saída estruturada como objeto JSON válido.",
+          "sub_options": []
+        },
+        {
+          "label": "Código",
+          "value": "code",
+          "description": "Saída com arquivos, snippets, estrutura de pastas ou implementação.",
+          "sub_options": []
+        },
+        {
+          "label": "Texto",
+          "value": "text",
+          "description": "Saída textual direta, sem estrutura pesada.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "validacao_schema",
+      "menu_name": "PROMPT - Validação de Schema",
+      "description": "Define o rigor de validação aplicado antes da entrega.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Rigor padrão",
+          "value": "rigor_padrao",
+          "description": "Valida JSON, campos obrigatórios, enums, arrays e consistência básica.",
+          "sub_options": []
+        },
+        {
+          "label": "Rigor máximo",
+          "value": "rigor_maximo",
+          "description": "Valida ausência de campos extras, placeholders, menu_ids existentes, TAGs, status e menus espelhados.",
+          "sub_options": []
+        },
+        {
+          "label": "Modo diagnóstico",
+          "value": "modo_diagnostico",
+          "description": "Além de validar, aponta riscos, lacunas e melhorias aplicadas.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_frontend",
+      "menu_name": "WEBDEV - Stack Frontend",
+      "description": "Usado quando o template envolve frontend, produto digital, UI, webapp ou geração de código.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "nextjs_app_router",
+          "description": "Considera rotas, layouts, server/client components e organização por app directory.",
+          "sub_options": []
+        },
+        {
+          "label": "React",
+          "value": "react",
+          "description": "Considera componentização, props, composição e estados de UI.",
+          "sub_options": []
+        },
+        {
+          "label": "TypeScript",
+          "value": "typescript",
+          "description": "Exige tipagem explícita, interfaces e segurança de tipos.",
+          "sub_options": []
+        },
+        {
+          "label": "Tailwind CSS",
+          "value": "tailwind_css",
+          "description": "Usa classes utilitárias, responsividade e design tokens.",
+          "sub_options": []
+        },
+        {
+          "label": "Framer Motion",
+          "value": "framer_motion",
+          "description": "Inclui animações, transições, microinterações e motion states.",
+          "sub_options": []
+        },
+        {
+          "label": "React Three Fiber",
+          "value": "react_three_fiber",
+          "description": "Inclui cenas 3D, canvas, performance e fallback quando fizer sentido.",
+          "sub_options": []
+        },
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "description": "Inclui autenticação, banco, storage ou realtime quando aplicável.",
+          "sub_options": []
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "description": "Inclui auth, firestore, storage ou hosting quando aplicável.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

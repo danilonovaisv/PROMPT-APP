@@ -245,6 +245,14 @@ db.version(12).stores({
     });
 });
 
+db.version(13).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    menuOptions: '++id, menuKey, value',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+    promptMemory: '++id, key, templateId, [templateId+key], remoteId, syncStatus, isDeleted',
+});
+
 const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'remoteId'>[] = [
     { name: 'Copywriting', icon: '✍️', color: '#ff6b35', createdAt: new Date(), syncStatus: 'pending' },
     { name: 'Código', icon: '💻', color: '#0048ff', createdAt: new Date(), syncStatus: 'pending' },

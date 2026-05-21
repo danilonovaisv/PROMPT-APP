@@ -21,9 +21,27 @@ jest.mock('@/services/assetManager', () => ({
 }));
 
 jest.mock('@/services/realtimeService', () => ({
-  setupRealtimeListeners: jest.fn().mockResolvedValue(undefined),
+  setupRealtimeListeners: jest.fn().mockResolvedValue({
+    success: true,
+    channels: {
+      categories: 'subscribed',
+      prompts: 'subscribed',
+      menus: 'subscribed',
+      memory: 'subscribed',
+    },
+    errors: [],
+  }),
   cleanupRealtimeListeners: jest.fn(),
-  reconnectRealtime: jest.fn().mockResolvedValue(undefined),
+  reconnectRealtime: jest.fn().mockResolvedValue({
+    success: true,
+    channels: {
+      categories: 'subscribed',
+      prompts: 'subscribed',
+      menus: 'subscribed',
+      memory: 'subscribed',
+    },
+    errors: [],
+  }),
 }));
 
 jest.mock('@/services/syncService', () => ({

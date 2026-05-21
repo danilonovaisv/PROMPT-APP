@@ -15,6 +15,7 @@ jest.mock('@/lib/supabase', () => ({
       getSession: jest.fn(),
     },
     channel: jest.fn(),
+    removeChannel: jest.fn(),
   },
 }));
 
@@ -37,10 +38,11 @@ describe('realtimeService', () => {
     channelNames.length = 0;
     subscriptions.length = 0;
 
-    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock }, channel: jest.Mock } };
+    const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock }, channel: jest.Mock, removeChannel: jest.Mock } };
     mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
+    mockedSupabase.removeChannel.mockResolvedValue('ok');
     mockedSupabase.channel.mockImplementation((name: unknown) => {
       channelNames.push(name);
       const subscription = { unsubscribe: jest.fn() };
@@ -48,7 +50,11 @@ describe('realtimeService', () => {
 
       return {
         on: jest.fn().mockReturnThis(),
-        subscribe: jest.fn(() => subscription),
+        subscribe: jest.fn((callback?: (status: string) => void) => {
+          callback?.('SUBSCRIBED');
+          return subscription;
+        }),
+        unsubscribe: subscription.unsubscribe,
       };
     });
   });
@@ -60,10 +66,12 @@ describe('realtimeService', () => {
     const { setupRealtimeListeners } = await import('@/services/realtimeService');
     const { supabase } = await import('@/lib/supabase');
 
-    await setupRealtimeListeners();
-    await setupRealtimeListeners();
+    const firstResult = await setupRealtimeListeners();
+    const secondResult = await setupRealtimeListeners();
 
     expect(supabase.channel).toHaveBeenCalledTimes(8);
+    expect(firstResult.success).toBe(true);
+    expect(secondResult.success).toBe(true);
     expect(channelNames).toEqual([
       'categories_changes',
       'prompts_changes',
@@ -81,6 +89,7 @@ describe('realtimeService', () => {
 
   test('cleanupRealtimeListeners unsubscribes all channels and is idempotent', async () => {
     const { setupRealtimeListeners, cleanupRealtimeListeners } = await import('@/services/realtimeService');
+    const { supabase } = await import('@/lib/supabase');
 
     await setupRealtimeListeners();
     cleanupRealtimeListeners();
@@ -89,5 +98,6 @@ describe('realtimeService', () => {
     expect(activeSubscriptions()).toBe(0);
     expect(subscriptions).toHaveLength(4);
     expect(subscriptions.every((subscription) => subscription.unsubscribe.mock.calls.length === 1)).toBe(true);
+    expect(supabase.removeChannel).toHaveBeenCalledTimes(4);
   });
 });

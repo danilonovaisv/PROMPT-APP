@@ -77,10 +77,13 @@ export const downloadMemoryFromCloud = async () => {
     console.log(`🧠 Baixando memória para ${templates.length} template(s)...`);
 
     // 1. ⚡ Buscar todos os registros locais relevantes em UMA query
-    const allLocalRecords = await db.promptMemory
-      .where('templateId')
-      .anyOf(templates)
-      .toArray();
+    const remoteKeys = remoteData.map(item => [item.template_id, item.key] as [string, string]);
+    const allLocalRecords = remoteKeys.length > 0
+      ? await db.promptMemory
+        .where('[templateId+key]')
+        .anyOf(remoteKeys)
+        .toArray()
+      : [];
 
     // 2. Indexar locais por "templateId|key" para lookup O(1)
     const localByKey = new Map(

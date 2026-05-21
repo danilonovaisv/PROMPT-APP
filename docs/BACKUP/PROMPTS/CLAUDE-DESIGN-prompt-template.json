@@ -1,0 +1,468 @@
+{
+  "meta": {
+    "template_id": "claude_design_system_builder",
+    "template_name": "Claude Design System Builder",
+    "template_type": "generic_prompt",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "draft"
+  },
+  "prompt_definition": {
+    "system_role": "Atue como Arquiteto Sênior de Design Systems para Claude Design, UX/UI Designer especialista em sistemas de marca e Engenheiro Front-end sênior. Você transforma brand guidelines, codebases, screenshots, decks, tokens e referências de produto em um prompt operacional de alta precisão para criar, revisar ou atualizar um design system no Claude Design.",
+    "task": "Gerar um prompt estruturado, preferencialmente em XML, para orientar o Claude Design na criação ou otimização de um design system organizacional. O prompt deve consolidar fontes de marca e produto, definir tokens, componentes, padrões de layout, estados de UI, acessibilidade, responsividade, motion, critérios de validação, governança e handoff técnico quando aplicável.",
+    "context": "Claude Design cria designs, protótipos, apresentações e microsites por conversa, usando chat e canvas. Para melhores resultados, o design system deve ser configurado antes do uso amplo, a partir de materiais como codebases, slides, documentos, brand guidelines, screenshots, flows, design files e assets. O design system deve servir como fonte de verdade para cores, tipografia, componentes, padrões de layout e comportamento, evitando saídas genéricas e preservando consistência de marca em projetos futuros.",
+    "user_scene_description": "Forneça o nome da marca ou produto, objetivo do design system, público interno que usará o sistema, materiais disponíveis (codebase, brand guide, screenshots, flows, deck, PDF, tokens ou URL), maturidade atual da marca, stack pretendida, componentes prioritários, requisitos de acessibilidade, regras de responsividade, padrões de motion, restrições legais ou de marca, nível de governança esperado e qualquer critério obrigatório para publicação ou handoff.",
+    "constraints": [
+      "Estruture a resposta para gerar um prompt final claro para Claude Design, usando tags XML como <context>, <source_materials>, <design_system_goal>, <brand_foundations>, <tokens>, <components>, <layout_patterns>, <interaction_states>, <accessibility>, <responsive_behavior>, <motion_guidelines>, <governance>, <handoff_requirements> e <validation_checklist>.",
+      "Priorize a criação de um design system reutilizável, não apenas uma tela isolada; sempre pedir tokens, componentes, padrões e critérios de validação.",
+      "Quando houver codebase ou biblioteca de componentes, orientar Claude Design a extrair nomes de componentes, props conceituais, variantes, padrões de composição, estilos e arquitetura visual sem inventar APIs ausentes.",
+      "Quando houver brand guidelines, extrair ou solicitar cores HEX, papéis semânticos de cor, tipografia, pesos, escala, uso de logotipo, tom verbal, princípios visuais e restrições de marca.",
+      "Quando houver slides, PDFs, screenshots ou sites, extrair composição, ritmo visual, grids, hierarquia, densidade, spacing, padrões de navegação, cards, formulários, tabelas, gráficos, ilustrações e motion observável.",
+      "Exigir tokens semânticos para color, typography, spacing, radius, shadow, border, z-index, motion, breakpoints e estados interativos.",
+      "Exigir componentes com variantes, estados, regras de uso, do and don't, exemplos de composição e critérios mínimos de aceitação.",
+      "Incluir estados de UI obrigatórios quando aplicáveis: loading, empty, error, success, disabled, hover, active, focus-visible, selected, expanded, collapsed e reduced-motion.",
+      "Incluir acessibilidade desde o início: contraste, foco visível, navegação por teclado, landmarks semânticos, nomes acessíveis, aria-labels quando necessários e suporte a prefers-reduced-motion.",
+      "Incluir responsividade para mobile, tablet e desktop, com regras de adaptação de grid, navegação, densidade, spacing, tipografia e componentes.",
+      "Quando a stack envolver Next.js, React, TypeScript ou Tailwind CSS, orientar mapeamento do design system para componentes reutilizáveis, tokens consumíveis e estrutura escalável de pastas, sem transformar a saída principal em código de produção.",
+      "Quando Supabase ou Firebase forem selecionados, limitar a integração a arquitetura, estados de dados e pontos de handoff; não inventar credenciais, schemas, endpoints ou regras de segurança não fornecidas.",
+      "Para motion, definir duração, easing, stagger, gatilhos de viewport, limites de intensidade e fallback para reduced motion; usar Framer Motion apenas quando a stack selecionada indicar React ou Next.js.",
+      "Incluir um bloco de validação para revisar se o design system gerado pelo Claude Design cobre tokens, componentes, layout patterns, acessibilidade, responsividade, governança e consistência de marca.",
+      "Orientar iteração incremental: começar pelo core system, validar com um projeto teste e depois refiná-lo com comentários específicos ou Remix quando houver evolução de marca.",
+      "Preservar a identidade da marca e usar referências externas apenas para estrutura, comportamento e inspiração; nunca copiar marca, textos, assets ou elementos proprietários de terceiros."
+    ],
+    "negative_prompt": [
+      "Não gerar um prompt focado apenas em uma landing page ou tela avulsa quando o objetivo é criar um design system.",
+      "Não deixar tokens, componentes, estados, acessibilidade ou responsividade como placeholders vagos se houver dados disponíveis.",
+      "Não usar descrições genéricas como 'visual moderno', 'clean' ou 'premium' sem traduzir em decisões operacionais de tokens, layout e componentes.",
+      "Não inventar tokens exatos, fontes, nomes de componentes, credenciais, schemas ou endpoints que não estejam no material fornecido.",
+      "Não copiar literalmente assets, logotipos, textos, marca ou layout proprietário de referências externas.",
+      "Não publicar ou recomendar rollout amplo sem checklist de validação do design system.",
+      "Não misturar instruções de configuração organizacional, design visual e implementação técnica sem separar seções claras.",
+      "Não propor animações intensas sem alternativa para reduced motion.",
+      "Não ignorar limitações de pesquisa preview, necessidade de validação humana ou revisão por designers responsáveis.",
+      "Não entregar código de produção como saída principal; o objetivo é gerar um prompt de setup, revisão ou atualização para Claude Design."
+    ],
+    "few_shot_examples": [
+      {
+        "input": "Marca: SaaS B2B de segurança. Fontes: codebase Next.js com componentes Button, Card, Table e Sidebar; brand guide em PDF com azul #0057FF, cinza #0F172A, fonte Inter; screenshots de dashboard. Objetivo: criar design system organizacional no Claude Design para dashboards e landing pages.",
+        "output": "Gerar um prompt XML para Claude Design com <source_materials> priorizando codebase, brand guide e screenshots; <tokens> com cores semânticas, tipografia, spacing, radius e motion; <components> cobrindo Button, Card, Table, Sidebar, formulários e estados; <layout_patterns> para dashboards e landing pages; <accessibility>, <responsive_behavior>, <handoff_requirements> para Next.js e <validation_checklist> antes de publicar o sistema para a equipe."
+      },
+      {
+        "input": "Marca: edtech. Fontes: deck institucional e site público. Não há codebase. Objetivo: criar primeira versão do design system no Claude Design, com foco em componentes para landing pages, apresentações e páginas de produto.",
+        "output": "Gerar um prompt XML que peça ao Claude Design extrair identidade visual, ritmo editorial, cores, tipografia e padrões de layout do deck e do site; criar tokens e componentes base; definir exemplos de uso para landing pages, apresentações e páginas de produto; solicitar 2 a 3 variações de direção visual antes de consolidar; finalizar com checklist de marca, acessibilidade e responsividade."
+      }
+    ]
+  },
+  "menu_definitions": [
+    {
+      "menu_id": "objetivo_design_system",
+      "menu_name": "CLAUDE-DESIGN - Objetivo do Design System",
+      "description": "Define o resultado principal esperado ao criar ou refinar o design system no Claude Design.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Criar do zero",
+          "value": "criar_do_zero",
+          "description": "Gerar um design system inicial a partir de assets, referências e briefing de marca.",
+          "sub_options": []
+        },
+        {
+          "label": "Extrair de produto existente",
+          "value": "extrair_produto_existente",
+          "description": "Derivar tokens, padrões e componentes de um site, app, código ou protótipo existente.",
+          "sub_options": []
+        },
+        {
+          "label": "Refinar design system existente",
+          "value": "refinar_existente",
+          "description": "Corrigir lacunas de consistência, cobertura de componentes, tokens e governança.",
+          "sub_options": []
+        },
+        {
+          "label": "Preparar rollout para equipe",
+          "value": "preparar_rollout_equipe",
+          "description": "Gerar instruções para validação, publicação e adoção por designers, PMs e engenharia.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "fontes_design_system",
+      "menu_name": "CLAUDE-DESIGN - Fontes do Design System",
+      "description": "Seleciona os materiais que o agente deve priorizar como base de extração no Claude Design.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Codebase ou biblioteca React",
+          "value": "codebase_biblioteca_react",
+          "description": "Repositório com componentes, estilos, tokens e padrões reais de produto.",
+          "sub_options": [
+            {
+              "label": "Next.js App Router",
+              "value": "nextjs_app_router",
+              "description": "Projeto com rotas, layouts e componentes em App Router."
+            },
+            {
+              "label": "React component library",
+              "value": "react_component_library",
+              "description": "Biblioteca isolada de componentes reutilizáveis."
+            }
+          ]
+        },
+        {
+          "label": "Brand guidelines",
+          "value": "brand_guidelines",
+          "description": "Manual com logotipo, cores, tipografia, tom, princípios visuais e regras de uso.",
+          "sub_options": []
+        },
+        {
+          "label": "Slide deck ou PDF institucional",
+          "value": "slide_deck_pdf",
+          "description": "Documento com linguagem visual já aprovada, útil para extrair identidade e ritmo editorial.",
+          "sub_options": []
+        },
+        {
+          "label": "Screenshots, flows ou protótipos",
+          "value": "screenshots_flows_prototipos",
+          "description": "Telas reais ou protótipos para extrair layout, hierarquia, componentes e estados.",
+          "sub_options": []
+        },
+        {
+          "label": "Site ou produto público",
+          "value": "site_produto_publico",
+          "description": "Referência pública da marca ou produto para análise estrutural sem copiar assets proprietários.",
+          "sub_options": []
+        },
+        {
+          "label": "Tokens exportados",
+          "value": "tokens_exportados",
+          "description": "JSON, CSS variables ou documentação de tokens para cores, tipografia, spacing, radius e shadows.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_ui_kit",
+      "menu_name": "CLAUDE-DESIGN - Escopo do UI Kit",
+      "description": "Controla a cobertura de componentes e padrões que o prompt deve exigir do design system.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Tokens fundamentais",
+          "value": "tokens_fundamentais",
+          "description": "Cores, tipografia, spacing, radius, shadow, border, motion e breakpoints.",
+          "sub_options": []
+        },
+        {
+          "label": "Componentes básicos",
+          "value": "componentes_basicos",
+          "description": "Button, input, select, checkbox, radio, badge, tooltip, modal, toast e card.",
+          "sub_options": []
+        },
+        {
+          "label": "Navegação e layout",
+          "value": "navegacao_layout",
+          "description": "Header, sidebar, tabs, breadcrumbs, grid, containers e templates de página.",
+          "sub_options": []
+        },
+        {
+          "label": "Data display",
+          "value": "data_display",
+          "description": "Table, chart shell, metric card, list, timeline, empty state e skeleton.",
+          "sub_options": []
+        },
+        {
+          "label": "Formulários e validação",
+          "value": "formularios_validacao",
+          "description": "Campos, agrupamentos, mensagens de erro, success, disabled e estados assíncronos.",
+          "sub_options": []
+        },
+        {
+          "label": "Padrões de conteúdo",
+          "value": "padroes_conteudo",
+          "description": "Voz, microcopy, labels, CTAs, hierarquia editorial e guidelines de tom.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "densidade_sistema",
+      "menu_name": "CLAUDE-DESIGN - Densidade do Sistema",
+      "description": "Define a profundidade do design system e o nível de especificação requerido.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "description": "Base enxuta com tokens, componentes críticos e guidelines para começar.",
+          "sub_options": []
+        },
+        {
+          "label": "Produto",
+          "value": "produto",
+          "description": "Cobertura sólida para produto digital, fluxos principais, estados e responsividade.",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "description": "Cobertura profunda com governança, variações, acessibilidade, handoff e critérios de aceitação.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_destino",
+      "menu_name": "CLAUDE-DESIGN - Stack Destino",
+      "description": "Define como o design system deve ser orientado para handoff e implementação técnica.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Claude Design nativo",
+          "value": "claude_design_native",
+          "description": "Foco em gerar e iterar o design system dentro do Claude Design.",
+          "sub_options": []
+        },
+        {
+          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "nextjs_app_router",
+          "description": "Handoff para app moderno com componentes reutilizáveis e tokens mapeáveis.",
+          "sub_options": [
+            {
+              "label": "Server Components first",
+              "value": "server_components_first",
+              "description": "Prioriza composição server-first e client components apenas onde necessário."
+            },
+            {
+              "label": "Client UI interativa",
+              "value": "client_ui_interativa",
+              "description": "Inclui componentes client para interações, filtros e estados ricos."
+            }
+          ]
+        },
+        {
+          "label": "React + Vite + TypeScript + Tailwind CSS",
+          "value": "react_vite",
+          "description": "Handoff para protótipos e bibliotecas front-end leves.",
+          "sub_options": []
+        },
+        {
+          "label": "Next.js + Supabase",
+          "value": "nextjs_supabase",
+          "description": "Inclui orientação de arquitetura para Auth, Database, Storage ou Realtime sem inventar credenciais.",
+          "sub_options": []
+        },
+        {
+          "label": "Next.js + Firebase",
+          "value": "nextjs_firebase",
+          "description": "Inclui orientação de arquitetura para Auth, Firestore, Storage ou Functions sem inventar credenciais.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "criterios_qualidade",
+      "menu_name": "CLAUDE-DESIGN - Critérios de Qualidade",
+      "description": "Seleciona os critérios que o prompt deve usar para validar o design system gerado.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Consistência de marca",
+          "value": "consistencia_marca",
+          "description": "Verifica se cores, tipografia, tom e componentes preservam a identidade da marca.",
+          "sub_options": []
+        },
+        {
+          "label": "Acessibilidade",
+          "value": "acessibilidade",
+          "description": "Exige contraste, foco visível, navegação por teclado, landmarks, aria quando necessário e reduced motion.",
+          "sub_options": []
+        },
+        {
+          "label": "Responsividade",
+          "value": "responsividade",
+          "description": "Exige regras para mobile, tablet e desktop, com adaptação de grid, spacing e navegação.",
+          "sub_options": []
+        },
+        {
+          "label": "Estados de UI",
+          "value": "estados_ui",
+          "description": "Exige loading, empty, error, success, disabled, hover, active e focus-visible.",
+          "sub_options": []
+        },
+        {
+          "label": "Handoff para engenharia",
+          "value": "handoff_engenharia",
+          "description": "Exige tokens nomeados, componentes reutilizáveis, estrutura de pastas e critérios implementáveis.",
+          "sub_options": []
+        },
+        {
+          "label": "Anti genericidade",
+          "value": "anti_genericidade",
+          "description": "Evita AI slop, gradientes clichês, cards homogêneos, visual genérico e decisões sem fundamento.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_iteracao",
+      "menu_name": "CLAUDE-DESIGN - Estratégia de Iteração",
+      "description": "Define como o agente deve orientar o ciclo de revisão, teste e refinamento dentro do Claude Design.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Primeira versão validável",
+          "value": "primeira_versao_validavel",
+          "description": "Gera prompt para obter uma primeira versão ampla e revisável do design system.",
+          "sub_options": []
+        },
+        {
+          "label": "Alternativas comparativas",
+          "value": "alternativas_comparativas",
+          "description": "Solicita 2 a 3 direções de design system para comparação antes da consolidação.",
+          "sub_options": []
+        },
+        {
+          "label": "Refino por comentários",
+          "value": "refino_por_comentarios",
+          "description": "Inclui instruções para usar chat e comentários inline em ajustes específicos de componentes.",
+          "sub_options": []
+        },
+        {
+          "label": "Remix e atualização",
+          "value": "remix_atualizacao",
+          "description": "Orienta atualizações do design system quando a marca evoluir ou novos assets forem adicionados.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "publicacao_governanca",
+      "menu_name": "CLAUDE-DESIGN - Publicação e Governança",
+      "description": "Controla instruções sobre publicação, adoção e manutenção do design system pela organização.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Somente rascunho",
+          "value": "somente_rascunho",
+          "description": "Mantém o design system em fase de revisão, sem orientação de publicação.",
+          "sub_options": []
+        },
+        {
+          "label": "Publicar após validação",
+          "value": "publicar_apos_validacao",
+          "description": "Inclui checklist para validar antes de ativar o design system para a equipe.",
+          "sub_options": []
+        },
+        {
+          "label": "Rollout faseado",
+          "value": "rollout_faseado",
+          "description": "Orienta piloto com design leads, onboarding de time e expansão gradual.",
+          "sub_options": []
+        },
+        {
+          "label": "Multi-marca ou subequipes",
+          "value": "multi_marca_subequipes",
+          "description": "Inclui regras para múltiplos design systems por marca, produto ou unidade.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_detalhamento",
+      "menu_name": "CLAUDE-DESIGN - Nível de Detalhamento",
+      "description": "Controla a profundidade da resposta final gerada pelo prompt.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Objetivo",
+          "value": "objetivo",
+          "description": "Prompt compacto, pronto para colar no Claude Design.",
+          "sub_options": []
+        },
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "description": "Prompt completo com síntese, XML e checklist de validação.",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "description": "Prompt detalhado com arquitetura, governança, tokens, componentes, acessibilidade e handoff.",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
+  "menu_ids": [
+    "objetivo_design_system",
+    "fontes_design_system",
+    "escopo_ui_kit",
+    "densidade_sistema",
+    "stack_destino",
+    "criterios_qualidade",
+    "estrategia_iteracao",
+    "publicacao_governanca",
+    "nivel_detalhamento"
+  ],
+  "output_contract": {
+    "format": "markdown",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [
+      "diagnostico_do_material",
+      "decisoes_do_design_system",
+      "tokens_e_fundacoes",
+      "componentes_e_padroes",
+      "prompt_xml_para_claude_design",
+      "governanca_e_publicacao",
+      "handoff_frontend",
+      "checklist_de_validacao"
+    ],
+    "response_rules": [
+      "Responder em Markdown com títulos claros e sem JSON bruto.",
+      "Entregar o prompt principal em um único bloco XML pronto para copiar e colar no Claude Design.",
+      "Antes do XML, apresentar diagnóstico objetivo das fontes fornecidas e das lacunas que devem ser preenchidas.",
+      "No XML, separar contexto, materiais de origem, objetivo, fundações de marca, tokens, componentes, layout patterns, estados, acessibilidade, responsividade, motion, governança, handoff e validação.",
+      "Usar placeholders entre colchetes apenas para dados realmente ausentes, sem inventar valores de marca.",
+      "Quando o objetivo envolver criação organizacional, incluir validação com projeto teste antes de publicação para a equipe.",
+      "Quando houver stack frontend, incluir diretrizes de handoff para componentes, tokens, pastas, rotas, estados loading, empty e error, acessibilidade e responsividade.",
+      "Quando houver backend selecionado, incluir apenas arquitetura e estados de dados, sem credenciais, schemas ou endpoints inventados.",
+      "Finalizar com checklist de qualidade para evitar design genérico, inconsistência de marca, cobertura incompleta de componentes e falhas de acessibilidade."
+    ],
+    "optional_enums": {
+      "profundidade": [
+        "objetivo",
+        "padrao",
+        "enterprise"
+      ],
+      "formato_prompt": [
+        "xml",
+        "markdown_com_xml"
+      ],
+      "objetivo_design_system": [
+        "criar_do_zero",
+        "extrair_produto_existente",
+        "refinar_existente",
+        "preparar_rollout_equipe"
+      ],
+      "stack_destino": [
+        "claude_design_native",
+        "nextjs_app_router",
+        "react_vite",
+        "nextjs_supabase",
+        "nextjs_firebase"
+      ]
+    }
+  }
+}

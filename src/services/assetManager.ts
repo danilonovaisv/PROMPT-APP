@@ -15,13 +15,13 @@ import {
   parseUserSelection,
   type LegacyContextMenuSelection,
 } from "@/models/promptSchema";
-import type { Category, ContextMenu, Prompt, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt, BaseRemoteEntity } from "@/models/types";
+import type { Category, ContextMenu, Prompt, PromptMemory, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt, RemotePromptMemory, BaseRemoteEntity } from "@/models/types";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
-  type: "category" | "prompt" | "menu";
+  type: "category" | "prompt" | "menu" | "memory";
   id: number;
-  remoteId?: number;
+  remoteId?: number | string;
   action: "created" | "updated" | "deleted";
   timestamp: Date;
   data?: Record<string, unknown>;
@@ -33,7 +33,8 @@ export interface ConflictResolution {
   resolved: boolean;
 }
 
-type SyncableEntity = Category | Prompt | ContextMenu;
+type NumericRemoteEntity = Category | Prompt | ContextMenu;
+type SyncableEntity = NumericRemoteEntity | PromptMemory;
 
 /**
  * Detecta conflitos entre dados locais e remotos
@@ -46,10 +47,11 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
 
   try {
     // Buscar dados remotos
-    const [catRes, promptRes, menuRes] = await Promise.all([
+    const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
       supabase.from("categories").select("*").eq("user_id", session.user.id),
       supabase.from("prompts").select("*").eq("user_id", session.user.id),
       supabase.from("context_menus").select("*").eq("user_id", session.user.id),
+      supabase.from("prompt_memory_context").select("*").eq("user_id", session.user.id),
     ]);
 
     // Verificar categorias
@@ -139,6 +141,32 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       }
     }
 
+    const remoteMemory = memoryRes.data || [];
+    const remoteMemoryKeys = remoteMemory.map((m: RemotePromptMemory) => [m.template_id, m.key] as [string, string]);
+    const localMemory = remoteMemoryKeys.length > 0
+      ? await db.promptMemory.where('[templateId+key]').anyOf(remoteMemoryKeys).toArray()
+      : [];
+    const localMemoryMap = new Map(localMemory.map((memory) => [`${memory.templateId}|${memory.key}`, memory]));
+
+    for (const remote of remoteMemory) {
+      const local = localMemoryMap.get(`${remote.template_id}|${remote.key}`);
+      if (local) {
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const localUpdated = new Date(local.updatedAt || local.createdAt);
+
+        if (remoteUpdated > localUpdated) {
+          conflicts.push({
+            type: "memory",
+            id: local.id!,
+            remoteId: remote.id,
+            action: remote.is_deleted ? "deleted" : "updated",
+            timestamp: remoteUpdated,
+            data: remote,
+          });
+        }
+      }
+    }
+
     return conflicts;
   } catch (error) {
     console.error("❌ Erro ao detectar conflitos:", error);
@@ -196,7 +224,7 @@ async function applyRemoteChanges(update: AssetUpdate): Promise<void> {
   const remoteData = update.data;
 
 interface AssetRemoteData {
-  id: number;
+  id: number | string;
   name?: string;
   icon?: string;
   color?: string;
@@ -225,6 +253,11 @@ interface AssetRemoteData {
   description?: string;
   selection_mode?: "single" | "multiple";
   options?: unknown;
+  key?: string;
+  value?: string;
+  template_id?: string;
+  is_deleted?: boolean;
+  deleted_at?: string | null;
 }
 
   // Type assertions for remote data
@@ -304,6 +337,39 @@ interface AssetRemoteData {
         console.log(`📥 Menu #${update.id} atualizado com dados remotos`);
       }
       break;
+
+    case "memory":
+      if (remoteData) {
+        if (rd.is_deleted) {
+          if (update.id > 0) {
+            await db.promptMemory.update(update.id, {
+              isDeleted: true,
+              syncStatus: "synced",
+              updatedAt: new Date((rd.updated_at || rd.deleted_at || new Date().toISOString()) as string),
+            });
+          }
+          break;
+        }
+
+        const memoryData: Omit<PromptMemory, "id"> = {
+          remoteId: typeof rd.id === "string" ? rd.id : String(rd.id),
+          key: rd.key || "",
+          value: rd.value || "",
+          templateId: rd.template_id || "global",
+          isDeleted: false,
+          syncStatus: "synced",
+          createdAt: new Date((rd.created_at || new Date().toISOString()) as string),
+          updatedAt: new Date((rd.updated_at || rd.created_at || new Date().toISOString()) as string),
+        };
+
+        if (update.id > 0) {
+          await db.promptMemory.update(update.id, memoryData);
+        } else {
+          await db.promptMemory.add(memoryData);
+        }
+        console.log(`📥 Memória fixa #${update.id || memoryData.key} atualizada com dados remotos`);
+      }
+      break;
   }
 }
 
@@ -369,6 +435,19 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
       };
       break;
     }
+    case "memory": {
+      const memory = localItem as PromptMemory;
+      table = "prompt_memory_context";
+      payload = {
+        template_id: memory.templateId,
+        key: memory.key,
+        value: memory.value,
+        is_deleted: !!memory.isDeleted,
+        deleted_at: memory.isDeleted ? memory.updatedAt.toISOString() : null,
+        user_id: session.user.id,
+      };
+      break;
+    }
   }
 
   if (localItem.remoteId) {
@@ -391,7 +470,14 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
     if (error) throw error;
 
     // Atualiza localmente com o novo remoteId
-    await (db as unknown as Record<string, { update: (id: number, changes: object) => Promise<number> }>)[table !== "context_menus" ? table : "contextMenus"]
+    const localTableName =
+      table === "context_menus"
+        ? "contextMenus"
+        : table === "prompt_memory_context"
+          ? "promptMemory"
+          : table;
+
+    await (db as unknown as Record<string, { update: (id: number, changes: object) => Promise<number> }>)[localTableName]
       .update(update.id, {
         remoteId: data.id,
         syncStatus: "synced",
@@ -427,7 +513,7 @@ async function mergeChanges(update: AssetUpdate): Promise<void> {
 async function getLocalItem(
   type: AssetUpdate["type"],
   id: number,
-): Promise<Category | Prompt | ContextMenu | null> {
+): Promise<Category | Prompt | ContextMenu | PromptMemory | null> {
   switch (type) {
     case "category":
       return (await db.categories.get(id)) || null;
@@ -435,6 +521,8 @@ async function getLocalItem(
       return (await db.prompts.get(id)) || null;
     case "menu":
       return (await db.contextMenus.get(id)) || null;
+    case "memory":
+      return (await db.promptMemory.get(id)) || null;
     default:
       return null;
   }
@@ -494,16 +582,17 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
   let pulledCount = 0;
 
   // Buscar todos os IDs remotos
-  const [catRes, promptRes, menuRes] = await Promise.all([
+  const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
     supabase.from("categories").select("*").eq("user_id", session.user.id),
     supabase.from("prompts").select("*").eq("user_id", session.user.id),
     supabase.from("context_menus").select("*").eq("user_id", session.user.id),
+    supabase.from("prompt_memory_context").select("*").eq("user_id", session.user.id),
   ]);
 
-  const pullItems = async <T extends SyncableEntity>(
+  const pullItems = async <T extends NumericRemoteEntity>(
     remoteItems: (RemoteCategory | RemotePrompt | RemoteContextMenu)[] | null,
     localTable: Table<T, number>,
-    type: AssetUpdate["type"],
+    type: "category" | "prompt" | "menu",
   ) => {
     if (!remoteItems || remoteItems.length === 0) return;
 
@@ -535,9 +624,33 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
     }
   };
 
-  await pullItems(catRes.data as RemoteCategory[], db.categories as Table<SyncableEntity, number>, "category");
-  await pullItems(promptRes.data as RemotePrompt[], db.prompts as Table<SyncableEntity, number>, "prompt");
-  await pullItems(menuRes.data as RemoteContextMenu[], db.contextMenus as Table<SyncableEntity, number>, "menu");
+  await pullItems(catRes.data as RemoteCategory[], db.categories as Table<NumericRemoteEntity, number>, "category");
+  await pullItems(promptRes.data as RemotePrompt[], db.prompts as Table<NumericRemoteEntity, number>, "prompt");
+  await pullItems(menuRes.data as RemoteContextMenu[], db.contextMenus as Table<NumericRemoteEntity, number>, "menu");
+
+  const remoteMemory = (memoryRes.data || []) as RemotePromptMemory[];
+  if (remoteMemory.length > 0) {
+    const remoteKeys = remoteMemory.map((memory) => [memory.template_id, memory.key] as [string, string]);
+    const matchingLocalMemory = await db.promptMemory
+      .where('[templateId+key]')
+      .anyOf(remoteKeys)
+      .toArray();
+    const existingMemoryKeys = new Set(matchingLocalMemory.map((memory) => `${memory.templateId}|${memory.key}`));
+
+    for (const remote of remoteMemory) {
+      if (!existingMemoryKeys.has(`${remote.template_id}|${remote.key}`) && !remote.is_deleted) {
+        await applyRemoteChanges({
+          type: "memory",
+          id: 0,
+          remoteId: remote.id,
+          action: "created",
+          timestamp: new Date(remote.created_at || new Date().toISOString()),
+          data: remote as unknown as Record<string, unknown>,
+        });
+        pulledCount++;
+      }
+    }
+  }
 
   return { pulled: pulledCount };
 }
@@ -573,6 +686,7 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   await findPending(db.categories as Table<SyncableEntity, number>, "category");
   await findPending(db.prompts as Table<SyncableEntity, number>, "prompt");
   await findPending(db.contextMenus as Table<SyncableEntity, number>, "menu");
+  await findPending(db.promptMemory as Table<SyncableEntity, number>, "memory");
 
   return { pushed: pushedCount };
 }

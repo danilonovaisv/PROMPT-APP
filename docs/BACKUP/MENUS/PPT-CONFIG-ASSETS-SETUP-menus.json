@@ -1,0 +1,152 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_projeto_apresentacao",
+      "menu_name": "PPT-CONFIG - Tipo de Projeto de Apresentação",
+      "description": "Define o tipo de apresentação que o agente deve preparar.",
+      "options": [
+        {
+          "label": "Pitch comercial",
+          "value": "pitch_comercial",
+          "sub_options": []
+        },
+        {
+          "label": "Aula ou treinamento",
+          "value": "aula_treinamento",
+          "sub_options": []
+        },
+        {
+          "label": "Relatório executivo",
+          "value": "relatorio_executivo",
+          "sub_options": []
+        },
+        {
+          "label": "Webinar ou palestra",
+          "value": "webinar_palestra",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_execucao",
+      "menu_name": "PPT-CONFIG - Escopo de Execução",
+      "description": "Define até onde o agente deve avançar no setup dos assets.",
+      "options": [
+        {
+          "label": "Somente scaffold inicial",
+          "value": "scaffold_inicial",
+          "sub_options": []
+        },
+        {
+          "label": "Scaffold + roteiro",
+          "value": "scaffold_roteiro",
+          "sub_options": []
+        },
+        {
+          "label": "Scaffold + roteiro + imagens",
+          "value": "scaffold_roteiro_imagens",
+          "sub_options": []
+        },
+        {
+          "label": "Pipeline completo",
+          "value": "pipeline_completo",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_validacao",
+      "menu_name": "PPT-CONFIG - Nível de Validação",
+      "description": "Controla a profundidade das auditorias técnicas e visuais.",
+      "options": [
+        {
+          "label": "Rápido",
+          "value": "rapido",
+          "sub_options": []
+        },
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Rigoroso",
+          "value": "rigoroso",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estilo_visual",
+      "menu_name": "PPT-CONFIG - Estilo Visual",
+      "description": "Define a direção visual base que será registrada em .context/DESIGN.md.",
+      "options": [
+        {
+          "label": "Premium minimalista",
+          "value": "premium_minimalista",
+          "sub_options": []
+        },
+        {
+          "label": "Corporativo tecnológico",
+          "value": "corporativo_tecnologico",
+          "sub_options": []
+        },
+        {
+          "label": "Educacional claro",
+          "value": "educacional_claro",
+          "sub_options": []
+        },
+        {
+          "label": "Impacto comercial",
+          "value": "impacto_comercial",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "gerador_visual",
+      "menu_name": "PPT-CONFIG - Gerador Visual",
+      "description": "Define como o agente deve preparar os prompts e assets de imagem.",
+      "options": [
+        {
+          "label": "Nano Banana Pro",
+          "value": "nano_banana_pro",
+          "sub_options": []
+        },
+        {
+          "label": "Imagem manual",
+          "value": "imagem_manual",
+          "sub_options": []
+        },
+        {
+          "label": "Sem geração de imagem",
+          "value": "sem_geracao_imagem",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_deploy",
+      "menu_name": "PPT-CONFIG - Estratégia de Deploy",
+      "description": "Define a abordagem de execução e publicação no Google Slides.",
+      "options": [
+        {
+          "label": "Emulação local primeiro",
+          "value": "emulacao_local_primeiro",
+          "sub_options": []
+        },
+        {
+          "label": "Deploy real assistido",
+          "value": "deploy_real_assistido",
+          "sub_options": []
+        },
+        {
+          "label": "Somente pacote exportável",
+          "value": "somente_pacote_exportavel",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

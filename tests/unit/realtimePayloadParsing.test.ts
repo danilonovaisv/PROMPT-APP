@@ -9,7 +9,9 @@ type RealtimePayload = {
 
 type RealtimeCallback = (payload: RealtimePayload) => Promise<void> | void;
 
-const channelCallbacks: Partial<Record<'categories' | 'prompts' | 'context_menus', RealtimeCallback>> = {};
+type RealtimeTable = 'categories' | 'prompts' | 'context_menus' | 'prompt_memory_context';
+
+const channelCallbacks: Partial<Record<RealtimeTable, RealtimeCallback>> = {};
 
 jest.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: true,
@@ -20,15 +22,20 @@ jest.mock('@/lib/supabase', () => ({
     channel: jest.fn((_name: string) => {
       const subscription = { unsubscribe: jest.fn() };
       const channel = {
-        on: jest.fn((_eventName: string, config: { table: 'categories' | 'prompts' | 'context_menus' }, callback: RealtimeCallback) => {
+        on: jest.fn((_eventName: string, config: { table: RealtimeTable }, callback: RealtimeCallback) => {
           channelCallbacks[config.table] = callback;
           return channel;
         }),
-        subscribe: jest.fn(() => subscription),
+        subscribe: jest.fn((callback?: (status: string) => void) => {
+          callback?.('SUBSCRIBED');
+          return subscription;
+        }),
+        unsubscribe: subscription.unsubscribe,
       };
 
       return channel;
     }),
+    removeChannel: jest.fn().mockResolvedValue('ok'),
   },
 }));
 
@@ -52,6 +59,12 @@ jest.mock('@/db/database', () => ({
       delete: jest.fn(),
       where: jest.fn(),
     },
+    promptMemory: {
+      add: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      where: jest.fn(),
+    },
   },
 }));
 
@@ -66,13 +79,14 @@ describe('realtime payload parsing', () => {
     channelCallbacks.categories = undefined;
     channelCallbacks.prompts = undefined;
     channelCallbacks.context_menus = undefined;
+    channelCallbacks.prompt_memory_context = undefined;
 
     const { supabase: mockedSupabase } = (await import('@/lib/supabase')) as unknown as { supabase: { auth: { getSession: jest.Mock } } };
     mockedSupabase.auth.getSession.mockResolvedValue({
       data: { session: { user: { id: 'user-123' } } },
     });
 
-    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { categories: { where: jest.Mock }, prompts: { where: jest.Mock }, contextMenus: { where: jest.Mock } } };
+    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { categories: { where: jest.Mock }, prompts: { where: jest.Mock }, contextMenus: { where: jest.Mock }, promptMemory: { where: jest.Mock } } };
     mockedDb.categories.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => ({ id: 11 })),
@@ -84,6 +98,11 @@ describe('realtime payload parsing', () => {
       })),
     });
     mockedDb.contextMenus.where.mockReturnValue({
+      equals: jest.fn(() => ({
+        first: jest.fn(async () => null),
+      })),
+    });
+    mockedDb.promptMemory.where.mockReturnValue({
       equals: jest.fn(() => ({
         first: jest.fn(async () => null),
       })),
@@ -229,5 +248,201 @@ describe('realtime payload parsing', () => {
         syncStatus: 'synced',
       })
     );
+  });
+
+  test('creates prompt memory records from realtime inserts', async () => {
+    jest.useFakeTimers();
+
+    const { setupRealtimeListeners } = await import('@/services/realtimeService');
+    const { db } = await import('@/db/database');
+
+    await setupRealtimeListeners();
+    const memoryCallback = channelCallbacks.prompt_memory_context;
+    expect(memoryCallback).toBeDefined();
+
+    await memoryCallback!({
+      eventType: 'INSERT',
+      new: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: 'Direct and concise',
+        is_deleted: false,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:01:00.000Z',
+      },
+      old: null,
+    });
+
+    expect(db.promptMemory.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        remoteId: 'memory-remote-1',
+        templateId: 'template-1',
+        key: 'brand_voice',
+        value: 'Direct and concise',
+        syncStatus: 'synced',
+        isDeleted: false,
+      })
+    );
+  });
+
+  test('updates prompt memory only when realtime payload is newer', async () => {
+    jest.useFakeTimers();
+
+    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { promptMemory: { where: jest.Mock, update: jest.Mock } } };
+    mockedDb.promptMemory.where.mockReturnValue({
+      equals: jest.fn(() => ({
+        first: jest.fn(async () => ({
+          id: 7,
+          templateId: 'template-1',
+          key: 'brand_voice',
+          value: 'Old local',
+          syncStatus: 'synced',
+          isDeleted: false,
+          updatedAt: new Date('2026-04-08T00:00:00.000Z'),
+        })),
+      })),
+    });
+
+    const { setupRealtimeListeners } = await import('@/services/realtimeService');
+
+    await setupRealtimeListeners();
+    const memoryCallback = channelCallbacks.prompt_memory_context;
+    expect(memoryCallback).toBeDefined();
+
+    await memoryCallback!({
+      eventType: 'UPDATE',
+      new: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: 'New remote',
+        is_deleted: false,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:02:00.000Z',
+      },
+      old: null,
+    });
+
+    expect(mockedDb.promptMemory.update).toHaveBeenCalledWith(
+      7,
+      expect.objectContaining({
+        value: 'New remote',
+        syncStatus: 'synced',
+      })
+    );
+  });
+
+  test('ignores stale realtime memory payloads and local pending deletes', async () => {
+    jest.useFakeTimers();
+
+    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { promptMemory: { where: jest.Mock, update: jest.Mock } } };
+    const firstMock = jest.fn(async () => ({
+      id: 7,
+      templateId: 'template-1',
+      key: 'brand_voice',
+      value: 'Newer local',
+      syncStatus: 'synced',
+      isDeleted: false,
+      updatedAt: new Date('2026-04-08T00:03:00.000Z'),
+    }));
+    const secondMock = jest.fn(async () => ({
+      id: 8,
+      templateId: 'template-1',
+      key: 'brand_voice',
+      value: 'Pending delete',
+      syncStatus: 'pending',
+      isDeleted: true,
+      updatedAt: new Date('2026-04-08T00:03:00.000Z'),
+    }));
+
+    mockedDb.promptMemory.where
+      .mockReturnValueOnce({ equals: jest.fn(() => ({ first: firstMock })) })
+      .mockReturnValueOnce({ equals: jest.fn(() => ({ first: secondMock })) });
+
+    const { setupRealtimeListeners } = await import('@/services/realtimeService');
+
+    await setupRealtimeListeners();
+    const memoryCallback = channelCallbacks.prompt_memory_context;
+    expect(memoryCallback).toBeDefined();
+
+    await memoryCallback!({
+      eventType: 'UPDATE',
+      new: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: 'Stale remote',
+        is_deleted: false,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:02:00.000Z',
+      },
+      old: null,
+    });
+
+    await memoryCallback!({
+      eventType: 'UPDATE',
+      new: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: 'Remote after delete',
+        is_deleted: false,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:04:00.000Z',
+      },
+      old: null,
+    });
+
+    expect(mockedDb.promptMemory.update).not.toHaveBeenCalled();
+  });
+
+  test('deletes prompt memory records from realtime delete and soft delete payloads', async () => {
+    jest.useFakeTimers();
+
+    const { db: mockedDb } = (await import('@/db/database')) as unknown as { db: { promptMemory: { where: jest.Mock, delete: jest.Mock } } };
+    mockedDb.promptMemory.where.mockReturnValue({
+      equals: jest.fn(() => ({
+        first: jest.fn(async () => ({ id: 7 })),
+      })),
+    });
+
+    const { setupRealtimeListeners } = await import('@/services/realtimeService');
+
+    await setupRealtimeListeners();
+    const memoryCallback = channelCallbacks.prompt_memory_context;
+    expect(memoryCallback).toBeDefined();
+
+    await memoryCallback!({
+      eventType: 'DELETE',
+      new: null,
+      old: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: '',
+        is_deleted: false,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:02:00.000Z',
+      },
+    });
+
+    await memoryCallback!({
+      eventType: 'UPDATE',
+      new: {
+        id: 'memory-remote-1',
+        template_id: 'template-1',
+        key: 'brand_voice',
+        value: '',
+        is_deleted: true,
+        created_at: '2026-04-08T00:00:00.000Z',
+        updated_at: '2026-04-08T00:03:00.000Z',
+      },
+      old: null,
+    });
+
+    expect(mockedDb.promptMemory.delete).toHaveBeenCalledTimes(2);
+    expect(mockedDb.promptMemory.delete).toHaveBeenNthCalledWith(1, 7);
+    expect(mockedDb.promptMemory.delete).toHaveBeenNthCalledWith(2, 7);
   });
 });

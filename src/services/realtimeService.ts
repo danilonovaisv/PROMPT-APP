@@ -21,6 +21,28 @@ import {
 } from "@/models/promptSchema";
 import type { LegacyContextMenuSelection } from "@/models/promptSchema";
 
+type RealtimeChannelName = "categories" | "prompts" | "menus" | "memory";
+type RealtimeChannelState = "subscribed" | "error" | "timed_out" | "closed" | "skipped";
+
+export interface RealtimeSetupResult {
+  success: boolean;
+  channels: Record<RealtimeChannelName, RealtimeChannelState>;
+  errors: string[];
+}
+
+const REALTIME_SUBSCRIBE_TIMEOUT_MS = 5000;
+
+const createEmptySetupResult = (state: RealtimeChannelState = "skipped"): RealtimeSetupResult => ({
+  success: false,
+  channels: {
+    categories: state,
+    prompts: state,
+    menus: state,
+    memory: state,
+  },
+  errors: [],
+});
+
 // Canais de realtime para cada tabela
 let categoriesChannel: RealtimeChannel | null = null;
 let promptsChannel: RealtimeChannel | null = null;
@@ -42,21 +64,25 @@ const debouncedSaveLocalBackup = () => {
 /**
  * Inicializa os listeners de realtime do Supabase
  */
-export async function setupRealtimeListeners() {
+export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
   // Evita canais duplicados em cenários de re-init (mount + auth change + reconnect)
   cleanupRealtimeListeners();
 
   if (!isSupabaseConfigured) {
-    return;
+    const result = createEmptySetupResult();
+    result.errors.push("Supabase is not configured");
+    return result;
   }
 
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
-    return;
+    const result = createEmptySetupResult();
+    result.errors.push("No active Supabase session");
+    return result;
   }
 
   const userId = session.user.id;
-
+  const result = createEmptySetupResult("closed");
 
   // Canal para Categorias
   categoriesChannel = supabase
@@ -73,8 +99,7 @@ export async function setupRealtimeListeners() {
         await handleCategoryChange(payload);
         debouncedSaveLocalBackup();
       },
-    )
-    .subscribe();
+    );
 
   // Canal para Prompts
   promptsChannel = supabase
@@ -91,8 +116,7 @@ export async function setupRealtimeListeners() {
         await handlePromptChange(payload);
         debouncedSaveLocalBackup();
       },
-    )
-    .subscribe();
+    );
 
   // Canal para Menus de Contexto
   menusChannel = supabase
@@ -109,8 +133,7 @@ export async function setupRealtimeListeners() {
         await handleMenuChange(payload);
         debouncedSaveLocalBackup();
       },
-    )
-    .subscribe();
+    );
 
   // Canal para Memória Fixa por template
   memoryChannel = supabase
@@ -127,8 +150,67 @@ export async function setupRealtimeListeners() {
         await handleMemoryChange(payload);
         debouncedSaveLocalBackup();
       },
-    )
-    .subscribe();
+    );
+
+  await Promise.all([
+    subscribeWithStatus("categories", categoriesChannel, result),
+    subscribeWithStatus("prompts", promptsChannel, result),
+    subscribeWithStatus("menus", menusChannel, result),
+    subscribeWithStatus("memory", memoryChannel, result),
+  ]);
+
+  result.success = Object.values(result.channels).every((state) => state === "subscribed");
+  return result;
+}
+
+function subscribeWithStatus(
+  name: RealtimeChannelName,
+  channel: RealtimeChannel,
+  result: RealtimeSetupResult,
+): Promise<void> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const settle = (state: RealtimeChannelState, error?: Error | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      result.channels[name] = state;
+      if (error) {
+        result.errors.push(`${name}: ${error.message}`);
+      }
+      if (state === "subscribed") {
+        console.log(`✅ Realtime channel subscribed: ${name}`);
+      } else {
+        console.warn(`⚠️ Realtime channel ${name} status: ${state}`);
+      }
+      resolve();
+    };
+
+    const timeout = setTimeout(() => {
+      settle("timed_out", new Error("Realtime subscription timed out"));
+    }, REALTIME_SUBSCRIBE_TIMEOUT_MS);
+
+    channel.subscribe((status, error) => {
+      if (status === "SUBSCRIBED") {
+        settle("subscribed");
+        return;
+      }
+
+      if (status === "CHANNEL_ERROR") {
+        settle("error", error || new Error("Realtime channel error"));
+        return;
+      }
+
+      if (status === "TIMED_OUT") {
+        settle("timed_out", error || new Error("Realtime channel timed out"));
+        return;
+      }
+
+      if (status === "CLOSED") {
+        settle("closed", error || null);
+      }
+    });
+  });
 }
 
 interface RealtimeCategoryPayload {
@@ -508,9 +590,8 @@ async function handleMemoryChange(payload: {
 
   try {
     const existing = await db.promptMemory
-      .where("templateId")
-      .equals(rd.template_id)
-      .and((item) => item.key === rd.key)
+      .where("[templateId+key]")
+      .equals([rd.template_id, rd.key])
       .first();
 
     if (eventType === "DELETE" || rd.is_deleted) {
@@ -555,21 +636,33 @@ async function handleMemoryChange(payload: {
 export function cleanupRealtimeListeners() {
   if (categoriesChannel) {
     categoriesChannel.unsubscribe();
+    void supabase.removeChannel(categoriesChannel).catch((error) => {
+      console.warn("⚠️ Failed to remove categories realtime channel:", error);
+    });
     categoriesChannel = null;
   }
 
   if (promptsChannel) {
     promptsChannel.unsubscribe();
+    void supabase.removeChannel(promptsChannel).catch((error) => {
+      console.warn("⚠️ Failed to remove prompts realtime channel:", error);
+    });
     promptsChannel = null;
   }
 
   if (menusChannel) {
     menusChannel.unsubscribe();
+    void supabase.removeChannel(menusChannel).catch((error) => {
+      console.warn("⚠️ Failed to remove menus realtime channel:", error);
+    });
     menusChannel = null;
   }
 
   if (memoryChannel) {
     memoryChannel.unsubscribe();
+    void supabase.removeChannel(memoryChannel).catch((error) => {
+      console.warn("⚠️ Failed to remove memory realtime channel:", error);
+    });
     memoryChannel = null;
   }
 
@@ -580,5 +673,5 @@ export function cleanupRealtimeListeners() {
  */
 export async function reconnectRealtime() {
   cleanupRealtimeListeners();
-  await setupRealtimeListeners();
+  return setupRealtimeListeners();
 }
