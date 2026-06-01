@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_projeto",
+      "menu_name": "PPT-CREATOR - Tipo de Projeto",
+      "description": "Tipo de apresenta\u00e7\u00e3o",
+      "options": [
+        {
+          "label": "Pitch",
+          "value": "pitch",
+          "sub_options": []
+        },
+        {
+          "label": "Treinamento",
+          "value": "treinamento",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
