@@ -20,3 +20,6 @@ allowBuilds:
   'protobufjs': true
   'sqlite3': true
   'tldjs': true
+
+minimumReleaseAgeExclude:
+  - netlify-cli@26.1.0
