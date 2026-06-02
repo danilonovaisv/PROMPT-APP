@@ -1,5 +1,7 @@
 [project]
-domains = []
+domains = ["https://prompt-app-dan.netlify.app/"]
+name = "PROMPT-APP"
+
 
 [crawler]
 max_pages = 100

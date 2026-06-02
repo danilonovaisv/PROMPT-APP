@@ -92,8 +92,51 @@
   force = true
 
 [[redirects]]
+  from = "/page-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/news-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/category-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/post_tag-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/author-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/product-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/tag-sitemap.xml"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
   # SPA fallback para roteamento client-side
   from = "/*"
   to = "/index.html"
   status = 200
   force = false
+
