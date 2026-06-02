@@ -20,3 +20,29 @@ allowBuilds:
   'protobufjs': true
   'sqlite3': true
   'tldjs': true
+
+minimumReleaseAgeExclude:
+  - '@sentry-internal/browser-utils@10.56.0'
+  - '@sentry-internal/feedback@10.56.0'
+  - '@sentry-internal/replay-canvas@10.56.0'
+  - '@sentry-internal/replay@10.56.0'
+  - '@sentry/browser@10.56.0'
+  - '@sentry/core@10.56.0'
+  - '@sentry/react@10.56.0'
+  - '@supabase/auth-js@2.107.0'
+  - '@supabase/functions-js@2.107.0'
+  - '@supabase/postgrest-js@2.107.0'
+  - '@supabase/realtime-js@2.107.0'
+  - '@supabase/storage-js@2.107.0'
+  - '@supabase/supabase-js@2.107.0'
+  - '@typescript-eslint/eslint-plugin@8.60.1'
+  - '@typescript-eslint/parser@8.60.1'
+  - '@typescript-eslint/project-service@8.60.1'
+  - '@typescript-eslint/scope-manager@8.60.1'
+  - '@typescript-eslint/tsconfig-utils@8.60.1'
+  - '@typescript-eslint/type-utils@8.60.1'
+  - '@typescript-eslint/types@8.60.1'
+  - '@typescript-eslint/typescript-estree@8.60.1'
+  - '@typescript-eslint/utils@8.60.1'
+  - '@typescript-eslint/visitor-keys@8.60.1'
+  - typescript-eslint@8.60.1

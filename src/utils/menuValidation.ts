@@ -127,9 +127,11 @@ export function normalizeAndValidateMenu(raw: unknown): MenuValidationResult {
       options: parsed.options.map((opt) => ({
         value: opt.value,
         label: opt.label,
+        description: opt.description,
         subOptions: (opt.sub_options ?? []).map((sub) => ({
           value: sub.value,
           label: sub.label,
+          description: sub.description,
         })),
       })),
       createdAt: now,

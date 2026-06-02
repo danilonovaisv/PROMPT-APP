@@ -2,11 +2,13 @@
 export interface ImportSubOption {
     label: string;
     value: string;
+    description?: string;
 }
 /** Opção principal no schema de importação */
 export interface ImportOption {
     label: string;
     value: string;
+    description?: string;
     sub_options?: ImportSubOption[];
 }
 /** Menu individual no schema de importação */

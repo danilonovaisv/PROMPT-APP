@@ -1,7 +1,6 @@
 import { db } from '@/db/database';
 import {
   parsePromptPayload,
-  getPrimaryReferenceUrl,
   getPromptSummaryFields,
   type PromptContract,
   type MenuDefinition,
@@ -80,7 +79,6 @@ function buildPromptRecord(
     schemaVersion: summary.schemaVersion,
     language: summary.language,
     outputFormat: summary.outputFormat,
-    referenceUrl: getPrimaryReferenceUrl(promptPayload),
     fewShotExamples: promptPayload.prompt_definition.few_shot_examples,
     createdAt: now,
     updatedAt: now,

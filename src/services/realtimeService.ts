@@ -423,7 +423,6 @@ async function handlePromptChange(payload: {
           schemaVersion: rd.schema_version || "1.0.0",
           language: rd.language || "pt-BR",
           outputFormat: rd.output_format || "markdown",
-          referenceUrl: rd.reference_url || undefined,
           fewShotExamples: (rd.few_shot_examples as unknown as FewShotExample[]) || [],
           createdAt: new Date(rd.created_at),
           updatedAt: new Date(rd.updated_at),

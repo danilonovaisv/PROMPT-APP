@@ -933,12 +933,6 @@ export function getPromptSummaryFields(payload: TemplatePayload) {
   };
 }
 
-export function getPrimaryReferenceUrl(
-  _payload?: TemplatePayload,
-): string | undefined {
-  return undefined;
-}
-
 export function getLegacyPromptColumns(
   template: TemplatePayload,
   selection?: UserSelection,

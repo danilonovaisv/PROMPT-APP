@@ -9,7 +9,6 @@ import { saveLocalBackup } from "@/utils/backupManager";
 import {
   compilePromptPayload,
   getLegacyPromptColumns,
-  getPrimaryReferenceUrl,
   getPromptSummaryFields,
   parsePromptPayload,
   parseUserSelection,
@@ -316,7 +315,6 @@ interface AssetRemoteData {
           schemaVersion: rd.schema_version || "1.0.0",
           language: rd.language || "pt-BR",
           outputFormat: rd.output_format || "markdown",
-          referenceUrl: rd.reference_url || undefined,
           fewShotExamples: (rd.few_shot_examples || []) as FewShotExample[],
           updatedAt: new Date((rd.updated_at || rd.created_at || new Date().toISOString()) as string),
         });
@@ -411,7 +409,7 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
         schema_version: promptSummary.schemaVersion,
         output_format: promptSummary.outputFormat,
         language: promptSummary.language,
-        reference_url: getPrimaryReferenceUrl(prompt.promptPayload as Parameters<typeof getPrimaryReferenceUrl>[0]),
+        reference_url: null,
         few_shot_examples: prompt.fewShotExamples || [],
         user_id: session.user.id,
         ...getLegacyPromptColumns(

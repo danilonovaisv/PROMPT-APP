@@ -26,11 +26,11 @@ export function contextMenuToDefinition(menu: ContextMenu): MenuDefinition {
     options: options.map((option) => ({
       label: option.label,
       value: option.value,
-      description: '',
+      description: option.description || '',
       sub_options: (option.subOptions || []).map((subOption) => ({
         label: subOption.label,
         value: subOption.value,
-        description: '',
+        description: subOption.description || '',
       })),
     })),
   });

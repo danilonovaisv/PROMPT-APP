@@ -3,7 +3,7 @@
    ====================================================== */
 
 import Dexie, { type EntityTable } from 'dexie';
-import type { Category, Prompt, MenuOption, ContextMenu, PromptMemory } from '@/models/types';
+import type { Category, Prompt, ContextMenu, PromptMemory } from '@/models/types';
 import {
     createPromptPayloadFromLegacyRecord,
     getPromptSummaryFields,
@@ -14,7 +14,6 @@ import { DEFAULT_PROMPTS } from './defaultPrompts';
 const db = new Dexie('PromptAppDB') as Dexie & {
     categories: EntityTable<Category, 'id'>;
     prompts: EntityTable<Prompt, 'id'>;
-    menuOptions: EntityTable<MenuOption, 'id'>;
     contextMenus: EntityTable<ContextMenu, 'id'>;
     promptMemory: EntityTable<PromptMemory, 'id'>;
 };
@@ -253,6 +252,13 @@ db.version(13).stores({
     promptMemory: '++id, key, templateId, [templateId+key], remoteId, syncStatus, isDeleted',
 });
 
+db.version(14).stores({
+    categories: '++id, input, name, createdAt, remoteId, syncStatus',
+    prompts: '++id, categoryId, title, schemaVersion, language, outputFormat, selectedMenuIds, createdAt, updatedAt, remoteId, syncStatus',
+    contextMenus: '++id, menuId, menuName, selectionMode, createdAt, remoteId, syncStatus',
+    promptMemory: '++id, key, templateId, [templateId+key], remoteId, syncStatus, isDeleted',
+});
+
 const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'remoteId'>[] = [
     { name: 'Copywriting', icon: '✍️', color: '#ff6b35', createdAt: new Date(), syncStatus: 'pending' },
     { name: 'Código', icon: '💻', color: '#0048ff', createdAt: new Date(), syncStatus: 'pending' },
@@ -262,31 +268,6 @@ const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'remoteId'>[] = [
     { name: 'Negócios', icon: '💼', color: '#ffaa00', createdAt: new Date(), syncStatus: 'pending' },
 ];
 
-const DEFAULT_MENU_OPTIONS: Omit<MenuOption, 'id'>[] = [
-    { menuKey: 'tom', label: 'Formal', value: 'formal' },
-    { menuKey: 'tom', label: 'Informal', value: 'informal' },
-    { menuKey: 'tom', label: 'Técnico', value: 'tecnico' },
-    { menuKey: 'tom', label: 'Didático', value: 'didatico' },
-    { menuKey: 'tom', label: 'Persuasivo', value: 'persuasivo' },
-    { menuKey: 'tom', label: 'Neutro', value: 'neutro' },
-    { menuKey: 'publico', label: 'Desenvolvedores', value: 'desenvolvedores' },
-    { menuKey: 'publico', label: 'Executivos', value: 'executivos' },
-    { menuKey: 'publico', label: 'Estudantes', value: 'estudantes' },
-    { menuKey: 'publico', label: 'Público Geral', value: 'publico_geral' },
-    { menuKey: 'publico', label: 'Especialistas', value: 'especialistas' },
-    { menuKey: 'publico', label: 'Crianças', value: 'criancas' },
-    { menuKey: 'idioma', label: 'Português (BR)', value: 'pt-br' },
-    { menuKey: 'idioma', label: 'Inglês', value: 'en' },
-    { menuKey: 'idioma', label: 'Espanhol', value: 'es' },
-    { menuKey: 'idioma', label: 'Francês', value: 'fr' },
-    { menuKey: 'idioma', label: 'Alemão', value: 'de' },
-    { menuKey: 'estilo', label: 'Conciso', value: 'conciso' },
-    { menuKey: 'estilo', label: 'Detalhado', value: 'detalhado' },
-    { menuKey: 'estilo', label: 'Passo a passo', value: 'passo_a_passo' },
-    { menuKey: 'estilo', label: 'Lista', value: 'lista' },
-    { menuKey: 'estilo', label: 'Narrativo', value: 'narrativo' },
-    { menuKey: 'estilo', label: 'Comparativo', value: 'comparativo' },
-];
 
 function createDefaultContextMenus() {
     const now = new Date();
@@ -423,7 +404,7 @@ export async function seedDatabase() {
             await db.open();
             console.log('📦 Banco de Dados: Iniciando verificação de seed...');
 
-            await db.transaction('rw', db.categories, db.menuOptions, db.contextMenus, async () => {
+            await db.transaction('rw', db.categories, db.contextMenus, async () => {
                 const existingCategories = await db.categories.toArray();
                 const duplicateCategoryIds = getDuplicateIds(
                     existingCategories,
@@ -450,29 +431,6 @@ export async function seedDatabase() {
                 if (missingCategories.length > 0) {
                     console.log(`🌱 Seed: Criando ${missingCategories.length} categorias padrão...`);
                     await db.categories.bulkAdd(missingCategories);
-                }
-
-                const existingMenuOptions = await db.menuOptions.toArray();
-                const duplicateMenuOptionIds = getDuplicateIds(
-                    existingMenuOptions,
-                    (item) => `${item.menuKey}:${normalizeKey(item.value)}`,
-                    (item) => item.id
-                );
-                if (duplicateMenuOptionIds.length > 0) {
-                    await db.menuOptions.bulkDelete(duplicateMenuOptionIds);
-                }
-
-                const menuOptionsAfterCleanup = existingMenuOptions.filter(
-                    (item) => !duplicateMenuOptionIds.includes(item.id ?? -1)
-                );
-                const missingMenuOptions = getMissingSeedRecords(
-                    DEFAULT_MENU_OPTIONS,
-                    menuOptionsAfterCleanup,
-                    (item) => `${item.menuKey}:${normalizeKey(item.value)}`
-                );
-                if (missingMenuOptions.length > 0) {
-                    console.log(`🌱 Seed: Criando ${missingMenuOptions.length} opções de menu padrão...`);
-                    await db.menuOptions.bulkAdd(missingMenuOptions);
                 }
 
                 const existingContextMenus = await db.contextMenus.toArray();

@@ -19,12 +19,14 @@ import { z } from 'zod';
 
 const SubOptionSchema = z.object({
     label: z.string().min(1, "label é obrigatório e deve ser string não-vazia"),
-    value: z.string().min(1, "value é obrigatório e deve ser string não-vazia")
+    value: z.string().min(1, "value é obrigatório e deve ser string não-vazia"),
+    description: z.string().optional()
 });
 
 const OptionSchema = z.object({
     label: z.string().min(1, "label é obrigatório e deve ser string não-vazia"),
     value: z.string().min(1, "value é obrigatório e deve ser string não-vazia"),
+    description: z.string().optional(),
     sub_options: z.array(SubOptionSchema).optional()
 });
 
@@ -131,9 +133,11 @@ function toContextMenu(imported: ImportMenu): Omit<ContextMenu, 'id'> {
         options: (imported.options || []).map((opt) => ({
             label: opt.label || '',
             value: opt.value,
+            description: opt.description,
             subOptions: (opt.sub_options ?? []).map((sub) => ({
                 label: sub.label,
                 value: sub.value,
+                description: sub.description,
             })),
         })),
         createdAt: now,
@@ -318,8 +322,13 @@ export async function exportMenusToJson(): Promise<MenuImportSchema> {
             options: (m.options || []).map((opt) => ({
                 label: opt.label,
                 value: opt.value,
+                description: opt.description,
                 sub_options: (opt.subOptions || []).length > 0
-                    ? (opt.subOptions || []).map((sub) => ({ label: sub.label, value: sub.value }))
+                    ? (opt.subOptions || []).map((sub) => ({ 
+                        label: sub.label, 
+                        value: sub.value,
+                        description: sub.description,
+                    }))
                     : undefined,
             })),
         })),

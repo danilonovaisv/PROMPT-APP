@@ -12,11 +12,13 @@ export interface Category {
 export interface ContextMenuSubOption {
     label: string;
     value: string;
+    description?: string;
 }
 /** Opção principal de um menu de contexto (com sub-opções opcionais) */
 export interface ContextMenuOption {
     label: string;
     value: string;
+    description?: string;
     subOptions: ContextMenuSubOption[];
 }
 /** Menu de contexto completo — criado e gerenciado pelo usuário */
@@ -86,7 +88,6 @@ export interface Prompt {
     negativePrompt: string[];
     outputSchema: OutputSchema;
     fewShotExamples: FewShotExample[];
-    referenceUrl?: string;
     createdAt: Date;
     updatedAt: Date;
 }

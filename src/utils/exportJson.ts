@@ -5,15 +5,26 @@ import {
   PromptContractSchema,
   type TemplatePayload,
 } from "@/models/promptSchema";
-import type { BulkExport, Prompt } from "@/models/types";
+import type { BulkExport, Prompt, ContextMenu } from "@/models/types";
 import { contextMenuToDefinition } from "@/utils/promptArtifacts";
 import {
   CURRENT_BULK_EXPORT_VERSION,
   CURRENT_PROMPT_SCHEMA_VERSION,
 } from "@/utils/schemaCompatibility";
 
-export function toExportFormat(prompt: Prompt): PromptContract {
-  return PromptContractSchema.parse(prompt.promptPayload);
+export function toExportFormat(prompt: Prompt, contextMenus?: ContextMenu[]): PromptContract {
+  const payload = { ...prompt.promptPayload };
+  if (contextMenus && prompt.selectedMenuIds) {
+    const menuMap = new Map(contextMenus.map((m) => [m.id, m.menuId]));
+    const menuIds = prompt.selectedMenuIds
+      .map((id) => menuMap.get(id))
+      .filter((id): id is string => typeof id === "string");
+    payload.menu_ids = Array.from(new Set([
+      ...(payload.menu_ids || []),
+      ...menuIds
+    ]));
+  }
+  return PromptContractSchema.parse(payload);
 }
 
 export function downloadJson(data: unknown, filename: string) {
@@ -29,8 +40,9 @@ export function downloadJson(data: unknown, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function downloadPrompt(prompt: Prompt) {
-  const exported = toExportFormat(prompt);
+export async function downloadPrompt(prompt: Prompt) {
+  const contextMenus = await db.contextMenus.toArray();
+  const exported = toExportFormat(prompt, contextMenus);
   const safeName = prompt.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
   downloadJson(exported, `prompt_${safeName}`);
 }
@@ -54,7 +66,7 @@ export async function downloadAllPrompts() {
       title: prompt.title,
       category: categoryMap.get(prompt.categoryId) || "Sem categoria",
       schemaVersion: prompt.schemaVersion,
-      prompt: toExportFormat(prompt),
+      prompt: toExportFormat(prompt, contextMenus),
     })),
   };
 

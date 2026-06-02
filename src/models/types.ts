@@ -22,11 +22,13 @@ export interface Category {
 export interface ContextMenuSubOption {
   label: string;
   value: string;
+  description?: string;
 }
 
 export interface ContextMenuOption {
   label: string;
   value: string;
+  description?: string;
   subOptions: ContextMenuSubOption[];
 }
 
@@ -98,7 +100,6 @@ export interface Prompt {
   schemaVersion: string;
   language: string;
   outputFormat: PromptOutputFormat;
-  referenceUrl?: string;
   fewShotExamples: FewShotExample[];
   createdAt: Date;
   updatedAt: Date;

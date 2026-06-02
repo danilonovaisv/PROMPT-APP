@@ -3,7 +3,6 @@ import { db } from '@/db/database';
 import {
     createPromptPayloadFromLegacyRecord,
     getLegacyPromptColumns,
-    getPrimaryReferenceUrl,
     getPromptSummaryFields,
     type PromptContract,
 } from '@/models/promptSchema';
@@ -16,7 +15,6 @@ function resolvePromptPayload(input: Partial<Prompt>): PromptContract {
 
     return createPromptPayloadFromLegacyRecord({
         title: input.title,
-        referenceUrl: input.referenceUrl,
         schemaVersion: input.schemaVersion,
         language: input.language,
     });
@@ -52,7 +50,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
-        reference_url: getPrimaryReferenceUrl(promptPayload),
+        reference_url: null,
         // few_shot_examples: campo novo (migration 20260327000001)
         few_shot_examples: input.fewShotExamples || [],
         // Garantir que itens salvos nunca sejam marcados como excluídos

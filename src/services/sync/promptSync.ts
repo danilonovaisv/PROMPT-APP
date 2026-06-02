@@ -5,7 +5,6 @@ import { withRetry, fetchAllPages } from "./utils";
 import { 
   getPromptSummaryFields, 
   getLegacyPromptColumns, 
-  getPrimaryReferenceUrl,
   type PromptOutputFormat
 } from "@/models/promptSchema";
 
@@ -115,7 +114,7 @@ export const syncPrompts = async (
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
-        reference_url: getPrimaryReferenceUrl(data.promptPayload),
+        reference_url: null,
         few_shot_examples: data.fewShotExamples || [],
         is_deleted: false,
         updated_at: new Date().toISOString(),
@@ -164,7 +163,7 @@ export const syncPrompts = async (
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
-        reference_url: getPrimaryReferenceUrl(prompt.promptPayload),
+        reference_url: null,
         few_shot_examples: prompt.fewShotExamples || [],
         is_deleted: false,
         updated_at: new Date().toISOString(),
@@ -251,7 +250,6 @@ export const downloadPrompts = async (
       schemaVersion: p.schema_version,
       language: p.language,
       outputFormat: p.output_format as PromptOutputFormat,
-      referenceUrl: p.reference_url || undefined,
       fewShotExamples: p.few_shot_examples,
       createdAt: new Date(p.created_at),
       updatedAt: new Date(p.updated_at),
