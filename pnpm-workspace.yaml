@@ -46,3 +46,5 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/utils@8.60.1'
   - '@typescript-eslint/visitor-keys@8.60.1'
   - typescript-eslint@8.60.1
+  - eslint@10.5.0
+  - lucide-react@1.18.0

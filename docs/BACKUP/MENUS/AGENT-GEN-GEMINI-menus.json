@@ -1,0 +1,201 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "escopo_agente",
+      "menu_name": "AGENT-GEN - Escopo do Agente",
+      "description": "Define o foco operacional do arquivo GEMINI.md dentro do repositório.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Arquitetura e código",
+          "value": "arquitetura_codigo",
+          "description": "Orienta o agente a atuar em arquitetura, refatoração, geração e revisão de código.",
+          "sub_options": []
+        },
+        {
+          "label": "Revisão e qualidade",
+          "value": "revisao_qualidade",
+          "description": "Prioriza code review, testes, segurança, performance e manutenção.",
+          "sub_options": []
+        },
+        {
+          "label": "Onboarding técnico",
+          "value": "onboarding_tecnico",
+          "description": "Prioriza explicações sobre estrutura do projeto, padrões internos e fluxo de contribuição.",
+          "sub_options": []
+        },
+        {
+          "label": "Automação de tarefas",
+          "value": "automacao_tarefas",
+          "description": "Prioriza geração de comandos, scripts, rotinas e fluxos de manutenção.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_principal",
+      "menu_name": "AGENT-GEN - Stack Principal",
+      "description": "Seleciona a stack que deve orientar as recomendações técnicas do GEMINI.md.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "nextjs_app_router",
+          "description": "Projeto com Next.js, React, TypeScript e arquitetura App Router.",
+          "sub_options": [
+            {
+              "label": "Supabase",
+              "value": "supabase",
+              "description": "Inclui Auth, Database, Storage, RLS e clientes server/client quando aplicável."
+            },
+            {
+              "label": "Firebase",
+              "value": "firebase",
+              "description": "Inclui Auth, Firestore, Storage e regras de segurança quando aplicável."
+            },
+            {
+              "label": "Sem backend definido",
+              "value": "sem_backend_definido",
+              "description": "Mantém instruções abertas para backend futuro sem inventar integração."
+            }
+          ]
+        },
+        {
+          "label": "React SPA",
+          "value": "react_spa",
+          "description": "Projeto React com Vite, TypeScript e renderização client-side.",
+          "sub_options": []
+        },
+        {
+          "label": "Node.js backend",
+          "value": "nodejs_backend",
+          "description": "Projeto focado em APIs, serviços, automações e integrações server-side.",
+          "sub_options": []
+        },
+        {
+          "label": "Stack personalizada",
+          "value": "stack_personalizada",
+          "description": "Usa a stack informada manualmente pelo usuário no input.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_rigor",
+      "menu_name": "AGENT-GEN - Nível de Rigor",
+      "description": "Define a intensidade das regras de segurança, arquitetura e validação no GEMINI.md.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Conservador",
+          "value": "conservador",
+          "description": "Evita mudanças amplas e prioriza compatibilidade com o código existente.",
+          "sub_options": []
+        },
+        {
+          "label": "Equilibrado",
+          "value": "equilibrado",
+          "description": "Permite melhorias estruturais com justificativa objetiva.",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "description": "Exige rastreabilidade, segurança, testes, acessibilidade e padrões de manutenção robustos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_resposta_ide",
+      "menu_name": "AGENT-GEN - Formato de Resposta no IDE",
+      "description": "Define como o agente descrito no GEMINI.md deve responder quando estiver operando no chat do IDE.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Código primeiro",
+          "value": "codigo_primeiro",
+          "description": "Prioriza diffs, arquivos alterados e comentários técnicos curtos.",
+          "sub_options": []
+        },
+        {
+          "label": "Plano antes do código",
+          "value": "plano_antes_codigo",
+          "description": "Exige plano breve antes de alterações relevantes.",
+          "sub_options": []
+        },
+        {
+          "label": "Diagnóstico estruturado",
+          "value": "diagnostico_estruturado",
+          "description": "Organiza respostas em problema, causa, solução e validação.",
+          "sub_options": []
+        },
+        {
+          "label": "Markdown completo",
+          "value": "markdown_completo",
+          "description": "Responde com seções claras, listas e exemplos quando útil.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_exemplo",
+      "menu_name": "AGENT-GEN - Profundidade dos Exemplos",
+      "description": "Define o nível de detalhe do exemplo one-shot incluído no GEMINI.md.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Curto",
+          "value": "curto",
+          "description": "Inclui exemplo mínimo de padrão ruim e refatoração esperada.",
+          "sub_options": []
+        },
+        {
+          "label": "Médio",
+          "value": "medio",
+          "description": "Inclui exemplo com contexto, problema, código ruim e versão refatorada.",
+          "sub_options": []
+        },
+        {
+          "label": "Detalhado",
+          "value": "detalhado",
+          "description": "Inclui exemplo com critérios de arquitetura, segurança e testes.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "idioma_gemini_md",
+      "menu_name": "AGENT-GEN - Idioma do GEMINI.md",
+      "description": "Define o idioma do arquivo GEMINI.md gerado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Português do Brasil",
+          "value": "pt_br",
+          "description": "Gera o GEMINI.md em pt-BR.",
+          "sub_options": []
+        },
+        {
+          "label": "Inglês",
+          "value": "en_us",
+          "description": "Gera o GEMINI.md em en-US.",
+          "sub_options": []
+        },
+        {
+          "label": "Espanhol",
+          "value": "es_es",
+          "description": "Gera o GEMINI.md em es-ES.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
