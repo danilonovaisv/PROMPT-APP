@@ -1,4 +1,3 @@
-import { useActionState } from 'react';
 import type { TemplatePayload } from '@/models/promptSchema';
 import type { Category } from '@/models/types';
 
@@ -10,29 +9,16 @@ type EditorMetaFormProps = {
   onCategoryChange: (categoryId: number) => void;
 };
 
-type ActionState = { message: string; status: 'idle' | 'saving' | 'success' | 'error' };
-
-// Simulated save action for React 19 form action pattern
-const saveMetaAction = async (_prevState: ActionState, _formData: FormData): Promise<ActionState> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return { message: 'Salvo com sucesso', status: 'success' };
-};
-
-const initialState: ActionState = { message: '', status: 'idle' };
-
 export function EditorMetaForm({ template, categoryId, categories, updateMetaField, onCategoryChange }: EditorMetaFormProps) {
-  const [state, formAction, isPending] = useActionState(saveMetaAction, initialState);
   const nameEmpty = !template.meta.template_name.trim();
   const categoryMissing = !categoryId;
 
   return (
-    <form action={formAction} className="form-section">
+    <div className="form-section">
       <div className="form-section__header flex-row-center justify-between">
         <h3 className="form-section__title mb-0">
           Metadados do Template
         </h3>
-        {isPending && <span className="text-sm text-primary animate-pulse">Salvando...</span>}
-        {state.status === 'success' && !isPending && <span className="text-sm text-success fade-out-text">Salvo</span>}
       </div>
 
       <div className="form-group">
@@ -159,8 +145,7 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
           <option value="archived">archived</option>
         </select>
       </div>
-
-      <button type="submit" style={{ display: 'none' }} aria-hidden="true">Submit</button>
-    </form>
+    </div>
   );
 }
+

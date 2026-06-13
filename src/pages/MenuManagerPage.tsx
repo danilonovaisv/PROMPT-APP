@@ -89,6 +89,17 @@ export default function MenuManagerPage() {
       return;
     }
 
+    if (form.options.length === 0) {
+      showToast('Adicione pelo menos uma opção ao menu', 'error');
+      return;
+    }
+
+    const emptyOption = form.options.find(opt => !opt.label.trim());
+    if (emptyOption) {
+      showToast('Todas as opções devem ter um label preenchido', 'error');
+      return;
+    }
+
     const menuId = form.menuId || toSlug(form.menuName);
 
     if (!isEditing) {

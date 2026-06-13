@@ -190,6 +190,134 @@ function buildPromptRecordFromRaw(
   }
 }
 
+export interface ImportPreviewData {
+  prompts: Array<{
+    title: string;
+    description?: string;
+    category?: string;
+  }>;
+  menus: Array<{
+    menuName: string;
+    menuId: string;
+  }>;
+  warnings: string[];
+  errors: ImportError[];
+}
+
+export function parseImportData(rawJson: string): ImportPreviewData {
+  const errors: ImportError[] = [];
+  const warnings: string[] = [];
+  const prompts: Array<{ title: string; description?: string; category?: string }> = [];
+  const menus: Array<{ menuName: string; menuId: string }> = [];
+
+  const sanitizeJsonString = (jsonStr: string): string => {
+    const cleaned = jsonStr.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+    const firstBrace = cleaned.indexOf('{');
+    const firstBracket = cleaned.indexOf('[');
+    let startIndex = -1;
+    if (firstBrace !== -1 && firstBracket !== -1) {
+        startIndex = Math.min(firstBrace, firstBracket);
+    } else if (firstBrace !== -1) {
+        startIndex = firstBrace;
+    } else if (firstBracket !== -1) {
+        startIndex = firstBracket;
+    }
+    
+    if (startIndex !== -1) {
+        const isObject = cleaned[startIndex] === '{';
+        const closingChar = isObject ? '}' : ']';
+        const lastIndex = cleaned.lastIndexOf(closingChar);
+        if (lastIndex !== -1 && lastIndex >= startIndex) {
+            return cleaned.substring(startIndex, lastIndex + 1);
+        }
+    }
+    return cleaned;
+  };
+
+  try {
+    const sanitizedStr = sanitizeJsonString(rawJson);
+    const parsed = JSON.parse(sanitizedStr) as unknown;
+
+    if (isBulkExport(parsed)) {
+      const rawMenuDefinitions = Array.isArray(parsed.menuDefinitions)
+        ? parsed.menuDefinitions
+        : Array.isArray(parsed.contextMenus)
+          ? parsed.contextMenus
+          : [];
+
+      const { valid, errors: batchErrors } = normalizeMenuBatch(rawMenuDefinitions);
+      for (const m of valid) {
+        menus.push({
+          menuName: m.menuName || m.menuId,
+          menuId: m.menuId,
+        });
+      }
+      for (const batchErr of batchErrors) {
+        errors.push({
+          type: 'validation',
+          field: 'menu_definition',
+          message: batchErr.error,
+        });
+      }
+
+      for (const item of parsed.prompts) {
+        try {
+          const payload = parsePromptContract(item.prompt);
+          prompts.push({
+            title: payload.meta.template_name,
+            description: payload.prompt_definition.task,
+            category: item.category,
+          });
+        } catch (e: unknown) {
+          errors.push({
+            type: 'validation',
+            field: 'prompt',
+            message: e instanceof Error ? e.message : 'Formato de prompt inválido',
+          });
+        }
+      }
+    } else if (Array.isArray(parsed)) {
+      for (const item of parsed) {
+        try {
+          const payload = parsePromptContract(item);
+          prompts.push({
+            title: payload.meta.template_name,
+            description: payload.prompt_definition.task,
+          });
+        } catch (e: unknown) {
+          errors.push({
+            type: 'validation',
+            field: 'prompt',
+            message: e instanceof Error ? e.message : 'Formato de prompt inválido',
+          });
+        }
+      }
+    } else {
+      try {
+        const payload = parsePromptContract(parsed);
+        prompts.push({
+          title: payload.meta.template_name,
+          description: payload.prompt_definition.task,
+        });
+      } catch (e: unknown) {
+        errors.push({
+          type: 'validation',
+          field: 'prompt',
+          message: e instanceof Error ? e.message : 'Formato de prompt inválido',
+        });
+      }
+    }
+  } catch (e: unknown) {
+    errors.push({
+      type: 'processing',
+      field: 'general',
+      message: e instanceof Error ? e.message : 'Erro ao analisar JSON',
+    });
+  }
+
+  return { prompts, menus, warnings, errors };
+}
+
 export async function importFromFile(file: File): Promise<ImportResult> {
   return importFromJsonText(await file.text(), file.name);
 }

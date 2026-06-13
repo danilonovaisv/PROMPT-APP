@@ -78,6 +78,16 @@ export default function CategoryManagerPage() {
             return;
         }
 
+        const normalizedName = form.name.trim().toLowerCase();
+        const allCategories = await db.categories.filter(c => !c.isDeleted).toArray();
+        const duplicate = allCategories.find(
+            c => c.name.trim().toLowerCase() === normalizedName && c.id !== isEditing
+        );
+        if (duplicate) {
+            showToast(`Já existe uma categoria chamada "${duplicate.name}"`, 'error');
+            return;
+        }
+
         const now = new Date();
         let localId: number | null;
 

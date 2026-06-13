@@ -2,7 +2,7 @@
    Layout — Shell com sidebar e área principal
    ====================================================== */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
@@ -42,6 +42,15 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     }, []);
 
     const categories = useLiveQuery(() => db.categories.filter(c => !c.isDeleted).toArray()) ?? [];
+    const prompts = useLiveQuery(() => db.prompts.filter(p => !p.isDeleted).toArray()) ?? [];
+
+    const promptCountByCategory = useMemo(() => {
+        const map = new Map<number, number>();
+        for (const p of prompts) {
+            map.set(p.categoryId, (map.get(p.categoryId) || 0) + 1);
+        }
+        return map;
+    }, [prompts]);
 
     const navItemClass = ({ isActive }: { isActive: boolean }) =>
         `app-sidebar__nav-item ${isActive ? 'app-sidebar__nav-item--active' : ''}`;
@@ -103,17 +112,23 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                     {/* Categorias */}
                     <div className="app-sidebar__section-title">Categorias</div>
-                    {categories.map((cat) => (
-                        <NavLink
-                            key={cat.id}
-                            to={`/categoria/${cat.id}`}
-                            className={navItemClass}
-                            onClick={() => setSidebarOpen(false)}
-                        >
-                            <span>{cat.icon}</span>
-                            {cat.name}
-                        </NavLink>
-                    ))}
+                    {categories.map((cat) => {
+                        const count = promptCountByCategory.get(cat.id!) || 0;
+                        return (
+                            <NavLink
+                                key={cat.id}
+                                to={`/categoria/${cat.id}`}
+                                className={navItemClass}
+                                onClick={() => setSidebarOpen(false)}
+                            >
+                                <span>{cat.icon}</span>
+                                {cat.name}
+                                {count > 0 && (
+                                    <span className="app-sidebar__count-badge">{count}</span>
+                                )}
+                            </NavLink>
+                        );
+                    })}
 
                     {/* Ações */}
                     <div className="app-sidebar__section-title">Ações</div>
@@ -164,10 +179,9 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                 <footer className="app-footer app-shell-container">
                     <span>Prompt App • Engenharia de Prompts</span>
                     <nav className="app-footer__links" aria-label="Links informativos">
-                        <a href="/sobre">Sobre</a>
-                        <a href="/contato">Contato</a>
-                        <a href="/privacidade">Privacidade</a>
-
+                        <NavLink to="/sobre">Sobre</NavLink>
+                        <NavLink to="/contato">Contato</NavLink>
+                        <NavLink to="/privacidade">Privacidade</NavLink>
                     </nav>
                 </footer>
             </main>

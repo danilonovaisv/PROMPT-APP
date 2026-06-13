@@ -257,6 +257,8 @@ export default function EditorPage() {
   const isNew = id === 'novo';
 
   const [loaded, setLoaded] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const originalStateRef = useRef<TemplateFormState | null>(null);
   const categoriesLive = useLiveQuery(
     async () => {
       const list = await db.categories.filter((c) => !c.isDeleted).toArray();
@@ -360,11 +362,13 @@ export default function EditorPage() {
       const categoryFromQuery = Number(searchParams.get('categoria') || firstCatId || 0);
       const draftData = readDraftState(id);
       const baseState = buildInitialFormState(categoryFromQuery);
+      originalStateRef.current = baseState;
 
       if (draftData?.template?.meta?.template_name) {
         draftAppliedRef.current = true;
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setForm({ ...baseState, ...draftData });
+        setDraftRestored(true);
         showToast('Rascunho recuperado automaticamente!', 'info');
       } else {
         setForm(baseState);
@@ -387,9 +391,11 @@ export default function EditorPage() {
       const draftData = readDraftState(id);
       if (prompt) {
         const baseState = buildFormStateFromPrompt(prompt, availableContextMenus);
+        originalStateRef.current = baseState;
         if (draftData?.template?.meta?.template_name) {
           draftAppliedRef.current = true;
           setForm({ ...baseState, ...draftData });
+          setDraftRestored(true);
           showToast('Rascunho recuperado automaticamente!', 'info');
         } else {
           setForm(baseState);
@@ -447,6 +453,8 @@ export default function EditorPage() {
     startTransition(() => {
       setForm((current) => ({ ...current, ...draftData }));
     });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraftRestored(true);
     showToast('Rascunho recuperado automaticamente!', 'info');
   }, [id, loaded, showToast]);
 
@@ -464,13 +472,55 @@ export default function EditorPage() {
     localStorage.removeItem(`template_draft_${id}`);
   }, [id]);
 
+  const handleRevert = useCallback(() => {
+    if (originalStateRef.current) {
+      setForm(originalStateRef.current);
+      localStorage.removeItem(`template_draft_${id}`);
+      setDraftRestored(false);
+      showToast('Alterações revertidas para a versão salva.', 'success');
+    }
+  }, [id, showToast]);
+
+  const handleDiscard = useCallback(() => {
+    localStorage.removeItem(`template_draft_${id}`);
+    setDraftRestored(false);
+    showToast('Alterações descartadas.', 'info');
+    navigate(-1);
+  }, [id, navigate, showToast]);
+
   const handleSave = useCallback(async () => {
+    // --- Validation with scroll-to-first-error ---
+    const scrollToField = (fieldId: string) => {
+      const el = document.getElementById(fieldId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      }
+    };
+
     if (!form.template.meta.template_name.trim()) {
       showToast('Nome do template é obrigatório', 'error');
+      scrollToField('template-name');
       return;
     }
     if (!form.categoryId) {
       showToast('Selecione uma categoria', 'error');
+      scrollToField('template-category');
+      return;
+    }
+    if (!form.template.prompt_definition.system_role.trim()) {
+      showToast('O papel do sistema (System Role) é obrigatório', 'error');
+      scrollToField('system-role');
+      return;
+    }
+    if (!form.template.prompt_definition.task.trim()) {
+      showToast('A tarefa (Task) é obrigatória', 'error');
+      scrollToField('task');
+      return;
+    }
+    if (!form.template.prompt_definition.user_scene_description.trim()) {
+      showToast('A descrição da cena de usuário (User Scene Description) é obrigatória', 'error');
+      scrollToField('user-scene-description');
       return;
     }
 
@@ -478,10 +528,12 @@ export default function EditorPage() {
     const selectedCategory = await db.categories.get(form.categoryId);
     if (!selectedCategory) {
       showToast('Categoria selecionada não existe mais', 'error');
+      scrollToField('template-category');
       return;
     }
     if (selectedCategory.isDeleted === true) {
       showToast('Categoria selecionada foi excluída. Selecione outra categoria.', 'error');
+      scrollToField('template-category');
       return;
     }
 
@@ -493,6 +545,15 @@ export default function EditorPage() {
     try {
       ({ template, selection, compiledPayload, migrationWarnings } = buildPersistedArtifacts(form, availableContextMenus, fixedMemory));
     } catch (e: unknown) {
+      if (e && typeof e === 'object' && 'issues' in e) {
+        const zodError = e as { issues: Array<{ path: (string | number)[]; message: string }> };
+        const first = zodError.issues[0];
+        if (first) {
+          const fieldPath = first.path.join('.');
+          showToast(`Campo inválido: ${fieldPath} — ${first.message}`, 'error');
+          return;
+        }
+      }
       const errorMessage = e instanceof Error ? e.message : 'Template inválido';
       showToast(errorMessage, 'error');
       return;
@@ -842,6 +903,18 @@ export default function EditorPage() {
         <div className={`editor-main-scrollable ${isSidebarOpen ? 'editor-main-scrollable--with-sidebar' : ''}`}>
           <div className="app-content">
             <div className="editor-form--constrained">
+              {draftRestored && (
+                <div className="draft-banner card" style={{ padding: 'var(--space-3) var(--space-4)', marginBottom: 'var(--space-4)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-4)', backgroundColor: 'var(--color-surface-2)', borderLeft: '4px solid var(--color-warning)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontWeight: '600', fontSize: 'var(--font-size-sm)' }}>Rascunho Restaurado</span>
+                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Você está visualizando alterações não salvas de uma sessão anterior.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                    <button className="btn btn--secondary btn--sm" onClick={handleRevert}>Reverter</button>
+                    <button className="btn btn--ghost btn--sm" onClick={handleDiscard}>Descartar</button>
+                  </div>
+                </div>
+              )}
               {/* A11y Audit Fix #09: Breadcrumbs */}
               <Breadcrumb
                 items={[

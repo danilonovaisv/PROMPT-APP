@@ -165,3 +165,22 @@
   text-transform: uppercase;
 }
 
+/* --- Prompt Stats (Token Counter) --- */
+.prompt-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.prompt-stats__separator {
+  opacity: 0.4;
+}

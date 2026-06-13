@@ -17,6 +17,7 @@ const MenuManagerPage = lazy(() => import('@/pages/MenuManagerPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
   const [showImportExport, setShowImportExport] = useState(false);
@@ -54,6 +55,7 @@ export default function App() {
                 <Route path="/categorias" element={<Suspense fallback={<SkeletonCategoryGrid />}><CategoryManagerPage /></Suspense>} />
                 <Route path="/editor/:id" element={<Suspense fallback={<SkeletonEditor />}><EditorPage /></Suspense>} />
                 <Route path="/menus" element={<Suspense fallback={<SkeletonEditor />}><MenuManagerPage /></Suspense>} />
+                <Route path="*" element={<Suspense fallback={<SkeletonEditor />}><NotFoundPage /></Suspense>} />
               </Routes>
             </Layout>
             <ImportExportModal

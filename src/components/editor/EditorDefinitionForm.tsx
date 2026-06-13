@@ -1,8 +1,123 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 import MultiSelect from '@/components/ui/MultiSelect';
-import { Plus, Trash2 } from 'lucide-react';
-import { useEffect, useRef, useId } from 'react';
+import { Plus, Trash2, GripVertical, X } from 'lucide-react';
+import { useEffect, useRef, useId, useState } from 'react';
+
+type ArrayChipInputProps = {
+  id: string;
+  label: string;
+  values: string[];
+  onChange: (values: string[]) => void;
+  placeholder: string;
+  hint: string;
+  hintId: string;
+};
+
+function ArrayChipInput({
+  id,
+  label,
+  values = [],
+  onChange,
+  placeholder,
+  hint,
+  hintId
+}: ArrayChipInputProps) {
+  const [inputValue, setInputValue] = useState('');
+
+  const addItems = (text: string) => {
+    const newItems = text
+      .split('\n')
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+    if (newItems.length > 0) {
+      onChange([...values, ...newItems]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (inputValue.trim()) {
+        addItems(inputValue);
+        setInputValue('');
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    if (inputValue.trim()) {
+      addItems(inputValue);
+      setInputValue('');
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData('text');
+    addItems(pastedText);
+    setInputValue('');
+  };
+
+  const removeItem = (index: number) => {
+    onChange(values.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="form-group array-chip-input">
+      <label className="form-label" htmlFor={id}>{label}</label>
+      
+      {values.length > 0 && (
+        <div className="chip-container" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-2)', padding: 'var(--space-2)', backgroundColor: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+          {values.map((val, idx) => (
+            <span key={idx} className="chip-item" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)', padding: '2px 8px', backgroundColor: 'var(--color-surface-3)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>
+              <span className="chip-text">{val}</span>
+              <button
+                type="button"
+                className="chip-delete-btn"
+                onClick={() => removeItem(idx)}
+                aria-label={`Remover ${val}`}
+                style={{ background: 'none', border: 'none', padding: '2px', cursor: 'pointer', display: 'inline-flex', color: 'var(--color-text-muted)' }}
+              >
+                <X size={10} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="chip-input-wrapper" style={{ display: 'flex', gap: 'var(--space-2)' }}>
+        <input
+          id={id}
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onPaste={handlePaste}
+          placeholder={placeholder}
+          aria-describedby={hintId}
+          className="form-input chip-input-field"
+          style={{ flex: 1 }}
+        />
+        <button
+          type="button"
+          className="btn btn--secondary btn--sm"
+          onClick={() => {
+            if (inputValue.trim()) {
+              addItems(inputValue);
+              setInputValue('');
+            }
+          }}
+          style={{ padding: '0 var(--space-3)' }}
+        >
+          Adicionar
+        </button>
+      </div>
+      <span id={hintId} className="form-label__hint">{hint}</span>
+    </div>
+  );
+}
 
 type EditorDefinitionFormProps = {
   template: TemplatePayload;
@@ -40,6 +155,34 @@ export function EditorDefinitionForm({
   const lastItemRef = useRef<HTMLTextAreaElement>(null);
   const prevExamplesLength = useRef(template.prompt_definition.few_shot_examples.length);
   const formId = useId();
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, _index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const list = [...template.prompt_definition.few_shot_examples];
+    const draggedItem = list[draggedIndex];
+    list.splice(draggedIndex, 1);
+    list.splice(index, 0, draggedItem);
+
+    updatePromptDefinitionField('few_shot_examples', list);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
 
   useEffect(() => {
     if (template.prompt_definition.few_shot_examples.length > prevExamplesLength.current) {
@@ -71,9 +214,9 @@ export function EditorDefinitionForm({
         <div className="form-section--grouped">
           <h3 className="form-label--sub">Núcleo do Prompt</h3>
           <div className="form-group">
-            <label className="form-label" htmlFor={`${formId}-system-role`}>System role</label>
+            <label className="form-label" htmlFor="system-role">System role</label>
             <textarea
-              id={`${formId}-system-role`}
+              id="system-role"
               value={template.prompt_definition.system_role}
               onChange={(event) => updatePromptDefinitionField('system_role', event.target.value)}
               rows={4}
@@ -87,9 +230,9 @@ export function EditorDefinitionForm({
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor={`${formId}-task`}>Task</label>
+            <label className="form-label" htmlFor="task">Task</label>
             <textarea
-              id={`${formId}-task`}
+              id="task"
               value={template.prompt_definition.task}
               onChange={(event) => updatePromptDefinitionField('task', event.target.value)}
               rows={4}
@@ -103,17 +246,20 @@ export function EditorDefinitionForm({
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor={`${formId}-user-scene-description`}>User Scene Description</label>
+            <label className="form-label" htmlFor="user-scene-description">
+              User Scene Description <span className="required-badge" aria-hidden="true">*</span>
+            </label>
             <textarea
-              id={`${formId}-user-scene-description`}
+              id="user-scene-description"
               value={template.prompt_definition.user_scene_description}
               onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
               rows={4}
               placeholder="Descreva a cena de usuário"
               aria-describedby={fieldHints.userSceneDescription}
+              aria-required="true"
             />
             <span id={fieldHints.userSceneDescription} className="form-label__hint">
-              Descreva brevemente o cenário do usuário em que o template será usado.
+              Descreva o cenário do usuário em que o template será usado (Campo obrigatório).
             </span>
           </div>
 
@@ -132,53 +278,31 @@ export function EditorDefinitionForm({
             </span>
           </div>
 
-          <div className="form-group">
-            <label className="form-label" htmlFor={`${formId}-scene-description`}>Scene description</label>
-            <textarea
-              id={`${formId}-scene-description`}
-              value={template.prompt_definition.user_scene_description}
-              onChange={(event) => updatePromptDefinitionField('user_scene_description', event.target.value)}
-              rows={4}
-              placeholder="Descreva a cena ou cenário de uso padrão"
-            />
-            <span className="form-label__hint">
-              Este campo serve como base para a variável de descrição da cena no playground.
-            </span>
-          </div>
+
         </div>
 
         <div className="form-section--grouped">
           <h3 className="form-label--sub">Guardrails & Menus</h3>
           <div className="form-group-grid">
-            <div className="form-group">
-              <label className="form-label" htmlFor={`${formId}-constraints`}>Constraints</label>
-              <textarea
-                id={`${formId}-constraints`}
-                value={template.prompt_definition.constraints.join('\n')}
-                onChange={(event) => updatePromptDefinitionField('constraints', event.target.value.split('\n').filter(Boolean))}
-                rows={6}
-                placeholder="Uma restrição por linha"
-                aria-describedby={fieldHints.constraints}
-              />
-              <span id={fieldHints.constraints} className="form-label__hint">
-                Liste limites, critérios e guardrails, uma instrução por linha.
-              </span>
-            </div>
+            <ArrayChipInput
+              id="template-constraints"
+              label="Constraints"
+              values={template.prompt_definition.constraints}
+              onChange={(values) => updatePromptDefinitionField('constraints', values)}
+              placeholder="Digite uma restrição e pressione Enter"
+              hint="Liste limites, critérios e guardrails."
+              hintId={fieldHints.constraints}
+            />
 
-            <div className="form-group">
-              <label className="form-label" htmlFor={`${formId}-negative-prompt`}>Negative prompt</label>
-              <textarea
-                id={`${formId}-negative-prompt`}
-                value={template.prompt_definition.negative_prompt.join('\n')}
-                onChange={(event) => updatePromptDefinitionField('negative_prompt', event.target.value.split('\n').filter(Boolean))}
-                rows={6}
-                placeholder="Uma proibição por linha"
-                aria-describedby={fieldHints.negativePrompt}
-              />
-              <span id={fieldHints.negativePrompt} className="form-label__hint">
-                Informe o que a resposta deve evitar, uma proibição por linha.
-              </span>
-            </div>
+            <ArrayChipInput
+              id="template-negative-prompt"
+              label="Negative prompt"
+              values={template.prompt_definition.negative_prompt}
+              onChange={(values) => updatePromptDefinitionField('negative_prompt', values)}
+              placeholder="Digite uma proibição e pressione Enter"
+              hint="Informe o que a resposta deve evitar."
+              hintId={fieldHints.negativePrompt}
+            />
           </div>
 
           {availableContextMenus.length > 0 && (
@@ -215,8 +339,46 @@ export function EditorDefinitionForm({
               const inputEmpty = example.input.trim() === '';
               const outputEmpty = example.output.trim() === '';
               return (
-                <div key={`few-shot-${index}`} className={`few-shot-item${inputEmpty || outputEmpty ? ' few-shot-item--invalid' : ''}`}>
-                  <div className="form-group">
+                <div
+                  key={`few-shot-${index}`}
+                  className={`few-shot-item card ${inputEmpty || outputEmpty ? 'few-shot-item--invalid' : ''} ${draggedIndex === index ? 'few-shot-item--dragging' : ''}`}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                  onDrop={(e) => handleDrop(e, index)}
+                  style={{
+                    position: 'relative',
+                    padding: 'var(--space-4)',
+                    marginBottom: 'var(--space-4)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: draggedIndex === index ? 'var(--color-surface-3)' : 'var(--color-surface-1)',
+                    opacity: draggedIndex === index ? 0.6 : 1,
+                    transition: 'opacity 0.2s, background-color 0.2s',
+                  }}
+                >
+                  <div className="few-shot-item__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'grab' }} title="Arraste para reordenar">
+                      <GripVertical size={16} color="var(--color-text-muted)" />
+                      <strong style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>Exemplo {index + 1}</strong>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--icon btn--sm"
+                      onClick={() => {
+                        const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
+                        updatePromptDefinitionField('few_shot_examples', next);
+                      }}
+                      title="Remover exemplo"
+                      aria-label={`Remover exemplo ${index + 1}`}
+                      style={{ color: 'var(--color-error)', padding: '4px' }}
+                    >
+                      <Trash2 size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+
+                  <div className="form-group" style={{ marginBottom: 'var(--space-3)' }}>
                     <label className="form-label--sub" htmlFor={`${formId}-few-shot-input-${index}`}>
                       Input do usuário <span className="required-badge" aria-hidden="true">*</span>
                     </label>
@@ -231,6 +393,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Como faço para..."
+                      className="form-input"
                       aria-invalid={inputEmpty ? 'true' : 'false'}
                       aria-required="true"
                       aria-describedby={inputEmpty ? `${formId}-few-shot-input-error-${index}` : undefined}
@@ -241,7 +404,8 @@ export function EditorDefinitionForm({
                       </span>
                     )}
                   </div>
-                  <div className="form-group">
+                  
+                  <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label--sub" htmlFor={`${formId}-few-shot-output-${index}`}>
                       Resposta esperada <span className="required-badge" aria-hidden="true">*</span>
                     </label>
@@ -255,6 +419,7 @@ export function EditorDefinitionForm({
                       }}
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
+                      className="form-input"
                       aria-invalid={outputEmpty ? 'true' : 'false'}
                       aria-required="true"
                       aria-describedby={outputEmpty ? `${formId}-few-shot-output-error-${index}` : undefined}
@@ -265,17 +430,6 @@ export function EditorDefinitionForm({
                       </span>
                     )}
                   </div>
-                  <button
-                    className="btn btn--ghost btn--icon few-shot-delete"
-                    onClick={() => {
-                      const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
-                      updatePromptDefinitionField('few_shot_examples', next);
-                    }}
-                    title="Remover exemplo"
-                    aria-label={`Remover exemplo ${index + 1}`}
-                  >
-                    <Trash2 size={16} aria-hidden="true" />
-                  </button>
                 </div>
               );
             })}

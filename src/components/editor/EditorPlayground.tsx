@@ -318,9 +318,20 @@ export function EditorPlayground({
         {outputError ? (
           <div className="form-error" role="alert">{outputError}</div>
         ) : (
-          <pre className="json-preview json-preview--prompt">
-            {renderedPrompt || '— preencha os campos acima para compilar o prompt —'}
-          </pre>
+          <>
+            <pre className="json-preview json-preview--prompt">
+              {renderedPrompt || '— preencha os campos acima para compilar o prompt —'}
+            </pre>
+            {renderedPrompt && (
+              <div className="prompt-stats" aria-label="Estatísticas do prompt">
+                <span>{renderedPrompt.length.toLocaleString('pt-BR')} caracteres</span>
+                <span className="prompt-stats__separator">•</span>
+                <span>{renderedPrompt.split(/\s+/).filter(Boolean).length.toLocaleString('pt-BR')} palavras</span>
+                <span className="prompt-stats__separator">•</span>
+                <span>~{Math.ceil(renderedPrompt.length / 4).toLocaleString('pt-BR')} tokens</span>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

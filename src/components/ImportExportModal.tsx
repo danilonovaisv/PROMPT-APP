@@ -12,7 +12,7 @@ import {
     Copy,
     Save,
 } from 'lucide-react';
-import { importFromFile, importFromJsonText, type ImportResult } from '@/services/importService';
+import { importFromJsonText, parseImportData, type ImportResult, type ImportPreviewData } from '@/services/importService';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
 import { downloadAllPrompts, getTemplateFile } from '@/utils/exportJson';
@@ -33,6 +33,9 @@ export default function ImportExportModal({
     const [importing, setImporting] = useState(false);
     const [result, setResult] = useState<ImportResult | null>(null);
     const [jsonInput, setJsonInput] = useState('');
+    const [previewData, setPreviewData] = useState<ImportPreviewData | null>(null);
+    const [rawJsonToImport, setRawJsonToImport] = useState('');
+    const [sourceName, setSourceName] = useState('');
 
     useAccessibleModal({
         isOpen,
@@ -46,6 +49,9 @@ export default function ImportExportModal({
             startTransition(() => {
                 setResult(null);
                 setJsonInput('');
+                setPreviewData(null);
+                setRawJsonToImport('');
+                setSourceName('');
             });
         }
     }, [isOpen]);
@@ -63,23 +69,17 @@ export default function ImportExportModal({
             return;
         }
 
-
-        setImporting(true);
-        setResult(null);
-
         try {
-            const res = await importFromFile(file);
-            setResult(res);
-            if (res.success) {
-                showToast(`${res.count} prompts importados!`, 'success');
-            } else {
-                showToast('Importação concluída com erros.', 'error');
-            }
+            const text = await file.text();
+            const preview = parseImportData(text);
+            setPreviewData(preview);
+            setRawJsonToImport(text);
+            setSourceName(fileName);
+            setResult(null);
         } catch (e: unknown) {
-            const errorMessage = e instanceof Error ? e.message : 'Erro ao importar';
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao ler arquivo';
             showToast(errorMessage, 'error');
         } finally {
-            setImporting(false);
             if (fileRef.current) fileRef.current.value = '';
         }
     };
@@ -96,24 +96,44 @@ export default function ImportExportModal({
             return;
         }
 
-        setImporting(true);
-        setResult(null);
-
         try {
-            const res = await importFromJsonText(jsonInput, 'clipboard.json');
+            const preview = parseImportData(jsonInput);
+            setPreviewData(preview);
+            setRawJsonToImport(jsonInput);
+            setSourceName('clipboard.json');
+            setResult(null);
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao analisar JSON';
+            showToast(errorMessage, 'error');
+        }
+    };
+
+    const handleConfirmImport = async () => {
+        if (!rawJsonToImport) return;
+        setImporting(true);
+        try {
+            const res = await importFromJsonText(rawJsonToImport, sourceName);
             setResult(res);
             if (res.success) {
                 showToast(`${res.count} prompts importados!`, 'success');
-                setJsonInput('');
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
+            setPreviewData(null);
+            setRawJsonToImport('');
+            setJsonInput('');
         } catch (e: unknown) {
-            const errorMessage = e instanceof Error ? e.message : 'Erro ao importar JSON colado';
+            const errorMessage = e instanceof Error ? e.message : 'Erro ao processar importação';
             showToast(errorMessage, 'error');
         } finally {
             setImporting(false);
         }
+    };
+
+    const handleCancelPreview = () => {
+        setPreviewData(null);
+        setRawJsonToImport('');
+        setSourceName('');
     };
 
     const handleDownloadTemplate = () => {
@@ -156,51 +176,135 @@ export default function ImportExportModal({
                     {/* Importar */}
                     <fieldset className="form-section">
                         <legend className="section-title">Importar</legend>
-                        <p className="section-desc" id="modal-description">
-                            Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
-                        </p>
 
-                        <label className="dropzone" id="import-dropzone">
-                            <FileUp size={32} color="var(--color-text-muted)" aria-hidden="true" />
-                            <span className="dropzone__label">
-                                {importing ? 'Importando...' : 'Clique ou arraste um arquivo .json'}
-                            </span>
-                            <input
-                                ref={fileRef}
-                                type="file"
-                                accept=".json"
-                                onChange={handleImport}
-                                className="hidden-input"
-                                aria-labelledby="import-dropzone"
-                            />
-                        </label>
+                        {previewData ? (
+                            <div className="import-preview-container">
+                                <p className="section-desc">
+                                    Revise os registros encontrados no arquivo <strong>{sourceName}</strong> antes de confirmar a importação:
+                                </p>
 
-                        <div className="form-group">
-                            <label className="form-label" htmlFor="json-import-input">
-                                Ou cole o JSON diretamente
-                            </label>
-                            <textarea
-                                id="json-import-input"
-                                value={jsonInput}
-                                onChange={(event) => setJsonInput(event.target.value)}
-                                rows={8}
-                                placeholder="Cole aqui um prompt exportado ou um backup em JSON"
-                                aria-required="true"
-                            />
-                        </div>
+                                <div className="preview-stats" style={{ display: 'flex', gap: 'var(--space-4)', margin: 'var(--space-4) 0' }}>
+                                    <div className="preview-stat-card" style={{ flex: 1, padding: 'var(--space-4)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'bold', color: 'var(--color-primary-light)' }}>{previewData.prompts.length}</div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>Templates de Prompt</div>
+                                    </div>
+                                    <div className="preview-stat-card" style={{ flex: 1, padding: 'var(--space-4)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'bold', color: 'var(--color-primary-light)' }}>{previewData.menus.length}</div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>Menus do Template</div>
+                                    </div>
+                                </div>
 
-                        <button
-                            className="btn btn--secondary"
-                            onClick={handleImportFromText}
-                            disabled={importing}
-                        >
-                            <Copy size={16} aria-hidden="true" /> Importar JSON colado
-                        </button>
+                                {previewData.prompts.length > 0 && (
+                                    <div className="preview-list-section" style={{ marginBottom: 'var(--space-4)' }}>
+                                        <strong style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Prompts identificados:</strong>
+                                        <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', maxHeight: '150px', overflowY: 'auto', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-3)', border: '1px solid var(--color-border)', listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                                            {previewData.prompts.map((p, idx) => (
+                                                <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <span style={{ fontWeight: '500' }}>{p.title}</span>
+                                                    {p.category && <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{p.category}</span>}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {previewData.menus.length > 0 && (
+                                    <div className="preview-list-section" style={{ marginBottom: 'var(--space-4)' }}>
+                                        <strong style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Menus identificados:</strong>
+                                        <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', maxHeight: '120px', overflowY: 'auto', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-3)', border: '1px solid var(--color-border)', listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                                            {previewData.menus.map((m, idx) => (
+                                                <li key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <span style={{ fontWeight: '500' }}>{m.menuName}</span>
+                                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>ID: {m.menuId}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {previewData.errors.length > 0 && (
+                                    <div className="import-result import-result--warning" style={{ margin: 'var(--space-4) 0' }}>
+                                        <div className="import-result__header" role="alert">
+                                            <AlertCircle size={16} aria-hidden="true" />
+                                            Avisos/Erros de validação ({previewData.errors.length} registro(s) inválido(s))
+                                        </div>
+                                        <div className="import-result__errors">
+                                            <ul>
+                                                {previewData.errors.slice(0, 3).map((error, idx) => (
+                                                    <li key={idx}>
+                                                        <strong>{error.field}:</strong> {error.message}
+                                                    </li>
+                                                ))}
+                                                {previewData.errors.length > 3 && (
+                                                    <li>+ {previewData.errors.length - 3} outros erros...</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="preview-actions" style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-4)' }}>
+                                    <button
+                                        className="btn btn--primary"
+                                        onClick={handleConfirmImport}
+                                        disabled={importing || (previewData.prompts.length === 0 && previewData.menus.length === 0)}
+                                    >
+                                        {importing ? 'Importando...' : 'Confirmar Importação'}
+                                    </button>
+                                    <button className="btn btn--secondary" onClick={handleCancelPreview} disabled={importing}>
+                                        Voltar
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <p className="section-desc" id="modal-description">
+                                    Selecione um arquivo <strong>.json</strong> exportado pelo Prompt App ou no formato padrão.
+                                </p>
+
+                                <label className="dropzone" id="import-dropzone">
+                                    <FileUp size={32} color="var(--color-text-muted)" aria-hidden="true" />
+                                    <span className="dropzone__label">
+                                        Clique ou arraste um arquivo .json
+                                    </span>
+                                    <input
+                                        ref={fileRef}
+                                        type="file"
+                                        accept=".json"
+                                        onChange={handleImport}
+                                        className="hidden-input"
+                                        aria-labelledby="import-dropzone"
+                                    />
+                                </label>
+
+                                <div className="form-group">
+                                    <label className="form-label" htmlFor="json-import-input">
+                                        Ou cole o JSON diretamente
+                                    </label>
+                                    <textarea
+                                        id="json-import-input"
+                                        value={jsonInput}
+                                        onChange={(event) => setJsonInput(event.target.value)}
+                                        rows={6}
+                                        placeholder="Cole aqui um prompt exportado ou um backup em JSON"
+                                        aria-required="true"
+                                    />
+                                </div>
+
+                                <button
+                                    className="btn btn--secondary"
+                                    onClick={handleImportFromText}
+                                >
+                                    <Copy size={16} aria-hidden="true" /> Analisar JSON
+                                </button>
+                            </>
+                        )}
 
                         {result && (
                             <div
                                 className={`import-result ${result.success ? 'import-result--success' : 'import-result--warning'}`}
                                 aria-live="polite"
+                                style={{ marginTop: 'var(--space-4)' }}
                             >
                                 {result.success ? (
                                     <div className="import-result__header" role="status">
