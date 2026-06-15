@@ -1,6 +1,13 @@
 import type { TemplatePayload, PromptOutputContract } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
-import MultiSelect from '@/components/ui/MultiSelect';
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from '@/components/ui/MultiSelect';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Trash2, GripVertical, X } from 'lucide-react';
 import { useEffect, useRef, useId, useState } from 'react';
 
@@ -316,14 +323,56 @@ export function EditorDefinitionForm({
               </p>
               <div id="template-linked-menus">
                 <MultiSelect
-                  options={menuOptions}
-                  selectedIds={selectedMenuIds}
-                  onChange={(ids) => onMenuSelectionChange?.(ids)}
-                  placeholder="Escolha os menus vinculados ao template"
-                  emptyMessage="Nenhum menu cadastrado no banco local."
-                  ariaLabelledBy={`${formId}-menus-label`}
-                  ariaDescribedBy={`${formId}-menus-hint`}
-                />
+                  value={selectedMenuIds.map(String)}
+                  onValueChange={(vals) => onMenuSelectionChange?.(vals.map(Number))}
+                >
+                  <MultiSelectTrigger className="w-full">
+                    <MultiSelectValue placeholder="Escolha os menus vinculados ao template">
+                      {selectedMenuIds.length > 0
+                        ? `${selectedMenuIds.length} menu(s) selecionado(s)`
+                        : "Escolha os menus vinculados ao template"}
+                    </MultiSelectValue>
+                  </MultiSelectTrigger>
+                  <MultiSelectContent>
+                    {menuOptions.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground" style={{ padding: '8px', opacity: 0.7 }}>
+                        Nenhum menu cadastrado no banco local.
+                      </div>
+                    ) : (
+                      menuOptions.map((option) => (
+                        <MultiSelectItem
+                          key={option.id}
+                          value={String(option.id)}
+                          onClick={() => {
+                            const val = String(option.id);
+                            const prev = selectedMenuIds.map(String);
+                            const next = prev.includes(val)
+                              ? prev.filter((item) => item !== val)
+                              : [...prev, val];
+                            onMenuSelectionChange?.(next.map(Number));
+                          }}
+                          icons={
+                            <div onClick={(e) => { e.stopPropagation() }}>
+                              <Checkbox
+                                className="w-5 h-5"
+                                checked={selectedMenuIds.includes(option.id)}
+                                onChange={() => {
+                                  const id = option.id;
+                                  const next = selectedMenuIds.includes(id)
+                                    ? selectedMenuIds.filter(v => v !== id)
+                                    : [...selectedMenuIds, id];
+                                  onMenuSelectionChange?.(next);
+                                }}
+                              />
+                            </div>
+                          }
+                        >
+                          {option.label}
+                        </MultiSelectItem>
+                      ))
+                    )}
+                  </MultiSelectContent>
+                </MultiSelect>
               </div>
             </div>
           )}

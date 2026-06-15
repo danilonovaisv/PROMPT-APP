@@ -1,309 +1,189 @@
-import { useEffect, useId, useMemo, useRef, useState, useCallback } from 'react';
-import { ChevronDown, Search, X, Check } from 'lucide-react';
+import * as React from 'react'
+import * as SelectPrimitive from '@radix-ui/react-select'
+import { cn } from '@/lib/utils'
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
 
-// ─────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────
-type MultiSelectOption = {
-  id: number;
-  label: string;
-  description?: string;
-};
+export interface MultiSelectProps extends Omit<React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>, 'value' | 'onValueChange'> {
+  value: string[]
+  onValueChange: (value: string[]) => void
+  placeholder?: string
+  className?: string
+  disabled?: boolean
+  separator?: string
+  renderSelectedValues?: (selectedValues: string[]) => React.ReactNode
+}
 
-type MultiSelectProps = {
-  options: MultiSelectOption[];
-  selectedIds: number[];
-  onChange: (ids: number[]) => void;
-  placeholder?: string;
-  emptyMessage?: string;
-  ariaLabelledBy?: string;
-  ariaDescribedBy?: string;
-};
+interface MultiSelectContextValue {
+  selectedValues: string[]
+  onValueChange: (value: string[]) => void
+  onSelect: (value: string) => void
+  onRemove: (value: string) => void
+  renderSelectedValues?: (selectedValues: string[]) => React.ReactNode
+}
 
-// ─────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────
-export default function MultiSelect({
-  options,
-  selectedIds,
-  onChange,
-  placeholder = 'Selecione uma ou mais opções',
-  emptyMessage = 'Nenhuma opção encontrada.',
-  ariaLabelledBy,
-  ariaDescribedBy,
-}: MultiSelectProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [activeIndex, setActiveIndex] = useState(-1);
+const MultiSelectContext = React.createContext<MultiSelectContextValue | undefined>(undefined)
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
-  const listboxId = useId();
-  const triggerId = useId();
-  const searchId = useId();
+export function useMultiSelect() {
+  const context = React.useContext(MultiSelectContext)
+  if (!context) {
+    throw new Error('useMultiSelect must be used within a MultiSelectProvider')
+  }
+  return context
+}
 
-  // ── Derived state ──────────────────────────────
-  const selectedOptions = useMemo(
-    () => options.filter((opt) => selectedIds.includes(opt.id)),
-    [options, selectedIds],
-  );
-
-  /** Opções filtradas pela busca textual (case-insensitive, label + description) */
-  const filteredOptions = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return options;
-    return options.filter(
-      (opt) =>
-        opt.label.toLowerCase().includes(q) ||
-        (opt.description ?? '').toLowerCase().includes(q),
-    );
-  }, [options, search]);
-
-  // ── Open / Close ───────────────────────────────
-  const open = useCallback(() => {
-    setIsOpen(true);
-    setSearch('');
-    setActiveIndex(-1);
-    // Focus search input on next tick (after mount)
-    setTimeout(() => searchRef.current?.focus(), 0);
-  }, []);
-
-  const close = useCallback((returnFocus = true) => {
-    setIsOpen(false);
-    setSearch('');
-    setActiveIndex(-1);
-    if (returnFocus) {
-      // Return focus to the trigger so keyboard users don't lose context
-      triggerRef.current?.focus();
-    }
-  }, []);
-
-  const toggle = useCallback(() => {
-    if (isOpen) close();
-    else open();
-  }, [isOpen, open, close]);
-
-  // ── Click outside ──────────────────────────────
-  useEffect(() => {
-    function handlePointerDown(e: MouseEvent) {
-      if (!containerRef.current?.contains(e.target as Node)) {
-        close(false); // click outside → don't steal focus from wherever user clicked
+const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSelectedValues, ...props }: MultiSelectProps) => {
+  const stringValue = value.join(separator)
+  
+  const handleValueChange = React.useCallback(
+    (val: string) => {
+      if (!val) return
+      
+      if (value.includes(val)) {
+        onValueChange(value.filter((v) => v !== val))
+      } else {
+        onValueChange([...value, val])
       }
-    }
-    document.addEventListener('mousedown', handlePointerDown);
-    return () => document.removeEventListener('mousedown', handlePointerDown);
-  }, [close]);
-
-  // ── Option toggle ──────────────────────────────
-  const toggleOption = useCallback(
-    (id: number) => {
-      onChange(
-        selectedIds.includes(id)
-          ? selectedIds.filter((item) => item !== id)
-          : [...selectedIds, id],
-      );
     },
-    [onChange, selectedIds],
-  );
+    [value, onValueChange]
+  )
 
-  // ── Keyboard navigation (trigger) ─────────────
-  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      open();
-    }
-  };
-
-  // ── Keyboard navigation (dropdown) ────────────
-  const handleDropdownKeyDown = (e: React.KeyboardEvent) => {
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        setActiveIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : prev,
-        );
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
-        break;
-      case 'Enter':
-        e.preventDefault();
-        if (activeIndex >= 0 && activeIndex < filteredOptions.length) {
-          toggleOption(filteredOptions[activeIndex].id);
+  const contextValue = React.useMemo(
+    () => ({
+      selectedValues: value,
+      onValueChange,
+      onSelect: (val: string) => {
+        if (!value.includes(val)) {
+          onValueChange([...value, val])
         }
-        break;
-      case 'Escape':
-        e.preventDefault();
-        close();
-        break;
-    }
-  };
+      },
+      onRemove: (val: string) => {
+        onValueChange(value.filter((v) => v !== val))
+      },
+      renderSelectedValues,
+    }),
+    [value, onValueChange, renderSelectedValues]
+  )
 
-  const activeDescendantId =
-    activeIndex >= 0 && filteredOptions[activeIndex]
-      ? `${listboxId}-option-${filteredOptions[activeIndex].id}`
-      : undefined;
-
-  // ── Render ──────────────────────────────────────
   return (
-    <div className="multi-select" ref={containerRef}>
-      {/* Trigger */}
-      <button
-        id={triggerId}
-        ref={triggerRef}
-        role="combobox"
-        type="button"
-        className={`multi-select__trigger${isOpen ? ' multi-select__trigger--open' : ''}`}
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={listboxId}
-        aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${triggerId}` : undefined}
-        aria-describedby={ariaDescribedBy}
-        aria-activedescendant={activeDescendantId}
-        onClick={toggle}
-        onKeyDown={handleTriggerKeyDown}
+    <MultiSelectContext.Provider value={contextValue}>
+      <SelectPrimitive.Root
+        {...props}
+        value={stringValue}
+        onValueChange={handleValueChange}
       >
-        <span className="multi-select__trigger-label">
-          {selectedOptions.length > 0
-            ? `${selectedOptions.length} menu(s) selecionado(s)`
-            : placeholder}
-        </span>
-        <ChevronDown
-          size={16}
-          className={`multi-select__chevron${isOpen ? ' multi-select__chevron--open' : ''}`}
-          aria-hidden="true"
-        />
-      </button>
+        {children}
+      </SelectPrimitive.Root>
+    </MultiSelectContext.Provider>
+  )
+}
+MultiSelect.displayName = 'MultiSelect'
 
-      {/* Selected chips */}
-      <div className="multi-select__chips" aria-live="polite" aria-label="Menus selecionados">
-        {selectedOptions.length > 0 ? (
-          selectedOptions.map((opt) => (
-            <span key={opt.id} className="multi-select__chip">
-              <span className="multi-select__chip-label">{opt.label}</span>
-              {opt.description && (
-                <span className="multi-select__chip-desc">{opt.description}</span>
-              )}
-              <button
-                type="button"
-                className="multi-select__chip-remove"
-                onClick={() => toggleOption(opt.id)}
-                aria-label={`Remover ${opt.label}`}
-                title={`Remover ${opt.label}`}
-              >
-                <X size={12} aria-hidden="true" />
-              </button>
-            </span>
-          ))
-        ) : (
-          <span className="multi-select__hint">
-            Nenhum menu selecionado. Escolha quais menus estarão disponíveis no template.
-          </span>
-        )}
-      </div>
+const MultiSelectGroup = SelectPrimitive.Group
 
-      {/* Dropdown popover */}
-      {isOpen && (
-        <div
-          className="multi-select__dropdown"
-          role="presentation"
-          onKeyDown={handleDropdownKeyDown}
-        >
-          {/* Search input */}
-          <div className="multi-select__search-wrapper" aria-hidden="false">
-            <Search size={14} className="multi-select__search-icon" aria-hidden="true" />
-            <input
-              id={searchId}
-              ref={searchRef}
-              type="search"
-              className="multi-select__search"
-              placeholder="Buscar menus…"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setActiveIndex(-1);
-              }}
-              aria-label="Filtrar menus disponíveis"
-              autoComplete="off"
-            />
-            {search && (
-              <span className="multi-select__search-count" aria-live="polite" aria-atomic="true">
-                {filteredOptions.length}/{options.length}
-              </span>
-            )}
-          </div>
+const MultiSelectValue = SelectPrimitive.Value
 
-          {/* Options listbox */}
-          <div
-            id={listboxId}
-            className="multi-select__options"
-            role="listbox"
-            aria-multiselectable="true"
-            aria-labelledby={ariaLabelledBy ?? triggerId}
-          >
-            {filteredOptions.length === 0 ? (
-              <div className="multi-select__empty" role="status">
-                {search
-                  ? `Nenhum menu corresponde a "${search}"`
-                  : emptyMessage}
-              </div>
-            ) : (
-              filteredOptions.map((opt, idx) => {
-                const isSelected = selectedIds.includes(opt.id);
-                const isActive = idx === activeIndex;
+const MultiSelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={cn(
+        className,
+      'text-text flex w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 shadow-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&_span]:line-clamp-1',
+    )}
+    {...props}>
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDownIcon className="h-4 w-4 opacity-50" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+))
+MultiSelectTrigger.displayName = 'MultiSelectTrigger'
 
-                return (
-                  <div
-                    key={opt.id}
-                    id={`${listboxId}-option-${opt.id}`}
-                    role="option"
-                    aria-selected={isSelected}
-                    className={[
-                      'multi-select__option',
-                      isSelected ? 'multi-select__option--selected' : '',
-                      isActive ? 'multi-select__option--active' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
-                    onClick={() => {
-                      toggleOption(opt.id);
-                      setActiveIndex(idx);
-                    }}
-                    onMouseEnter={() => setActiveIndex(idx)}
-                  >
-                    <div className="multi-select__option-copy">
-                      <span className="multi-select__option-label">{opt.label}</span>
-                      {opt.description && (
-                        <span className="multi-select__option-description">
-                          {opt.description}
-                        </span>
-                      )}
-                    </div>
-                    <span
-                      className={`multi-select__option-state${isSelected ? ' multi-select__option-state--selected' : ''}`}
-                      aria-hidden="true"
-                    >
-                      {isSelected ? (
-                        <Check size={14} aria-hidden="true" />
-                      ) : null}
-                    </span>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* Footer hint */}
-          {selectedOptions.length === options.length && options.length > 0 && (
-            <div className="multi-select__footer">
-              Todos os menus disponíveis já foram vinculados.
-            </div>
-          )}
-        </div>
+const MultiSelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, position = 'popper', ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+        position === 'popper' &&
+          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+        className
       )}
+      position={position}
+      {...props}>
+      <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
+        <ChevronUpIcon className="h-4 w-4" />
+      </SelectPrimitive.ScrollUpButton>
+      <SelectPrimitive.Viewport
+        className={cn(
+          'p-1',
+          position === 'popper' &&
+            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+        )}>
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectPrimitive.ScrollDownButton className="flex cursor-default items-center justify-center py-1">
+        <ChevronDownIcon className="h-4 w-4" />
+      </SelectPrimitive.ScrollDownButton>
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+))
+MultiSelectContent.displayName = 'MultiSelectContent'
+
+const MultiSelectLabel = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Label ref={ref} className={cn('px-2 py-1.5 text-sm font-semibold', className)} {...props} />
+))
+MultiSelectLabel.displayName = 'MultiSelectLabel'
+
+const MultiSelectItem = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & { value: string, icons?: React.ReactNode }
+>(({ className, children, value, icons, ...props }, ref) => {
+  const { selectedValues } = useMultiSelect()
+  const isSelected = selectedValues.includes(value)
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:opacity-50 transition-all duration-300',
+        isSelected && 'bg-accent/50',
+        className
+      )}
+      {...props}
+    >
+      <div className="flex items-center justify-center mr-2">
+        {icons}
+      </div>
+      <div>{children}</div>
     </div>
-  );
+  )
+})
+MultiSelectItem.displayName = 'MultiSelectItem'
+
+const MultiSelectSeparator = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-muted', className)} {...props} />
+))
+MultiSelectSeparator.displayName = 'MultiSelectSeparator'
+
+export {
+  MultiSelect,
+  MultiSelectGroup,
+  MultiSelectValue,
+  MultiSelectTrigger,
+  MultiSelectContent,
+  MultiSelectLabel,
+  MultiSelectItem,
+  MultiSelectSeparator,
 }
