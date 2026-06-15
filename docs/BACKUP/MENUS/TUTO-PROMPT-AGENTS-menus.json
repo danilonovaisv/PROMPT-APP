@@ -1,0 +1,141 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "profundidade_analise",
+      "menu_name": "WEBDEV - Profundidade da Análise",
+      "description": "Define o nível de leitura técnica da transcrição e o grau de detalhamento dos artefatos gerados.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria profunda",
+          "value": "auditoria_profunda",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_workspace",
+      "menu_name": "WEBDEV - Tipo de Workspace",
+      "description": "Parametriza o tipo de ambiente agêntico que será inicializado a partir do vídeo.",
+      "options": [
+        {
+          "label": "Frontend Agent IDE",
+          "value": "frontend_agent_ide",
+          "sub_options": []
+        },
+        {
+          "label": "Fullstack Agent IDE",
+          "value": "fullstack_agent_ide",
+          "sub_options": []
+        },
+        {
+          "label": "Infraestrutura Agêntica",
+          "value": "infraestrutura_agentica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_base",
+      "menu_name": "WEBDEV - Stack Base",
+      "description": "Define a stack técnica principal usada como premissa quando a transcrição não especificar uma alternativa.",
+      "options": [
+        {
+          "label": "Next.js App Router",
+          "value": "next_app_router",
+          "sub_options": []
+        },
+        {
+          "label": "React Vite",
+          "value": "react_vite",
+          "sub_options": []
+        },
+        {
+          "label": "Apenas estrutura agêntica",
+          "value": "estrutura_agentica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "backend_preferido",
+      "menu_name": "WEBDEV - Backend Preferido",
+      "description": "Define como tratar backend, autenticação e persistência quando o vídeo sugerir integração.",
+      "options": [
+        {
+          "label": "Sem backend",
+          "value": "sem_backend",
+          "sub_options": []
+        },
+        {
+          "label": "Supabase",
+          "value": "supabase",
+          "sub_options": []
+        },
+        {
+          "label": "Firebase",
+          "value": "firebase",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_animacao",
+      "menu_name": "WEBDEV - Estratégia de Animação",
+      "description": "Controla o nível de instruções para animações, Motion, scroll, cenas 3D e performance visual.",
+      "options": [
+        {
+          "label": "Conservadora",
+          "value": "conservadora",
+          "sub_options": []
+        },
+        {
+          "label": "Cinematográfica",
+          "value": "cinematografica",
+          "sub_options": [
+            {
+              "label": "Motion UI",
+              "value": "motion_ui"
+            },
+            {
+              "label": "R3F coordenado",
+              "value": "r3f_coordenado"
+            }
+          ]
+        },
+        {
+          "label": "Sem animações",
+          "value": "sem_animacoes",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "rigor_validacao",
+      "menu_name": "WEBDEV - Rigor de Validação",
+      "description": "Define o nível de checklist, gates técnicos e flags de confirmação exigidos na saída.",
+      "options": [
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Rigor máximo",
+          "value": "rigor_maximo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
