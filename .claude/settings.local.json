@@ -19,7 +19,8 @@
       "Bash(netlify api *)",
       "mcp__claude_ai_Netlify__netlify-deploy-services-updater",
       "Bash(git -C /Users/PROJETOS-DEV/PROMPT-APP ls-files --error-unmatch .env .env.local)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(git merge *)"
     ]
   },
   "enableAllProjectMcpServers": true,

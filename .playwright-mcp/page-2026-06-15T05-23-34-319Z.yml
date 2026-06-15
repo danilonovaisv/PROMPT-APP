@@ -1,0 +1,328 @@
+- generic:
+  - generic:
+    - generic:
+      - link:
+        - /url: "#main-content"
+        - text: Pular para o conteúdo
+      - complementary:
+        - generic:
+          - img
+          - generic: Prompt App
+        - navigation:
+          - link:
+            - /url: /
+            - img
+            - text: Início
+          - link:
+            - /url: /categorias
+            - img
+            - text: Categorias
+          - link:
+            - /url: /menus
+            - img
+            - text: Menus do Template
+          - generic: Categorias
+          - generic: Ações
+          - generic:
+            - button "Nuvem indisponível" [disabled]:
+              - img
+              - generic: Nuvem indisponível
+            - paragraph: Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.
+          - button:
+            - img
+            - text: Importar Templates
+          - button:
+            - img
+            - text: Exportar Todos
+        - generic:
+          - generic: Prompt App v3.0
+      - main:
+        - generic:
+          - status:
+            - strong: Supabase não configurado.
+            - generic: Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Recursos em nuvem permanecem desativados.
+          - generic:
+            - generic:
+              - button:
+                - img
+              - heading [level=1]: Novo Template
+            - generic:
+              - generic: Rascunho salvo às 02:23 AM
+              - button:
+                - img
+                - text: Foco
+              - button:
+                - img
+                - text: Copiar
+              - button:
+                - img
+                - text: Baixar
+              - button:
+                - img
+                - text: Salvar
+            - generic:
+              - button:
+                - img
+              - button [expanded]:
+                - img
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Rascunho Restaurado
+                      - generic: Você está visualizando alterações não salvas de uma sessão anterior.
+                    - generic:
+                      - button: Reverter
+                      - button: Descartar
+                  - navigation:
+                    - list:
+                      - listitem:
+                        - link:
+                          - /url: /
+                          - text: Início
+                        - img
+                      - listitem:
+                        - generic: Novo Template
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Metadados do Template
+                    - generic:
+                      - generic:
+                        - text: Nome do template
+                        - generic: "*"
+                      - textbox:
+                        - /placeholder: "Ex: Gerador de Cenas Publicitárias"
+                        - text: Novo Template
+                      - generic: Nome exibido nas listagens e no breadcrumb.
+                    - generic:
+                      - generic: ID do template
+                      - textbox:
+                        - /placeholder: scene_generator_v1
+                        - text: novo_template
+                      - generic: Identificador único. Gerado automaticamente se vazio.
+                    - generic:
+                      - generic: Tipo
+                      - textbox:
+                        - /placeholder: scene_generation
+                        - text: generic_prompt
+                    - generic:
+                      - generic:
+                        - text: Categoria
+                        - generic: "*"
+                      - combobox [invalid]
+                      - generic: Categoria usada para organizar o template na biblioteca principal.
+                      - alert: Selecione uma categoria para o template.
+                    - generic:
+                      - generic: Idioma
+                      - textbox:
+                        - /placeholder: pt-BR
+                        - text: pt-BR
+                      - generic: "Ex: pt-BR, en-US"
+                    - generic:
+                      - generic: Schema version
+                      - textbox:
+                        - /placeholder: 1.0.0
+                        - text: 1.0.0
+                    - generic:
+                      - generic: Status
+                      - combobox
+                  - group:
+                    - generic: Definição do Prompt
+                    - generic:
+                      - heading [level=3]: Núcleo do Prompt
+                      - generic:
+                        - generic: System role
+                        - textbox:
+                          - /placeholder: Defina o papel do modelo
+                        - generic: Defina o papel e a especialidade que o modelo deve assumir neste template.
+                      - generic:
+                        - generic: Task
+                        - textbox:
+                          - /placeholder: Descreva a tarefa principal
+                        - generic: Explique a entrega principal esperada para o template.
+                      - generic:
+                        - generic:
+                          - text: User Scene Description
+                          - generic: "*"
+                        - textbox:
+                          - /placeholder: Descreva a cena de usuário
+                        - generic: Descreva o cenário do usuário em que o template será usado (Campo obrigatório).
+                      - generic:
+                        - generic: Context
+                        - textbox:
+                          - /placeholder: Explique o contexto do template
+                        - generic: Registre premissas, cenário de uso e informações de apoio para a resposta.
+                    - generic:
+                      - heading [level=3]: Guardrails & Menus
+                      - generic:
+                        - generic:
+                          - generic: Constraints
+                          - generic:
+                            - textbox:
+                              - /placeholder: Digite uma restrição e pressione Enter
+                            - button: Adicionar
+                          - generic: Liste limites, critérios e guardrails.
+                        - generic:
+                          - generic: Negative prompt
+                          - generic:
+                            - textbox:
+                              - /placeholder: Digite uma proibição e pressione Enter
+                            - button: Adicionar
+                          - generic: Informe o que a resposta deve evitar.
+                      - generic:
+                        - generic: Menus do Template
+                        - paragraph: Selecione os menus que estarão disponíveis neste template
+                        - generic:
+                          - generic:
+                            - combobox [expanded]:
+                              - generic: Escolha os menus vinculados ao template
+                              - img
+                    - group:
+                      - generic:
+                        - text: Exemplos de Resposta (Few-shot)
+                        - generic: — preencha os campos antes de salvar
+                      - generic:
+                        - button:
+                          - img
+                          - text: Novo exemplo
+                  - group:
+                    - generic: Output Contract
+                    - generic:
+                      - heading [level=3]: Configurações de Saída
+                      - generic:
+                        - generic: Format
+                        - combobox
+                        - generic: Defina o formato final esperado para a resposta compilada.
+                      - generic:
+                        - generic: Response language
+                        - textbox:
+                          - /placeholder: pt-BR
+                          - text: pt-BR
+                        - generic: Idioma preferencial da resposta final gerada pelo template.
+                      - generic:
+                        - generic:
+                          - checkbox [checked]
+                          - text: Strict mode
+                      - generic:
+                        - generic: Required fields
+                        - textbox:
+                          - /placeholder: Um campo obrigatório por linha
+                        - generic: Informe os campos que devem existir na resposta, um item por linha.
+                      - generic:
+                        - generic: Response rules
+                        - textbox:
+                          - /placeholder: Uma regra por linha
+                        - generic: Liste regras obrigatórias de formatação e comportamento, uma por linha.
+                  - generic:
+                    - button: Cancelar
+                    - button:
+                      - img
+                      - text: Salvar Template
+            - complementary:
+              - generic:
+                - heading [level=3]:
+                  - img
+                  - text: Playground
+                - button:
+                  - img
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Inputs Livres
+                      - paragraph: Variáveis específicas para este teste.
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic: Chave
+                        - textbox:
+                          - /placeholder: user_scene_description
+                      - generic:
+                        - generic: Valor
+                        - textbox:
+                          - /placeholder: Descreva o input livre
+                      - button:
+                        - img
+                    - button:
+                      - img
+                      - text: Novo input livre
+                  - generic:
+                    - generic:
+                      - heading [level=4]: Memória Fixa
+                    - paragraph:
+                      - text: Estes valores ficam vinculados ao template
+                      - strong: Novo Template
+                      - text: e preenchem variáveis fixas sempre que este template for usado. Eles não são globais entre templates.
+                    - generic:
+                      - paragraph: Nenhuma chave fixa definida para este template. Adicione apenas os campos que precisam ser preenchidos sempre neste contexto.
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic: Nova Chave Fixa do Template
+                          - generic:
+                            - textbox:
+                              - /placeholder: "EX: BRAND_VOICE"
+                            - textbox:
+                              - /placeholder: Valor inicial da chave...
+                            - generic:
+                              - button:
+                                - img
+                              - button:
+                                - img
+                  - paragraph: Vincule menus na seção acima para testar a compilação.
+                  - generic:
+                    - heading [level=4]: Prompt compilado
+                    - generic: "## OUTPUT FORMAT - Formato: markdown - Idioma: pt-BR - Modo estrito: sim"
+                    - generic:
+                      - generic: 72 caracteres
+                      - generic: •
+                      - generic: 13 palavras
+                      - generic: •
+                      - generic: ~18 tokens
+            - button [expanded]:
+              - img
+          - generic:
+            - button:
+              - img
+            - button:
+              - img
+            - button:
+              - img
+              - text: Salvar
+        - generic:
+          - generic: Prompt App • Engenharia de Prompts
+          - navigation:
+            - link:
+              - /url: /sobre
+              - text: Sobre
+            - link:
+              - /url: /contato
+              - text: Contato
+            - link:
+              - /url: /privacidade
+              - text: Privacidade
+    - status
+  - listbox [active] [ref=e62]:
+    - generic [ref=e64]:
+      - generic [ref=e66]:
+        - checkbox [ref=e67]
+        - img [ref=e69]
+      - generic [ref=e71]: Estilo de Escrita
+    - generic [ref=e73]:
+      - generic [ref=e75]:
+        - checkbox [ref=e76]
+        - img [ref=e78]
+      - generic [ref=e80]: Framework
+    - generic [ref=e82]:
+      - generic [ref=e84]:
+        - checkbox [ref=e85]
+        - img [ref=e87]
+      - generic [ref=e89]: Nível Técnico
+    - generic [ref=e91]:
+      - generic [ref=e93]:
+        - checkbox [ref=e94]
+        - img [ref=e96]
+      - generic [ref=e98]: Idioma de saída
+    - img [ref=e100]
