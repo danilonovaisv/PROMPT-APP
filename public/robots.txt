@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://prompt-app-dan.netlify.app/sitemap.xml
+Sitemap: https://project-vwlgp.vercel.app/sitemap.xml

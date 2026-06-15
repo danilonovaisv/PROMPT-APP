@@ -11,7 +11,7 @@ export default function AboutPage() {
             <SEO
                 title="Sobre"
                 description="Conheça o Prompt App e a proposta de organização profissional de prompts para LLMs."
-                url="https://prompt-app-dan.netlify.app/sobre"
+                url="https://project-vwlgp.vercel.app/sobre"
             />
             <header className="app-header">
                 <h1 className="app-header__title">Sobre</h1>

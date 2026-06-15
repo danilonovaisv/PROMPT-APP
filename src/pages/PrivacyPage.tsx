@@ -11,7 +11,7 @@ export default function PrivacyPage() {
             <SEO
                 title="Privacidade"
                 description="Política de privacidade do Prompt App com foco em dados locais e sincronização opcional."
-                url="https://prompt-app-dan.netlify.app/privacidade"
+                url="https://project-vwlgp.vercel.app/privacidade"
             />
             <header className="app-header">
                 <h1 className="app-header__title">Privacidade</h1>

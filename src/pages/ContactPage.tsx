@@ -11,7 +11,7 @@ export default function ContactPage() {
             <SEO
                 title="Contato"
                 description="Canais oficiais para suporte e colaboração no Prompt App."
-                url="https://prompt-app-dan.netlify.app/contato"
+                url="https://project-vwlgp.vercel.app/contato"
             />
             <header className="app-header">
                 <h1 className="app-header__title">Contato</h1>

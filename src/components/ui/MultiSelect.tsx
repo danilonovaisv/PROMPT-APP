@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons'
 
 export interface MultiSelectProps extends Omit<React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>, 'value' | 'onValueChange'> {
