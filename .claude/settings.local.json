@@ -19,7 +19,21 @@
       "Bash(netlify api *)",
       "mcp__claude_ai_Netlify__netlify-deploy-services-updater",
       "Bash(git -C /Users/PROJETOS-DEV/PROMPT-APP ls-files --error-unmatch .env .env.local)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(timeout 15 npx -y @claude-flow/cli@latest mcp start)",
+      "Bash(npm cache *)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Bash(pkill -f \"vite\")",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "Bash(rm /Users/PROJETOS-DEV/PROMPT-APP/.git/worktrees/multiselect-visual-fix/index.lock)",
+      "Bash(rtk git *)",
+      "Bash(rm -f /Users/PROJETOS-DEV/PROMPT-APP/.git/worktrees/multiselect-visual-fix/index.lock)",
+      "Bash(git commit -m ' *)"
     ]
   },
   "enableAllProjectMcpServers": true,
