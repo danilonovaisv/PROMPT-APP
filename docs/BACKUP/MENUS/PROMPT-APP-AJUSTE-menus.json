@@ -1,0 +1,170 @@
+{
+  "version": "1.0.0",
+  "menus": [
+    {
+      "menu_id": "prompt_app_ajuste_agent_destino",
+      "menu_name": "PROMPT-APP-AJUSTE - Agent IDE Destino",
+      "description": "Define para qual ambiente de agente IDE o prompt copiável será otimizado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Antigravity",
+          "value": "antigravity",
+          "description": "Gera prompt em blocos Markdown, com comandos conservadores e foco em leitura, edição e validação do projeto.",
+          "sub_options": []
+        },
+        {
+          "label": "Google AI Studio",
+          "value": "google_ai_studio",
+          "description": "Gera prompt em blocos Markdown claros, com instruções compatíveis com execução assistida por IA.",
+          "sub_options": []
+        },
+        {
+          "label": "Cursor",
+          "value": "cursor",
+          "description": "Gera prompt orientado a agent IDE com inspeção de arquivos, plano de edição e validação por terminal.",
+          "sub_options": []
+        },
+        {
+          "label": "Genérico",
+          "value": "generico",
+          "description": "Gera prompt neutro para qualquer agent IDE com leitura, edição e validação de código.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "prompt_app_ajuste_escopo_correcao",
+      "menu_name": "PROMPT-APP-AJUSTE - Escopo da Correção",
+      "description": "Determina a amplitude da investigação e das alterações solicitadas ao agent IDE.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Bug pontual",
+          "value": "bug_pontual",
+          "description": "Foca em reproduzir, localizar causa raiz e corrigir um erro específico informado pelo usuário.",
+          "sub_options": []
+        },
+        {
+          "label": "UX e acessibilidade",
+          "value": "ux_acessibilidade",
+          "description": "Prioriza usabilidade, navegação por teclado, semântica, aria, contraste e áreas de toque.",
+          "sub_options": []
+        },
+        {
+          "label": "Performance frontend",
+          "value": "performance_frontend",
+          "description": "Prioriza renderização, imports, estado, memoização, bundle, lazy loading e gargalos observáveis.",
+          "sub_options": []
+        },
+        {
+          "label": "Funcionalidade completa",
+          "value": "funcionalidade_completa",
+          "description": "Foca na implementação funcional de uma melhoria ou fluxo completo já descrito pelo usuário.",
+          "sub_options": []
+        },
+        {
+          "label": "Refatoração segura",
+          "value": "refatoracao_segura",
+          "description": "Solicita melhoria estrutural com preservação explícita de comportamento existente.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "prompt_app_ajuste_politica_capacidades",
+      "menu_name": "PROMPT-APP-AJUSTE - Política de Capacidades Técnicas",
+      "description": "Controla o quanto o prompt permite que o agent IDE aja autonomamente no projeto.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Conservadora",
+          "value": "conservadora",
+          "description": "Exige confirmação por evidência antes de editar e limita mudanças ao escopo informado.",
+          "sub_options": []
+        },
+        {
+          "label": "Equilibrada",
+          "value": "equilibrada",
+          "description": "Permite correções relacionadas ao mesmo fluxo quando houver evidência direta no código.",
+          "sub_options": []
+        },
+        {
+          "label": "Autônoma controlada",
+          "value": "autonoma_controlada",
+          "description": "Permite aplicar correções correlatas, mantendo relatório detalhado e validação obrigatória.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "prompt_app_ajuste_formato_saida",
+      "menu_name": "PROMPT-APP-AJUSTE - Formato dos Prompts Copiáveis",
+      "description": "Define como a saída do template deve embalar o prompt final para colar no agent IDE.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Bloco .md obrigatório",
+          "value": "bloco_md_obrigatorio",
+          "description": "Entrega apenas um bloco Markdown copiável, pronto para colar no agent IDE.",
+          "sub_options": []
+        },
+        {
+          "label": "Bloco .md com checklist",
+          "value": "bloco_md_com_checklist",
+          "description": "Entrega o prompt copiável e uma checklist curta de uso antes da execução.",
+          "sub_options": []
+        },
+        {
+          "label": "Seções Markdown",
+          "value": "secoes_markdown",
+          "description": "Entrega o prompt em seções Markdown sem cerca de código, para edição manual.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "prompt_app_ajuste_nivel_validacao",
+      "menu_name": "PROMPT-APP-AJUSTE - Nível de Validação",
+      "description": "Define quais validações o prompt deve exigir após a correção do agent IDE.",
+      "selection_mode": "multiple",
+      "required": false,
+      "options": [
+        {
+          "label": "TypeScript",
+          "value": "typescript",
+          "description": "Exigir verificação de tipos ou justificativa se o comando não estiver disponível.",
+          "sub_options": []
+        },
+        {
+          "label": "Build Vite",
+          "value": "build_vite",
+          "description": "Exigir npm run build, pnpm build ou comando equivalente declarado no package.json.",
+          "sub_options": []
+        },
+        {
+          "label": "Lint",
+          "value": "lint",
+          "description": "Exigir lint quando houver script disponível no package.json.",
+          "sub_options": []
+        },
+        {
+          "label": "Teste manual de fluxo",
+          "value": "teste_manual_fluxo",
+          "description": "Exigir checklist de navegação e comportamento do fluxo corrigido.",
+          "sub_options": []
+        },
+        {
+          "label": "Acessibilidade",
+          "value": "acessibilidade",
+          "description": "Exigir foco visível, aria válido, semântica HTML e contraste quando o escopo tocar UI.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

@@ -78,6 +78,7 @@
     "react-dom": "^19.2.7",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.17.0",
+    "workflow": "^4.4.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

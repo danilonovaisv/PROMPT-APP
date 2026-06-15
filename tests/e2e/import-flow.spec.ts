@@ -16,37 +16,33 @@ test.describe("PROMPT-APP: Import Flow & Fixed Memory", () => {
     await expect(page.getByRole("dialog")).toBeVisible();
 
     const importData = {
-      "meta": {
-        "template_id": "e2e_test_fixed_memory",
-        "template_name": "E2E Test Fixed Memory",
-        "template_type": "test",
-        "status": "active",
-      },
+      "title": "E2E Test Fixed Memory",
+      "task": "Test prompt with {{TEST_KEY}} and {{ANOTHER_KEY}}",
       "fixed_variables": {
         "TEST_KEY": "TEST_VALUE",
         "ANOTHER_KEY": "ANOTHER_VALUE",
-      },
-      "prompt_definition": {
-        "task": "Test prompt with {{TEST_KEY}} and {{ANOTHER_KEY}}",
       },
     };
 
     // Fill the textarea
     await page.locator("#json-import-input").fill(JSON.stringify(importData));
 
-    // Click import button
-    await page.getByRole("button", { name: "Importar JSON colado" }).click();
+    // Click Analyze JSON button
+    await page.getByRole("button", { name: "Analisar JSON" }).click();
+
+    // Click Confirm Import button
+    await page.getByRole("button", { name: "Confirmar Importação" }).click();
 
     // Check for success toast or result message
     await expect(page.locator(".import-result--success")).toBeVisible();
-    await expect(page.getByText("1 prompts importados")).toBeVisible();
+    await expect(page.getByText("✓ 1 prompts importados")).toBeVisible();
 
     // Close modal
-    await page.getByRole("button", { name: "Fechar" }).click();
+    await page.getByRole("button", { name: "Fechar", exact: true }).click();
 
     // Navigate to the newly imported prompt
     // It should be in "Importados" category
-    await page.getByText("Importados").click();
+    await page.getByText("Importados", { exact: true }).click();
 
     // Wait for the prompt list in category page
     await expect(page.getByText("E2E Test Fixed Memory")).toBeVisible();
@@ -61,11 +57,10 @@ test.describe("PROMPT-APP: Import Flow & Fixed Memory", () => {
     // Wait for the playground to load
     await expect(page.getByText("Memória Fixa")).toBeVisible();
 
-    // Verify values exist in the Fixed Memory UI
-    await expect(page.locator('input[value="TEST_KEY"]')).toBeVisible();
-    await expect(page.locator('input[value="TEST_VALUE"]')).toBeVisible();
-    await expect(page.locator('input[value="ANOTHER_KEY"]')).toBeVisible();
-    await expect(page.locator('input[value="ANOTHER_VALUE"]')).toBeVisible();
+    await expect(page.getByText("TEST_KEY", { exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "TEST_KEY" })).toHaveValue("TEST_VALUE");
+    await expect(page.getByText("ANOTHER_KEY", { exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "ANOTHER_KEY" })).toHaveValue("ANOTHER_VALUE");
 
     // Test compilation
     await expect(

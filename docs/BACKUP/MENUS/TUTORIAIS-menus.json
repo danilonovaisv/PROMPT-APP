@@ -3,6 +3,10 @@
   "menus": [
     {
       "menu_id": "core_profundidade_detalhamento",
+      "menu_name": "CORE - Profundidade de Detalhamento",
+      "description": "Define o nível de granularidade esperado no output, substituindo variações duplicadas de profundidade e detalhamento.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Essencial",
@@ -77,14 +81,14 @@
             }
           ]
         }
-      ],
-      "required": false,
-      "menu_name": "CORE - Profundidade de Detalhamento",
-      "description": "Define o nível de granularidade esperado no output, substituindo variações duplicadas de profundidade e detalhamento.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "core_formato_resposta",
+      "menu_name": "CORE - Formato da Resposta",
+      "description": "Controla a organização visual e retórica do output, unificando estilo, execução e apresentação.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Estrutura",
@@ -199,14 +203,14 @@
             }
           ]
         }
-      ],
-      "required": false,
-      "menu_name": "CORE - Formato da Resposta",
-      "description": "Controla a organização visual e retórica do output, unificando estilo, execução e apresentação.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "core_publico_alvo",
+      "menu_name": "CORE - Público-Alvo",
+      "description": "Define para quem o prompt deve otimizar linguagem, profundidade e nível técnico.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Desenvolvedores",
@@ -339,14 +343,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "CORE - Público-Alvo",
-      "description": "Define para quem o prompt deve otimizar linguagem, profundidade e nível técnico.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "core_tom_comunicacao",
+      "menu_name": "CORE - Tom de Comunicação",
+      "description": "Define a postura discursiva principal do prompt, unificando tom geral, tom da resposta e tom da análise.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Formal / Institucional",
@@ -474,14 +478,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "CORE - Tom de Comunicação",
-      "description": "Define a postura discursiva principal do prompt, unificando tom geral, tom da resposta e tom da análise.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "agente_tarefa_especialista",
+      "menu_name": "AGENTE - Tarefa e Especialista",
+      "description": "Define a natureza da missão e a persona dominante do agente responsável.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Tipo de tarefa",
@@ -552,14 +556,14 @@
             }
           ]
         }
-      ],
-      "required": false,
-      "menu_name": "AGENTE - Tarefa e Especialista",
-      "description": "Define a natureza da missão e a persona dominante do agente responsável.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "output_tipo_entrega",
+      "menu_name": "OUTPUT - Tipo de Entrega",
+      "description": "Define os artefatos e formatos finais que devem ser produzidos pelo prompt.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Produto e planejamento",
@@ -689,14 +693,14 @@
             }
           ]
         }
-      ],
-      "required": false,
-      "menu_name": "OUTPUT - Tipo de Entrega",
-      "description": "Define os artefatos e formatos finais que devem ser produzidos pelo prompt.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "estilo",
+      "menu_name": "TUTORIAL - Estilo",
+      "description": "Define o estilo de formatação da saída",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Conciso",
@@ -756,14 +760,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Estilo",
-      "description": "Define o estilo de formatação da saída",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "publico",
+      "menu_name": "TUTORIAL - Público",
+      "description": "Define o público-alvo do prompt",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Desenvolvedores",
@@ -833,14 +837,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Público",
-      "description": "Define o público-alvo do prompt",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "tom",
+      "menu_name": "TUTORIAL - Tom",
+      "description": "Define o tom de comunicação do prompt",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Formal",
@@ -898,7 +902,7 @@
             },
             {
               "label": "Acadêmico",
-              "value": "academico",
+              "value": "tecnico_academico",
               "description": ""
             }
           ]
@@ -921,14 +925,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Tom",
-      "description": "Define o tom de comunicação do prompt",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "estilo_execucao",
+      "menu_name": "TUTORIAL - Estilo de Execução",
+      "description": "Controla a forma de apresentação da orientação prática.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Passo a Passo",
@@ -948,14 +952,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Estilo de Execução",
-      "description": "Controla a forma de apresentação da orientação prática.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "audit_scope",
+      "menu_name": "TUTORIAL - Escopo da Auditoria",
+      "description": "Define a profundidade e o foco principal da auditoria e do ajuste.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Página completa",
@@ -1022,14 +1026,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Escopo da Auditoria",
-      "description": "Define a profundidade e o foco principal da auditoria e do ajuste.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "estilo_resposta",
+      "menu_name": "TUTORIAL - Estilo de Resposta",
+      "description": "Define o formato predominante da saída do template.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Arquitetura Completa",
@@ -1049,14 +1053,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Estilo de Resposta",
-      "description": "Define o formato predominante da saída do template.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "prompt_depth",
+      "menu_name": "TUTORIAL - Profundidade dos Prompts",
+      "description": "Define o nível de detalhamento da saída.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Essencial",
@@ -1070,14 +1074,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Profundidade dos Prompts",
-      "description": "Define o nível de detalhamento da saída.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "delivery_depth",
+      "menu_name": "TUTORIAL - Profundidade da Entrega",
+      "description": "Define o nível de detalhamento técnico esperado na resposta.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Executiva",
@@ -1097,14 +1101,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Profundidade da Entrega",
-      "description": "Define o nível de detalhamento técnico esperado na resposta.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "nivel_detalhamento",
+      "menu_name": "TUTORIAL - Nível de Detalhamento",
+      "description": "Controla a profundidade da análise e das diretrizes de recriação.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Essencial",
@@ -1123,15 +1127,27 @@
           "value": "maximo",
           "description": "",
           "sub_options": []
+        },
+        {
+          "label": "Objetivo",
+          "value": "objetivo",
+          "description": "Mantém apenas conceitos essenciais, passos principais e resultado esperado.",
+          "sub_options": []
+        },
+        {
+          "label": "Avançado",
+          "value": "avancado",
+          "description": "Inclui arquitetura, alternativas, riscos, segurança, performance e tendências.",
+          "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Nível de Detalhamento",
-      "description": "Controla a profundidade da análise e das diretrizes de recriação.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "objetivo_estrategico",
+      "menu_name": "TUTORIAL - Objetivo Estratégico",
+      "description": "Define a transformação estratégica mais importante esperada com a auditoria.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Reposicionamento",
@@ -1163,14 +1179,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Objetivo Estratégico",
-      "description": "Define a transformação estratégica mais importante esperada com a auditoria.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "nivel_profundidade",
+      "menu_name": "TUTORIAL - Nível de Profundidade",
+      "description": "Controla o nível de detalhe da auditoria e do plano de implementação.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Executivo",
@@ -1190,14 +1206,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Nível de Profundidade",
-      "description": "Controla o nível de detalhe da auditoria e do plano de implementação.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "formato_resposta",
+      "menu_name": "TUTORIAL - Formato da resposta",
+      "description": "Define o estilo de organização do resultado.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Lista",
@@ -1211,14 +1227,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Formato da resposta",
-      "description": "Define o estilo de organização do resultado.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "plataforma_exibicao",
+      "menu_name": "TUTORIAL - Plataforma de Exibição",
+      "description": "Ajusta as diretrizes de recriação conforme o contexto principal de publicação.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Instagram",
@@ -1266,14 +1282,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Plataforma de Exibição",
-      "description": "Ajusta as diretrizes de recriação conforme o contexto principal de publicação.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "formato_entrega",
+      "menu_name": "TUTORIAL - Formato da Entrega",
+      "description": "Escolhe o foco dominante do output final.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Plano técnico + arquitetura",
@@ -1305,14 +1321,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Formato da Entrega",
-      "description": "Escolhe o foco dominante do output final.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "plataforma_destino",
+      "menu_name": "TUTORIAL - Plataforma de Destino",
+      "description": "Define o contexto principal de uso da interface.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Web app responsivo",
@@ -1344,14 +1360,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Plataforma de Destino",
-      "description": "Define o contexto principal de uso da interface.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "tipo_entrega",
+      "menu_name": "TUTORIAL - Tipo de Entrega",
+      "description": "Define profundidade e foco da saída.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Plano de Produto",
@@ -1377,14 +1393,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Tipo de Entrega",
-      "description": "Define profundidade e foco da saída.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "estilo_visual",
+      "menu_name": "TUTORIAL - Estilo Visual",
+      "description": "Controla o caráter estético dominante da proposta final.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Minimalista",
@@ -1422,14 +1438,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Estilo Visual",
-      "description": "Controla o caráter estético dominante da proposta final.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "platform_type",
+      "menu_name": "TUTORIAL - Plataforma",
+      "description": "Define o contexto principal da interface.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Mobile",
@@ -1443,14 +1459,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Plataforma",
-      "description": "Define o contexto principal da interface.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "objetivo_analise",
+      "menu_name": "TUTORIAL - Objetivo da Análise",
+      "description": "Define o principal resultado esperado da análise e da geração do scaffold.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Recriar com alta fidelidade",
@@ -1482,14 +1498,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Objetivo da Análise",
-      "description": "Define o principal resultado esperado da análise e da geração do scaffold.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "modelo_principal",
+      "menu_name": "TUTORIAL - Modelo Principal do Pipeline",
+      "description": "Define o modelo de IA predominante nos nós de geração.",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Gemini (texto e lógica)",
@@ -1515,14 +1531,14 @@
           "description": "",
           "sub_options": []
         }
-      ],
-      "required": false,
-      "menu_name": "Modelo Principal do Pipeline",
-      "description": "Define o modelo de IA predominante nos nós de geração.",
-      "selection_mode": "single"
+      ]
     },
     {
       "menu_id": "stack_alvo",
+      "menu_name": "TUTORIAL - Stack Alvo",
+      "description": "Define preferências tecnológicas do projeto.",
+      "selection_mode": "multiple",
+      "required": false,
       "options": [
         {
           "label": "Frontend React",
@@ -1575,14 +1591,14 @@
             }
           ]
         }
-      ],
-      "required": false,
-      "menu_name": "Stack Alvo",
-      "description": "Define preferências tecnológicas do projeto.",
-      "selection_mode": "multiple"
+      ]
     },
     {
       "menu_id": "idioma",
+      "menu_name": "TUTORIAL - Idioma",
+      "description": "Define o idioma de resposta do prompt",
+      "selection_mode": "single",
+      "required": false,
       "options": [
         {
           "label": "Português (BR)",
@@ -1625,11 +1641,160 @@
           "description": "",
           "sub_options": []
         }
-      ],
+      ]
+    },
+    {
+      "menu_id": "tipo_tutorial",
+      "menu_name": "TUTO-YOUTUBE - Tipo de Tutorial",
+      "description": "Define o tipo de material que será produzido a partir da transcrição do vídeo.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Guia técnico executável",
+          "value": "guia_tecnico_executavel",
+          "description": "Transforma a transcrição em um tutorial técnico com passos reproduzíveis.",
+          "sub_options": []
+        },
+        {
+          "label": "Artigo didático publicável",
+          "value": "artigo_didatico_publicavel",
+          "description": "Organiza o conteúdo como artigo técnico para blog, newsletter ou base de conhecimento.",
+          "sub_options": []
+        },
+        {
+          "label": "Resumo expandido com aplicação prática",
+          "value": "resumo_expandido_pratico",
+          "description": "Condensa o vídeo e adiciona aplicações práticas, limitações e próximos passos.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "publico_alvo",
+      "menu_name": "TUTO-YOUTUBE - Público-Alvo",
+      "description": "Define para quem o tutorial deve ser escrito.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Iniciante técnico",
+          "value": "iniciante_tecnico",
+          "description": "Explica termos, pré-requisitos e decisões sem assumir experiência avançada.",
+          "sub_options": []
+        },
+        {
+          "label": "Desenvolvedor full stack",
+          "value": "desenvolvedor_full_stack",
+          "description": "Foca implementação, arquitetura, trade-offs e boas práticas de desenvolvimento.",
+          "sub_options": []
+        },
+        {
+          "label": "Tech lead ou arquiteto",
+          "value": "tech_lead_arquiteto",
+          "description": "Prioriza decisões, riscos, escalabilidade, manutenção e impacto técnico.",
+          "sub_options": []
+        },
+        {
+          "label": "Criador de conteúdo técnico",
+          "value": "criador_conteudo_tecnico",
+          "description": "Entrega material didático com estrutura editorial pronta para publicação.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "foco_tecnico",
+      "menu_name": "TUTO-YOUTUBE - Foco Técnico",
+      "description": "Define qual dimensão técnica deve receber prioridade na expansão do conteúdo.",
+      "selection_mode": "multiple",
       "required": false,
-      "menu_name": "Idioma",
-      "description": "Define o idioma de resposta do prompt",
-      "selection_mode": "single"
+      "options": [
+        {
+          "label": "Implementação",
+          "value": "implementacao",
+          "description": "Prioriza comandos, etapas práticas, snippets e validações.",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetura",
+          "value": "arquitetura",
+          "description": "Prioriza fluxo, stack, componentes, integrações e decisões estruturais.",
+          "sub_options": []
+        },
+        {
+          "label": "Boas práticas",
+          "value": "boas_praticas",
+          "description": "Prioriza padrões, organização, manutenção, segurança e qualidade.",
+          "sub_options": []
+        },
+        {
+          "label": "Comparação de ferramentas",
+          "value": "comparacao_ferramentas",
+          "description": "Prioriza alternativas, trade-offs, custos e cenários de uso.",
+          "sub_options": []
+        },
+        {
+          "label": "Publicação e SEO",
+          "value": "publicacao_seo",
+          "description": "Prioriza título, introdução, escaneabilidade, links e estrutura publicável.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "politica_fontes",
+      "menu_name": "TUTO-YOUTUBE - Política de Fontes",
+      "description": "Define como lidar com links, documentação e informações não verificadas.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Somente fontes verificáveis",
+          "value": "somente_fontes_verificaveis",
+          "description": "Usa apenas links presentes no input ou fontes oficiais conhecidas; marca o restante como verificar.",
+          "sub_options": []
+        },
+        {
+          "label": "Fontes oficiais primeiro",
+          "value": "fontes_oficiais_primeiro",
+          "description": "Prioriza documentação oficial, páginas de suporte e repositórios primários.",
+          "sub_options": []
+        },
+        {
+          "label": "Sem links externos",
+          "value": "sem_links_externos",
+          "description": "Remove links externos e usa marcações internas de verificação quando necessário.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_saida",
+      "menu_name": "TUTO-YOUTUBE - Formato de Saída",
+      "description": "Define a estrutura final do conteúdo gerado.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Duas fases",
+          "value": "duas_fases",
+          "description": "Entrega Fase 1 com guia base e Fase 2 com expansão comparativa.",
+          "sub_options": []
+        },
+        {
+          "label": "Tutorial único",
+          "value": "tutorial_unico",
+          "description": "Consolida tudo em um único tutorial sequencial.",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist operacional",
+          "value": "checklist_operacional",
+          "description": "Organiza a saída como checklist de execução, validação e publicação.",
+          "sub_options": []
+        }
+      ]
     }
   ]
 }

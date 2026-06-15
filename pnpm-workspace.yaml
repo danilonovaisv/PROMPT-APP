@@ -20,6 +20,8 @@ allowBuilds:
   'protobufjs': true
   'sqlite3': true
   'tldjs': true
+  '@swc/core': false
+  cbor-extract: false
 
 minimumReleaseAgeExclude:
   - '@sentry-internal/browser-utils@10.56.0'

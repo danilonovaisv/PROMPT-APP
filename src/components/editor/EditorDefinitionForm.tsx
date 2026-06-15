@@ -149,6 +149,7 @@ export function EditorDefinitionForm({
     .map((menu) => ({
       id: menu.id,
       label: menu.menuName || menu.menuId,
+      // description shown as slug badge inside MultiSelect option row
       description: menu.menuId,
     }));
   

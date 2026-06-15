@@ -1,6 +1,9 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { useEffect, useId, useMemo, useRef, useState, useCallback } from 'react';
+import { ChevronDown, Search, X, Check } from 'lucide-react';
 
+// ─────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────
 type MultiSelectOption = {
   id: number;
   label: string;
@@ -17,6 +20,9 @@ type MultiSelectProps = {
   ariaDescribedBy?: string;
 };
 
+// ─────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────
 export default function MultiSelect({
   options,
   selectedIds,
@@ -27,106 +33,137 @@ export default function MultiSelect({
   ariaDescribedBy,
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(-1);
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
   const triggerId = useId();
+  const searchId = useId();
 
-  useEffect(() => {
-    function handlePointerDown(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
+  // ── Derived state ──────────────────────────────
+  const selectedOptions = useMemo(
+    () => options.filter((opt) => selectedIds.includes(opt.id)),
+    [options, selectedIds],
+  );
 
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
+  /** Opções filtradas pela busca textual (case-insensitive, label + description) */
+  const filteredOptions = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter(
+      (opt) =>
+        opt.label.toLowerCase().includes(q) ||
+        (opt.description ?? '').toLowerCase().includes(q),
+    );
+  }, [options, search]);
 
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('keydown', handleEscape);
-    };
+  // ── Open / Close ───────────────────────────────
+  const open = useCallback(() => {
+    setIsOpen(true);
+    setSearch('');
+    setActiveIndex(-1);
+    // Focus search input on next tick (after mount)
+    setTimeout(() => searchRef.current?.focus(), 0);
   }, []);
 
-  const selectedOptions = useMemo(
-    () => options.filter((option) => selectedIds.includes(option.id)),
-    [options, selectedIds],
-  );
-
-  const availableOptions = useMemo(
-    () => options.filter((option) => !selectedIds.includes(option.id)),
-    [options, selectedIds],
-  );
-
-  const toggleOption = (id: number) => {
-    if (selectedIds.includes(id)) {
-      onChange(selectedIds.filter((item) => item !== id));
-      return;
+  const close = useCallback((returnFocus = true) => {
+    setIsOpen(false);
+    setSearch('');
+    setActiveIndex(-1);
+    if (returnFocus) {
+      // Return focus to the trigger so keyboard users don't lose context
+      triggerRef.current?.focus();
     }
+  }, []);
 
-    onChange([...selectedIds, id]);
+  const toggle = useCallback(() => {
+    if (isOpen) close();
+    else open();
+  }, [isOpen, open, close]);
+
+  // ── Click outside ──────────────────────────────
+  useEffect(() => {
+    function handlePointerDown(e: MouseEvent) {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        close(false); // click outside → don't steal focus from wherever user clicked
+      }
+    }
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, [close]);
+
+  // ── Option toggle ──────────────────────────────
+  const toggleOption = useCallback(
+    (id: number) => {
+      onChange(
+        selectedIds.includes(id)
+          ? selectedIds.filter((item) => item !== id)
+          : [...selectedIds, id],
+      );
+    },
+    [onChange, selectedIds],
+  );
+
+  // ── Keyboard navigation (trigger) ─────────────
+  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      open();
+    }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (!isOpen) {
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        setIsOpen(true);
-        setActiveIndex(0);
-      }
-      return;
-    }
-
-    switch (event.key) {
+  // ── Keyboard navigation (dropdown) ────────────
+  const handleDropdownKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
       case 'ArrowDown':
-        event.preventDefault();
-        setActiveIndex((prev) => (prev < options.length - 1 ? prev + 1 : prev));
+        e.preventDefault();
+        setActiveIndex((prev) =>
+          prev < filteredOptions.length - 1 ? prev + 1 : prev,
+        );
         break;
       case 'ArrowUp':
-        event.preventDefault();
+        e.preventDefault();
         setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
         break;
       case 'Enter':
-      case ' ':
-        event.preventDefault();
-        if (activeIndex >= 0 && activeIndex < options.length) {
-          toggleOption(options[activeIndex].id);
+        e.preventDefault();
+        if (activeIndex >= 0 && activeIndex < filteredOptions.length) {
+          toggleOption(filteredOptions[activeIndex].id);
         }
         break;
       case 'Escape':
-      case 'Tab':
-        setIsOpen(false);
+        e.preventDefault();
+        close();
         break;
     }
   };
 
-  // removed useEffect to prevent React state update during render loop warning if it was an issue, 
-  // but wait it was an effect, however it's better to update together with setIsOpen.
+  const activeDescendantId =
+    activeIndex >= 0 && filteredOptions[activeIndex]
+      ? `${listboxId}-option-${filteredOptions[activeIndex].id}`
+      : undefined;
 
+  // ── Render ──────────────────────────────────────
   return (
     <div className="multi-select" ref={containerRef}>
+      {/* Trigger */}
       <button
         id={triggerId}
+        ref={triggerRef}
         role="combobox"
         type="button"
-        className={`multi-select__trigger ${isOpen ? 'multi-select__trigger--open' : ''}`}
+        className={`multi-select__trigger${isOpen ? ' multi-select__trigger--open' : ''}`}
         aria-haspopup="listbox"
-        aria-expanded={isOpen ? 'true' : 'false'}
+        aria-expanded={isOpen}
         aria-controls={listboxId}
         aria-labelledby={ariaLabelledBy ? `${ariaLabelledBy} ${triggerId}` : undefined}
         aria-describedby={ariaDescribedBy}
-        aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${options[activeIndex].id}` : undefined}
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (isOpen) setActiveIndex(-1);
-        }}
-        onKeyDown={handleKeyDown}
+        aria-activedescendant={activeDescendantId}
+        onClick={toggle}
+        onKeyDown={handleTriggerKeyDown}
       >
         <span className="multi-select__trigger-label">
           {selectedOptions.length > 0
@@ -135,23 +172,28 @@ export default function MultiSelect({
         </span>
         <ChevronDown
           size={16}
-          className={`multi-select__chevron ${isOpen ? 'multi-select__chevron--open' : ''}`}
+          className={`multi-select__chevron${isOpen ? ' multi-select__chevron--open' : ''}`}
           aria-hidden="true"
         />
       </button>
 
-      <div className="multi-select__chips" aria-live="polite">
+      {/* Selected chips */}
+      <div className="multi-select__chips" aria-live="polite" aria-label="Menus selecionados">
         {selectedOptions.length > 0 ? (
-          selectedOptions.map((option) => (
-            <span key={option.id} className="multi-select__chip">
-              <span className="multi-select__chip-label">{option.label}</span>
+          selectedOptions.map((opt) => (
+            <span key={opt.id} className="multi-select__chip">
+              <span className="multi-select__chip-label">{opt.label}</span>
+              {opt.description && (
+                <span className="multi-select__chip-desc">{opt.description}</span>
+              )}
               <button
                 type="button"
                 className="multi-select__chip-remove"
-                onClick={() => toggleOption(option.id)}
-                aria-label={`Remover ${option.label}`}
+                onClick={() => toggleOption(opt.id)}
+                aria-label={`Remover ${opt.label}`}
+                title={`Remover ${opt.label}`}
               >
-                <X size={14} aria-hidden="true" />
+                <X size={12} aria-hidden="true" />
               </button>
             </span>
           ))
@@ -162,44 +204,91 @@ export default function MultiSelect({
         )}
       </div>
 
+      {/* Dropdown popover */}
       {isOpen && (
-        <div className="multi-select__dropdown">
+        <div
+          className="multi-select__dropdown"
+          role="presentation"
+          onKeyDown={handleDropdownKeyDown}
+        >
+          {/* Search input */}
+          <div className="multi-select__search-wrapper" aria-hidden="false">
+            <Search size={14} className="multi-select__search-icon" aria-hidden="true" />
+            <input
+              id={searchId}
+              ref={searchRef}
+              type="search"
+              className="multi-select__search"
+              placeholder="Buscar menus…"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setActiveIndex(-1);
+              }}
+              aria-label="Filtrar menus disponíveis"
+              autoComplete="off"
+            />
+            {search && (
+              <span className="multi-select__search-count" aria-live="polite" aria-atomic="true">
+                {filteredOptions.length}/{options.length}
+              </span>
+            )}
+          </div>
+
+          {/* Options listbox */}
           <div
             id={listboxId}
             className="multi-select__options"
             role="listbox"
             aria-multiselectable="true"
-            aria-labelledby={ariaLabelledBy || triggerId}
+            aria-labelledby={ariaLabelledBy ?? triggerId}
           >
-            {options.length === 0 ? (
-              <div className="multi-select__empty">{emptyMessage}</div>
+            {filteredOptions.length === 0 ? (
+              <div className="multi-select__empty" role="status">
+                {search
+                  ? `Nenhum menu corresponde a "${search}"`
+                  : emptyMessage}
+              </div>
             ) : (
-              options.map((option, index) => {
-                const isSelected = selectedIds.includes(option.id);
+              filteredOptions.map((opt, idx) => {
+                const isSelected = selectedIds.includes(opt.id);
+                const isActive = idx === activeIndex;
 
                 return (
                   <div
-                    key={option.id}
-                    id={`${listboxId}-option-${option.id}`}
+                    key={opt.id}
+                    id={`${listboxId}-option-${opt.id}`}
                     role="option"
                     aria-selected={isSelected}
-                    className={`multi-select__option ${isSelected ? 'multi-select__option--selected' : ''} ${
-                      index === activeIndex ? 'multi-select__option--active' : ''
-                    }`}
-                    onMouseDown={(e) => e.preventDefault()}
+                    className={[
+                      'multi-select__option',
+                      isSelected ? 'multi-select__option--selected' : '',
+                      isActive ? 'multi-select__option--active' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
                     onClick={() => {
-                      toggleOption(option.id);
-                      setActiveIndex(index);
+                      toggleOption(opt.id);
+                      setActiveIndex(idx);
                     }}
+                    onMouseEnter={() => setActiveIndex(idx)}
                   >
                     <div className="multi-select__option-copy">
-                      <span className="multi-select__option-label">{option.label}</span>
-                      {option.description ? (
-                        <span className="multi-select__option-description">{option.description}</span>
-                      ) : null}
+                      <span className="multi-select__option-label">{opt.label}</span>
+                      {opt.description && (
+                        <span className="multi-select__option-description">
+                          {opt.description}
+                        </span>
+                      )}
                     </div>
-                    <span className="multi-select__option-state">
-                      {isSelected ? 'Selecionado' : 'Selecionar'}
+                    <span
+                      className={`multi-select__option-state${isSelected ? ' multi-select__option-state--selected' : ''}`}
+                      aria-hidden="true"
+                    >
+                      {isSelected ? (
+                        <Check size={14} aria-hidden="true" />
+                      ) : null}
                     </span>
                   </div>
                 );
@@ -207,9 +296,12 @@ export default function MultiSelect({
             )}
           </div>
 
-          {availableOptions.length === 0 && options.length > 0 ? (
-            <div className="multi-select__footer">Todos os menus disponíveis já foram vinculados.</div>
-          ) : null}
+          {/* Footer hint */}
+          {selectedOptions.length === options.length && options.length > 0 && (
+            <div className="multi-select__footer">
+              Todos os menus disponíveis já foram vinculados.
+            </div>
+          )}
         </div>
       )}
     </div>
