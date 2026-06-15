@@ -1,0 +1,161 @@
+{
+  "_comment": "PROMPT-TEMPLATE.json — Template oficial de importação para o Prompt App (schema v1.0.0)",
+  "_docs": "Remova esta chave '_comment' e '_docs' antes de importar. Todos os campos com comentário '(obrigatório)' devem ser preenchidos.",
+
+  "meta": {
+    "template_id": "meu_template_slug",
+    "template_name": "Nome do Template",
+    "template_type": "generic_prompt",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "draft"
+  },
+
+  "prompt_definition": {
+    "system_role": "Você é um especialista em [área de conhecimento]. Seu papel é [responsabilidade principal do agente].",
+    "task": "Realize a seguinte tarefa: [descrição objetiva e detalhada da tarefa principal que o prompt deve executar].",
+    "context": "Contexto do projeto ou situação: [informações de fundo, restrições do ambiente, dados relevantes que o modelo deve considerar ao executar a tarefa].",
+    "user_scene_description": "Cenário do usuário: [quem é o usuário, qual problema ele quer resolver, em qual situação ele está].",
+    "constraints": [
+      "Responda sempre em português do Brasil.",
+      "Não invente informações; baseie-se apenas no contexto fornecido.",
+      "Mantenha o tom profissional e direto."
+    ],
+    "negative_prompt": [
+      "Não use jargões técnicos sem explicação.",
+      "Não inclua avisos legais desnecessários.",
+      "Não repita a pergunta do usuário na resposta."
+    ],
+    "few_shot_examples": [
+      {
+        "input": "Exemplo de entrada do usuário",
+        "output": "Exemplo de saída esperada do modelo para esta entrada"
+      },
+      {
+        "input": "Outro exemplo de entrada",
+        "output": "Outro exemplo de saída correspondente"
+      }
+    ]
+  },
+
+  "menu_definitions": [
+    {
+      "menu_id": "tom_comunicacao",
+      "menu_name": "Tom de Comunicação",
+      "description": "Define o registro e estilo de linguagem da resposta",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Formal",
+          "value": "formal",
+          "description": "Linguagem profissional e protocolar",
+          "sub_options": []
+        },
+        {
+          "label": "Casual",
+          "value": "casual",
+          "description": "Linguagem descontraída e acessível",
+          "sub_options": []
+        },
+        {
+          "label": "Técnico",
+          "value": "tecnico",
+          "description": "Vocabulário especializado para audiências técnicas",
+          "sub_options": [
+            {
+              "label": "Alto nível (arquitetura)",
+              "value": "tecnico_alto_nivel",
+              "description": "Foco em design e decisões arquiteturais"
+            },
+            {
+              "label": "Baixo nível (implementação)",
+              "value": "tecnico_baixo_nivel",
+              "description": "Foco em código e detalhes de implementação"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "publico_alvo",
+      "menu_name": "Público-Alvo",
+      "description": "Para quem a resposta deve ser adaptada",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Iniciantes",
+          "value": "iniciantes",
+          "description": "Pessoas sem conhecimento prévio na área",
+          "sub_options": []
+        },
+        {
+          "label": "Intermediários",
+          "value": "intermediarios",
+          "description": "Pessoas com conhecimento básico consolidado",
+          "sub_options": []
+        },
+        {
+          "label": "Especialistas",
+          "value": "especialistas",
+          "description": "Profissionais sênior com domínio profundo do tema",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "idioma_saida",
+      "menu_name": "Idioma de Saída",
+      "description": "Idioma em que a resposta deve ser gerada",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Português (Brasil)",
+          "value": "pt-BR",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Inglês (EUA)",
+          "value": "en-US",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Espanhol",
+          "value": "es",
+          "description": "",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
+
+  "menu_ids": [
+    "tom_comunicacao",
+    "publico_alvo",
+    "idioma_saida"
+  ],
+
+  "output_contract": {
+    "format": "markdown",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [
+      "Introdução",
+      "Desenvolvimento",
+      "Conclusão"
+    ],
+    "response_rules": [
+      "Sempre estruture a resposta com título e seções claras.",
+      "Use bullet points para listas com mais de 3 itens.",
+      "Inclua um resumo executivo no final quando a resposta for longa."
+    ],
+    "optional_enums": {
+      "nivel_detalhe": ["alto", "medio", "baixo"],
+      "formato_codigo": ["typescript", "python", "javascript"]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/db/database';
@@ -13,10 +13,12 @@ import SEO from '@/components/SEO';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { SkeletonEditor } from '@/components/SkeletonLoader';
 import type { ContextMenu, ContextMenuOption, ContextMenuSubOption } from '@/models/types';
-import { ArrowLeft, Plus, Upload, Download, Settings } from 'lucide-react';
+import { ArrowLeft, Plus, Upload, Download, Settings, Search, ArrowDownAZ, ArrowUpDown } from 'lucide-react';
 
 import { MenuForm } from '@/components/menu-manager/MenuForm';
 import { MenuCard } from '@/components/menu-manager/MenuCard';
+
+type SortOrder = 'default' | 'alpha';
 
 interface MenuFormData {
   menuId: string;
@@ -39,20 +41,64 @@ export default function MenuManagerPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const confirm = useConfirm();
+
+  // ── Live data from IndexedDB ──
   const menuResults = useLiveQuery(async () => {
     return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   });
   const menus = menuResults ?? [];
   const isLoading = menuResults === undefined;
 
+  // ── Form / edit state ──
   const [isEditing, setIsEditing] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [form, setForm] = useState<MenuFormData>(EMPTY_FORM);
   const [expandedOption, setExpandedOption] = useState<number | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
 
+  // ── Search & sort state (in-memory, zero IndexedDB hits) ──
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('default');
+
+  // ── Derived list: filter + sort via useMemo (latência zero) ──
+  const filteredMenus = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+
+    let result = q
+      ? menus.filter((menu) => {
+          const nameMatch = menu.menuName.toLowerCase().includes(q);
+          const idMatch = menu.menuId.toLowerCase().includes(q);
+          const optionMatch = menu.options?.some(
+            (opt) =>
+              opt.label.toLowerCase().includes(q) ||
+              opt.subOptions?.some((sub) => sub.label.toLowerCase().includes(q)),
+          );
+          return nameMatch || idMatch || optionMatch;
+        })
+      : [...menus];
+
+    if (sortOrder === 'alpha') {
+      result = [...result].sort((a, b) =>
+        a.menuName.localeCompare(b.menuName, 'pt-BR', { sensitivity: 'base' }),
+      );
+    }
+
+    return result;
+  }, [menus, searchQuery, sortOrder]);
+
+  const toggleSort = () =>
+    setSortOrder((prev) => (prev === 'default' ? 'alpha' : 'default'));
+
+  // ─────────────────────────────────────────────────
+  // Helpers
+  // ─────────────────────────────────────────────────
   const toSlug = (text: string) =>
-    text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_|_$/g, '');
 
   const startCreate = () => {
     setIsEditing(null);
@@ -61,7 +107,6 @@ export default function MenuManagerPage() {
     setExpandedOption(null);
   };
 
-  // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
   const startEdit = useCallback((menu: ContextMenu) => {
     setIsCreating(false);
     setIsEditing(menu.id!);
@@ -83,18 +128,19 @@ export default function MenuManagerPage() {
     setExpandedOption(null);
   };
 
+  // ─────────────────────────────────────────────────
+  // Persistence (Dexie + Supabase) — unchanged
+  // ─────────────────────────────────────────────────
   const save = async () => {
     if (!form.menuName.trim()) {
       showToast('Nome do menu é obrigatório', 'error');
       return;
     }
-
     if (form.options.length === 0) {
       showToast('Adicione pelo menos uma opção ao menu', 'error');
       return;
     }
-
-    const emptyOption = form.options.find(opt => !opt.label.trim());
+    const emptyOption = form.options.find((opt) => !opt.label.trim());
     if (emptyOption) {
       showToast('Todas as opções devem ter um label preenchido', 'error');
       return;
@@ -135,7 +181,8 @@ export default function MenuManagerPage() {
       await saveLocalBackup();
     } catch (error: unknown) {
       console.error('Erro ao salvar localmente:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erro ao salvar o menu localmente.';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro ao salvar o menu localmente.';
       showToast(errorMessage, 'error');
       return;
     }
@@ -165,48 +212,55 @@ export default function MenuManagerPage() {
     }
   };
 
-  // ⚡ Bolt Optimization: Wrap handlers passed to memoized children in useCallback
-  const handleDelete = useCallback(async (id: number, remoteId?: number) => {
-    const menu = await db.contextMenus.get(id);
-    if (!menu) return;
+  const handleDelete = useCallback(
+    async (id: number, remoteId?: number) => {
+      const menu = await db.contextMenus.get(id);
+      if (!menu) return;
 
-    const shouldDelete = await confirm({
-      title: 'Excluir menu',
-      message: `Deseja realmente excluir "${menu.menuName}"?`,
-      confirmLabel: 'Excluir',
-      cancelLabel: 'Cancelar',
-      variant: 'danger',
-    });
+      const shouldDelete = await confirm({
+        title: 'Excluir menu',
+        message: `Deseja realmente excluir "${menu.menuName}"?`,
+        confirmLabel: 'Excluir',
+        cancelLabel: 'Cancelar',
+        variant: 'danger',
+      });
+      if (!shouldDelete) return;
 
-    if (!shouldDelete) return;
+      try {
+        if (!remoteId) {
+          await db.contextMenus.delete(id);
+          await saveLocalBackup();
+          showToast('Menu excluído!');
+          return;
+        }
 
-    try {
-      if (!remoteId) {
+        await db.contextMenus.update(id, {
+          isDeleted: true,
+          syncStatus: 'pending',
+          updatedAt: new Date(),
+        });
+        await saveLocalBackup();
+
+        if (remoteId) {
+          await deleteMenuFromSupabase(remoteId);
+        }
         await db.contextMenus.delete(id);
         await saveLocalBackup();
         showToast('Menu excluído!');
-        return;
+      } catch (error: unknown) {
+        console.error('Erro ao excluir do Supabase:', error);
+        showToast(
+          'Menu removido localmente. A exclusão será sincronizada ao reconectar.',
+          'info',
+        );
       }
+    },
+    [confirm, showToast],
+  );
 
-      await db.contextMenus.update(id, {
-        isDeleted: true,
-        syncStatus: 'pending',
-        updatedAt: new Date(),
-      });
-      await saveLocalBackup();
-
-      if (remoteId) {
-        await deleteMenuFromSupabase(remoteId);
-      }
-      await db.contextMenus.delete(id);
-      await saveLocalBackup();
-      showToast('Menu excluído!');
-    } catch (error: unknown) {
-      console.error('Erro ao excluir do Supabase:', error);
-      showToast('Menu removido localmente. A exclusão será sincronizada ao reconectar.', 'info');
-    }
-  }, [confirm, showToast]);
-
+  // ─────────────────────────────────────────────────
+  // Form option helpers — unchanged
+  // ─────────────────────────────────────────────────
   const addOption = () => {
     setForm((prev) => ({
       ...prev,
@@ -245,7 +299,12 @@ export default function MenuManagerPage() {
     });
   };
 
-  const updateSubOption = (optIdx: number, subIdx: number, field: keyof ContextMenuSubOption, value: string) => {
+  const updateSubOption = (
+    optIdx: number,
+    subIdx: number,
+    field: keyof ContextMenuSubOption,
+    value: string,
+  ) => {
     setForm((prev) => {
       const options = [...prev.options];
       const subs = [...(options[optIdx].subOptions || [])];
@@ -269,7 +328,10 @@ export default function MenuManagerPage() {
     });
   };
 
-  const handleFieldChange = <K extends keyof MenuFormData>(field: K, value: MenuFormData[K]) => {
+  const handleFieldChange = <K extends keyof MenuFormData>(
+    field: K,
+    value: MenuFormData[K],
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -277,6 +339,9 @@ export default function MenuManagerPage() {
     setExpandedOption(expandedOption === index ? null : index);
   };
 
+  // ─────────────────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────────────────
   return (
     <>
       <SEO
@@ -324,7 +389,7 @@ export default function MenuManagerPage() {
       </header>
 
       <div className="app-content">
-        {/* A11y Audit Fix #09: Breadcrumbs */}
+        {/* Breadcrumbs */}
         <Breadcrumb
           items={[
             { label: 'Início', href: '/' },
@@ -336,46 +401,101 @@ export default function MenuManagerPage() {
           <SkeletonEditor />
         ) : (
           <>
-        {(isCreating || isEditing !== null) && (
-          <MenuForm
-            form={form}
-            isEditing={isEditing}
-            expandedOption={expandedOption}
-            toSlug={toSlug}
-            onCancel={cancel}
-            onSave={save}
-            onFieldChange={handleFieldChange}
-            onOptionUpdate={updateOption}
-            onOptionRemove={removeOption}
-            onSubOptionUpdate={updateSubOption}
-            onSubOptionRemove={removeSubOption}
-            onAddOption={addOption}
-            onAddSubOption={addSubOption}
-            onToggleExpand={handleToggleExpand}
-          />
-        )}
-
-        {menus.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state__icon"><Settings size={48} aria-hidden="true" /></div>
-            <h3 className="empty-state__title">Nenhum menu do template</h3>
-            <p className="empty-state__description">
-              Menus do template são conjuntos reutilizáveis de opções configuráveis que enriquecem seus formatos de saída.
-              Clique em "Novo Menu" para começar.
-            </p>
-          </div>
-        ) : (
-          <div className="ctx-menu-grid">
-            {menus.map((menu) => (
-              <MenuCard
-                key={menu.id}
-                menu={menu}
-                onEdit={() => startEdit(menu)}
-                onDelete={() => handleDelete(menu.id!, menu.remoteId)}
+            {(isCreating || isEditing !== null) && (
+              <MenuForm
+                form={form}
+                isEditing={isEditing}
+                expandedOption={expandedOption}
+                toSlug={toSlug}
+                onCancel={cancel}
+                onSave={save}
+                onFieldChange={handleFieldChange}
+                onOptionUpdate={updateOption}
+                onOptionRemove={removeOption}
+                onSubOptionUpdate={updateSubOption}
+                onSubOptionRemove={removeSubOption}
+                onAddOption={addOption}
+                onAddSubOption={addSubOption}
+                onToggleExpand={handleToggleExpand}
               />
-            ))}
-          </div>
-        )}
+            )}
+
+            {menus.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-state__icon">
+                  <Settings size={48} aria-hidden="true" />
+                </div>
+                <h3 className="empty-state__title">Nenhum menu do template</h3>
+                <p className="empty-state__description">
+                  Menus do template são conjuntos reutilizáveis de opções configuráveis que
+                  enriquecem seus formatos de saída. Clique em &quot;Novo Menu&quot; para começar.
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* ── Toolbar: Search + Sort ── */}
+                <div className="menu-toolbar" role="toolbar" aria-label="Ferramentas de lista">
+                  <div className="menu-toolbar__search">
+                    <Search size={15} className="menu-toolbar__search-icon" aria-hidden="true" />
+                    <input
+                      id="menu-search"
+                      type="search"
+                      className="menu-toolbar__input"
+                      placeholder="Buscar por nome, slug ou opção…"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      aria-label="Buscar menus"
+                      autoComplete="off"
+                    />
+                    {searchQuery && (
+                      <span className="menu-toolbar__count" aria-live="polite" aria-atomic="true">
+                        {filteredMenus.length}/{menus.length}
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    className={`btn btn--ghost btn--sm menu-toolbar__sort${sortOrder === 'alpha' ? ' menu-toolbar__sort--active' : ''}`}
+                    onClick={toggleSort}
+                    aria-pressed={sortOrder === 'alpha'}
+                    title={sortOrder === 'alpha' ? 'Ordem padrão (criação)' : 'Ordenar A–Z'}
+                    type="button"
+                  >
+                    {sortOrder === 'alpha' ? (
+                      <ArrowDownAZ size={15} aria-hidden="true" />
+                    ) : (
+                      <ArrowUpDown size={15} aria-hidden="true" />
+                    )}
+                    <span>{sortOrder === 'alpha' ? 'A–Z' : 'Ordenar'}</span>
+                  </button>
+                </div>
+
+                {filteredMenus.length === 0 ? (
+                  <div className="menu-no-results" role="status" aria-live="polite">
+                    <Search size={32} aria-hidden="true" />
+                    <p>Nenhum menu encontrado para <strong>"{searchQuery}"</strong></p>
+                    <button
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      Limpar busca
+                    </button>
+                  </div>
+                ) : (
+                  <div className="ctx-menu-grid" role="list" aria-label="Lista de menus">
+                    {filteredMenus.map((menu) => (
+                      <div key={menu.id} role="listitem">
+                        <MenuCard
+                          menu={menu}
+                          onEdit={() => startEdit(menu)}
+                          onDelete={() => handleDelete(menu.id!, menu.remoteId)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </>
         )}
       </div>

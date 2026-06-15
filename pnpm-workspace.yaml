@@ -48,3 +48,4 @@ minimumReleaseAgeExclude:
   - typescript-eslint@8.60.1
   - eslint@10.5.0
   - lucide-react@1.18.0
+  - eslint-plugin-react-refresh@0.5.3
