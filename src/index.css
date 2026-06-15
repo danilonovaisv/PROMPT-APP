@@ -18,6 +18,7 @@
 @import './styles/components/pickers.css';
 @import './styles/components/editor.css';
 @import './styles/components/breadcrumb.css';
+@import './styles/components/forms.css';
 
 /* 5. Feature Specific Styles */
 @import './styles/menus.css';

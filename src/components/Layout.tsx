@@ -42,7 +42,8 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
     }, []);
 
     const categories = useLiveQuery(() => db.categories.filter(c => !c.isDeleted).toArray()) ?? [];
-    const prompts = useLiveQuery(() => db.prompts.filter(p => !p.isDeleted).toArray()) ?? [];
+    const rawPrompts = useLiveQuery(() => db.prompts.filter(p => !p.isDeleted).toArray());
+    const prompts = useMemo(() => rawPrompts ?? [], [rawPrompts]);
 
     const promptCountByCategory = useMemo(() => {
         const map = new Map<number, number>();

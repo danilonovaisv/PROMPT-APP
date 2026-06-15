@@ -46,7 +46,7 @@ export default function MenuManagerPage() {
   const menuResults = useLiveQuery(async () => {
     return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   });
-  const menus = menuResults ?? [];
+  const menus = useMemo(() => menuResults ?? [], [menuResults]);
   const isLoading = menuResults === undefined;
 
   // ── Form / edit state ──
