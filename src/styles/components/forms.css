@@ -146,10 +146,15 @@
 }
 
 .multi-select__dropdown {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  left: 0;
-  right: 0;
+  /* Radix Select renders this inside a fixed popper wrapper.
+     The wrapper has a 0×0 box; positioning absolutely against it collapses
+     the dropdown to its border width. Use static placement and stretch
+     to the trigger width via the Radix CSS var. */
+  position: relative;
+  width: var(--radix-select-trigger-width, 100%);
+  min-width: 240px;
+  max-width: min(96vw, 520px);
+  margin-top: var(--space-2);
   z-index: 120;
   overflow: hidden;
   border: 1px solid var(--color-border-active);
@@ -234,6 +239,7 @@
 }
 
 .multi-select__options {
+  width: 100%;
   max-height: 260px;
   overflow-y: auto;
 }
