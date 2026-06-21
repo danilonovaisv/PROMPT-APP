@@ -19,6 +19,8 @@ interface MultiSelectContextValue {
   onSelect: (value: string) => void
   onRemove: (value: string) => void
   renderSelectedValues?: (selectedValues: string[]) => React.ReactNode
+  searchTerm: string
+  setSearchTerm: (term: string) => void
 }
 
 const MultiSelectContext = React.createContext<MultiSelectContextValue | undefined>(undefined)
@@ -31,7 +33,8 @@ function useMultiSelect() {
   return context
 }
 
-const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSelectedValues, ...props }: MultiSelectProps) => {
+const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSelectedValues, onOpenChange, ...props }: MultiSelectProps) => {
+  const [searchTerm, setSearchTerm] = React.useState('')
   const stringValue = value.join(separator)
   
   const handleValueChange = React.useCallback(
@@ -47,6 +50,13 @@ const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSe
     [value, onValueChange]
   )
 
+  const handleOpenChange = React.useCallback((open: boolean) => {
+    if (!open) {
+      setSearchTerm('')
+    }
+    onOpenChange?.(open)
+  }, [onOpenChange])
+
   const contextValue = React.useMemo(
     () => ({
       selectedValues: value,
@@ -60,8 +70,10 @@ const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSe
         onValueChange(value.filter((v) => v !== val))
       },
       renderSelectedValues,
+      searchTerm,
+      setSearchTerm,
     }),
-    [value, onValueChange, renderSelectedValues]
+    [value, onValueChange, renderSelectedValues, searchTerm, setSearchTerm]
   )
 
   return (
@@ -71,6 +83,7 @@ const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSe
           {...props}
           value={stringValue}
           onValueChange={handleValueChange}
+          onOpenChange={handleOpenChange}
         >
           {children}
         </SelectPrimitive.Root>
@@ -102,34 +115,118 @@ MultiSelectTrigger.displayName = 'MultiSelectTrigger'
 
 const MultiSelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = 'popper', ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        'multi-select__dropdown',
-        className
-      )}
-      position={position}
-      {...props}>
-      <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
-        <ChevronUpIcon className="h-4 w-4" />
-      </SelectPrimitive.ScrollUpButton>
-      <SelectPrimitive.Viewport
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> & {
+    showSearch?: boolean
+    searchPlaceholder?: string
+  }
+>(({ className, children, position = 'popper', showSearch = true, searchPlaceholder = 'Pesquisar menus...', ...props }, ref) => {
+  const { searchTerm, setSearchTerm } = useMultiSelect()
+  const searchInputRef = React.useRef<HTMLInputElement>(null)
+
+  React.useEffect(() => {
+    if (showSearch && searchInputRef.current) {
+      const t = setTimeout(() => {
+        searchInputRef.current?.focus()
+      }, 50)
+      return () => clearTimeout(t)
+    }
+  }, [showSearch])
+
+  const childrenArray = React.Children.toArray(children)
+  const items = childrenArray.filter(child => {
+    if (React.isValidElement(child)) {
+      const childProps = child.props as any
+      if (childProps && childProps.value !== undefined) {
+        const label = String(childProps.children || '').toLowerCase()
+        return label.includes(searchTerm.toLowerCase())
+      }
+    }
+    return true
+  })
+
+  const visibleCount = items.filter(child => {
+    if (React.isValidElement(child)) {
+      const childProps = child.props as any
+      return childProps && childProps.value !== undefined
+    }
+    return false
+  }).length
+
+  const totalCount = childrenArray.filter(child => {
+    if (React.isValidElement(child)) {
+      const childProps = child.props as any
+      return childProps && childProps.value !== undefined
+    }
+    return false
+  }).length
+
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        ref={ref}
         className={cn(
-          'multi-select__options',
-          position === 'popper' &&
-            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
-        )}>
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectPrimitive.ScrollDownButton className="flex cursor-default items-center justify-center py-1">
-        <ChevronDownIcon className="h-4 w-4" />
-      </SelectPrimitive.ScrollDownButton>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
+          'multi-select__dropdown',
+          className
+        )}
+        position={position}
+        {...props}>
+        <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
+          <ChevronUpIcon className="h-4 w-4" />
+        </SelectPrimitive.ScrollUpButton>
+        
+        {showSearch && (
+          <div 
+            className="multi-select__search-wrapper"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              e.stopPropagation()
+              if (e.key === 'ArrowDown') {
+                const container = e.currentTarget.closest('.multi-select__dropdown')
+                const firstOption = container?.querySelector('.multi-select__option') as HTMLElement | null
+                firstOption?.focus()
+                e.preventDefault()
+              }
+            }}
+          >
+            <span className="multi-select__search-icon" aria-hidden="true">🔍</span>
+            <input
+              ref={searchInputRef}
+              type="search"
+              className="multi-select__search"
+              placeholder={searchPlaceholder}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label={searchPlaceholder}
+            />
+            {searchTerm && (
+              <span className="multi-select__search-count" aria-live="polite">
+                {visibleCount} de {totalCount}
+              </span>
+            )}
+          </div>
+        )}
+
+        <SelectPrimitive.Viewport
+          className={cn(
+            'multi-select__options',
+            position === 'popper' &&
+              'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+          )}>
+          {visibleCount === 0 && searchTerm ? (
+            <div className="multi-select__empty" role="status" aria-live="polite">
+              Nenhum menu encontrado para "{searchTerm}"
+            </div>
+          ) : (
+            items
+          )}
+        </SelectPrimitive.Viewport>
+        <SelectPrimitive.ScrollDownButton className="flex cursor-default items-center justify-center py-1">
+          <ChevronDownIcon className="h-4 w-4" />
+        </SelectPrimitive.ScrollDownButton>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+})
 MultiSelectContent.displayName = 'MultiSelectContent'
 
 const MultiSelectLabel = React.forwardRef<
@@ -143,9 +240,32 @@ MultiSelectLabel.displayName = 'MultiSelectLabel'
 const MultiSelectItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { value: string, icons?: React.ReactNode }
->(({ className, children, value, icons, ...props }, ref) => {
+>(({ className, children, value, icons, onClick, ...props }, ref) => {
   const { selectedValues } = useMultiSelect()
   const isSelected = selectedValues.includes(value)
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onClick?.(e as any)
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      const nextSibling = e.currentTarget.nextElementSibling as HTMLElement | null
+      if (nextSibling && nextSibling.classList.contains('multi-select__option')) {
+        nextSibling.focus()
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      const prevSibling = e.currentTarget.previousElementSibling as HTMLElement | null
+      if (prevSibling && prevSibling.classList.contains('multi-select__option')) {
+        prevSibling.focus()
+      } else {
+        const container = e.currentTarget.closest('.multi-select__dropdown')
+        const searchInput = container?.querySelector('.multi-select__search') as HTMLElement | null
+        searchInput?.focus()
+      }
+    }
+  }
 
   return (
     <div
@@ -155,6 +275,12 @@ const MultiSelectItem = React.forwardRef<
         isSelected && 'multi-select__option--selected',
         className
       )}
+      tabIndex={0}
+      role="option"
+      aria-selected={isSelected}
+      onKeyDown={handleKeyDown}
+      onClick={onClick}
+      style={{ minHeight: '44px' }}
       {...props}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>

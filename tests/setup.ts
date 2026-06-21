@@ -40,7 +40,7 @@ if (typeof (Blob.prototype as unknown as { text?: unknown }).text === "undefined
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
         reader.onerror = () => reject(reader.error);
-        reader.readAsText(this);
+        reader.readAsText(this as any);
       });
     },
     configurable: true,

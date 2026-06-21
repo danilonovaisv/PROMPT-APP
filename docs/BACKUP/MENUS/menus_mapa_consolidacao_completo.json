@@ -1,0 +1,1573 @@
+{
+  "version": "1.0",
+  "total_original_menus": 174,
+  "final_recommended_menus": 74,
+  "items": [
+    {
+      "menu_id_original": "frontend_acessibilidade",
+      "menu_name_original": "FRONTEND - Acessibilidade",
+      "menu_name_normalizado": "FRONTEND - Acessibilidade",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Acessibilidade",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 16
+    },
+    {
+      "menu_id_original": "tipo_referencia",
+      "menu_name_original": "ANIMA-WEBDEV - Tipo de Referência",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Tipo de Referência",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 4
+    },
+    {
+      "menu_id_original": "auditoria_escopo_execucao",
+      "menu_name_original": "AUDITORIA - Escopo e Execução",
+      "menu_name_normalizado": "AUDITORIA - Escopo e Execução",
+      "tag_normalizada": "AUDITORIA",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 28
+    },
+    {
+      "menu_id_original": "core_profundidade_detalhamento",
+      "menu_name_original": "ANIMA - WEBDEV - CORE - Profundidade de Detalhamento",
+      "menu_name_normalizado": "ANIMA - WEBDEV - CORE - Profundidade de Detalhamento",
+      "tag_normalizada": "ANIMA",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 9
+    },
+    {
+      "menu_id_original": "video_config",
+      "menu_name_original": "DETALHES-VIDEO-CREATOR",
+      "menu_name_normalizado": "VIDEO - Detalhes do Video Creator",
+      "tag_normalizada": "VIDEO",
+      "menu_final_recomendado": "VIDEO - Configuração e Entrega",
+      "quantidade_opcoes": 9,
+      "quantidade_subopcoes": 26
+    },
+    {
+      "menu_id_original": "video_iluminacao_mood",
+      "menu_name_original": "VÍDEO - Iluminação e Mood",
+      "menu_name_normalizado": "VÍDEO - Iluminação e Mood",
+      "tag_normalizada": "VÍDEO",
+      "menu_final_recomendado": "VIDEO - Iluminação e Mood",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 53
+    },
+    {
+      "menu_id_original": "frontend_estrutura_rotas_secoes",
+      "menu_name_original": "FRONTEND - Estrutura de Rotas e Seções",
+      "menu_name_normalizado": "FRONTEND - Estrutura de Rotas e Seções",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Estrutura de Rotas e Seções",
+      "quantidade_opcoes": 23,
+      "quantidade_subopcoes": 99
+    },
+    {
+      "menu_id_original": "design_imagens_ilustracoes",
+      "menu_name_original": "DESIGN - Imagens e Ilustrações",
+      "menu_name_normalizado": "DESIGN - Imagens e Ilustrações",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Imagens e Ilustrações",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_operacao",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Modo de Operação",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Modo de Operação",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "GOOGLE-ANTIGRAVITY - Modo de Operação",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estrategia_animacao",
+      "menu_name_original": "CLAUDE - Estratégia de Animação",
+      "menu_name_normalizado": "CLAUDE - Estratégia de Animação",
+      "tag_normalizada": "CLAUDE",
+      "menu_final_recomendado": "MOTION - Animação, 3D e Movimento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "core_idioma_saida",
+      "menu_name_original": "CORE - Idioma de Saída",
+      "menu_name_normalizado": "CORE - Idioma de Saída",
+      "tag_normalizada": "CORE",
+      "menu_final_recomendado": "CORE - Idioma de Saída",
+      "quantidade_opcoes": 7,
+      "quantidade_subopcoes": 6
+    },
+    {
+      "menu_id_original": "publico_alvo",
+      "menu_name_original": "TUTO-YOUTUBE - Público-Alvo",
+      "menu_name_normalizado": "TUTO-YOUTUBE - Público-Alvo",
+      "tag_normalizada": "TUTO-YOUTUBE",
+      "menu_final_recomendado": "CORE - Público-Alvo",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "backend_preferido",
+      "menu_name_original": "AGENTS - Backend Preferido",
+      "menu_name_normalizado": "AGENTS - Backend Preferido",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Ferramentas, MCPs e Integrações",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "ia_workflow_modelo_complexidade",
+      "menu_name_original": "IA - Modelo e Complexidade do Workflow",
+      "menu_name_normalizado": "IA - Modelo e Complexidade do Workflow",
+      "tag_normalizada": "IA",
+      "menu_final_recomendado": "IA - Modelo, Pipeline e Complexidade",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 17
+    },
+    {
+      "menu_id_original": "foco_melhoria",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Foco de Melhoria",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Foco de Melhoria",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "GOOGLE-ANTIGRAVITY - Foco de Melhoria",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 3
+    },
+    {
+      "menu_id_original": "core_formato_resposta",
+      "menu_name_original": "CORE - Formato da Resposta",
+      "menu_name_normalizado": "CORE - Formato da Resposta",
+      "tag_normalizada": "CORE",
+      "menu_final_recomendado": "CORE - Formato da Resposta",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 17
+    },
+    {
+      "menu_id_original": "design_pecas_formatos",
+      "menu_name_original": "DESIGN - Peças e Formatos",
+      "menu_name_normalizado": "DESIGN - Peças e Formatos",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Peças e Formatos",
+      "quantidade_opcoes": 9,
+      "quantidade_subopcoes": 73
+    },
+    {
+      "menu_id_original": "stack_destino",
+      "menu_name_original": "CLAUDE-DESIGN - Stack Destino",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Stack Destino",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 2
+    },
+    {
+      "menu_id_original": "tipo_auditoria",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Tipo de Auditoria",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Tipo de Auditoria",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "AUDITORIA - Modo e Objetivo da Análise",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "brand_estrategia_percepcao",
+      "menu_name_original": "BRAND - Estratégia e Percepção",
+      "menu_name_normalizado": "BRAND - Estratégia e Percepção",
+      "tag_normalizada": "BRAND",
+      "menu_final_recomendado": "BRANDING - Estratégia e Percepção",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 19
+    },
+    {
+      "menu_id_original": "tipo_workflow_opal",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Tipo de Workflow OPAL",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Tipo de Workflow OPAL",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "GOOGLE-ANTIGRAVITY - Workflow OPAL",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_estilo_visual",
+      "menu_name_original": "DESIGN - Estilo Visual",
+      "menu_name_normalizado": "DESIGN - Estilo Visual",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Estilo e Direção Visual",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 21
+    },
+    {
+      "menu_id_original": "design_direcao_arte",
+      "menu_name_original": "DESIGN - Direção de Arte",
+      "menu_name_normalizado": "DESIGN - Direção de Arte",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Estilo e Direção Visual",
+      "quantidade_opcoes": 7,
+      "quantidade_subopcoes": 41
+    },
+    {
+      "menu_id_original": "stack_alvo",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Stack Alvo",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Stack Alvo",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_tokens_visuais",
+      "menu_name_original": "DESIGN - Tokens Visuais",
+      "menu_name_normalizado": "DESIGN - Tokens Visuais",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Tokens, Cores e Tipografia",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 24
+    },
+    {
+      "menu_id_original": "contrato_saida_nos",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Contrato de Saída dos Nós",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Contrato de Saída dos Nós",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "IA - Modelo, Pipeline e Complexidade",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "fonte_brand_guide",
+      "menu_name_original": "CLAUDE - Fonte do Brand Guide",
+      "menu_name_normalizado": "CLAUDE - Fonte do Brand Guide",
+      "tag_normalizada": "CLAUDE",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "frontend_tipo_interface",
+      "menu_name_original": "FRONTEND - Tipo de Interface",
+      "menu_name_normalizado": "FRONTEND - Tipo de Interface",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Tipo de Interface e Workspace",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "foco_tecnico",
+      "menu_name_original": "TUTO-YOUTUBE - Foco Técnico",
+      "menu_name_normalizado": "TUTO-YOUTUBE - Foco Técnico",
+      "tag_normalizada": "TUTO-YOUTUBE",
+      "menu_final_recomendado": "AUDITORIA - Eixos Técnicos",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "motion_animacao_3d",
+      "menu_name_original": "MOTION - Animação e 3D",
+      "menu_name_normalizado": "MOTION - Animação e 3D",
+      "tag_normalizada": "MOTION",
+      "menu_final_recomendado": "MOTION - Animação, 3D e Movimento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 14
+    },
+    {
+      "menu_id_original": "rigor_evidencia",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Rigor de Evidência",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Rigor de Evidência",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_tipografia",
+      "menu_name_original": "DESIGN - Tipografia",
+      "menu_name_normalizado": "DESIGN - Tipografia",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Tokens, Cores e Tipografia",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_pesquisa_notebooklm",
+      "menu_name_original": "NOTEBOOKLM - Modo de Pesquisa",
+      "menu_name_normalizado": "NOTEBOOKLM - Modo de Pesquisa",
+      "tag_normalizada": "NOTEBOOKLM",
+      "menu_final_recomendado": "AUDITORIA - Modo e Objetivo da Análise",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "viagem_transporte_passagem",
+      "menu_name_original": "VIAGEM - Transporte e Passagem",
+      "menu_name_normalizado": "VIAGEM - Transporte e Passagem",
+      "tag_normalizada": "VIAGEM",
+      "menu_final_recomendado": "VIAGEM - Transporte e Passagem",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 14
+    },
+    {
+      "menu_id_original": "nivel_autonomia",
+      "menu_name_original": "AGENTS - Nível de Autonomia",
+      "menu_name_normalizado": "AGENTS - Nível de Autonomia",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Nível de Autonomia",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estrategia_integracao_arroba",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Estratégia de Integração @",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Estratégia de Integração @",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "GOOGLE-ANTIGRAVITY - Estratégia de Integração",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "escopo_arquivos",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Escopo de Arquivos",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Escopo de Arquivos",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "video_modelo_ia",
+      "menu_name_original": "VÍDEO - Modelo de IA",
+      "menu_name_normalizado": "VÍDEO - Modelo de IA",
+      "tag_normalizada": "VÍDEO",
+      "menu_final_recomendado": "VIDEO - Modelo de IA",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 12
+    },
+    {
+      "menu_id_original": "pesquisa_foco_fontes",
+      "menu_name_original": "PESQUISA - Foco e Fontes",
+      "menu_name_normalizado": "PESQUISA - Foco e Fontes",
+      "tag_normalizada": "PESQUISA",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 17
+    },
+    {
+      "menu_id_original": "escopo_fontes",
+      "menu_name_original": "NOTEBOOKLM - Escopo das Fontes",
+      "menu_name_normalizado": "NOTEBOOKLM - Escopo das Fontes",
+      "tag_normalizada": "NOTEBOOKLM",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "politica_fontes",
+      "menu_name_original": "TUTO-YOUTUBE - Política de Fontes",
+      "menu_name_normalizado": "TUTO-YOUTUBE - Política de Fontes",
+      "tag_normalizada": "TUTO-YOUTUBE",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "formato_prompts_copiaveis",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Formato dos Prompts Copiáveis",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Formato dos Prompts Copiáveis",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "GOOGLE-ANTIGRAVITY - Operação e Prompts",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "output_tipo_entrega",
+      "menu_name_original": "OUTPUT - Tipo de Entrega",
+      "menu_name_normalizado": "OUTPUT - Tipo de Entrega",
+      "tag_normalizada": "OUTPUT",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 20
+    },
+    {
+      "menu_id_original": "auditoria_eixos_tecnicos",
+      "menu_name_original": "AUDITORIA - Eixos Técnicos",
+      "menu_name_normalizado": "AUDITORIA - Eixos Técnicos",
+      "tag_normalizada": "AUDITORIA",
+      "menu_final_recomendado": "AUDITORIA - Eixos Técnicos",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 38
+    },
+    {
+      "menu_id_original": "design_cena_ambientacao",
+      "menu_name_original": "DESIGN - Cena e Ambientação",
+      "menu_name_normalizado": "DESIGN - Cena e Ambientação",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Cena e Ambientação",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 66
+    },
+    {
+      "menu_id_original": "profundidade_relatorio",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Profundidade do Relatório",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Profundidade do Relatório",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "video_configuracao_entrega",
+      "menu_name_original": "VÍDEO - Configuração e Entrega",
+      "menu_name_normalizado": "VÍDEO - Configuração e Entrega",
+      "tag_normalizada": "VÍDEO",
+      "menu_final_recomendado": "VIDEO - Configuração e Entrega",
+      "quantidade_opcoes": 12,
+      "quantidade_subopcoes": 56
+    },
+    {
+      "menu_id_original": "politica_capacidades_tecnicas",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Política de Capacidades Técnicas",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Política de Capacidades Técnicas",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "CORE - Política de Capacidades Técnicas",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "core_publico_alvo",
+      "menu_name_original": "CORE - Público-Alvo",
+      "menu_name_normalizado": "CORE - Público-Alvo",
+      "tag_normalizada": "CORE",
+      "menu_final_recomendado": "CORE - Público-Alvo",
+      "quantidade_opcoes": 7,
+      "quantidade_subopcoes": 17
+    },
+    {
+      "menu_id_original": "frontend_stack_integracoes",
+      "menu_name_original": "FRONTEND - Stack e Integrações",
+      "menu_name_normalizado": "FRONTEND - Stack e Integrações",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 20
+    },
+    {
+      "menu_id_original": "tipo_fonte_prioritaria",
+      "menu_name_original": "NOTEBOOKLM - Tipo de Fonte Prioritária",
+      "menu_name_normalizado": "NOTEBOOKLM - Tipo de Fonte Prioritária",
+      "tag_normalizada": "NOTEBOOKLM",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_correcao",
+      "menu_name_original": "ANIMA-CHECK-WEBDEV - Modo de Correção",
+      "menu_name_normalizado": "ANIMA-CHECK-WEBDEV - Modo de Correção",
+      "tag_normalizada": "ANIMA-CHECK-WEBDEV",
+      "menu_final_recomendado": "AUDITORIA - Correção e Handoff",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "brand_entrada_referencia",
+      "menu_name_original": "BRAND - Entrada e Referência",
+      "menu_name_normalizado": "BRAND - Entrada e Referência",
+      "tag_normalizada": "BRAND",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 7
+    },
+    {
+      "menu_id_original": "agente_workflow_governanca",
+      "menu_name_original": "AGENTS - Workflow e Governança",
+      "menu_name_normalizado": "AGENTS - Workflow e Governança",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Workflow e Governança",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 15
+    },
+    {
+      "menu_id_original": "recorte_temporal",
+      "menu_name_original": "NOTEBOOKLM - Recorte Temporal",
+      "menu_name_normalizado": "NOTEBOOKLM - Recorte Temporal",
+      "tag_normalizada": "NOTEBOOKLM",
+      "menu_final_recomendado": "NOTEBOOKLM - Recorte Temporal",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "publicacao_governanca",
+      "menu_name_original": "CLAUDE-DESIGN - Publicação e Governança",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Publicação e Governança",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CLAUDE - Publicação e Governança",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_saida_opal",
+      "menu_name_original": "GOOGLE & ANTIGRAVITY - Tipo de Saída OPAL",
+      "menu_name_normalizado": "GOOGLE & ANTIGRAVITY - Tipo de Saída OPAL",
+      "tag_normalizada": "GOOGLE & ANTIGRAVITY",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_personagens_cena",
+      "menu_name_original": "DESIGN - Personagens na Cena",
+      "menu_name_normalizado": "DESIGN - Personagens na Cena",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Personagens na Cena",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 30
+    },
+    {
+      "menu_id_original": "agente_tarefa_especialista",
+      "menu_name_original": "AGENTS - Tarefa e Especialista",
+      "menu_name_normalizado": "AGENTS - Tarefa e Especialista",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Tarefa e Especialista",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 11
+    },
+    {
+      "menu_id_original": "tipo_saida",
+      "menu_name_original": "CLAUDE - Tipo de Saída",
+      "menu_name_normalizado": "CLAUDE - Tipo de Saída",
+      "tag_normalizada": "CLAUDE",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "core_tom_comunicacao",
+      "menu_name_original": "CORE - Tom de Comunicação",
+      "menu_name_normalizado": "CORE - Tom de Comunicação",
+      "tag_normalizada": "CORE",
+      "menu_final_recomendado": "CORE - Tom e Estilo da Resposta",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 17
+    },
+    {
+      "menu_id_original": "frontend_modo_geracao",
+      "menu_name_original": "FRONTEND - Modo de Geração",
+      "menu_name_normalizado": "FRONTEND - Modo de Geração",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Modo de Geração",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "frontend_estados_ui",
+      "menu_name_original": "FRONTEND - Estados de UI",
+      "menu_name_normalizado": "FRONTEND - Estados de UI",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "FRONTEND - Estados de UI",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 16
+    },
+    {
+      "menu_id_original": "design_material_fisico_superficie",
+      "menu_name_original": "DESIGN - Material Físico e Superfície",
+      "menu_name_normalizado": "DESIGN - Material Físico e Superfície",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Materiais e Superfícies",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 85
+    },
+    {
+      "menu_id_original": "estilo_query",
+      "menu_name_original": "NOTEBOOKLM - Estilo da Query",
+      "menu_name_normalizado": "NOTEBOOKLM - Estilo da Query",
+      "tag_normalizada": "NOTEBOOKLM",
+      "menu_final_recomendado": "NOTEBOOKLM - Estilo da Query",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "apresentacao_tipo_outline",
+      "menu_name_original": "APRESENTAÇÃO - Tipo e Outline",
+      "menu_name_normalizado": "APRESENTAÇÃO - Tipo e Outline",
+      "tag_normalizada": "APRESENTAÇÃO",
+      "menu_final_recomendado": "PPT-CREATOR - Tipo de Projeto de Apresentação",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 8
+    },
+    {
+      "menu_id_original": "estilo_interface",
+      "menu_name_original": "ANIMA-WEBDEV - Estilo de Interface",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Estilo de Interface",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Tipo de Interface e Workspace",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 6
+    },
+    {
+      "menu_id_original": "frontend_plataforma_viewport",
+      "menu_name_original": "FRONTEND - Plataforma e Viewport",
+      "menu_name_normalizado": "FRONTEND - Plataforma e Viewport",
+      "tag_normalizada": "FRONTEND",
+      "menu_final_recomendado": "CORE - Plataforma e Viewport",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 11
+    },
+    {
+      "menu_id_original": "stack_frontend",
+      "menu_name_original": "WEBDEV - Stack Frontend",
+      "menu_name_normalizado": "WEBDEV - Stack Frontend",
+      "tag_normalizada": "WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "escopo_ui_kit",
+      "menu_name_original": "CLAUDE-DESIGN - Escopo do UI Kit",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Escopo do UI Kit",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_componentes_ui",
+      "menu_name_original": "DESIGN - Componentes de UI",
+      "menu_name_normalizado": "DESIGN - Componentes de UI",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Componentes de UI",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 20
+    },
+    {
+      "menu_id_original": "design_paleta_cores",
+      "menu_name_original": "DESIGN - Paleta de Cores",
+      "menu_name_normalizado": "DESIGN - Paleta de Cores",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Tokens, Cores e Tipografia",
+      "quantidade_opcoes": 7,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "fonte_referencia_ui",
+      "menu_name_original": "CLAUDE - Fonte da Referência UI",
+      "menu_name_normalizado": "CLAUDE - Fonte da Referência UI",
+      "tag_normalizada": "CLAUDE",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "design_tipo_material",
+      "menu_name_original": "DESIGN - Tipo de Material",
+      "menu_name_normalizado": "DESIGN - Tipo de Material",
+      "tag_normalizada": "DESIGN",
+      "menu_final_recomendado": "DESIGN - Materiais e Superfícies",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "fonte_design_system",
+      "menu_name_original": "CLAUDE - Fonte do Design System",
+      "menu_name_normalizado": "CLAUDE - Fonte do Design System",
+      "tag_normalizada": "CLAUDE",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "densidade_sistema",
+      "menu_name_original": "CLAUDE-DESIGN - Densidade do Sistema",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Densidade do Sistema",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CLAUDE - UI Kit e Design System",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "camadas_animacao",
+      "menu_name_original": "ANIMA-WEBDEV - Camadas de Animação",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Camadas de Animação",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "MOTION - Animação, 3D e Movimento",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 10
+    },
+    {
+      "menu_id_original": "video_estilo_comercial",
+      "menu_name_original": "VÍDEO - Estilo Comercial",
+      "menu_name_normalizado": "VÍDEO - Estilo Comercial",
+      "tag_normalizada": "VÍDEO",
+      "menu_final_recomendado": "VIDEO - Estilo Comercial",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 23
+    },
+    {
+      "menu_id_original": "criterios_qualidade",
+      "menu_name_original": "CLAUDE-DESIGN - Critérios de Qualidade",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Critérios de Qualidade",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "mcp_alvo",
+      "menu_name_original": "AGENTS - MCP Alvo",
+      "menu_name_normalizado": "AGENTS - MCP Alvo",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Ferramentas, MCPs e Integrações",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "artefatos_gerados",
+      "menu_name_original": "AGENTS - Artefatos Gerados",
+      "menu_name_normalizado": "AGENTS - Artefatos Gerados",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "AGENTS - Artefatos Gerados",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "profundidade_saida",
+      "menu_name_original": "AGENTS - Profundidade da Saída",
+      "menu_name_normalizado": "AGENTS - Profundidade da Saída",
+      "tag_normalizada": "AGENTS",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_material",
+      "menu_name_original": "BRANDING - Tipo de Material",
+      "menu_name_normalizado": "BRANDING - Tipo de Material",
+      "tag_normalizada": "BRANDING",
+      "menu_final_recomendado": "DESIGN - Materiais e Superfícies",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "stack_replicacao",
+      "menu_name_original": "ANIMA-WEBDEV - Stack de Replicação",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Stack de Replicação",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "objetivo_estrategico",
+      "menu_name_original": "BRANDING - Objetivo Estratégico",
+      "menu_name_normalizado": "BRANDING - Objetivo Estratégico",
+      "tag_normalizada": "BRANDING",
+      "menu_final_recomendado": "BRANDING - Objetivo Estratégico",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "nivel_profundidade",
+      "menu_name_original": "BRANDING - Nível de Profundidade",
+      "menu_name_normalizado": "BRANDING - Nível de Profundidade",
+      "tag_normalizada": "BRANDING",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_analise",
+      "menu_name_original": "ANIMA-WEBDEV - Modo de Análise",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Modo de Análise",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "AUDITORIA - Modo e Objetivo da Análise",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "foco_principal",
+      "menu_name_original": "BRANDING - Foco Principal",
+      "menu_name_normalizado": "BRANDING - Foco Principal",
+      "tag_normalizada": "BRANDING",
+      "menu_final_recomendado": "BRANDING - Foco Principal",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tom_analise",
+      "menu_name_original": "BRANDING - Tom da Análise",
+      "menu_name_normalizado": "BRANDING - Tom da Análise",
+      "tag_normalizada": "BRANDING",
+      "menu_final_recomendado": "CORE - Tom e Estilo da Resposta",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "destino_handoff",
+      "menu_name_original": "ANIMA-WEBDEV - Destino do Handoff",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Destino do Handoff",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "AUDITORIA - Correção e Handoff",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "foco_motion",
+      "menu_name_original": "ANIMA-WEBDEV - Foco de Movimento",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Foco de Movimento",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "MOTION - Animação, 3D e Movimento",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "rigor_acessibilidade",
+      "menu_name_original": "ANIMA-WEBDEV - Rigor de Acessibilidade",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Rigor de Acessibilidade",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "idioma_saida",
+      "menu_name_original": "ANIMA-WEBDEV - Idioma de Saída",
+      "menu_name_normalizado": "ANIMA-WEBDEV - Idioma de Saída",
+      "tag_normalizada": "ANIMA-WEBDEV",
+      "menu_final_recomendado": "CORE - Idioma de Saída",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "proporcao_painel",
+      "menu_name_original": "IMAGEM - Proporção do Painel",
+      "menu_name_normalizado": "IMAGEM - Proporção do Painel",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "IMAGE - Proporção do Painel",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estetica_visual",
+      "menu_name_original": "IMAGEM - Estética Visual",
+      "menu_name_normalizado": "IMAGEM - Estética Visual",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "DESIGN - Estilo e Direção Visual",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "paleta_cromatica",
+      "menu_name_original": "IMAGEM - Paleta Cromática",
+      "menu_name_normalizado": "IMAGEM - Paleta Cromática",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "DESIGN - Tokens, Cores e Tipografia",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "densidade_informacional",
+      "menu_name_original": "IMAGEM - Densidade Informacional",
+      "menu_name_normalizado": "IMAGEM - Densidade Informacional",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "IMAGE - Densidade Informacional",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_logo_referencia",
+      "menu_name_original": "IMAGEM - Tipo de Referência do Logo",
+      "menu_name_normalizado": "IMAGEM - Tipo de Referência do Logo",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "conteudo_obrigatorio",
+      "menu_name_original": "IMAGEM - Conteúdo Obrigatório",
+      "menu_name_normalizado": "IMAGEM - Conteúdo Obrigatório",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "DESIGN - Conteúdo Obrigatório",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "qualidade_render",
+      "menu_name_original": "IMAGEM - Qualidade de Render",
+      "menu_name_normalizado": "IMAGEM - Qualidade de Render",
+      "tag_normalizada": "IMAGEM",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_template",
+      "menu_name_original": "PROMPT - Tipo de Template",
+      "menu_name_normalizado": "PROMPT - Tipo de Template",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "PROMPT - Tipo de Template",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "profundidade_analise",
+      "menu_name_original": "PROMPT - Profundidade da Análise",
+      "menu_name_normalizado": "PROMPT - Profundidade da Análise",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_saida",
+      "menu_name_original": "PROMPT - Modo de Saída",
+      "menu_name_normalizado": "PROMPT - Modo de Saída",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "PROMPT - Modo de Saída",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tom_resposta",
+      "menu_name_original": "PROMPT - Tom da Resposta",
+      "menu_name_normalizado": "PROMPT - Tom da Resposta",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "CORE - Tom e Estilo da Resposta",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "formato_resultado",
+      "menu_name_original": "PROMPT - Formato do Resultado",
+      "menu_name_normalizado": "PROMPT - Formato do Resultado",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "CORE - Formato da Resposta",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "validacao_schema",
+      "menu_name_original": "PROMPT - Validação de Schema",
+      "menu_name_normalizado": "PROMPT - Validação de Schema",
+      "tag_normalizada": "PROMPT",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_tutorial",
+      "menu_name_original": "TUTO-YOUTUBE - Tipo de Tutorial",
+      "menu_name_normalizado": "TUTO-YOUTUBE - Tipo de Tutorial",
+      "tag_normalizada": "TUTO-YOUTUBE",
+      "menu_final_recomendado": "TUTORIAL - Tipo de Tutorial",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estrategia_iteracao",
+      "menu_name_original": "CLAUDE-DESIGN - Estratégia de Iteração",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Estratégia de Iteração",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CLAUDE - Estratégia de Iteração",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_agente",
+      "menu_name_original": "AGENT-CLAUDE - Tipo de Agente",
+      "menu_name_normalizado": "AGENT-CLAUDE - Tipo de Agente",
+      "tag_normalizada": "AGENT-CLAUDE",
+      "menu_final_recomendado": "AGENTS - Tipo de Agente",
+      "quantidade_opcoes": 9,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "instalacao_distribuicao",
+      "menu_name_original": "AGENT-CLAUDE-ESCOPO - Instalação e Distribuição",
+      "menu_name_normalizado": "AGENT-CLAUDE-ESCOPO - Instalação e Distribuição",
+      "tag_normalizada": "AGENT-CLAUDE-ESCOPO",
+      "menu_final_recomendado": "AGENTS - Instalação e Distribuição",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "geracao_imagens",
+      "menu_name_original": "PPT-CREATOR - Geração de Imagens",
+      "menu_name_normalizado": "PPT-CREATOR - Geração de Imagens",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "PPT-CREATOR - Geração de Imagens",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "nivel_validacao",
+      "menu_name_original": "PPT-CREATOR - Nível de Validação",
+      "menu_name_normalizado": "PPT-CREATOR - Nível de Validação",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estrategia_deploy",
+      "menu_name_original": "PPT-CREATOR - Estratégia de Deploy",
+      "menu_name_normalizado": "PPT-CREATOR - Estratégia de Deploy",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "PPT-CREATOR - Estratégia de Deploy",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "nivel_acao",
+      "menu_name_original": "AGENT-CLAUDE-AUTONOMIA - Nível de Autonomia",
+      "menu_name_normalizado": "AGENT-CLAUDE-AUTONOMIA - Nível de Autonomia",
+      "tag_normalizada": "AGENT-CLAUDE-AUTONOMIA",
+      "menu_final_recomendado": "AGENTS - Nível de Autonomia",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "ferramentas_permitidas",
+      "menu_name_original": "AGENT-CLAUDE-TOOLS - Ferramentas Permitidas",
+      "menu_name_normalizado": "AGENT-CLAUDE-TOOLS - Ferramentas Permitidas",
+      "tag_normalizada": "AGENT-CLAUDE-TOOLS",
+      "menu_final_recomendado": "AGENTS - Ferramentas, MCPs e Integrações",
+      "quantidade_opcoes": 8,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "preferencia_raciocinio",
+      "menu_name_original": "AGENT-CLAUDE-MODELO - Modelo do Subagente",
+      "menu_name_normalizado": "AGENT-CLAUDE-MODELO - Modelo do Subagente",
+      "tag_normalizada": "AGENT-CLAUDE-MODELO",
+      "menu_final_recomendado": "IA - Modelo, Pipeline e Complexidade",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_permissao",
+      "menu_name_original": "AGENT-CLAUDE-SEGURANCA - Modo de Permissão",
+      "menu_name_normalizado": "AGENT-CLAUDE-SEGURANCA - Modo de Permissão",
+      "tag_normalizada": "AGENT-CLAUDE-SEGURANCA",
+      "menu_final_recomendado": "AGENTS - Segurança e Permissões",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "componentes_complementares",
+      "menu_name_original": "AGENT-CLAUDE-ARQUITETURA - Componentes Complementares",
+      "menu_name_normalizado": "AGENT-CLAUDE-ARQUITETURA - Componentes Complementares",
+      "tag_normalizada": "AGENT-CLAUDE-ARQUITETURA",
+      "menu_final_recomendado": "CLAUDE - Critérios e Saída",
+      "quantidade_opcoes": 7,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_resultado",
+      "menu_name_original": "AGENT-CLAUDE-OUTPUT - Tipo de Entrega",
+      "menu_name_normalizado": "AGENT-CLAUDE-OUTPUT - Tipo de Entrega",
+      "tag_normalizada": "AGENT-CLAUDE-OUTPUT",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "detalhe_resposta",
+      "menu_name_original": "AGENT-CLAUDE-OUTPUT - Profundidade da Saída",
+      "menu_name_normalizado": "AGENT-CLAUDE-OUTPUT - Profundidade da Saída",
+      "tag_normalizada": "AGENT-CLAUDE-OUTPUT",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "nivel_detalhamento",
+      "menu_name_original": "CLAUDE-DESIGN - Nível de Detalhamento",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Nível de Detalhamento",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "objetivo_design_system",
+      "menu_name_original": "CLAUDE-DESIGN - Objetivo do Design System",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Objetivo do Design System",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CLAUDE - UI Kit e Design System",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "fontes_design_system",
+      "menu_name_original": "CLAUDE-DESIGN - Fontes do Design System",
+      "menu_name_normalizado": "CLAUDE-DESIGN - Fontes do Design System",
+      "tag_normalizada": "CLAUDE-DESIGN",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 2
+    },
+    {
+      "menu_id_original": "execution_depth",
+      "menu_name_original": "WORKFLOW-CREATOR - Execution Depth",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Execution Depth",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "artifact_policy",
+      "menu_name_original": "WORKFLOW-CREATOR - Artifact Policy",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Artifact Policy",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "WORKFLOW - Artifact Policy",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "visual_reference_mode",
+      "menu_name_original": "WORKFLOW-CREATOR - Visual Reference Mode",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Visual Reference Mode",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "repository_mode",
+      "menu_name_original": "WORKFLOW-CREATOR - Repository Mode",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Repository Mode",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "output_specificity",
+      "menu_name_original": "WORKFLOW-CREATOR - Output Specificity",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Output Specificity",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "WORKFLOW - Especificidade de Output",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "workflow_scope",
+      "menu_name_original": "WORKFLOW-CREATOR - Workflow Scope",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Workflow Scope",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "technical_capability_policy",
+      "menu_name_original": "WORKFLOW-CREATOR - Política de Capacidades Técnicas",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Política de Capacidades Técnicas",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Política de Capacidades Técnicas",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "output_language",
+      "menu_name_original": "WORKFLOW-CREATOR - Output Language",
+      "menu_name_normalizado": "WORKFLOW-CREATOR - Output Language",
+      "tag_normalizada": "WORKFLOW-CREATOR",
+      "menu_final_recomendado": "CORE - Idioma de Saída",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_projeto",
+      "menu_name_original": "PPT-CREATOR - Tipo de Projeto",
+      "menu_name_normalizado": "PPT-CREATOR - Tipo de Projeto",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "PPT-CREATOR - Tipo de Projeto de Apresentação",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "plataforma_alvo",
+      "menu_name_original": "PPT-CREATOR - Plataforma Alvo",
+      "menu_name_normalizado": "PPT-CREATOR - Plataforma Alvo",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "CORE - Plataforma e Viewport",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_projeto_apresentacao",
+      "menu_name_original": "PPT-CREATOR - Tipo de Projeto de Apresentação",
+      "menu_name_normalizado": "PPT-CREATOR - Tipo de Projeto de Apresentação",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "PPT-CREATOR - Tipo de Projeto de Apresentação",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "volumetria_slides",
+      "menu_name_original": "PPT-CREATOR - Volumetria de Slides",
+      "menu_name_normalizado": "PPT-CREATOR - Volumetria de Slides",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "PPT-CREATOR - Volumetria de Slides",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "escopo_execucao",
+      "menu_name_original": "PPT-CREATOR - Escopo de Execução",
+      "menu_name_normalizado": "PPT-CREATOR - Escopo de Execução",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estado_inputs",
+      "menu_name_original": "PPT-CREATOR - Estado dos Inputs",
+      "menu_name_normalizado": "PPT-CREATOR - Estado dos Inputs",
+      "tag_normalizada": "PPT-CREATOR",
+      "menu_final_recomendado": "CORE - Entrada, Fonte e Referência",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "stack_principal",
+      "menu_name_original": "AGENT-GEN - Stack Principal",
+      "menu_name_normalizado": "AGENT-GEN - Stack Principal",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 3
+    },
+    {
+      "menu_id_original": "nivel_rigor",
+      "menu_name_original": "AGENT-GEN - Nível de Rigor",
+      "menu_name_normalizado": "AGENT-GEN - Nível de Rigor",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "profundidade_exemplo",
+      "menu_name_original": "AGENT-GEN - Profundidade dos Exemplos",
+      "menu_name_normalizado": "AGENT-GEN - Profundidade dos Exemplos",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "idioma_gemini_md",
+      "menu_name_original": "AGENT-GEN - Idioma do GEMINI.md",
+      "menu_name_normalizado": "AGENT-GEN - Idioma do GEMINI.md",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "CORE - Idioma de Saída",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "formato_resposta_ide",
+      "menu_name_original": "AGENT-GEN - Formato de Resposta no IDE",
+      "menu_name_normalizado": "AGENT-GEN - Formato de Resposta no IDE",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "CORE - Formato da Resposta",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "escopo_agente",
+      "menu_name_original": "AGENT-GEN - Escopo do Agente",
+      "menu_name_normalizado": "AGENT-GEN - Escopo do Agente",
+      "tag_normalizada": "AGENT-GEN",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "formato_saida",
+      "menu_name_original": "TUTO-YOUTUBE - Formato de Saída",
+      "menu_name_normalizado": "TUTO-YOUTUBE - Formato de Saída",
+      "tag_normalizada": "TUTO-YOUTUBE",
+      "menu_final_recomendado": "CORE - Formato da Resposta",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "platform_type",
+      "menu_name_original": "Plataforma",
+      "menu_name_normalizado": "CORE - Plataforma",
+      "tag_normalizada": "CORE",
+      "menu_final_recomendado": "CORE - Plataforma e Viewport",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "objetivo_analise",
+      "menu_name_original": "Objetivo da Análise",
+      "menu_name_normalizado": "AUDITORIA - Objetivo da Análise",
+      "tag_normalizada": "AUDITORIA",
+      "menu_final_recomendado": "AUDITORIA - Modo e Objetivo da Análise",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modelo_principal",
+      "menu_name_original": "Modelo Principal do Pipeline",
+      "menu_name_normalizado": "IA - Modelo Principal do Pipeline",
+      "tag_normalizada": "IA",
+      "menu_final_recomendado": "IA - Modelo, Pipeline e Complexidade",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estilo",
+      "menu_name_original": "TUTORIAL - Estilo",
+      "menu_name_normalizado": "TUTORIAL - Estilo",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "TUTORIAL - Estilo e Execução",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 4
+    },
+    {
+      "menu_id_original": "publico",
+      "menu_name_original": "TUTORIAL - Público",
+      "menu_name_normalizado": "TUTORIAL - Público",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Público-Alvo",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 6
+    },
+    {
+      "menu_id_original": "tom",
+      "menu_name_original": "TUTORIAL - Tom",
+      "menu_name_normalizado": "TUTORIAL - Tom",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Tom e Estilo da Resposta",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 8
+    },
+    {
+      "menu_id_original": "estilo_execucao",
+      "menu_name_original": "TUTORIAL - Estilo de Execução",
+      "menu_name_normalizado": "TUTORIAL - Estilo de Execução",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "TUTORIAL - Estilo e Execução",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "audit_scope",
+      "menu_name_original": "TUTORIAL - Escopo da Auditoria",
+      "menu_name_normalizado": "TUTORIAL - Escopo da Auditoria",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 9
+    },
+    {
+      "menu_id_original": "estilo_resposta",
+      "menu_name_original": "TUTORIAL - Estilo de Resposta",
+      "menu_name_normalizado": "TUTORIAL - Estilo de Resposta",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Tom e Estilo da Resposta",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "prompt_depth",
+      "menu_name_original": "TUTORIAL - Profundidade dos Prompts",
+      "menu_name_normalizado": "TUTORIAL - Profundidade dos Prompts",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "delivery_depth",
+      "menu_name_original": "TUTORIAL - Profundidade da Entrega",
+      "menu_name_normalizado": "TUTORIAL - Profundidade da Entrega",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "formato_resposta",
+      "menu_name_original": "TUTORIAL - Formato da resposta",
+      "menu_name_normalizado": "TUTORIAL - Formato da resposta",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Formato da Resposta",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "plataforma_exibicao",
+      "menu_name_original": "TUTORIAL - Plataforma de Exibição",
+      "menu_name_normalizado": "TUTORIAL - Plataforma de Exibição",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Plataforma e Viewport",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 4
+    },
+    {
+      "menu_id_original": "formato_entrega",
+      "menu_name_original": "TUTORIAL - Formato da Entrega",
+      "menu_name_normalizado": "TUTORIAL - Formato da Entrega",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "plataforma_destino",
+      "menu_name_original": "TUTORIAL - Plataforma de Destino",
+      "menu_name_normalizado": "TUTORIAL - Plataforma de Destino",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Plataforma e Viewport",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_entrega",
+      "menu_name_original": "TUTORIAL - Tipo de Entrega",
+      "menu_name_normalizado": "TUTORIAL - Tipo de Entrega",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Tipo de Entrega",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "estilo_visual",
+      "menu_name_original": "TUTORIAL - Estilo Visual",
+      "menu_name_normalizado": "TUTORIAL - Estilo Visual",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "DESIGN - Estilo e Direção Visual",
+      "quantidade_opcoes": 6,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "idioma",
+      "menu_name_original": "TUTORIAL - Idioma",
+      "menu_name_normalizado": "TUTORIAL - Idioma",
+      "tag_normalizada": "TUTORIAL",
+      "menu_final_recomendado": "CORE - Idioma de Saída",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 2
+    },
+    {
+      "menu_id_original": "prompt_app_ajuste_agent_destino",
+      "menu_name_original": "PROMPT-APP-AJUSTE - Agent IDE Destino",
+      "menu_name_normalizado": "PROMPT-APP-AJUSTE - Agent IDE Destino",
+      "tag_normalizada": "PROMPT-APP-AJUSTE",
+      "menu_final_recomendado": "PROMPT - Estrutura e Resultado",
+      "quantidade_opcoes": 4,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "prompt_app_ajuste_escopo_correcao",
+      "menu_name_original": "PROMPT-APP-AJUSTE - Escopo da Correção",
+      "menu_name_normalizado": "PROMPT-APP-AJUSTE - Escopo da Correção",
+      "tag_normalizada": "PROMPT-APP-AJUSTE",
+      "menu_final_recomendado": "CORE - Escopo e Execução",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "prompt_app_ajuste_politica_capacidades",
+      "menu_name_original": "PROMPT-APP-AJUSTE - Política de Capacidades Técnicas",
+      "menu_name_normalizado": "PROMPT-APP-AJUSTE - Política de Capacidades Técnicas",
+      "tag_normalizada": "PROMPT-APP-AJUSTE",
+      "menu_final_recomendado": "CORE - Política de Capacidades Técnicas",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "prompt_app_ajuste_formato_saida",
+      "menu_name_original": "PROMPT-APP-AJUSTE - Formato dos Prompts Copiáveis",
+      "menu_name_normalizado": "PROMPT-APP-AJUSTE - Formato dos Prompts Copiáveis",
+      "tag_normalizada": "PROMPT-APP-AJUSTE",
+      "menu_final_recomendado": "PROMPT - Formato dos Prompts Copiáveis",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "prompt_app_ajuste_nivel_validacao",
+      "menu_name_original": "PROMPT-APP-AJUSTE - Nível de Validação",
+      "menu_name_normalizado": "PROMPT-APP-AJUSTE - Nível de Validação",
+      "tag_normalizada": "PROMPT-APP-AJUSTE",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_workspace",
+      "menu_name_original": "WEBDEV - Tipo de Workspace",
+      "menu_name_normalizado": "WEBDEV - Tipo de Workspace",
+      "tag_normalizada": "WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Tipo de Interface e Workspace",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "stack_base",
+      "menu_name_original": "WEBDEV - Stack Base",
+      "menu_name_normalizado": "WEBDEV - Stack Base",
+      "tag_normalizada": "WEBDEV",
+      "menu_final_recomendado": "FRONTEND - Stack e Integrações",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "rigor_validacao",
+      "menu_name_original": "WEBDEV - Rigor de Validação",
+      "menu_name_normalizado": "WEBDEV - Rigor de Validação",
+      "tag_normalizada": "WEBDEV",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 2,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "tipo_intervencao",
+      "menu_name_original": "AJUSTE-AGENT-IDE - Tipo de Intervenção",
+      "menu_name_normalizado": "AJUSTE-AGENT-IDE - Tipo de Intervenção",
+      "tag_normalizada": "AJUSTE-AGENT-IDE",
+      "menu_final_recomendado": "AGENT-IDE - Tipo de Intervenção",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "area_primaria",
+      "menu_name_original": "AJUSTE-AGENT-IDE - Área Primária",
+      "menu_name_normalizado": "AJUSTE-AGENT-IDE - Área Primária",
+      "tag_normalizada": "AJUSTE-AGENT-IDE",
+      "menu_final_recomendado": "AGENT-IDE - Área Primária",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 6
+    },
+    {
+      "menu_id_original": "profundidade_execucao",
+      "menu_name_original": "AJUSTE-AGENT-IDE - Profundidade de Execução",
+      "menu_name_normalizado": "AJUSTE-AGENT-IDE - Profundidade de Execução",
+      "tag_normalizada": "AJUSTE-AGENT-IDE",
+      "menu_final_recomendado": "CORE - Profundidade e Detalhamento",
+      "quantidade_opcoes": 3,
+      "quantidade_subopcoes": 0
+    },
+    {
+      "menu_id_original": "modo_validacao",
+      "menu_name_original": "AJUSTE-AGENT-IDE - Modo de Validação",
+      "menu_name_normalizado": "AJUSTE-AGENT-IDE - Modo de Validação",
+      "tag_normalizada": "AJUSTE-AGENT-IDE",
+      "menu_final_recomendado": "CORE - Validação, Rigor e Evidência",
+      "quantidade_opcoes": 5,
+      "quantidade_subopcoes": 0
+    }
+  ]
+}

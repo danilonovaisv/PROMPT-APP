@@ -1,0 +1,207 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "profundidade_execucao",
+      "menu_name": "PROMPT-AGENT-GITHUB - Profundidade da Execução",
+      "description": "Define o nível de detalhamento técnico, investigação do README e granularidade dos comandos e arquivos gerados.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria profunda",
+          "value": "auditoria_profunda",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_projeto_github",
+      "menu_name": "PROMPT-AGENT-GITHUB - Tipo de Projeto",
+      "description": "Ajuda o prompt a calibrar a leitura do README, a estrutura inicial e os comandos esperados.",
+      "options": [
+        {
+          "label": "Detectar pelo README",
+          "value": "detectar_pelo_readme",
+          "sub_options": []
+        },
+        {
+          "label": "Frontend web",
+          "value": "frontend_web",
+          "sub_options": []
+        },
+        {
+          "label": "Fullstack web",
+          "value": "fullstack_web",
+          "sub_options": []
+        },
+        {
+          "label": "Backend/API",
+          "value": "backend_api",
+          "sub_options": []
+        },
+        {
+          "label": "Biblioteca ou CLI",
+          "value": "biblioteca_cli",
+          "sub_options": []
+        },
+        {
+          "label": "Automação ou IA",
+          "value": "automacao_ia",
+          "sub_options": []
+        },
+        {
+          "label": "Mobile ou desktop",
+          "value": "mobile_desktop",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ambiente_agent_ide",
+      "menu_name": "PROMPT-AGENT-GITHUB - Ambiente Agent IDE",
+      "description": "Define o ambiente no qual o guia deve orientar a configuração e o prompt operacional para agentes.",
+      "options": [
+        {
+          "label": "Agent IDE genérico",
+          "value": "agent_ide_generico",
+          "sub_options": []
+        },
+        {
+          "label": "Cursor",
+          "value": "cursor",
+          "sub_options": []
+        },
+        {
+          "label": "Windsurf",
+          "value": "windsurf",
+          "sub_options": []
+        },
+        {
+          "label": "VS Code com Copilot",
+          "value": "vscode_copilot",
+          "sub_options": []
+        },
+        {
+          "label": "Google Antigravity",
+          "value": "google_antigravity",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Code",
+          "value": "claude_code",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_entrega_arquivos",
+      "menu_name": "PROMPT-AGENT-GITHUB - Estratégia de Entrega de Arquivos",
+      "description": "Define como o resultado deve entregar a criação inicial de pastas e arquivos do projeto.",
+      "options": [
+        {
+          "label": "Comandos para Terminal MacBook",
+          "value": "comandos_terminal_macbook",
+          "sub_options": []
+        },
+        {
+          "label": "Arquivos para download",
+          "value": "arquivos_para_download",
+          "sub_options": []
+        },
+        {
+          "label": "Ambos",
+          "value": "ambos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "gerenciador_pacotes",
+      "menu_name": "PROMPT-AGENT-GITHUB - Gerenciador de Pacotes",
+      "description": "Controla como o prompt escolhe comandos de instalação e execução quando o README não for conclusivo.",
+      "options": [
+        {
+          "label": "Detectar pelo README",
+          "value": "detectar_pelo_readme",
+          "sub_options": []
+        },
+        {
+          "label": "npm",
+          "value": "npm",
+          "sub_options": []
+        },
+        {
+          "label": "pnpm",
+          "value": "pnpm",
+          "sub_options": []
+        },
+        {
+          "label": "yarn",
+          "value": "yarn",
+          "sub_options": []
+        },
+        {
+          "label": "bun",
+          "value": "bun",
+          "sub_options": []
+        },
+        {
+          "label": "pip",
+          "value": "pip",
+          "sub_options": []
+        },
+        {
+          "label": "uv",
+          "value": "uv",
+          "sub_options": []
+        },
+        {
+          "label": "poetry",
+          "value": "poetry",
+          "sub_options": []
+        },
+        {
+          "label": "cargo",
+          "value": "cargo",
+          "sub_options": []
+        },
+        {
+          "label": "go mod",
+          "value": "go_mod",
+          "sub_options": []
+        },
+        {
+          "label": "Docker Compose",
+          "value": "docker_compose",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "rigor_validacao",
+      "menu_name": "PROMPT-AGENT-GITHUB - Rigor de Validação",
+      "description": "Define o nível de checagem, segurança, flags de verificação e prevenção de comandos arriscados.",
+      "options": [
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Rigor máximo",
+          "value": "rigor_maximo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

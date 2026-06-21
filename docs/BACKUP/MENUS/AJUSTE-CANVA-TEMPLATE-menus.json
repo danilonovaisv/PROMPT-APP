@@ -1,0 +1,135 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_operacao_canva",
+      "menu_name": "CANVA-TEMPLATE - Tipo de Operação",
+      "description": "Define a estratégia operacional principal para o ajuste do design Canva.",
+      "options": [
+        {
+          "label": "Autofill",
+          "value": "autofill",
+          "sub_options": []
+        },
+        {
+          "label": "Workflow Edit",
+          "value": "workflow_edit",
+          "sub_options": []
+        },
+        {
+          "label": "Híbrido",
+          "value": "hibrido",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_paginas_canva",
+      "menu_name": "CANVA-TEMPLATE - Escopo de Páginas",
+      "description": "Define o alcance dos ajustes solicitados.",
+      "options": [
+        {
+          "label": "Páginas específicas",
+          "value": "paginas_especificas",
+          "sub_options": []
+        },
+        {
+          "label": "Todas as páginas",
+          "value": "todas_paginas",
+          "sub_options": []
+        },
+        {
+          "label": "Detectar pelo briefing",
+          "value": "detectar_briefing",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_ajuste_canva",
+      "menu_name": "CANVA-TEMPLATE - Tipo de Ajuste",
+      "description": "Define os grupos de ajuste que devem orientar o mapeamento por página.",
+      "options": [
+        {
+          "label": "Texto e copy",
+          "value": "texto_copy",
+          "sub_options": []
+        },
+        {
+          "label": "Imagens e assets",
+          "value": "imagens_assets",
+          "sub_options": []
+        },
+        {
+          "label": "Layout e composição",
+          "value": "layout_composicao",
+          "sub_options": []
+        },
+        {
+          "label": "Brand Kit e identidade",
+          "value": "brand_identidade",
+          "sub_options": []
+        },
+        {
+          "label": "Gráficos e tabelas",
+          "value": "graficos_tabelas",
+          "sub_options": []
+        },
+        {
+          "label": "Links e CTAs",
+          "value": "links_ctas",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_validacao_canva",
+      "menu_name": "CANVA-TEMPLATE - Nível de Validação",
+      "description": "Define a profundidade da análise antes da execução ou entrega do plano.",
+      "options": [
+        {
+          "label": "Rápido",
+          "value": "rapido",
+          "sub_options": []
+        },
+        {
+          "label": "Completo",
+          "value": "completo",
+          "sub_options": []
+        },
+        {
+          "label": "Técnico",
+          "value": "tecnico",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "entrega_desejada_canva",
+      "menu_name": "CANVA-TEMPLATE - Entrega Desejada",
+      "description": "Define o formato de resposta mais útil para o momento da operação.",
+      "options": [
+        {
+          "label": "Plano operacional completo",
+          "value": "plano_operacional",
+          "sub_options": []
+        },
+        {
+          "label": "Payload técnico",
+          "value": "payload_tecnico",
+          "sub_options": []
+        },
+        {
+          "label": "Instruções por página",
+          "value": "instrucoes_pagina",
+          "sub_options": []
+        },
+        {
+          "label": "Checklist de QA",
+          "value": "checklist_qa",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

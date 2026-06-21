@@ -2,137 +2,141 @@
   "version": "1.0",
   "menus": [
     {
-      "menu_id": "profundidade_analise",
-      "menu_name": "WEBDEV - Profundidade da Análise",
-      "description": "Define o nível de leitura técnica da transcrição e o grau de detalhamento dos artefatos gerados.",
+      "menu_id": "tuto_prompt_agents_ide_alvo",
+      "menu_name": "TUTO-PROMPT-AGENTS - IDE ou Ambiente de Agentes",
+      "description": "Define quais ambientes de agentes de IDE devem ser considerados na adaptação dos assets, sem assumir que algum deles foi usado no vídeo.",
       "options": [
         {
-          "label": "Essencial",
-          "value": "essencial",
+          "label": "Cursor",
+          "value": "cursor",
           "sub_options": []
         },
         {
-          "label": "Completa",
-          "value": "completa",
+          "label": "Windsurf",
+          "value": "windsurf",
           "sub_options": []
         },
         {
-          "label": "Auditoria profunda",
-          "value": "auditoria_profunda",
+          "label": "Cline",
+          "value": "cline",
+          "sub_options": []
+        },
+        {
+          "label": "Roo Code",
+          "value": "roo_code",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Code",
+          "value": "claude_code",
+          "sub_options": []
+        },
+        {
+          "label": "Copilot Workspace ou similares",
+          "value": "copilot_workspace_similares",
           "sub_options": []
         }
       ]
     },
     {
-      "menu_id": "tipo_workspace",
-      "menu_name": "WEBDEV - Tipo de Workspace",
-      "description": "Parametriza o tipo de ambiente agêntico que será inicializado a partir do vídeo.",
+      "menu_id": "tuto_prompt_agents_escopo_assets",
+      "menu_name": "TUTO-PROMPT-AGENTS - Escopo dos Assets",
+      "description": "Define o nível de completude do pacote gerado a partir do vídeo.",
       "options": [
         {
-          "label": "Frontend Agent IDE",
-          "value": "frontend_agent_ide",
-          "sub_options": []
-        },
-        {
-          "label": "Fullstack Agent IDE",
-          "value": "fullstack_agent_ide",
-          "sub_options": []
-        },
-        {
-          "label": "Infraestrutura Agêntica",
-          "value": "infraestrutura_agentica",
-          "sub_options": []
-        }
-      ]
-    },
-    {
-      "menu_id": "stack_base",
-      "menu_name": "WEBDEV - Stack Base",
-      "description": "Define a stack técnica principal usada como premissa quando a transcrição não especificar uma alternativa.",
-      "options": [
-        {
-          "label": "Next.js App Router",
-          "value": "next_app_router",
-          "sub_options": []
-        },
-        {
-          "label": "React Vite",
-          "value": "react_vite",
-          "sub_options": []
-        },
-        {
-          "label": "Apenas estrutura agêntica",
-          "value": "estrutura_agentica",
-          "sub_options": []
-        }
-      ]
-    },
-    {
-      "menu_id": "backend_preferido",
-      "menu_name": "WEBDEV - Backend Preferido",
-      "description": "Define como tratar backend, autenticação e persistência quando o vídeo sugerir integração.",
-      "options": [
-        {
-          "label": "Sem backend",
-          "value": "sem_backend",
-          "sub_options": []
-        },
-        {
-          "label": "Supabase",
-          "value": "supabase",
-          "sub_options": []
-        },
-        {
-          "label": "Firebase",
-          "value": "firebase",
-          "sub_options": []
-        }
-      ]
-    },
-    {
-      "menu_id": "estrategia_animacao",
-      "menu_name": "WEBDEV - Estratégia de Animação",
-      "description": "Controla o nível de instruções para animações, Motion, scroll, cenas 3D e performance visual.",
-      "options": [
-        {
-          "label": "Conservadora",
-          "value": "conservadora",
-          "sub_options": []
-        },
-        {
-          "label": "Cinematográfica",
-          "value": "cinematografica",
+          "label": "Essencial para inicialização",
+          "value": "essencial_inicializacao",
           "sub_options": [
             {
-              "label": "Motion UI",
-              "value": "motion_ui"
-            },
-            {
-              "label": "R3F coordenado",
-              "value": "r3f_coordenado"
+              "label": "Priorizar PRD, arquitetura, README e tarefas",
+              "value": "prd_arquitetura_readme_tarefas"
             }
           ]
         },
         {
-          "label": "Sem animações",
-          "value": "sem_animacoes",
+          "label": "Completo para execução por agentes",
+          "value": "completo_execucao_agentes",
+          "sub_options": [
+            {
+              "label": "Incluir prompts especializados e memory files",
+              "value": "incluir_prompts_memorias"
+            }
+          ]
+        },
+        {
+          "label": "Auditoria profunda e pacote enterprise",
+          "value": "auditoria_profunda_enterprise",
+          "sub_options": [
+            {
+              "label": "Incluir matriz de rastreabilidade vídeo para asset",
+              "value": "incluir_matriz_rastreabilidade"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "tuto_prompt_agents_rigor_inferencia",
+      "menu_name": "TUTO-PROMPT-AGENTS - Rigor de Inferência",
+      "description": "Controla como o agente deve lidar com lacunas entre o conteúdo do vídeo e os assets gerados.",
+      "options": [
+        {
+          "label": "Somente informações explícitas",
+          "value": "somente_explicitas",
+          "sub_options": []
+        },
+        {
+          "label": "Inferências conservadoras sinalizadas",
+          "value": "inferencias_conservadoras_sinalizadas",
+          "sub_options": []
+        },
+        {
+          "label": "Inferências arquiteturais com validação",
+          "value": "inferencias_arquiteturais_com_validacao",
           "sub_options": []
         }
       ]
     },
     {
-      "menu_id": "rigor_validacao",
-      "menu_name": "WEBDEV - Rigor de Validação",
-      "description": "Define o nível de checklist, gates técnicos e flags de confirmação exigidos na saída.",
+      "menu_id": "tuto_prompt_agents_formato_entrega",
+      "menu_name": "TUTO-PROMPT-AGENTS - Formato da Entrega",
+      "description": "Define como o pacote de assets deve ser apresentado na saída final.",
       "options": [
         {
-          "label": "Padrão",
-          "value": "padrao",
+          "label": "Markdown com blocos de arquivo",
+          "value": "markdown_blocos_arquivo",
           "sub_options": []
         },
         {
-          "label": "Rigor máximo",
-          "value": "rigor_maximo",
+          "label": "Manifesto de arquivos e conteúdo",
+          "value": "manifesto_arquivos_conteudo",
+          "sub_options": []
+        },
+        {
+          "label": "Plano primeiro, arquivos depois",
+          "value": "plano_primeiro_arquivos_depois",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tuto_prompt_agents_verificacao_tecnica",
+      "menu_name": "TUTO-PROMPT-AGENTS - Verificação Técnica",
+      "description": "Define o tratamento de tecnologias, ferramentas, frameworks, bibliotecas, APIs e comandos mencionados no vídeo.",
+      "options": [
+        {
+          "label": "Não consultar fontes externas",
+          "value": "sem_fontes_externas",
+          "sub_options": []
+        },
+        {
+          "label": "Sinalizar pontos para documentação oficial",
+          "value": "sinalizar_documentacao_oficial",
+          "sub_options": []
+        },
+        {
+          "label": "Validar comandos e APIs quando disponível",
+          "value": "validar_comandos_apis_quando_disponivel",
           "sub_options": []
         }
       ]

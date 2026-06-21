@@ -1,0 +1,150 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_intervencao",
+      "menu_name": "AJUSTE-AGENT-IDE - Tipo de Intervenção",
+      "description": "Define a natureza principal da alteração que o agent IDE deve executar.",
+      "options": [
+        {
+          "label": "Correção de bug",
+          "value": "correcao_bug",
+          "sub_options": []
+        },
+        {
+          "label": "Ajuste de fluxo",
+          "value": "ajuste_fluxo",
+          "sub_options": []
+        },
+        {
+          "label": "Refatoração segura",
+          "value": "refatoracao_segura",
+          "sub_options": []
+        },
+        {
+          "label": "Alinhamento de schema",
+          "value": "alinhamento_schema",
+          "sub_options": []
+        },
+        {
+          "label": "Documentação operacional",
+          "value": "documentacao_operacional",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "area_primaria",
+      "menu_name": "AJUSTE-AGENT-IDE - Área Primária",
+      "description": "Direciona a primeira trilha de investigação e os arquivos prioritários.",
+      "options": [
+        {
+          "label": "Frontend e UI",
+          "value": "frontend_ui",
+          "sub_options": [
+            {
+              "label": "Componentes",
+              "value": "componentes"
+            },
+            {
+              "label": "Máquina de estados",
+              "value": "maquina_estados"
+            }
+          ]
+        },
+        {
+          "label": "IA, prompts e schemas",
+          "value": "ia_prompts_schemas",
+          "sub_options": [
+            {
+              "label": "Prompts",
+              "value": "prompts"
+            },
+            {
+              "label": "Schemas",
+              "value": "schemas"
+            }
+          ]
+        },
+        {
+          "label": "Backend, proxy e segurança",
+          "value": "backend_proxy_seguranca",
+          "sub_options": [
+            {
+              "label": "REST",
+              "value": "rest"
+            },
+            {
+              "label": "WebSocket",
+              "value": "websocket"
+            }
+          ]
+        },
+        {
+          "label": "Documentação e governança",
+          "value": "documentacao_governanca",
+          "sub_options": []
+        },
+        {
+          "label": "Múltiplas áreas",
+          "value": "multiplas_areas",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_execucao",
+      "menu_name": "AJUSTE-AGENT-IDE - Profundidade de Execução",
+      "description": "Define o nível de investigação, validação e documentação esperado.",
+      "options": [
+        {
+          "label": "Mínima segura",
+          "value": "minima_segura",
+          "sub_options": []
+        },
+        {
+          "label": "Padrão com auditoria",
+          "value": "padrao_auditoria",
+          "sub_options": []
+        },
+        {
+          "label": "Profunda com testes",
+          "value": "profunda_com_testes",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_validacao",
+      "menu_name": "AJUSTE-AGENT-IDE - Modo de Validação",
+      "description": "Define quais verificações devem ser priorizadas antes do fechamento.",
+      "options": [
+        {
+          "label": "TypeScript estrito",
+          "value": "typescript_estrito",
+          "sub_options": []
+        },
+        {
+          "label": "Schemas e payloads",
+          "value": "schemas_payloads",
+          "sub_options": []
+        },
+        {
+          "label": "Fluxo multiagente",
+          "value": "fluxo_multiagente",
+          "sub_options": []
+        },
+        {
+          "label": "Segurança e limites",
+          "value": "seguranca_limites",
+          "sub_options": []
+        },
+        {
+          "label": "Documentação sincronizada",
+          "value": "documentacao_sincronizada",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "profundidade_curadoria",
+      "menu_name": "DATA-URL - Profundidade da Curadoria",
+      "description": "Define o nível de detalhamento da descoberta, classificação e validação das URLs.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Completa",
+          "value": "completa",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria profunda",
+          "value": "auditoria_profunda",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "escopo_extracao",
+      "menu_name": "DATA-URL - Escopo da Extração",
+      "description": "Controla quais áreas do site entram na curadoria de URLs.",
+      "options": [
+        {
+          "label": "Apenas documentação",
+          "value": "apenas_documentacao",
+          "sub_options": []
+        },
+        {
+          "label": "Documentação e produto",
+          "value": "documentacao_produto",
+          "sub_options": []
+        },
+        {
+          "label": "Site inteiro curado",
+          "value": "site_inteiro_curado",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "fontes_descoberta",
+      "menu_name": "DATA-URL - Fontes de Descoberta",
+      "description": "Define quais fontes devem ser priorizadas para encontrar URLs.",
+      "options": [
+        {
+          "label": "Sitemap e sitemap index",
+          "value": "sitemap",
+          "sub_options": []
+        },
+        {
+          "label": "robots.txt",
+          "value": "robots_txt",
+          "sub_options": []
+        },
+        {
+          "label": "llms.txt e llms-full.txt",
+          "value": "llms_txt",
+          "sub_options": []
+        },
+        {
+          "label": "Navegação interna",
+          "value": "navegacao_interna",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_lista_banco",
+      "menu_name": "DATA-URL - Formato para Banco de Dados",
+      "description": "Define o formato final da lista de URLs para copiar e colar no pipeline de ingestão.",
+      "options": [
+        {
+          "label": "Lista simples",
+          "value": "lista_simples",
+          "sub_options": []
+        },
+        {
+          "label": "CSV",
+          "value": "csv",
+          "sub_options": []
+        },
+        {
+          "label": "JSONL",
+          "value": "jsonl",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "politica_deduplicacao",
+      "menu_name": "DATA-URL - Política de Deduplicação",
+      "description": "Define como tratar parâmetros, anchors, versões, idiomas e URLs equivalentes.",
+      "options": [
+        {
+          "label": "Conservadora",
+          "value": "conservadora",
+          "sub_options": []
+        },
+        {
+          "label": "Canônica",
+          "value": "canonica",
+          "sub_options": []
+        },
+        {
+          "label": "Agressiva para RAG",
+          "value": "agressiva_rag",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "rigor_validacao",
+      "menu_name": "DATA-URL - Rigor de Validação",
+      "description": "Define o grau de cautela para diferenciar URLs confirmadas, inferidas e descartadas.",
+      "options": [
+        {
+          "label": "Operacional rápido",
+          "value": "operacional_rapido",
+          "sub_options": []
+        },
+        {
+          "label": "Balanceado",
+          "value": "balanceado",
+          "sub_options": []
+        },
+        {
+          "label": "Estrito",
+          "value": "estrito",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
