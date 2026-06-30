@@ -4,6 +4,8 @@ packages:
 allowBuilds:
   '@parcel/watcher': true
   '@sentry/cli': true
+  '@swc/core': true
+  cbor-extract: true
   esbuild: true
   netlify-cli: true
   sharp: true

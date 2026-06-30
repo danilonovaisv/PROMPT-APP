@@ -27,7 +27,7 @@
     "clean:reports": "rm -rf coverage playwright-report test-results",
     "clean:modules": "rm -rf node_modules",
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install",
-    "postinstall": "playwright install"
+    "postinstall": "node -e \"if (!process.env.VERCEL) { require('child_process').execSync('playwright install', {stdio: 'inherit'}); }\""
   },
   "cspell": {
     "words": [
