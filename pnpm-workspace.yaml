@@ -2,7 +2,14 @@ packages:
   - '.'
 
 allowBuilds:
+  '@parcel/watcher': true
+  '@sentry/cli': true
+  esbuild: true
+  netlify-cli: true
+  sharp: true
   supabase: true
+  unix-dgram: true
+  unrs-resolver: true
 
 minimumReleaseAgeExclude:
   - '@sentry-internal/browser-utils@10.56.0'
