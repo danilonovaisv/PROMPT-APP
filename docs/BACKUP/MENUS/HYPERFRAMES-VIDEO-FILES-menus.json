@@ -1,0 +1,145 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_video_hyperframes_video_files",
+      "menu_name": "HYPERFRAMES-VIDEO-FILES - Tipo de Vídeo",
+      "description": "Define o workflow HyperFrames que orienta a estrutura dos arquivos, cenas, assets e validações.",
+      "options": [
+        {
+          "label": "Vídeo geral",
+          "value": "general_video",
+          "sub_options": []
+        },
+        {
+          "label": "Product launch",
+          "value": "product_launch_video",
+          "sub_options": []
+        },
+        {
+          "label": "Website to video",
+          "value": "website_to_video",
+          "sub_options": []
+        },
+        {
+          "label": "Faceless explainer",
+          "value": "faceless_explainer",
+          "sub_options": []
+        },
+        {
+          "label": "Motion graphics",
+          "value": "motion_graphics",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_video_hyperframes_video_files",
+      "menu_name": "HYPERFRAMES-VIDEO-FILES - Formato do Vídeo",
+      "description": "Define resolução, proporção e preset de composição a ser usado no scaffold.",
+      "options": [
+        {
+          "label": "16:9 horizontal",
+          "value": "landscape_1920x1080",
+          "sub_options": []
+        },
+        {
+          "label": "9:16 vertical",
+          "value": "portrait_1080x1920",
+          "sub_options": []
+        },
+        {
+          "label": "1:1 quadrado",
+          "value": "square_1080x1080",
+          "sub_options": []
+        },
+        {
+          "label": "Customizado",
+          "value": "custom_resolution",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "origem_assets_hyperframes_video_files",
+      "menu_name": "HYPERFRAMES-VIDEO-FILES - Origem dos Assets",
+      "description": "Controla como o pacote deve lidar com assets, captura de fonte, documentos e placeholders.",
+      "options": [
+        {
+          "label": "Partida fria",
+          "value": "cold_start",
+          "sub_options": []
+        },
+        {
+          "label": "Partida quente com URL",
+          "value": "warm_start_url",
+          "sub_options": []
+        },
+        {
+          "label": "Partida quente com PDF ou deck",
+          "value": "warm_start_document",
+          "sub_options": []
+        },
+        {
+          "label": "Assets já fornecidos",
+          "value": "provided_assets",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "profundidade_pacote_hyperframes_video_files",
+      "menu_name": "HYPERFRAMES-VIDEO-FILES - Profundidade do Pacote",
+      "description": "Define o nível de completude dos arquivos e do código que o template deve gerar.",
+      "options": [
+        {
+          "label": "MVP renderizável",
+          "value": "mvp_renderizavel",
+          "sub_options": []
+        },
+        {
+          "label": "Pipeline completo",
+          "value": "pipeline_completo",
+          "sub_options": []
+        },
+        {
+          "label": "Produção com QA",
+          "value": "producao_com_qa",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "qualidade_render_hyperframes_video_files",
+      "menu_name": "HYPERFRAMES-VIDEO-FILES - Qualidade de Render",
+      "description": "Define o preset de render, formato de saída e rigor de determinismo.",
+      "options": [
+        {
+          "label": "Draft",
+          "value": "render_draft",
+          "sub_options": []
+        },
+        {
+          "label": "Standard",
+          "value": "render_standard",
+          "sub_options": []
+        },
+        {
+          "label": "High",
+          "value": "render_high",
+          "sub_options": []
+        },
+        {
+          "label": "Determinístico com Docker",
+          "value": "render_docker",
+          "sub_options": []
+        },
+        {
+          "label": "WebM transparente",
+          "value": "render_webm_transparent",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

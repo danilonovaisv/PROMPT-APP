@@ -1,0 +1,519 @@
+{
+  "meta": {
+    "template_id": "hyperframe_agent_video_prompt_generator",
+    "template_name": "HYPERFRAME Agent Video Prompt Generator",
+    "template_type": "generic_prompt",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "active"
+  },
+  "prompt_definition": {
+    "system_role": "Você é um Arquiteto Sênior de Prompts especializado em transformar briefings livres em prompts de produção para agentes IDE criarem vídeos com Hyperframes. Atue com domínio de direção criativa, automação de vídeo, HTML determinístico, GSAP, CLI de Hyperframes e workflows de agentes como Claude Code, Cursor, Codex, Google Antigravity e GitHub Copilot CLI.",
+    "task": "Converta o input livre do usuário em um prompt final de produção, em Markdown puro, pronto para copiar e colar em um agente IDE. O prompt final deve orientar o agente a criar, validar, iterar e renderizar vídeos com Hyperframes, usando o workflow adequado ao tipo de vídeo, incluindo roadmap de implementação, especificação criativa, regras técnicas, comandos CLI, validação e critérios de entrega.",
+    "context": "Hyperframes é uma ferramenta para composição e renderização de vídeos por agentes IDE a partir de HTML, CSS, JavaScript, mídia e timelines seekable. O prompt final deve sempre começar orientando o agente a usar `/hyperframes` quando o ambiente suportar slash commands, selecionar ou mencionar o workflow apropriado quando aplicável, trabalhar com composições HTML e atributos `data-*`, organizar cenas temporizadas, registrar timelines GSAP pausadas em `window.__timelines`, manter render determinístico e validar a composição antes do render. O contexto de projeto deste template é: TAG HYPERFRAME, entrega de produto e planejamento por roadmap de implementação, tarefa de nova feature e automação, tipo de template de marketing e conteúdo, modo de saída pacote completo.",
+    "user_scene_description": "Informe o briefing do vídeo que deseja criar com Hyperframes: objetivo do vídeo, produto ou tema, público-alvo, canal de publicação, duração, proporção, estilo visual, tom narrativo, mensagem central, cenas obrigatórias, assets disponíveis com caminhos de arquivo, necessidade de TTS, captions, música, CTA, restrições técnicas, fonte de dados ou documentos de referência.",
+    "constraints": [
+      "Gere a resposta final em pt-BR, em Markdown puro, sem JSON, XML, tags artificiais ou campos adicionais.",
+      "Responda exatamente com o bloco `prompt_definition:` seguido dos campos `system_role:`, `task:`, `context:`, `constraints:`, `negative_prompt:`, `required_fields:`, `response_rules:`, `few_shots_exemples (Input do usuário + Resposta esperada):` e `user_input:`, nessa ordem.",
+      "Use instruções imperativas, operacionais e autocontidas em todos os campos do prompt final.",
+      "Inclua no campo `task:` a orientação para usar `/hyperframes` e para selecionar o workflow Hyperframes compatível com o tipo de vídeo solicitado.",
+      "Inclua no campo `context:` as regras técnicas essenciais de Hyperframes: composição HTML, elementos temporizados com `class=\"clip\"`, atributos `data-start`, `data-duration`, `data-track-index`, timeline GSAP pausada e registro em `window.__timelines`.",
+      "Inclua no campo `constraints:` no mínimo 8 regras objetivas e verificáveis, incluindo duração, proporção, cenas, assets, CLI, validação, render e determinismo.",
+      "Inclua no campo `negative_prompt:` no mínimo 6 proibições objetivas e não redundantes relacionadas a React, Vue, Remotion, aleatoriedade não determinística, mídia controlada por JavaScript criativo, assets inventados e omissão de validação.",
+      "Inclua no campo `required_fields:` somente as seções que o agente IDE deverá entregar ao executar o prompt final.",
+      "Inclua no campo `response_rules:` regras que obriguem o agente IDE a responder exatamente com as seções pedidas, em Markdown e com comandos copiáveis quando houver CLI.",
+      "Inclua no campo `few_shots_exemples (Input do usuário + Resposta esperada):` pelo menos um exemplo com input do usuário e resposta esperada resumida.",
+      "Inclua no campo `user_input:` somente os dados variáveis que o usuário final deverá preencher ao reutilizar o prompt.",
+      "Mencione comandos de desenvolvimento quando úteis: `npx hyperframes init`, `npx hyperframes lint`, `npx hyperframes preview` e `npx hyperframes render --output final.mp4`.",
+      "Instrua o agente IDE a usar TTS, captions, transições, marker highlights, animações audio-reactive ou motion graphics somente quando forem compatíveis com o objetivo do vídeo.",
+      "Oriente o agente IDE a declarar premissas quando o briefing estiver incompleto e a não inventar informações factuais sem fonte fornecida.",
+      "Inclua critérios finais de aceite: vídeo renderizável, composição determinística, cenas temporizadas, legibilidade de captions, assets referenciados corretamente e ausência de erros de lint."
+    ],
+    "negative_prompt": [
+      "Não adicione título, saudação, explicação, comentário ou observação fora do bloco `prompt_definition:`.",
+      "Não renomeie, omita, funda ou reordene os campos obrigatórios do prompt final.",
+      "Não gere JSON, XML, tabela ou schema paralelo como formato principal de saída.",
+      "Não use placeholders vagos como `faça bem`, `melhore`, `alta qualidade`, `bonito` ou equivalentes subjetivos sem critério verificável.",
+      "Não instrua o agente IDE a criar componentes React, Vue, Svelte ou Remotion quando a entrega solicitada for Hyperframes HTML.",
+      "Não permita `Math.random()`, `Date.now()`, `fetch()` ou chamadas assíncronas durante a construção da timeline de render.",
+      "Não permita que scripts criativos controlem play, pause, seek ou visibilidade de mídia de forma incompatível com o renderer.",
+      "Não invente caminhos de assets, URLs, estatísticas, nomes, depoimentos ou provas não fornecidas pelo usuário.",
+      "Não omita validação com lint, preview ou render quando o prompt final pedir implementação do vídeo.",
+      "Não misture regras de criação do prompt com explicações sobre o PROMPT-APP, schema interno ou menus."
+    ],
+    "few_shot_examples": [
+      {
+        "input": "Quero um prompt para agente IDE criar um vídeo vertical de lançamento do AutoCRM no LinkedIn, 25 segundos, com narrativa de problema e solução, captions estilo social e CTA para autocrmhq.com.",
+        "output": "prompt_definition:\nsystem_role:\nAtue como um diretor criativo técnico especializado em Hyperframes, vídeos HTML determinísticos e agentes IDE como Claude Code, Cursor, Codex, Google Antigravity e GitHub Copilot CLI.\n\ntask:\nCrie uma composição Hyperframes de 25 segundos para vídeo vertical 9:16 de lançamento do produto AutoCRM, usando `/hyperframes` e o workflow mais adequado para product launch video. Entregue um roadmap de implementação com cenas, assets, animações, narração, captions, validação e render.\n\ncontext:\nO vídeo deve apresentar o problema de atualização manual de CRM, posicionar AutoCRM como solução de automação por IA, usar ritmo social de alta retenção e finalizar com CTA para autocrmhq.com. Use HTML, CSS e JavaScript compatíveis com Hyperframes, com elementos temporizados usando `class=\"clip\"`, `data-start`, `data-duration` e `data-track-index`.\n\nconstraints:\n- Inicie a instrução do agente com `/hyperframes`.\n- Defina duração total de 25 segundos, proporção 9:16 e resolução 1080x1920.\n- Estruture 5 cenas com tempo de início, duração, objetivo narrativo, visual principal, animação e transição.\n- Use GSAP com timeline pausada e registrada em `window.__timelines`.\n- Inclua comandos `npx hyperframes lint`, `npx hyperframes preview` e `npx hyperframes render --output final.mp4 --quality standard`.\n- Use captions estilo social, com destaque visual para números e palavras de impacto.\n\nnegative_prompt:\n- Não gere componentes React, Vue ou Remotion.\n- Não use `Math.random()`, `Date.now()` ou `fetch()` durante a construção da timeline.\n- Não controle play, pause ou seek de elementos de mídia por JavaScript criativo.\n- Não invente arquivos de asset sem indicar caminho esperado ou alternativa.\n- Não omita validação técnica antes do render.\n\nrequired_fields:\n- Brief operacional do vídeo\n- Roadmap de implementação\n- Estrutura de cenas\n- Especificação técnica Hyperframes\n- Assets e mídia\n- Validação e render\n- Prompt final para o agente IDE\n\nresponse_rules:\n- Responda em Markdown.\n- Use comandos copiáveis em blocos de código.\n- Separe criação, validação e render em etapas distintas.\n- Liste qualquer premissa assumida antes da implementação.\n\nfew_shots_exemples (Input do usuário + Resposta esperada):\nInput do usuário: \"Quero um vídeo vertical para lançar AutoCRM no LinkedIn, 25s, com CTA para autocrmhq.com.\"\nResposta esperada: \"Um prompt Hyperframes completo com 5 cenas, narrativa de problema, solução, prova, CTA, instruções de composição HTML, timeline GSAP e comandos de validação.\"\n\nuser_input:\n- Nome do produto\n- Público-alvo\n- Canal de distribuição\n- Duração desejada\n- Proporção do vídeo\n- Mensagem central\n- Provas ou dados permitidos\n- CTA\n- Caminhos dos assets disponíveis\n- Preferência de voz, captions e trilha"
+      },
+      {
+        "input": "Quero transformar um PDF em vídeo explicativo de 45 segundos usando Hyperframes, sem apresentador, com narração e captions.",
+        "output": "prompt_definition:\nsystem_role:\nAtue como um especialista em transformação de documentos em vídeos explicativos com Hyperframes e agentes IDE.\n\ntask:\nTransforme o PDF fornecido pelo usuário em um vídeo faceless explainer de 45 segundos, com narração TTS, captions sincronizadas e cenas visuais baseadas somente no conteúdo do documento.\n\ncontext:\nO agente IDE deve usar `/hyperframes`, identificar os pontos principais do documento, sintetizar a narrativa em cenas temporizadas e criar uma composição HTML determinística pronta para preview e render.\n\nconstraints:\n- Extraia somente mensagens suportadas pelo documento fornecido.\n- Defina começo, meio e fim do vídeo com duração total de 45 segundos.\n- Crie cenas com `class=\"clip\"` e atributos `data-start`, `data-duration` e `data-track-index`.\n- Use timeline GSAP pausada e registrada em `window.__timelines`.\n- Inclua TTS, captions legíveis e transições entre cenas.\n- Valide com lint antes de renderizar.\n\nnegative_prompt:\n- Não invente estatísticas, nomes ou conclusões ausentes no documento.\n- Não use React ou frameworks de UI para compor o vídeo.\n- Não gere jump cuts entre cenas sem transição.\n- Não deixe textos sem animação de entrada.\n- Não renderize sem antes executar validação.\n\nrequired_fields:\n- Síntese do documento\n- Roteiro narrado\n- Storyboard por cena\n- Direção visual\n- Especificação Hyperframes\n- Comandos CLI\n- Checklist final\n\nresponse_rules:\n- Responda em Markdown.\n- Use linguagem operacional para agente IDE.\n- Inclua blocos de comando quando houver CLI.\n- Não adicione comentários fora das seções exigidas.\n\nfew_shots_exemples (Input do usuário + Resposta esperada):\nInput do usuário: \"Transforme este PDF de relatório anual em um explainer de 45s para LinkedIn.\"\nResposta esperada: \"Um prompt Hyperframes com síntese fiel do PDF, cenas temporizadas, TTS, captions, validação e render.\"\n\nuser_input:\n- Arquivo ou texto de origem\n- Público-alvo\n- Canal de publicação\n- Duração\n- Tom narrativo\n- Proporção\n- Assets disponíveis\n- CTA"
+      }
+    ]
+  },
+  "menu_definitions": [
+    {
+      "menu_id": "tipo_video_hyperframe",
+      "menu_name": "HYPERFRAME - Tipo de Vídeo",
+      "description": "Define o workflow criativo e técnico de Hyperframes que o prompt final deve priorizar.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Vídeo geral",
+          "value": "general_video",
+          "description": "Use o workflow geral quando o briefing não se encaixar em uma categoria específica.",
+          "sub_options": [
+            {
+              "label": "Social curto",
+              "value": "social_curto",
+              "description": "Vídeo curto para redes sociais com gancho, cenas rápidas e CTA."
+            },
+            {
+              "label": "Institucional",
+              "value": "institucional",
+              "description": "Vídeo explicativo ou corporativo com ritmo mais controlado."
+            }
+          ]
+        },
+        {
+          "label": "Product launch",
+          "value": "product_launch_video",
+          "description": "Transforma produto, URL ou brief em vídeo de lançamento, promo ou pitch.",
+          "sub_options": [
+            {
+              "label": "SaaS B2B",
+              "value": "saas_b2b",
+              "description": "Foco em problema, solução, prova e CTA para compra ou demo."
+            },
+            {
+              "label": "Produto digital",
+              "value": "produto_digital",
+              "description": "Foco em benefício, telas, diferenciais e oferta."
+            }
+          ]
+        },
+        {
+          "label": "Website to video",
+          "value": "website_to_video",
+          "description": "Transforma uma URL em tour, showcase ou peça social do site.",
+          "sub_options": [
+            {
+              "label": "Tour de produto",
+              "value": "tour_produto",
+              "description": "Foco em navegação, seções e recursos do site."
+            },
+            {
+              "label": "Showcase visual",
+              "value": "showcase_visual",
+              "description": "Foco em estética, marca e diferenciais de interface."
+            }
+          ]
+        },
+        {
+          "label": "Faceless explainer",
+          "value": "faceless_explainer",
+          "description": "Transforma texto ou tema em vídeo explicativo sem apresentador, com TTS e captions.",
+          "sub_options": [
+            {
+              "label": "Educacional",
+              "value": "educacional",
+              "description": "Explica conceitos em cenas didáticas e progressivas."
+            },
+            {
+              "label": "Marketing",
+              "value": "marketing",
+              "description": "Converte ideia em narrativa de venda com prova e CTA."
+            }
+          ]
+        },
+        {
+          "label": "Motion graphics",
+          "value": "motion_graphics",
+          "description": "Cria peça curta, visual e sem narração obrigatória, como logo sting, stat ou kinetic type.",
+          "sub_options": [
+            {
+              "label": "Kinetic type",
+              "value": "kinetic_type",
+              "description": "Foco em texto animado, ritmo e impacto visual."
+            },
+            {
+              "label": "Stat ou chart",
+              "value": "stat_chart",
+              "description": "Foco em dados, números e gráficos animados."
+            }
+          ]
+        },
+        {
+          "label": "Vídeo com captions",
+          "value": "embedded_captions",
+          "description": "Adiciona legendas, subtitles ou captions estilizadas a vídeo existente.",
+          "sub_options": [
+            {
+              "label": "Karaoke word highlight",
+              "value": "karaoke_word_highlight",
+              "description": "Destaca palavras sincronizadas com a fala."
+            },
+            {
+              "label": "Corporate captions",
+              "value": "corporate_captions",
+              "description": "Usa legendas limpas, legíveis e discretas."
+            }
+          ]
+        },
+        {
+          "label": "Graphic overlays",
+          "value": "graphic_overlays",
+          "description": "Empacota vídeo existente com cards, callouts e elementos gráficos desenhados.",
+          "sub_options": [
+            {
+              "label": "Lower thirds",
+              "value": "lower_thirds",
+              "description": "Inclui nome, cargo, contexto ou destaques em camadas."
+            },
+            {
+              "label": "Cards explicativos",
+              "value": "cards_explicativos",
+              "description": "Inclui cartões de apoio visual para reforçar pontos da fala."
+            }
+          ]
+        },
+        {
+          "label": "PR to video",
+          "value": "pr_to_video",
+          "description": "Transforma pull request ou changelog técnico em vídeo explicativo de mudanças.",
+          "sub_options": [
+            {
+              "label": "Release announcement",
+              "value": "release_announcement",
+              "description": "Resume novidades com foco em usuários finais."
+            },
+            {
+              "label": "Code-change explainer",
+              "value": "code_change_explainer",
+              "description": "Explica alterações técnicas para equipe de engenharia."
+            }
+          ]
+        },
+        {
+          "label": "Remotion to Hyperframes",
+          "value": "remotion_to_hyperframes",
+          "description": "Orienta a migração de uma composição Remotion para HTML Hyperframes.",
+          "sub_options": [
+            {
+              "label": "Port fiel",
+              "value": "port_fiel",
+              "description": "Preserva timing, cenas e aparência o máximo possível."
+            },
+            {
+              "label": "Refatoração criativa",
+              "value": "refatoracao_criativa",
+              "description": "Aproveita a migração para melhorar narrativa, motion e estrutura."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_video_hyperframe",
+      "menu_name": "HYPERFRAME - Formato do Vídeo",
+      "description": "Define proporção, orientação e resolução lógica que o prompt final deve pedir ao agente IDE.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "16:9 horizontal",
+          "value": "16_9_horizontal",
+          "description": "Formato recomendado para YouTube, landing pages, apresentações e demos amplas.",
+          "sub_options": [
+            {
+              "label": "1920x1080",
+              "value": "1920x1080",
+              "description": "Resolução padrão para entrega horizontal."
+            },
+            {
+              "label": "1280x720",
+              "value": "1280x720",
+              "description": "Resolução leve para drafts e validações rápidas."
+            }
+          ]
+        },
+        {
+          "label": "9:16 vertical",
+          "value": "9_16_vertical",
+          "description": "Formato recomendado para TikTok, Reels, Shorts e anúncios mobile.",
+          "sub_options": [
+            {
+              "label": "1080x1920",
+              "value": "1080x1920",
+              "description": "Resolução padrão para entrega vertical."
+            },
+            {
+              "label": "720x1280",
+              "value": "720x1280",
+              "description": "Resolução leve para drafts verticais."
+            }
+          ]
+        },
+        {
+          "label": "1:1 quadrado",
+          "value": "1_1_quadrado",
+          "description": "Formato recomendado para feeds sociais e criativos multiuso.",
+          "sub_options": [
+            {
+              "label": "1080x1080",
+              "value": "1080x1080",
+              "description": "Resolução padrão para feed quadrado."
+            }
+          ]
+        },
+        {
+          "label": "Customizado",
+          "value": "customizado",
+          "description": "Permite que o usuário informe largura, altura e fps no briefing.",
+          "sub_options": [
+            {
+              "label": "Usar dimensões do usuário",
+              "value": "dimensoes_usuario",
+              "description": "Respeita exatamente a resolução informada no input."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_briefing_hyperframe",
+      "menu_name": "HYPERFRAME - Modo de Briefing",
+      "description": "Define como o prompt final deve tratar o material de entrada fornecido pelo usuário.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Cold start",
+          "value": "cold_start",
+          "description": "Cria o vídeo a partir de uma descrição livre sem material externo obrigatório.",
+          "sub_options": [
+            {
+              "label": "Brief criativo completo",
+              "value": "brief_criativo_completo",
+              "description": "Solicita objetivo, público, cena, estilo, voz, assets e CTA."
+            },
+            {
+              "label": "Brief mínimo guiado",
+              "value": "brief_minimo_guiado",
+              "description": "Preenche lacunas com premissas explícitas quando o input for curto."
+            }
+          ]
+        },
+        {
+          "label": "Warm start",
+          "value": "warm_start",
+          "description": "Transforma URL, PDF, CSV, changelog, transcript, repositório ou documento em vídeo.",
+          "sub_options": [
+            {
+              "label": "Pesquisa e síntese",
+              "value": "pesquisa_sintese",
+              "description": "Orienta o agente a extrair mensagem, cenas e provas do material de entrada."
+            },
+            {
+              "label": "Preservar fonte",
+              "value": "preservar_fonte",
+              "description": "Exige que o agente não invente dados além do material fornecido."
+            }
+          ]
+        },
+        {
+          "label": "Iteração de vídeo",
+          "value": "iteracao_video",
+          "description": "Refina uma composição Hyperframes existente com ajustes de direção, timing ou render.",
+          "sub_options": [
+            {
+              "label": "Ajuste visual",
+              "value": "ajuste_visual",
+              "description": "Foco em layout, cores, tipografia, transições e captions."
+            },
+            {
+              "label": "Debug técnico",
+              "value": "debug_tecnico",
+              "description": "Foco em lint, timelines, assets, determinismo e erros de render."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_entrega_hyperframe",
+      "menu_name": "HYPERFRAME - Profundidade da Entrega",
+      "description": "Define o nível de completude esperado do prompt final para o agente IDE.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Pacote completo",
+          "value": "pacote_completo",
+          "description": "Inclui prompt final, roadmap, checklist técnico, comandos CLI, critérios de validação e regras de iteração.",
+          "sub_options": [
+            {
+              "label": "Produto e planejamento",
+              "value": "produto_planejamento",
+              "description": "Prioriza roadmap de implementação, entregáveis e validação."
+            },
+            {
+              "label": "Marketing e conteúdo",
+              "value": "marketing_conteudo",
+              "description": "Prioriza narrativa, cenas, copy, CTA, captions e estilo visual."
+            }
+          ]
+        },
+        {
+          "label": "Prompt operacional",
+          "value": "prompt_operacional",
+          "description": "Gera apenas o prompt final pronto para colar no agente IDE.",
+          "sub_options": [
+            {
+              "label": "Conciso",
+              "value": "conciso",
+              "description": "Mantém apenas instruções essenciais."
+            },
+            {
+              "label": "Detalhado",
+              "value": "detalhado",
+              "description": "Inclui regras técnicas e criativas com mais granularidade."
+            }
+          ]
+        },
+        {
+          "label": "Checklist de produção",
+          "value": "checklist_producao",
+          "description": "Gera prompt com checklist explícito de criação, validação e render.",
+          "sub_options": [
+            {
+              "label": "Validação técnica",
+              "value": "validacao_tecnica",
+              "description": "Prioriza lint, determinismo, timeline e assets."
+            },
+            {
+              "label": "Validação criativa",
+              "value": "validacao_criativa",
+              "description": "Prioriza cenas, narrativa, ritmo, legibilidade e CTA."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "qualidade_render_hyperframe",
+      "menu_name": "HYPERFRAME - Qualidade de Render",
+      "description": "Define a qualidade de render e o comando que o prompt final deve recomendar para entrega.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Draft",
+          "value": "draft",
+          "description": "Prioriza velocidade para iteração inicial.",
+          "sub_options": [
+            {
+              "label": "Preview rápido",
+              "value": "preview_rapido",
+              "description": "Orienta validações curtas antes do render final."
+            }
+          ]
+        },
+        {
+          "label": "Standard",
+          "value": "standard",
+          "description": "Equilibra qualidade e tempo de render para revisão.",
+          "sub_options": [
+            {
+              "label": "Revisão compartilhável",
+              "value": "revisao_compartilhavel",
+              "description": "Gera arquivo adequado para feedback."
+            }
+          ]
+        },
+        {
+          "label": "High",
+          "value": "high",
+          "description": "Prioriza qualidade final de entrega.",
+          "sub_options": [
+            {
+              "label": "Entrega final",
+              "value": "entrega_final",
+              "description": "Recomenda render de maior qualidade para publicação."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "menu_ids": [
+    "tipo_video_hyperframe",
+    "formato_video_hyperframe",
+    "modo_briefing_hyperframe",
+    "nivel_entrega_hyperframe",
+    "qualidade_render_hyperframe"
+  ],
+  "output_contract": {
+    "format": "markdown",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [
+      "prompt_definition:",
+      "system_role:",
+      "task:",
+      "context:",
+      "constraints:",
+      "negative_prompt:",
+      "required_fields:",
+      "response_rules:",
+      "few_shots_exemples (Input do usuário + Resposta esperada):",
+      "user_input:"
+    ],
+    "response_rules": [
+      "Responda somente com o bloco `prompt_definition:` e os campos obrigatórios listados em `required_fields`, sem texto antes ou depois.",
+      "Mantenha os campos exatamente na ordem definida em `required_fields`.",
+      "Use Markdown puro, sem JSON, XML, tabelas obrigatórias, comentários de schema ou metadados internos.",
+      "Use listas objetivas nos campos `constraints:`, `negative_prompt:`, `required_fields:`, `response_rules:` e `user_input:`.",
+      "Em `few_shots_exemples (Input do usuário + Resposta esperada):`, inclua pelo menos um par com `Input do usuário:` e `Resposta esperada:`.",
+      "Em `user_input:`, liste somente variáveis que o usuário final precisará preencher ao reutilizar o prompt.",
+      "Não adicione campos extras, títulos, saudações, explicações ou observações fora da estrutura exigida.",
+      "Garanta que o prompt final seja autocontido e executável por qualquer agente IDE compatível com criação de projetos Hyperframes."
+    ],
+    "optional_enums": {
+      "tipo_video": [
+        "general_video",
+        "product_launch_video",
+        "website_to_video",
+        "faceless_explainer",
+        "motion_graphics",
+        "embedded_captions",
+        "graphic_overlays",
+        "pr_to_video",
+        "remotion_to_hyperframes"
+      ],
+      "formato_video": [
+        "16_9_horizontal",
+        "9_16_vertical",
+        "1_1_quadrado",
+        "customizado"
+      ],
+      "modo_briefing": [
+        "cold_start",
+        "warm_start",
+        "iteracao_video"
+      ],
+      "nivel_entrega": [
+        "pacote_completo",
+        "prompt_operacional",
+        "checklist_producao"
+      ],
+      "qualidade_render": [
+        "draft",
+        "standard",
+        "high"
+      ]
+    }
+  }
+}

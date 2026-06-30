@@ -111,8 +111,16 @@ export const syncToCloud = async (): Promise<boolean> => {
 export const downloadFromCloud = async (): Promise<boolean> => {
   assertSupabaseConfigured();
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Usuário não autenticado");
+  const { data: sessionData } = await supabase.auth.getSession();
+  let session = sessionData.session;
+
+  if (!session) {
+    const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError || !refreshData.session) {
+      throw new Error("Usuário não autenticado ou sessão expirada");
+    }
+    session = refreshData.session;
+  }
 
   console.log("☁️ Iniciando Download Atômico (Nuvem → Local)...");
 

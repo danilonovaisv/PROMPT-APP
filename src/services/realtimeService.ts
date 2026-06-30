@@ -82,6 +82,7 @@ export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
   }
 
   const result = createEmptySetupResult("closed");
+  const userId = session.user.id;
 
   // Canal para Categorias
   categoriesChannel = supabase
@@ -92,6 +93,7 @@ export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
         event: "*",
         schema: "public",
         table: "categories",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
         await handleCategoryChange(payload);
@@ -108,6 +110,7 @@ export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
         event: "*",
         schema: "public",
         table: "prompts",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
         await handlePromptChange(payload);
@@ -124,6 +127,7 @@ export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
         event: "*",
         schema: "public",
         table: "context_menus",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
         await handleMenuChange(payload);
@@ -140,6 +144,7 @@ export async function setupRealtimeListeners(): Promise<RealtimeSetupResult> {
         event: "*",
         schema: "public",
         table: "prompt_memory_context",
+        filter: `user_id=eq.${userId}`,
       },
       async (payload) => {
         await handleMemoryChange(payload);

@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!.*\\.xml$|.*\\.txt$).*)",
       "destination": "/index.html"
     }
   ]

@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "client_brand_analize_tipo_projeto",
+      "menu_name": "CLIENT-BRAND-ANALIZE - Tipo de Projeto",
+      "description": "Define a natureza principal do projeto que será avaliado para ajustar riscos, escopo e critérios de decisão.",
+      "options": [
+        {
+          "label": "Identidade, posicionamento ou branding",
+          "value": "branding_posicionamento",
+          "sub_options": []
+        },
+        {
+          "label": "Campanha, lançamento ou ação comercial",
+          "value": "campanha_lancamento",
+          "sub_options": []
+        },
+        {
+          "label": "Site, landing page ou experiência digital",
+          "value": "site_landing_experiencia_digital",
+          "sub_options": []
+        },
+        {
+          "label": "Apresentação, proposta ou material institucional",
+          "value": "apresentacao_material_institucional",
+          "sub_options": []
+        },
+        {
+          "label": "Peças recorrentes, social ou desdobramentos",
+          "value": "pecas_recorrentes_social_desdobramentos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "client_brand_analize_profundidade_analise",
+      "menu_name": "CLIENT-BRAND-ANALIZE - Profundidade da Análise",
+      "description": "Define o nível de detalhe esperado no diagnóstico inicial antes de começar o projeto.",
+      "options": [
+        {
+          "label": "Triagem rápida",
+          "value": "triagem_rapida",
+          "sub_options": []
+        },
+        {
+          "label": "Diagnóstico completo",
+          "value": "diagnostico_completo",
+          "sub_options": []
+        },
+        {
+          "label": "Due diligence criativa e comercial",
+          "value": "due_diligence_criativa_comercial",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "client_brand_analize_foco_decisao",
+      "menu_name": "CLIENT-BRAND-ANALIZE - Foco da Decisão",
+      "description": "Define quais critérios devem receber prioridade na recomendação final do diagnóstico.",
+      "options": [
+        {
+          "label": "Evitar retrabalho",
+          "value": "evitar_retrabalho",
+          "sub_options": []
+        },
+        {
+          "label": "Proteger margem",
+          "value": "proteger_margem",
+          "sub_options": []
+        },
+        {
+          "label": "Definir escopo e entregáveis",
+          "value": "definir_escopo_entregaveis",
+          "sub_options": []
+        },
+        {
+          "label": "Identificar oportunidade estratégica",
+          "value": "identificar_oportunidade_estrategica",
+          "sub_options": []
+        },
+        {
+          "label": "Escolher modelo de produção",
+          "value": "escolher_modelo_producao",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

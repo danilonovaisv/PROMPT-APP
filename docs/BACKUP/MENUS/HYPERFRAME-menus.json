@@ -1,0 +1,328 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "tipo_video_hyperframe",
+      "menu_name": "HYPERFRAME - Tipo de Vídeo",
+      "description": "Define o workflow criativo e técnico de Hyperframes que o prompt final deve priorizar.",
+      "options": [
+        {
+          "label": "Vídeo geral",
+          "value": "general_video",
+          "sub_options": [
+            {
+              "label": "Social curto",
+              "value": "social_curto"
+            },
+            {
+              "label": "Institucional",
+              "value": "institucional"
+            }
+          ]
+        },
+        {
+          "label": "Product launch",
+          "value": "product_launch_video",
+          "sub_options": [
+            {
+              "label": "SaaS B2B",
+              "value": "saas_b2b"
+            },
+            {
+              "label": "Produto digital",
+              "value": "produto_digital"
+            }
+          ]
+        },
+        {
+          "label": "Website to video",
+          "value": "website_to_video",
+          "sub_options": [
+            {
+              "label": "Tour de produto",
+              "value": "tour_produto"
+            },
+            {
+              "label": "Showcase visual",
+              "value": "showcase_visual"
+            }
+          ]
+        },
+        {
+          "label": "Faceless explainer",
+          "value": "faceless_explainer",
+          "sub_options": [
+            {
+              "label": "Educacional",
+              "value": "educacional"
+            },
+            {
+              "label": "Marketing",
+              "value": "marketing"
+            }
+          ]
+        },
+        {
+          "label": "Motion graphics",
+          "value": "motion_graphics",
+          "sub_options": [
+            {
+              "label": "Kinetic type",
+              "value": "kinetic_type"
+            },
+            {
+              "label": "Stat ou chart",
+              "value": "stat_chart"
+            }
+          ]
+        },
+        {
+          "label": "Vídeo com captions",
+          "value": "embedded_captions",
+          "sub_options": [
+            {
+              "label": "Karaoke word highlight",
+              "value": "karaoke_word_highlight"
+            },
+            {
+              "label": "Corporate captions",
+              "value": "corporate_captions"
+            }
+          ]
+        },
+        {
+          "label": "Graphic overlays",
+          "value": "graphic_overlays",
+          "sub_options": [
+            {
+              "label": "Lower thirds",
+              "value": "lower_thirds"
+            },
+            {
+              "label": "Cards explicativos",
+              "value": "cards_explicativos"
+            }
+          ]
+        },
+        {
+          "label": "PR to video",
+          "value": "pr_to_video",
+          "sub_options": [
+            {
+              "label": "Release announcement",
+              "value": "release_announcement"
+            },
+            {
+              "label": "Code-change explainer",
+              "value": "code_change_explainer"
+            }
+          ]
+        },
+        {
+          "label": "Remotion to Hyperframes",
+          "value": "remotion_to_hyperframes",
+          "sub_options": [
+            {
+              "label": "Port fiel",
+              "value": "port_fiel"
+            },
+            {
+              "label": "Refatoração criativa",
+              "value": "refatoracao_criativa"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_video_hyperframe",
+      "menu_name": "HYPERFRAME - Formato do Vídeo",
+      "description": "Define proporção, orientação e resolução lógica que o prompt final deve pedir ao agente IDE.",
+      "options": [
+        {
+          "label": "16:9 horizontal",
+          "value": "16_9_horizontal",
+          "sub_options": [
+            {
+              "label": "1920x1080",
+              "value": "1920x1080"
+            },
+            {
+              "label": "1280x720",
+              "value": "1280x720"
+            }
+          ]
+        },
+        {
+          "label": "9:16 vertical",
+          "value": "9_16_vertical",
+          "sub_options": [
+            {
+              "label": "1080x1920",
+              "value": "1080x1920"
+            },
+            {
+              "label": "720x1280",
+              "value": "720x1280"
+            }
+          ]
+        },
+        {
+          "label": "1:1 quadrado",
+          "value": "1_1_quadrado",
+          "sub_options": [
+            {
+              "label": "1080x1080",
+              "value": "1080x1080"
+            }
+          ]
+        },
+        {
+          "label": "Customizado",
+          "value": "customizado",
+          "sub_options": [
+            {
+              "label": "Usar dimensões do usuário",
+              "value": "dimensoes_usuario"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "modo_briefing_hyperframe",
+      "menu_name": "HYPERFRAME - Modo de Briefing",
+      "description": "Define como o prompt final deve tratar o material de entrada fornecido pelo usuário.",
+      "options": [
+        {
+          "label": "Cold start",
+          "value": "cold_start",
+          "sub_options": [
+            {
+              "label": "Brief criativo completo",
+              "value": "brief_criativo_completo"
+            },
+            {
+              "label": "Brief mínimo guiado",
+              "value": "brief_minimo_guiado"
+            }
+          ]
+        },
+        {
+          "label": "Warm start",
+          "value": "warm_start",
+          "sub_options": [
+            {
+              "label": "Pesquisa e síntese",
+              "value": "pesquisa_sintese"
+            },
+            {
+              "label": "Preservar fonte",
+              "value": "preservar_fonte"
+            }
+          ]
+        },
+        {
+          "label": "Iteração de vídeo",
+          "value": "iteracao_video",
+          "sub_options": [
+            {
+              "label": "Ajuste visual",
+              "value": "ajuste_visual"
+            },
+            {
+              "label": "Debug técnico",
+              "value": "debug_tecnico"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_entrega_hyperframe",
+      "menu_name": "HYPERFRAME - Profundidade da Entrega",
+      "description": "Define o nível de completude esperado do prompt final para o agente IDE.",
+      "options": [
+        {
+          "label": "Pacote completo",
+          "value": "pacote_completo",
+          "sub_options": [
+            {
+              "label": "Produto e planejamento",
+              "value": "produto_planejamento"
+            },
+            {
+              "label": "Marketing e conteúdo",
+              "value": "marketing_conteudo"
+            }
+          ]
+        },
+        {
+          "label": "Prompt operacional",
+          "value": "prompt_operacional",
+          "sub_options": [
+            {
+              "label": "Conciso",
+              "value": "conciso"
+            },
+            {
+              "label": "Detalhado",
+              "value": "detalhado"
+            }
+          ]
+        },
+        {
+          "label": "Checklist de produção",
+          "value": "checklist_producao",
+          "sub_options": [
+            {
+              "label": "Validação técnica",
+              "value": "validacao_tecnica"
+            },
+            {
+              "label": "Validação criativa",
+              "value": "validacao_criativa"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "qualidade_render_hyperframe",
+      "menu_name": "HYPERFRAME - Qualidade de Render",
+      "description": "Define a qualidade de render e o comando que o prompt final deve recomendar para entrega.",
+      "options": [
+        {
+          "label": "Draft",
+          "value": "draft",
+          "sub_options": [
+            {
+              "label": "Preview rápido",
+              "value": "preview_rapido"
+            }
+          ]
+        },
+        {
+          "label": "Standard",
+          "value": "standard",
+          "sub_options": [
+            {
+              "label": "Revisão compartilhável",
+              "value": "revisao_compartilhavel"
+            }
+          ]
+        },
+        {
+          "label": "High",
+          "value": "high",
+          "sub_options": [
+            {
+              "label": "Entrega final",
+              "value": "entrega_final"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

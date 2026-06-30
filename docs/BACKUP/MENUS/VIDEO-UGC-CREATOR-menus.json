@@ -1,0 +1,142 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "modo_execucao_ugc",
+      "menu_name": "VIDEO-UGC-CREATOR - Modo de Execução",
+      "description": "Define o tipo de resultado que o agente deve gerar a partir dos rascunhos e requisitos do usuário.",
+      "options": [
+        {
+          "label": "Prompt Mestre Final para IDE",
+          "value": "prompt_mestre_final",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria e Otimização",
+          "value": "auditoria_otimizacao",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetura de Projeto Agêntico",
+          "value": "arquitetura_projeto_agentico",
+          "sub_options": []
+        },
+        {
+          "label": "Pipeline UGC Completo",
+          "value": "pipeline_ugc_completo",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ide_alvo_agente",
+      "menu_name": "VIDEO-UGC-CREATOR - IDE Alvo",
+      "description": "Define o ambiente para o qual o Prompt Mestre deve ser otimizado.",
+      "options": [
+        {
+          "label": "Google Antigravity",
+          "value": "google_antigravity",
+          "sub_options": []
+        },
+        {
+          "label": "Cursor",
+          "value": "cursor",
+          "sub_options": []
+        },
+        {
+          "label": "IDE agnóstico com MCP",
+          "value": "ide_agnostico_mcp",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_video_final",
+      "menu_name": "VIDEO-UGC-CREATOR - Formato Final do Vídeo",
+      "description": "Define as saídas de vídeo que a arquitetura deve prever.",
+      "options": [
+        {
+          "label": "Reels vertical 9:16",
+          "value": "reels_vertical_9_16",
+          "sub_options": []
+        },
+        {
+          "label": "Wide horizontal 16:9",
+          "value": "wide_horizontal_16_9",
+          "sub_options": []
+        },
+        {
+          "label": "Dual Reels e Wide",
+          "value": "dual_reels_wide",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_automacao",
+      "menu_name": "VIDEO-UGC-CREATOR - Nível de Automação",
+      "description": "Define até que ponto o agente deve criar arquivos, templates, configurações e checklists automaticamente.",
+      "options": [
+        {
+          "label": "Blueprint operacional",
+          "value": "blueprint_operacional",
+          "sub_options": []
+        },
+        {
+          "label": "Agente autônomo local",
+          "value": "agente_autonomo_local",
+          "sub_options": []
+        },
+        {
+          "label": "Agente autônomo com MCP e APIs",
+          "value": "agente_autonomo_mcp_apis",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "stack_midias_sinteticas",
+      "menu_name": "VIDEO-UGC-CREATOR - Stack de Mídias Sintéticas",
+      "description": "Define a combinação preferencial de ferramentas para imagem, avatar, vídeo e pós-produção.",
+      "options": [
+        {
+          "label": "Google nativo",
+          "value": "google_nativo",
+          "sub_options": []
+        },
+        {
+          "label": "Stack mista UGC",
+          "value": "stack_mista_ugc",
+          "sub_options": []
+        },
+        {
+          "label": "Agnóstico por contratos",
+          "value": "agnostico_por_contratos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "rigor_qa",
+      "menu_name": "VIDEO-UGC-CREATOR - Rigor de QA",
+      "description": "Define o nível de validação exigido para prompts, arquivos e saídas audiovisuais.",
+      "options": [
+        {
+          "label": "Padrão",
+          "value": "padrao",
+          "sub_options": []
+        },
+        {
+          "label": "Rigoroso",
+          "value": "rigoroso",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

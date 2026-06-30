@@ -2,26 +2,7 @@ packages:
   - '.'
 
 allowBuilds:
-  '@parcel/watcher': true
-  '@sentry/cli': true
-  'esbuild': true
-  'netlify-cli': true
-  'sharp': true
-  'unix-dgram': true
-  'unrs-resolver': true
-  '@google/genai': true
-  'agentdb': true
-  'agentic-flow': true
-  'argon2': true
-  'bcrypt': true
-  'better-sqlite3': true
-  'hnswlib-node': true
-  'onnxruntime-node': true
-  'protobufjs': true
-  'sqlite3': true
-  'tldjs': true
-  '@swc/core': false
-  cbor-extract: false
+  supabase: true
 
 minimumReleaseAgeExclude:
   - '@sentry-internal/browser-utils@10.56.0'
@@ -37,17 +18,19 @@ minimumReleaseAgeExclude:
   - '@supabase/realtime-js@2.107.0'
   - '@supabase/storage-js@2.107.0'
   - '@supabase/supabase-js@2.107.0'
-  - '@typescript-eslint/eslint-plugin@8.60.1'
-  - '@typescript-eslint/parser@8.60.1'
-  - '@typescript-eslint/project-service@8.60.1'
-  - '@typescript-eslint/scope-manager@8.60.1'
-  - '@typescript-eslint/tsconfig-utils@8.60.1'
-  - '@typescript-eslint/type-utils@8.60.1'
-  - '@typescript-eslint/types@8.60.1'
-  - '@typescript-eslint/typescript-estree@8.60.1'
-  - '@typescript-eslint/utils@8.60.1'
-  - '@typescript-eslint/visitor-keys@8.60.1'
-  - typescript-eslint@8.60.1
+  - '@typescript-eslint/eslint-plugin@8.60.1 || 8.62.1'
+  - '@typescript-eslint/parser@8.60.1 || 8.62.1'
+  - '@typescript-eslint/project-service@8.60.1 || 8.62.1'
+  - '@typescript-eslint/scope-manager@8.60.1 || 8.62.1'
+  - '@typescript-eslint/tsconfig-utils@8.60.1 || 8.62.1'
+  - '@typescript-eslint/type-utils@8.60.1 || 8.62.1'
+  - '@typescript-eslint/types@8.60.1 || 8.62.1'
+  - '@typescript-eslint/typescript-estree@8.60.1 || 8.62.1'
+  - '@typescript-eslint/utils@8.60.1 || 8.62.1'
+  - '@typescript-eslint/visitor-keys@8.60.1 || 8.62.1'
+  - typescript-eslint@8.60.1 || 8.62.1
   - eslint@10.5.0
   - lucide-react@1.18.0
   - eslint-plugin-react-refresh@0.5.3
+  - react-router-dom@7.18.1
+  - react-router@7.18.1
