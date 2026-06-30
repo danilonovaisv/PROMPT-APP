@@ -26,7 +26,8 @@
     "clean:cache": "rm -rf node_modules/.cache node_modules/.vite .eslintcache pnpm-lock.yaml",
     "clean:reports": "rm -rf coverage playwright-report test-results",
     "clean:modules": "rm -rf node_modules",
-    "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
+    "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install",
+    "postinstall": "playwright install"
   },
   "cspell": {
     "words": [
