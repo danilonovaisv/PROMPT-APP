@@ -190,7 +190,7 @@ export function EditorPlayground({
                 );
               })}
 
-              {isAddingKey || memoryKeys.length === 0 ? (
+              {isAddingKey ? (
                 <div className="card memory-card memory-card--add animate-fade-in">
                   <div className="form-group memory-add-group">
                     <label className="form-label memory-add-label">

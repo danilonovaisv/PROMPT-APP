@@ -1,6 +1,6 @@
 import { db } from '@/db/database';
 import {
-  parsePromptPayload,
+  parseTemplatePayload,
   getPromptSummaryFields,
   type PromptContract,
   type MenuDefinition,
@@ -52,7 +52,7 @@ function pushUniqueWarning(warnings: string[], warning: string | null) {
 function parsePromptContract(value: unknown): PromptContract {
   // Skip strict validation at this stage to prevent discarding valid legacy or extended JSON.
   // TemplatePayloadSchema inside migrateTemplateToCurrentSchema handles normalization safely.
-  return parsePromptPayload(value);
+  return parseTemplatePayload(value);
 }
 
 // Use shared utilities from @/utils/menuValidation

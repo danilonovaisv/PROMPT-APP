@@ -337,7 +337,7 @@ export default function EditorPage() {
   // Autosave da Memória Fixa (Debounced)
   useEffect(() => {
     // Evita salvar no load inicial ou se nada mudou de fato
-    if (!loaded || !form.template.meta.template_id || Object.keys(debouncedFixedMemory).length === 0) return;
+    if (!loaded || !form.template.meta.template_id) return;
 
     const saveChanges = async () => {
       setIsSavingMemory(true);
