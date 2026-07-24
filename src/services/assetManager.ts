@@ -14,7 +14,7 @@ import {
   parseUserSelection,
   type LegacyContextMenuSelection,
 } from "@/models/promptSchema";
-import type { Category, ContextMenu, Prompt, PromptMemory, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt, RemotePromptMemory, BaseRemoteEntity } from "@/models/types";
+import type { Category, ContextMenu, Prompt, PromptMemory, FewShotExample, RemoteCategory, RemoteContextMenu, RemotePrompt, RemotePromptMemory } from "@/models/types";
 // Tipos utilizados para tipagem
 
 export interface AssetUpdate {
@@ -34,6 +34,108 @@ export interface ConflictResolution {
 
 type NumericRemoteEntity = Category | Prompt | ContextMenu;
 type SyncableEntity = NumericRemoteEntity | PromptMemory;
+type RemoteCategorySummary = Pick<RemoteCategory, "id" | "created_at" | "updated_at" | "is_deleted">;
+type RemotePromptSummary = Pick<RemotePrompt, "id" | "created_at" | "updated_at" | "is_deleted">;
+type RemoteMenuSummary = Pick<RemoteContextMenu, "id" | "created_at" | "updated_at" | "is_deleted">;
+type RemoteMemorySummary = Pick<RemotePromptMemory, "id" | "template_id" | "key" | "created_at" | "updated_at" | "is_deleted">;
+
+const REMOTE_METADATA_SELECT = "id, created_at, updated_at, is_deleted";
+const REMOTE_MEMORY_METADATA_SELECT = "id, template_id, key, created_at, updated_at, is_deleted";
+
+function getLocalUpdatedAt(item: Category | Prompt | ContextMenu | PromptMemory): Date {
+  return new Date(item.updatedAt || item.createdAt);
+}
+
+async function fetchRemoteSummaries(userId: string): Promise<{
+  categories: RemoteCategorySummary[];
+  prompts: RemotePromptSummary[];
+  menus: RemoteMenuSummary[];
+  memory: RemoteMemorySummary[];
+}> {
+  const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
+    supabase.from("categories").select(REMOTE_METADATA_SELECT).eq("user_id", userId),
+    supabase.from("prompts").select(REMOTE_METADATA_SELECT).eq("user_id", userId),
+    supabase.from("context_menus").select(REMOTE_METADATA_SELECT).eq("user_id", userId),
+    supabase.from("prompt_memory_context").select(REMOTE_MEMORY_METADATA_SELECT).eq("user_id", userId),
+  ]);
+
+  if (catRes.error) throw catRes.error;
+  if (promptRes.error) throw promptRes.error;
+  if (menuRes.error) throw menuRes.error;
+  if (memoryRes.error) throw memoryRes.error;
+
+  return {
+    categories: (catRes.data || []) as RemoteCategorySummary[],
+    prompts: (promptRes.data || []) as RemotePromptSummary[],
+    menus: (menuRes.data || []) as RemoteMenuSummary[],
+    memory: (memoryRes.data || []) as RemoteMemorySummary[],
+  };
+}
+
+async function hydrateAssetUpdates(
+  userId: string,
+  updates: AssetUpdate[],
+): Promise<AssetUpdate[]> {
+  const categoryIds = updates
+    .filter((update) => update.type === "category" && typeof update.remoteId === "number")
+    .map((update) => update.remoteId as number);
+  const promptIds = updates
+    .filter((update) => update.type === "prompt" && typeof update.remoteId === "number")
+    .map((update) => update.remoteId as number);
+  const menuIds = updates
+    .filter((update) => update.type === "menu" && typeof update.remoteId === "number")
+    .map((update) => update.remoteId as number);
+  const memoryIds = updates
+    .filter((update) => update.type === "memory" && typeof update.remoteId === "string")
+    .map((update) => update.remoteId as string);
+
+  const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
+    categoryIds.length > 0
+      ? supabase.from("categories").select("*").eq("user_id", userId).in("id", categoryIds)
+      : Promise.resolve({ data: [] as RemoteCategory[], error: null }),
+    promptIds.length > 0
+      ? supabase.from("prompts").select("*").eq("user_id", userId).in("id", promptIds)
+      : Promise.resolve({ data: [] as RemotePrompt[], error: null }),
+    menuIds.length > 0
+      ? supabase.from("context_menus").select("*").eq("user_id", userId).in("id", menuIds)
+      : Promise.resolve({ data: [] as RemoteContextMenu[], error: null }),
+    memoryIds.length > 0
+      ? supabase.from("prompt_memory_context").select("*").eq("user_id", userId).in("id", memoryIds)
+      : Promise.resolve({ data: [] as RemotePromptMemory[], error: null }),
+  ]);
+
+  if (catRes.error) throw catRes.error;
+  if (promptRes.error) throw promptRes.error;
+  if (menuRes.error) throw menuRes.error;
+  if (memoryRes.error) throw memoryRes.error;
+
+  const categories = new Map((catRes.data || []).map((item) => [item.id, item]));
+  const prompts = new Map((promptRes.data || []).map((item) => [item.id, item]));
+  const menus = new Map((menuRes.data || []).map((item) => [item.id, item]));
+  const memory = new Map((memoryRes.data || []).map((item) => [item.id, item]));
+
+  return updates.map((update) => {
+    if (update.data) return update;
+
+    if (update.type === "category" && typeof update.remoteId === "number") {
+      return { ...update, data: categories.get(update.remoteId) as unknown as Record<string, unknown> | undefined };
+    }
+
+    if (update.type === "prompt" && typeof update.remoteId === "number") {
+      return { ...update, data: prompts.get(update.remoteId) as unknown as Record<string, unknown> | undefined };
+    }
+
+    if (update.type === "menu" && typeof update.remoteId === "number") {
+      return { ...update, data: menus.get(update.remoteId) as unknown as Record<string, unknown> | undefined };
+    }
+
+    if (update.type === "memory" && typeof update.remoteId === "string") {
+      return { ...update, data: memory.get(update.remoteId) as unknown as Record<string, unknown> | undefined };
+    }
+
+    return update;
+  });
+}
 
 /**
  * Detecta conflitos entre dados locais e remotos
@@ -45,17 +147,11 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
   if (!session) return conflicts;
 
   try {
-    // Buscar dados remotos
-    const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
-      supabase.from("categories").select("*").eq("user_id", session.user.id),
-      supabase.from("prompts").select("*").eq("user_id", session.user.id),
-      supabase.from("context_menus").select("*").eq("user_id", session.user.id),
-      supabase.from("prompt_memory_context").select("*").eq("user_id", session.user.id),
-    ]);
+    const remote = await fetchRemoteSummaries(session.user.id);
 
     // Verificar categorias
-    const remoteCategories = catRes.data || [];
-    const remoteCatIds = remoteCategories.map((c: RemoteCategory) => c.id);
+    const remoteCategories = remote.categories;
+    const remoteCatIds = remoteCategories.map((c) => c.id);
     const localCategories = remoteCatIds.length > 0
       ? await db.categories.where('remoteId').anyOf(remoteCatIds).toArray()
       : [];
@@ -66,26 +162,23 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
       const local = localCategoriesMap.get(remote.id);
       if (local) {
         const remoteUpdated = new Date(remote.updated_at || remote.created_at);
-        const localUpdated = new Date(
-          'updatedAt' in local ? (local as { updatedAt: Date }).updatedAt : local.createdAt,
-        );
+        const localUpdated = getLocalUpdatedAt(local);
 
         if (remoteUpdated > localUpdated) {
           conflicts.push({
             type: "category",
             id: local.id!,
             remoteId: remote.id,
-            action: "updated",
+            action: remote.is_deleted ? "deleted" : "updated",
             timestamp: remoteUpdated,
-            data: remote,
           });
         }
       }
     }
 
     // Verificar prompts
-    const remotePrompts = promptRes.data || [];
-    const remotePromptIds = remotePrompts.map((p: RemotePrompt) => p.id);
+    const remotePrompts = remote.prompts;
+    const remotePromptIds = remotePrompts.map((p) => p.id);
     const localPrompts = remotePromptIds.length > 0
       ? await db.prompts.where('remoteId').anyOf(remotePromptIds).toArray()
       : [];
@@ -105,16 +198,15 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
             type: "prompt",
             id: local.id!,
             remoteId: remote.id,
-            action: "updated",
+            action: remote.is_deleted ? "deleted" : "updated",
             timestamp: remoteUpdated,
-            data: remote,
           });
         }
       }
     }
 
-    const remoteMenus = menuRes.data || [];
-    const remoteMenuIds = remoteMenus.map((m: RemoteContextMenu) => m.id);
+    const remoteMenus = remote.menus;
+    const remoteMenuIds = remoteMenus.map((m) => m.id);
     const localMenus = remoteMenuIds.length > 0
       ? await db.contextMenus.where('remoteId').anyOf(remoteMenuIds).toArray()
       : [];
@@ -132,16 +224,15 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
             type: "menu",
             id: local.id!,
             remoteId: remote.id,
-            action: "updated",
+            action: remote.is_deleted ? "deleted" : "updated",
             timestamp: remoteUpdated,
-            data: remote,
           });
         }
       }
     }
 
-    const remoteMemory = memoryRes.data || [];
-    const remoteMemoryKeys = remoteMemory.map((m: RemotePromptMemory) => [m.template_id, m.key] as [string, string]);
+    const remoteMemory = remote.memory;
+    const remoteMemoryKeys = remoteMemory.map((m) => [m.template_id, m.key] as [string, string]);
     const localMemory = remoteMemoryKeys.length > 0
       ? await db.promptMemory.where('[templateId+key]').anyOf(remoteMemoryKeys).toArray()
       : [];
@@ -160,7 +251,6 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
             remoteId: remote.id,
             action: remote.is_deleted ? "deleted" : "updated",
             timestamp: remoteUpdated,
-            data: remote,
           });
         }
       }
@@ -180,11 +270,17 @@ export async function resolveConflicts(
   conflicts: AssetUpdate[],
   strategy: ConflictResolution["strategy"] = "remoteWins",
 ): Promise<void> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const hydratedConflicts =
+    session && (strategy === "remoteWins" || strategy === "merge")
+      ? await hydrateAssetUpdates(session.user.id, conflicts)
+      : conflicts;
+
   console.log(
-    `🔄 Resolvendo ${conflicts.length} conflitos usando estratégia: ${strategy}`,
+    `🔄 Resolvendo ${hydratedConflicts.length} conflitos usando estratégia: ${strategy}`,
   );
 
-  for (const conflict of conflicts) {
+  for (const conflict of hydratedConflicts) {
     try {
       switch (strategy) {
         case "remoteWins":
@@ -265,6 +361,12 @@ interface AssetRemoteData {
   switch (update.type) {
     case "category":
       if (remoteData) {
+        if (rd.is_deleted) {
+          await db.categories.delete(update.id);
+          console.log(`🧹 Categoria #${update.id} removida por soft delete remoto`);
+          break;
+        }
+
         await db.categories.update(update.id, {
           name: rd.name,
           icon: rd.icon,
@@ -277,6 +379,12 @@ interface AssetRemoteData {
 
     case "prompt":
       if (remoteData) {
+        if (rd.is_deleted) {
+          await db.prompts.delete(update.id);
+          console.log(`🧹 Prompt #${update.id} removido por soft delete remoto`);
+          break;
+        }
+
         const promptPayload = parsePromptPayload(
           rd.prompt_payload_jsonb,
           {
@@ -324,6 +432,12 @@ interface AssetRemoteData {
 
     case "menu":
       if (remoteData) {
+        if (rd.is_deleted) {
+          await db.contextMenus.delete(update.id);
+          console.log(`🧹 Menu #${update.id} removido por soft delete remoto`);
+          break;
+        }
+
         await db.contextMenus.update(update.id, {
           menuId: rd.menu_id,
           menuName: rd.menu_name,
@@ -578,76 +692,101 @@ async function pullLatestChanges(): Promise<{ pulled: number }> {
 
   console.log("📥 Puxando últimas mudanças do servidor...");
   let pulledCount = 0;
-
-  // Buscar todos os IDs remotos
-  const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
-    supabase.from("categories").select("*").eq("user_id", session.user.id),
-    supabase.from("prompts").select("*").eq("user_id", session.user.id),
-    supabase.from("context_menus").select("*").eq("user_id", session.user.id),
-    supabase.from("prompt_memory_context").select("*").eq("user_id", session.user.id),
-  ]);
+  const remote = await fetchRemoteSummaries(session.user.id);
+  const pendingUpdates: AssetUpdate[] = [];
 
   const pullItems = async <T extends NumericRemoteEntity>(
-    remoteItems: (RemoteCategory | RemotePrompt | RemoteContextMenu)[] | null,
+    remoteItems: Array<RemoteCategorySummary | RemotePromptSummary | RemoteMenuSummary>,
     localTable: Table<T, number>,
     type: "category" | "prompt" | "menu",
   ) => {
-    if (!remoteItems || remoteItems.length === 0) return;
+    if (remoteItems.length === 0) return;
 
-    // ⚡ Bolt Optimization: Fetch only the specific subset of local records needed to check existence
-    // using .anyOf() with an array of remote IDs instead of loading the entire table.
     const remoteIdsToCheck = remoteItems.map((r) => r.id);
     const matchingLocalItems = await localTable.where('remoteId').anyOf(remoteIdsToCheck).toArray();
-
-    const existingRemoteIds = new Set<number>();
-    for (const item of matchingLocalItems) {
-      if (item.remoteId != null) {
-        existingRemoteIds.add(item.remoteId);
-      }
-    }
+    const localByRemoteId = new Map(
+      matchingLocalItems
+        .filter((item) => item.remoteId != null)
+        .map((item) => [item.remoteId!, item]),
+    );
 
     for (const remote of remoteItems) {
-      const exists = existingRemoteIds.has(remote.id);
-      if (!exists) {
-        const baseRemote = remote as unknown as BaseRemoteEntity;
-        await applyRemoteChanges({
+      const local = localByRemoteId.get(remote.id);
+      const remoteTimestamp = new Date((remote.updated_at || remote.created_at) as string);
+
+      if (!local) {
+        pendingUpdates.push({
           type,
-          id: 0, // Novo item
+          id: 0,
+          remoteId: remote.id,
           action: "created",
-          timestamp: new Date((baseRemote.created_at || new Date().toISOString()) as string),
-          data: remote as unknown as Record<string, unknown>,
+          timestamp: remoteTimestamp,
         });
-        pulledCount++;
+        continue;
+      }
+
+      if (local.syncStatus === "synced" && remoteTimestamp > getLocalUpdatedAt(local)) {
+        pendingUpdates.push({
+          type,
+          id: local.id!,
+          remoteId: remote.id,
+          action: remote.is_deleted ? "deleted" : "updated",
+          timestamp: remoteTimestamp,
+        });
       }
     }
   };
 
-  await pullItems(catRes.data as RemoteCategory[], db.categories as Table<NumericRemoteEntity, number>, "category");
-  await pullItems(promptRes.data as RemotePrompt[], db.prompts as Table<NumericRemoteEntity, number>, "prompt");
-  await pullItems(menuRes.data as RemoteContextMenu[], db.contextMenus as Table<NumericRemoteEntity, number>, "menu");
+  await pullItems(remote.categories, db.categories as Table<NumericRemoteEntity, number>, "category");
+  await pullItems(remote.prompts, db.prompts as Table<NumericRemoteEntity, number>, "prompt");
+  await pullItems(remote.menus, db.contextMenus as Table<NumericRemoteEntity, number>, "menu");
 
-  const remoteMemory = (memoryRes.data || []) as RemotePromptMemory[];
+  const remoteMemory = remote.memory;
   if (remoteMemory.length > 0) {
     const remoteKeys = remoteMemory.map((memory) => [memory.template_id, memory.key] as [string, string]);
     const matchingLocalMemory = await db.promptMemory
       .where('[templateId+key]')
       .anyOf(remoteKeys)
       .toArray();
-    const existingMemoryKeys = new Set(matchingLocalMemory.map((memory) => `${memory.templateId}|${memory.key}`));
+    const localMemoryMap = new Map(
+      matchingLocalMemory.map((memory) => [`${memory.templateId}|${memory.key}`, memory]),
+    );
 
     for (const remote of remoteMemory) {
-      if (!existingMemoryKeys.has(`${remote.template_id}|${remote.key}`) && !remote.is_deleted) {
-        await applyRemoteChanges({
+      const local = localMemoryMap.get(`${remote.template_id}|${remote.key}`);
+      const remoteTimestamp = new Date(remote.updated_at || remote.created_at || new Date().toISOString());
+
+      if (!local && !remote.is_deleted) {
+        pendingUpdates.push({
           type: "memory",
           id: 0,
           remoteId: remote.id,
           action: "created",
-          timestamp: new Date(remote.created_at || new Date().toISOString()),
-          data: remote as unknown as Record<string, unknown>,
+          timestamp: remoteTimestamp,
         });
-        pulledCount++;
+        continue;
+      }
+
+      if (local && local.syncStatus === "synced" && remoteTimestamp > getLocalUpdatedAt(local)) {
+        pendingUpdates.push({
+          type: "memory",
+          id: local.id!,
+          remoteId: remote.id,
+          action: remote.is_deleted ? "deleted" : "updated",
+          timestamp: remoteTimestamp,
+        });
       }
     }
+  }
+
+  const hydratedUpdates = await hydrateAssetUpdates(session.user.id, pendingUpdates);
+  for (const update of hydratedUpdates) {
+    if (!update.data && update.action !== "deleted") {
+      continue;
+    }
+
+    await applyRemoteChanges(update);
+    pulledCount++;
   }
 
   return { pulled: pulledCount };

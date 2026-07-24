@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "politica_vestuario",
+      "menu_name": "NANO-BANANA-GERAR-PERSONAGEM - Política de Vestuário",
+      "description": "Define se o personagem deve manter a roupa da cena-base ou usar uma roupa descrita pelo usuário.",
+      "options": [
+        {
+          "label": "Manter roupa da Imagem 1",
+          "value": "manter_roupa_imagem_1",
+          "sub_options": []
+        },
+        {
+          "label": "Usar roupa personalizada",
+          "value": "usar_roupa_personalizada",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tratamento_composicao",
+      "menu_name": "NANO-BANANA-GERAR-PERSONAGEM - Tratamento da Composição",
+      "description": "Controla se a composição da Imagem 1 deve ser reproduzida sem alterações ou adaptada apenas ao formato final.",
+      "options": [
+        {
+          "label": "Reprodução estrita",
+          "value": "reproducao_estrita",
+          "sub_options": []
+        },
+        {
+          "label": "Adaptação proporcional",
+          "value": "adaptacao_proporcional",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

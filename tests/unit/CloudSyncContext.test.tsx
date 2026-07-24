@@ -56,12 +56,17 @@ function Harness() {
 describe('CloudSyncProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     (supabase.auth.getSession as jest.Mock).mockResolvedValue({
       data: { session: null },
     });
     (supabase.auth.onAuthStateChange as jest.Mock).mockReturnValue({
       data: { subscription: { unsubscribe: jest.fn() } },
     });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   test('reinstalls realtime listeners and syncs when auth changes to signed in', async () => {
@@ -124,5 +129,28 @@ describe('CloudSyncProvider', () => {
 
     await waitFor(() => expect(reconnectRealtime).toHaveBeenCalledTimes(1));
     expect(syncToCloud).toHaveBeenCalled();
+  });
+
+  test('does not poll for updates while realtime is active', async () => {
+    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+      data: { session: { user: { id: 'existing-user' } } },
+    });
+
+    render(
+      <CloudSyncProvider>
+        <Harness />
+      </CloudSyncProvider>
+    );
+
+    await waitFor(() => expect(setupRealtimeListeners).toHaveBeenCalledTimes(1));
+    expect(checkForUpdates).toHaveBeenCalledTimes(1);
+
+    jest.clearAllMocks();
+
+    await act(async () => {
+      jest.advanceTimersByTime(300000);
+    });
+
+    expect(checkForUpdates).not.toHaveBeenCalled();
   });
 });

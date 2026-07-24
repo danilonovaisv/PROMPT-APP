@@ -1,0 +1,104 @@
+{
+  "project": {
+    "name": "PROMPT-APP",
+    "ref": "dpejskjpghoozbpfxkpf",
+    "url": "https://dpejskjpghoozbpfxkpf.supabase.co"
+  },
+  "incident": {
+    "codes": [
+      "exceed_cached_egress_quota",
+      "exceed_egress_quota"
+    ],
+    "status": "restricted"
+  },
+  "billing": {
+    "plan": "unknown",
+    "spend_cap_enabled": null,
+    "billing_cycle_ends_at": null
+  },
+  "findings": [
+    {
+      "id": "api-full-table-polling",
+      "category": "A",
+      "summary": "Browser sessions performed repeated full-table reads for conflict detection and sync preparation.",
+      "confidence": "high",
+      "evidence": [
+        "src/context/CloudSyncContext.tsx polled refreshUpdates on an interval",
+        "src/services/assetManager.ts loaded full rows from categories, prompts, context_menus, and prompt_memory_context"
+      ],
+      "volume_estimate": {
+        "approx_chars_per_full_check": 4100723,
+        "table_breakdown_chars": {
+          "prompts": 3525921,
+          "prompt_memory_context": 355293,
+          "context_menus": 219201,
+          "categories": 308
+        }
+      },
+      "impact": "high",
+      "recommended_action": "keep update checks metadata-only and stop timer-driven full hydration"
+    },
+    {
+      "id": "public-storage-bucket",
+      "category": "B",
+      "summary": "A public Storage bucket exists in the same project, but the current app code does not reference Supabase Storage.",
+      "confidence": "medium",
+      "evidence": [
+        "SQL inventory shows public bucket HIGGSFIELD with 5 objects totaling about 9447814 bytes",
+        "Repository grep found no storage.from/getPublicUrl/createSignedUrl/download/upload usage in the app code"
+      ],
+      "volume_estimate": {
+        "public_bucket_total_bytes": 9447814,
+        "object_count": 5
+      },
+      "impact": "medium",
+      "recommended_action": "audit external access and confirm whether the public bucket is still required"
+    },
+    {
+      "id": "local-sensitive-env",
+      "category": "C",
+      "summary": "Sensitive Supabase credentials exist in local env files.",
+      "confidence": "high",
+      "evidence": [
+        ".env and .env.local include service role and JWT-related variables",
+        "git ls-files shows these local env files are not currently tracked"
+      ],
+      "volume_estimate": null,
+      "impact": "critical_if_exposed",
+      "recommended_action": "review exposure history and rotate credentials under a controlled change window if needed"
+    }
+  ],
+  "root_cause": {
+    "status": "partially_confirmed",
+    "summary": "Uncached egress is strongly explained by timer-driven full-table browser sync reads. Cached egress likely involves the public HIGGSFIELD bucket, but object-level access proof is still missing.",
+    "confidence": "medium"
+  },
+  "recommended_actions": {
+    "emergency": [
+      "clear the administrative restriction by billing action appropriate to the actual plan",
+      "avoid restoring billing without the sync mitigation already applied in this branch"
+    ],
+    "p0": [
+      "disable periodic update polling when Realtime is healthy",
+      "switch conflict checks to metadata-only summaries",
+      "hydrate full rows only for confirmed diffs"
+    ],
+    "p1": [
+      "replace broad select star patterns in sync flows with explicit columns where possible",
+      "review prompt memory autosync granularity",
+      "audit public bucket usage and visibility"
+    ],
+    "p2": [
+      "add usage monitoring and budget alerts",
+      "separate public media from app data if the public bucket remains necessary"
+    ]
+  },
+  "validation": {
+    "status": "pending",
+    "metrics": {
+      "realtime_polling_disabled_when_healthy": true,
+      "metadata_only_conflict_checks": true,
+      "post_unblock_usage_verification_required": true
+    }
+  }
+}

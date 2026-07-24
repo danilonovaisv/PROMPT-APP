@@ -1,0 +1,125 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "ltx_video_model_profile",
+      "menu_name": "LTX-VIDEO - Perfil do Modelo",
+      "description": "Define o perfil de inferência e os intervalos de Steps e CFG aplicáveis.",
+      "options": [
+        {
+          "label": "Distilled",
+          "value": "distilled",
+          "sub_options": []
+        },
+        {
+          "label": "Pro ou Base",
+          "value": "pro_base",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ltx_video_canvas",
+      "menu_name": "LTX-VIDEO - Formato e Resolução",
+      "description": "Seleciona uma resolução válida, com largura e altura múltiplas de 32.",
+      "options": [
+        {
+          "label": "Horizontal 1280x720",
+          "value": "horizontal_1280x720",
+          "sub_options": []
+        },
+        {
+          "label": "Horizontal 1920x1088",
+          "value": "horizontal_1920x1088",
+          "sub_options": []
+        },
+        {
+          "label": "Vertical 736x1280",
+          "value": "vertical_736x1280",
+          "sub_options": []
+        },
+        {
+          "label": "Quadrado 1024x1024",
+          "value": "square_1024x1024",
+          "sub_options": []
+        },
+        {
+          "label": "Personalizada válida",
+          "value": "custom_multiple_32",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ltx_video_fps",
+      "menu_name": "LTX-VIDEO - Taxa de Quadros",
+      "description": "Define a taxa de quadros usada no cálculo de duração e frames.",
+      "options": [
+        {
+          "label": "24 FPS",
+          "value": "fps_24",
+          "sub_options": []
+        },
+        {
+          "label": "25 FPS",
+          "value": "fps_25",
+          "sub_options": []
+        },
+        {
+          "label": "48 FPS",
+          "value": "fps_48",
+          "sub_options": []
+        },
+        {
+          "label": "50 FPS",
+          "value": "fps_50",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ltx_video_audio_mode",
+      "menu_name": "LTX-VIDEO - Estratégia de Áudio",
+      "description": "Controla a inclusão de som ambiente, efeitos e diálogo sincronizado.",
+      "options": [
+        {
+          "label": "Som ambiente e efeitos",
+          "value": "ambient_sfx",
+          "sub_options": []
+        },
+        {
+          "label": "Áudio completo com diálogo",
+          "value": "full_audio_dialogue",
+          "sub_options": []
+        },
+        {
+          "label": "Cena silenciosa",
+          "value": "silent_scene",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ltx_video_delivery_target",
+      "menu_name": "LTX-VIDEO - Destino da Configuração",
+      "description": "Adapta a apresentação final para uso manual, API ou ComfyUI.",
+      "options": [
+        {
+          "label": "Configuração universal",
+          "value": "universal",
+          "sub_options": []
+        },
+        {
+          "label": "API",
+          "value": "api_payload",
+          "sub_options": []
+        },
+        {
+          "label": "ComfyUI",
+          "value": "comfyui",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
