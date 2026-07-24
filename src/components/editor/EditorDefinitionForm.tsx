@@ -344,15 +344,14 @@ export function EditorDefinitionForm({
                           key={option.id}
                           value={String(option.id)}
                           onClick={() => {
-                            const val = String(option.id);
-                            const prev = selectedMenuIds.map(String);
-                            const next = prev.includes(val)
-                              ? prev.filter((item) => item !== val)
-                              : [...prev, val];
-                            onMenuSelectionChange?.(next.map(Number));
+                            const id = option.id;
+                            const next = selectedMenuIds.includes(id)
+                              ? selectedMenuIds.filter(v => v !== id)
+                              : [...selectedMenuIds, id];
+                            onMenuSelectionChange?.(next);
                           }}
                           icons={
-                            <div onClick={(e) => { e.stopPropagation() }}>
+                            <div>
                               <Checkbox
                                 className="w-5 h-5"
                                 checked={selectedMenuIds.includes(option.id)}

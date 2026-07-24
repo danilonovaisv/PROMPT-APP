@@ -181,6 +181,10 @@ describe('syncToCloud', () => {
     (supabase.auth.getSession as unknown as jest.Mock).mockResolvedValue({
       data: { session: null },
     });
+    (supabase.auth.refreshSession as unknown as jest.Mock).mockResolvedValue({
+      data: { session: null },
+      error: new Error('Usuário não autenticado'),
+    });
 
     await expect(downloadFromCloud()).rejects.toThrow('Usuário não autenticado');
   });
