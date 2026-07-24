@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "modo_geracao",
+      "menu_name": "PROMPT-VEO3 - Modo de Geração",
+      "description": "Define quais referências e controles de entrada serão considerados na arquitetura do prompt para Veo 3.1.",
+      "options": [
+        {
+          "label": "Texto para vídeo",
+          "value": "texto_para_video",
+          "sub_options": []
+        },
+        {
+          "label": "Imagem para vídeo",
+          "value": "imagem_para_video",
+          "sub_options": []
+        },
+        {
+          "label": "Primeiro e último frame",
+          "value": "primeiro_ultimo_frame",
+          "sub_options": []
+        },
+        {
+          "label": "Ingredientes de referência",
+          "value": "ingredientes_referencia",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "estrutura_video",
+      "menu_name": "PROMPT-VEO3 - Estrutura do Vídeo",
+      "description": "Controla se a saída descreve uma tomada contínua ou uma sequência temporal segmentada.",
+      "options": [
+        {
+          "label": "Plano único",
+          "value": "plano_unico",
+          "sub_options": []
+        },
+        {
+          "label": "Sequência multishot",
+          "value": "sequencia_multishot",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "duracao_clipe",
+      "menu_name": "PROMPT-VEO3 - Duração do Clipe",
+      "description": "Define a duração-alvo suportada para o planejamento temporal do prompt.",
+      "options": [
+        {
+          "label": "4 segundos",
+          "value": "4_segundos",
+          "sub_options": []
+        },
+        {
+          "label": "6 segundos",
+          "value": "6_segundos",
+          "sub_options": []
+        },
+        {
+          "label": "8 segundos",
+          "value": "8_segundos",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "proporcao_video",
+      "menu_name": "PROMPT-VEO3 - Proporção do Vídeo",
+      "description": "Adapta composição, enquadramento e distribuição espacial ao formato de destino.",
+      "options": [
+        {
+          "label": "Horizontal 16:9",
+          "value": "16_9",
+          "sub_options": []
+        },
+        {
+          "label": "Vertical 9:16",
+          "value": "9_16",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tratamento_audio",
+      "menu_name": "PROMPT-VEO3 - Tratamento de Áudio",
+      "description": "Define o nível de planejamento de diálogo, efeitos, ambiência e trilha na saída.",
+      "options": [
+        {
+          "label": "Áudio cinematográfico completo",
+          "value": "audio_completo",
+          "sub_options": []
+        },
+        {
+          "label": "Diálogo e ambiência",
+          "value": "dialogo_ambiencia",
+          "sub_options": []
+        },
+        {
+          "label": "Sem diálogo",
+          "value": "sem_dialogo",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

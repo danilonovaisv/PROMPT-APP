@@ -1,0 +1,132 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "ambiente_agent_ide",
+      "menu_name": "COMFYUI-IDE - Ambiente Agent IDE",
+      "description": "Adapta instruções, comandos e convenções ao ambiente de agente usado no projeto.",
+      "options": [
+        {
+          "label": "Google Antigravity",
+          "value": "google_antigravity",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Code",
+          "value": "claude_code",
+          "sub_options": []
+        },
+        {
+          "label": "Cursor",
+          "value": "cursor",
+          "sub_options": []
+        },
+        {
+          "label": "Windsurf",
+          "value": "windsurf",
+          "sub_options": []
+        },
+        {
+          "label": "Agent IDE genérico",
+          "value": "agent_ide_generico",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tipo_tarefa_comfyui",
+      "menu_name": "COMFYUI-IDE - Tipo de Tarefa",
+      "description": "Define o objetivo técnico principal e altera o fluxo de diagnóstico, pesquisa e implementação.",
+      "options": [
+        {
+          "label": "Diagnosticar erro",
+          "value": "diagnosticar_erro",
+          "sub_options": []
+        },
+        {
+          "label": "Criar ou corrigir workflow",
+          "value": "workflow_json",
+          "sub_options": [
+            {
+              "label": "API Format",
+              "value": "api_format"
+            },
+            {
+              "label": "Save/UI Format",
+              "value": "save_ui_format"
+            }
+          ]
+        },
+        {
+          "label": "Desenvolver custom node V3",
+          "value": "custom_node_v3",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetar execução cloud",
+          "value": "arquitetura_cloud",
+          "sub_options": []
+        },
+        {
+          "label": "Otimizar desempenho e VRAM",
+          "value": "otimizar_vram",
+          "sub_options": []
+        },
+        {
+          "label": "Auditar segurança e dependências",
+          "value": "auditar_seguranca",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "plataforma_execucao",
+      "menu_name": "COMFYUI-IDE - Plataforma de Execução",
+      "description": "Direciona decisões de implantação, escalabilidade, armazenamento e operação.",
+      "options": [
+        {
+          "label": "Local ou workstation",
+          "value": "local_workstation",
+          "sub_options": []
+        },
+        {
+          "label": "Docker em VM GPU",
+          "value": "docker_vm_gpu",
+          "sub_options": []
+        },
+        {
+          "label": "Kubernetes com auto-scaling",
+          "value": "kubernetes_autoscaling",
+          "sub_options": [
+            {
+              "label": "AKS com KEDA",
+              "value": "aks_keda"
+            },
+            {
+              "label": "Kubernetes genérico",
+              "value": "kubernetes_generico"
+            }
+          ]
+        },
+        {
+          "label": "Serverless GPU",
+          "value": "serverless_gpu",
+          "sub_options": [
+            {
+              "label": "RunPod",
+              "value": "runpod"
+            },
+            {
+              "label": "Beam",
+              "value": "beam"
+            },
+            {
+              "label": "Provedor genérico",
+              "value": "provedor_generico"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "modo_operacao_colab",
+      "menu_name": "GOOGLE-COLAB - Modo de Operação",
+      "description": "Define se o agente deve criar um notebook novo ou analisar e otimizar um notebook existente.",
+      "options": [
+        {
+          "label": "Criar notebook do zero",
+          "value": "criar_do_zero",
+          "sub_options": []
+        },
+        {
+          "label": "Analisar notebook existente",
+          "value": "analisar_existente",
+          "sub_options": []
+        },
+        {
+          "label": "Otimizar notebook existente",
+          "value": "otimizar_existente",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "acelerador_colab",
+      "menu_name": "GOOGLE-COLAB - Acelerador de Hardware",
+      "description": "Orienta decisões específicas de execução para CPU, GPU ou TPU.",
+      "options": [
+        {
+          "label": "Automático",
+          "value": "automatico",
+          "sub_options": []
+        },
+        {
+          "label": "CPU",
+          "value": "cpu",
+          "sub_options": []
+        },
+        {
+          "label": "GPU",
+          "value": "gpu",
+          "sub_options": [
+            {
+              "label": "PyTorch",
+              "value": "gpu_pytorch"
+            },
+            {
+              "label": "JAX",
+              "value": "gpu_jax"
+            },
+            {
+              "label": "TensorFlow",
+              "value": "gpu_tensorflow"
+            }
+          ]
+        },
+        {
+          "label": "TPU",
+          "value": "tpu",
+          "sub_options": [
+            {
+              "label": "JAX",
+              "value": "tpu_jax"
+            },
+            {
+              "label": "TensorFlow",
+              "value": "tpu_tensorflow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": "estrategia_ambiente",
+      "menu_name": "GOOGLE-COLAB - Estratégia de Ambiente",
+      "description": "Define a abordagem preferida para dependências e isolamento do ambiente.",
+      "options": [
+        {
+          "label": "uv no Python do runtime",
+          "value": "uv_system",
+          "sub_options": []
+        },
+        {
+          "label": "pip padrão",
+          "value": "pip_padrao",
+          "sub_options": []
+        },
+        {
+          "label": "condacolab",
+          "value": "condacolab",
+          "sub_options": []
+        },
+        {
+          "label": "udocker",
+          "value": "udocker",
+          "sub_options": []
+        },
+        {
+          "label": "Escolha automática",
+          "value": "escolha_automatica",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_entrega",
+      "menu_name": "GOOGLE-COLAB - Nível de Entrega",
+      "description": "Controla a profundidade do diagnóstico, explicações e validações.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Produção",
+          "value": "producao",
+          "sub_options": []
+        },
+        {
+          "label": "Auditoria técnica",
+          "value": "auditoria_tecnica",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

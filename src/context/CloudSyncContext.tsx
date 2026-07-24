@@ -168,12 +168,16 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session) return;
 
+    if (realtimeActive) {
+      return;
+    }
+
     const interval = setInterval(() => {
       void refreshUpdates();
-    }, 30000);
+    }, 300000);
 
     return () => clearInterval(interval);
-  }, [refreshUpdates, session]);
+  }, [refreshUpdates, realtimeActive, session]);
 
   const value = useMemo<CloudSyncContextValue>(() => ({
     session,

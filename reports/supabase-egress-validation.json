@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-07-24",
+  "status": "partial",
+  "code_validation": {
+    "metadata_only_conflict_queries": true,
+    "selective_remote_hydration": true,
+    "realtime_active_disables_polling": true,
+    "fallback_polling_interval_ms": 300000
+  },
+  "tests": {
+    "typecheck": "passed",
+    "targeted_lint": "passed",
+    "targeted_jest": {
+      "passed": true,
+      "suites": 3,
+      "tests": 7
+    },
+    "full_build": "passed"
+  },
+  "observability": {
+    "post_unblock_usage_confirmation": "pending",
+    "cached_egress_root_cause_confirmation": "pending"
+  },
+  "notes": [
+    "Administrative restriction is still active, so live post-fix usage could not be validated in Supabase.",
+    "Cached egress attribution still needs dashboard-level access to historical usage and object access evidence.",
+    "Production build completed with non-blocking warnings about ineffective dynamic imports and a Lightning CSS unknown @theme rule."
+  ]
+}
