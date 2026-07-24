@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "menus": [
+    {
+      "menu_id": "plataforma_destino",
+      "menu_name": "CRIAR-GEN-&-GPT - Plataforma de Destino",
+      "description": "Define o ambiente principal onde o System Prompt será implantado.",
+      "options": [
+        {
+          "label": "OpenAI Custom GPT",
+          "value": "openai_custom_gpt",
+          "sub_options": []
+        },
+        {
+          "label": "Google Gem",
+          "value": "google_gem",
+          "sub_options": []
+        },
+        {
+          "label": "Claude Project",
+          "value": "claude_project",
+          "sub_options": []
+        },
+        {
+          "label": "LLM genérico",
+          "value": "llm_generico",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nivel_robustez",
+      "menu_name": "CRIAR-GEN-&-GPT - Nível de Robustez",
+      "description": "Controla a profundidade arquitetural, a quantidade de validações e a extensão do System Prompt.",
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "sub_options": []
+        },
+        {
+          "label": "Profissional",
+          "value": "profissional",
+          "sub_options": []
+        },
+        {
+          "label": "Enterprise",
+          "value": "enterprise",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "governanca_conhecimento",
+      "menu_name": "CRIAR-GEN-&-GPT - Governança de Conhecimento",
+      "description": "Define como o agente compilado deve tratar arquivos, fontes externas, citações e informações ausentes.",
+      "options": [
+        {
+          "label": "Sem base de conhecimento",
+          "value": "sem_base_conhecimento",
+          "sub_options": []
+        },
+        {
+          "label": "Arquivos anexados",
+          "value": "arquivos_anexados",
+          "sub_options": []
+        },
+        {
+          "label": "RAG e fontes externas",
+          "value": "rag_fontes_externas",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "formato_entrega_system_prompt",
+      "menu_name": "CRIAR-GEN-&-GPT - Formato de Entrega",
+      "description": "Define o formato do artefato compilado.",
+      "options": [
+        {
+          "label": "XML em bloco Markdown",
+          "value": "xml_bloco_markdown",
+          "sub_options": []
+        },
+        {
+          "label": "Markdown modular",
+          "value": "markdown_modular",
+          "sub_options": []
+        },
+        {
+          "label": "Texto portátil",
+          "value": "texto_portatil",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}

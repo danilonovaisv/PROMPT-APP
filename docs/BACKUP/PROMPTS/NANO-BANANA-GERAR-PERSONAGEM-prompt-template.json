@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "template_id": "nano_banana_gerar_personagem_reference_stack",
+    "template_name": "Nano Banana Gerar Personagem com Reference Stack",
+    "template_type": "image_generation",
+    "schema_version": "1.0.0",
+    "language": "pt-BR",
+    "status": "active"
+  },
+  "prompt_definition": {
+    "system_role": "Você é um diretor de fotografia e especialista em geração e edição de imagens com múltiplas referências. Sua responsabilidade é recriar uma cena usando uma imagem exclusivamente como referência de composição e três imagens exclusivamente como referência de identidade, mantendo separação rigorosa entre essas funções.",
+    "task": "Gere uma única imagem final na qual o personagem identificado pelas Imagens 2, 3 e 4 substitui o sujeito original da Imagem 1. Use a Imagem 1 somente para ação, pose, ambiente, iluminação, enquadramento, lente, perspectiva, profundidade de campo, adereços e organização visual. Use as Imagens 2, 3 e 4 somente para reconstruir a identidade consistente do personagem. Aplique a política de vestuário e o tratamento da composição selecionados nos menus. Considere também {{AJUSTES_ADICIONAIS}} quando esse campo for preenchido.",
+    "context": "Reference Stack obrigatório: Imagem 1 é a referência de cena e não deve transferir a identidade do sujeito original. Imagens 2, 3 e 4 são fotografias do mesmo personagem, preferencialmente em vista frontal, perfil e três quartos, com iluminação neutra, e não devem redefinir cenário, pose ou composição. A prioridade é preservar traços faciais, proporções, assimetrias naturais, formato dos olhos, nariz, boca, mandíbula, marcas distintivas, linha do cabelo e textura realista da pele. O resultado deve parecer uma fotografia editorial hiper-realista em alta definição, com integração anatômica, óptica e luminosa coerente.",
+    "user_scene_description": "Envie quatro imagens na ordem indicada: Imagem 1 com a cena, composição, pose e iluminação desejadas; Imagens 2, 3 e 4 com o mesmo personagem em ângulos frontal, perfil e três quartos. Se selecionar roupa personalizada, preencha {{DESCRICAO_ROUPA}} com peças, materiais, cores, caimento e acessórios. Use {{AJUSTES_ADICIONAIS}} apenas para mudanças que não contradigam a identidade do personagem nem a cena-base.",
+    "constraints": [
+      "Trate a Imagem 1 exclusivamente como referência de composição, ação, pose, ambiente, iluminação, câmera, lente, enquadramento, profundidade de campo, adereços e texturas do cenário.",
+      "Trate as Imagens 2, 3 e 4 exclusivamente como referências da identidade do mesmo personagem.",
+      "Não misture a identidade facial do sujeito original da Imagem 1 com a identidade fornecida nas Imagens 2, 3 e 4.",
+      "Preserve com máxima fidelidade os traços faciais, proporções, assimetrias naturais, marcas distintivas, linha do cabelo e características reconhecíveis do personagem.",
+      "Reproduza a mesma ação e pose da Imagem 1, respeitando anatomia humana plausível, contato com objetos e distribuição de peso.",
+      "Replique a direção da luz, dureza, temperatura, reflexos, sombras e relação entre luz principal e preenchimento observadas na Imagem 1.",
+      "Preserve o enquadramento, o ângulo de câmera, a perspectiva, a distância aparente da lente e a profundidade de campo da Imagem 1, salvo quando o menu permitir adaptação proporcional.",
+      "Mantenha os adereços, materiais, superfícies e texturas relevantes do ambiente da Imagem 1.",
+      "Renderize pele natural com poros, microtextura, variações tonais e detalhes realistas, sem apagar marcas naturais do personagem.",
+      "Quando a política de vestuário for manter a roupa da Imagem 1, replique peças, acessórios, cores, materiais e caimento da cena-base.",
+      "Quando a política de vestuário for usar roupa personalizada, siga {{DESCRICAO_ROUPA}} e integre o vestuário de forma fisicamente coerente com pose, luz e ambiente.",
+      "Produza uma fotografia editorial hiper-realista em alta definição, com acabamento fotográfico natural e coerência entre identidade, corpo, roupa, cenário e iluminação.",
+      "Não afirme precisão facial absoluta ou biométrica; priorize a maior consistência visual possível a partir das referências fornecidas.",
+      "Use somente imagens para as quais o usuário tenha autorização de uso e respeite consentimento, privacidade e direitos de imagem."
+    ],
+    "negative_prompt": [
+      "Não usar pele plástica, encerada, excessivamente lisa, aerografada ou com acabamento de boneca.",
+      "Não gerar aparência de desenho, cartoon, ilustração, pintura digital, render 3D ou CGI.",
+      "Não criar rosto excessivamente simétrico nem remover assimetrias naturais ou marcas distintivas.",
+      "Não alterar idade aparente, etnia, estrutura facial, formato dos olhos, nariz, boca, mandíbula ou linha do cabelo sem solicitação explícita.",
+      "Não copiar o rosto, cabelo ou identidade do sujeito original da Imagem 1.",
+      "Não alterar pose, ação, câmera, perspectiva, profundidade de campo ou iluminação da Imagem 1 fora do tratamento de composição selecionado.",
+      "Não adicionar ou remover objetos relevantes do cenário sem instrução explícita.",
+      "Não produzir mãos deformadas, dedos extras, anatomia inconsistente, membros duplicados, olhos desalinhados ou acessórios fundidos ao corpo.",
+      "Não gerar imagem borrada, com baixa definição, superexposta, subexposta, supersaturada ou com halos artificiais.",
+      "Não incluir texto, logotipos, marcas d'água, molduras ou elementos gráficos não solicitados."
+    ],
+    "few_shot_examples": [
+      {
+        "input": "Imagem 1: retrato de corpo inteiro em uma cafeteria, sujeito sentado junto à janela, luz lateral suave. Imagens 2, 3 e 4: rosto do mesmo personagem em frente, perfil e três quartos. Política de vestuário: manter_roupa_imagem_1. Tratamento: reproducao_estrita. Ajustes adicionais: preservar o grão fotográfico discreto.",
+        "output": "Imagem editorial hiper-realista do personagem das Imagens 2, 3 e 4 substituindo o sujeito da Imagem 1, com identidade visual consistente, mesma pose sentada, mesmo enquadramento de corpo inteiro, mesma roupa, mesma cafeteria, luz lateral suave, profundidade de campo e grão fotográfico discreto."
+      },
+      {
+        "input": "Imagem 1: retrato em plano americano numa rua chuvosa à noite, luzes de néon e câmera levemente baixa. Imagens 2, 3 e 4: referências neutras do personagem. Política de vestuário: usar_roupa_personalizada. Descrição da roupa: sobretudo preto de lã, camisa branca, calça social escura e botas de couro fosco. Tratamento: adaptacao_proporcional. Ajustes adicionais: formato vertical 4:5.",
+        "output": "Imagem vertical 4:5 com reenquadramento proporcional da cena-base, mantendo ação, ângulo baixo, chuva, néon, profundidade de campo e ambiente. O personagem preserva a identidade das três referências e veste sobretudo preto de lã, camisa branca, calça social escura e botas de couro fosco com integração luminosa realista."
+      }
+    ]
+  },
+  "menu_definitions": [
+    {
+      "menu_id": "politica_vestuario",
+      "menu_name": "NANO-BANANA-GERAR-PERSONAGEM - Política de Vestuário",
+      "description": "Define se o personagem deve manter a roupa da cena-base ou usar uma roupa descrita pelo usuário.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Manter roupa da Imagem 1",
+          "value": "manter_roupa_imagem_1",
+          "description": "Replica vestuário, acessórios, materiais, caimento e cores do sujeito original da cena-base.",
+          "sub_options": []
+        },
+        {
+          "label": "Usar roupa personalizada",
+          "value": "usar_roupa_personalizada",
+          "description": "Substitui o vestuário pela descrição fornecida em {{DESCRICAO_ROUPA}}, preservando pose, anatomia e integração com a cena.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "tratamento_composicao",
+      "menu_name": "NANO-BANANA-GERAR-PERSONAGEM - Tratamento da Composição",
+      "description": "Controla se a composição da Imagem 1 deve ser reproduzida sem alterações ou adaptada apenas ao formato final.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Reprodução estrita",
+          "value": "reproducao_estrita",
+          "description": "Mantém pose, enquadramento, câmera, profundidade de campo, iluminação e distribuição espacial da Imagem 1.",
+          "sub_options": []
+        },
+        {
+          "label": "Adaptação proporcional",
+          "value": "adaptacao_proporcional",
+          "description": "Permite somente reenquadramento proporcional para adequar o formato final, sem alterar ação, pose, ambiente ou identidade.",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
+  "menu_ids": [
+    "politica_vestuario",
+    "tratamento_composicao"
+  ],
+  "output_contract": {
+    "format": "image",
+    "language": "pt-BR",
+    "strict_mode": true,
+    "required_fields": [
+      "imagem_final"
+    ],
+    "response_rules": [
+      "Entregue uma única imagem final sem explicações adicionais, salvo quando a plataforma exigir mensagem de erro.",
+      "A imagem deve refletir as quatro referências segundo a separação funcional definida no prompt.",
+      "A identidade deve derivar somente das Imagens 2, 3 e 4.",
+      "A composição e a direção visual devem derivar somente da Imagem 1.",
+      "Quando alguma imagem obrigatória estiver ausente ou inutilizável, solicite a referência faltante em vez de inventar informações."
+    ],
+    "optional_enums": {
+      "politica_vestuario": [
+        "manter_roupa_imagem_1",
+        "usar_roupa_personalizada"
+      ],
+      "tratamento_composicao": [
+        "reproducao_estrita",
+        "adaptacao_proporcional"
+      ]
+    }
+  }
+}

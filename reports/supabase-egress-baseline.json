@@ -1,0 +1,58 @@
+{
+  "captured_at": "2026-07-24",
+  "project_ref": "dpejskjpghoozbpfxkpf",
+  "restriction_status": "restricted",
+  "api_health_observation": {
+    "status_code": 402,
+    "source": "Supabase API logs"
+  },
+  "tables": {
+    "categories": 15,
+    "context_menus": 140,
+    "prompt_memory_context": 216,
+    "prompts": 85
+  },
+  "payload_sizes": {
+    "prompts": {
+      "avg_prompt_payload_chars": 25529.06,
+      "max_prompt_payload_chars": 172309,
+      "avg_compiled_payload_chars": 12477.32,
+      "max_compiled_payload_chars": 58943,
+      "avg_selection_payload_chars": 3446.92,
+      "max_selection_payload_chars": 46983
+    },
+    "approx_total_chars": {
+      "prompts": 3525921,
+      "prompt_memory_context": 355293,
+      "context_menus": 219201,
+      "categories": 308
+    }
+  },
+  "storage": {
+    "buckets": [
+      {
+        "id": "HIGGSFIELD",
+        "public": true,
+        "object_count": 5,
+        "total_bytes": 9447814,
+        "max_object_bytes": 2531626
+      },
+      {
+        "id": "attachments",
+        "public": false,
+        "object_count": 0,
+        "total_bytes": 0,
+        "max_object_bytes": 0
+      }
+    ]
+  },
+  "code_hotspots": [
+    "src/context/CloudSyncContext.tsx",
+    "src/services/assetManager.ts",
+    "src/services/sync/categorySync.ts",
+    "src/services/sync/promptSync.ts",
+    "src/services/sync/menuSync.ts",
+    "src/services/memoryService.ts",
+    "src/pages/EditorPage.tsx"
+  ]
+}

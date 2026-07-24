@@ -1,0 +1,62 @@
+{
+  "app": "Prompt App",
+  "version": "1.0.0",
+  "format": "menu-import",
+  "exportedAt": "2026-07-21T00:00:00.000Z",
+  "menuDefinitions": [
+    {
+      "menu_id": "nivel_profundidade",
+      "menu_name": "PORTFOLIO-AUDIT - Nível de Profundidade",
+      "description": "Define o grau de detalhe das evidências, riscos e recomendações do plano de auditoria.",
+      "selection_mode": "single",
+      "required": true,
+      "options": [
+        {
+          "label": "Essencial",
+          "value": "essencial",
+          "description": "Prioriza falhas críticas, bloqueadores e correções de maior impacto.",
+          "sub_options": []
+        },
+        {
+          "label": "Completo",
+          "value": "completo",
+          "description": "Cobre arquitetura, interface, animação, performance, acessibilidade e integrações.",
+          "sub_options": []
+        },
+        {
+          "label": "Forense",
+          "value": "forense",
+          "description": "Exige rastreabilidade por arquivo, evidência, risco, dependência e critério de aceite.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "ambiente_auditoria",
+      "menu_name": "PORTFOLIO-AUDIT - Ambiente de Auditoria",
+      "description": "Define os ambientes que devem orientar a coleta de evidências e os critérios do plano.",
+      "selection_mode": "multiple",
+      "required": true,
+      "options": [
+        {
+          "label": "Repositório local",
+          "value": "repositorio_local",
+          "description": "Analisa código, configuração, assets, estrutura de diretórios e documentação local.",
+          "sub_options": []
+        },
+        {
+          "label": "Staging",
+          "value": "staging",
+          "description": "Inclui comportamento integrado, dados de teste e validação visual em homologação.",
+          "sub_options": []
+        },
+        {
+          "label": "Produção",
+          "value": "producao",
+          "description": "Inclui métricas reais, experiência publicada e riscos operacionais.",
+          "sub_options": []
+        }
+      ]
+    }
+  ]
+}
