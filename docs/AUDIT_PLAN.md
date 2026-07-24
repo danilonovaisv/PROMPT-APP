@@ -1,40 +1,49 @@
-# PROMPT-APP Remote Audit & Local Fix - Audit Plan
+# PROMPT-APP Audit & Remediation Plan (squirrelscan)
 
-Este documento detalha o planejamento de correções com base no resultado da auditoria realizada pelo `squirrelscan` na URL de produção `https://prompt-app-dan.netlify.app/`.
-
-## 1. Erros Encontrados
-
-### Crawlability (Score: 89)
-
-* **Erro original:** `crawl/sitemap-valid` (Unknown sitemap format)
-  * `/page-sitemap.xml`
-  * `/news-sitemap.xml`
-* **Causa Raiz:** O crawler do `squirrelscan` (e outros robôs) tenta acessar endpoints comuns de sitemaps. Como o PROMPT-APP é uma Single Page Application (SPA) hospedada no Netlify, qualquer rota inexistente cai no fallback de SPA (`/* -> /index.html` com status `200`). Isso faz com que o crawler receba o HTML da aplicação em vez de um XML real ou um status `404`, gerando erros de validação de sitemap.
-* **Arquivo alvo local:** [`netlify.toml`](file:///Users/PROJETOS-DEV/PROMPT-APP/netlify.toml)
-* **Estratégia de Refatoração:** Adicionar os sitemaps comuns testados por robôs na lista de redirecionamento com status `404` e flag `force = true` no `netlify.toml`. Isso impede que o SPA fallback intercepte essas requisições e garante que elas retornem `404` legítimo.
+## Summary of Audit Findings
+- **Site URL Audited**: `https://prompt-app-dan.netlify.app/`
+- **Audit Tool**: `squirrelscan v0.0.78`
+- **Initial Health Score**: 62/100 (SEO/Crawlability errors due to broken domain references in sitemap/robots.txt and missing AI agent discovery specs).
 
 ---
 
-## 2. Avisos Encontrados
+## Mapped Issues & Target Files
 
-### Security (Score: 86)
+### 1. Crawlability & Domain Mismatch (HIGH / Error)
+- **Original Error**: `crawl/sitemap-exists` and `crawl/robots-txt` failing/misconfigured. `robots.txt` and `sitemap.xml` contained legacy domain `https://project-vwlgp.vercel.app/` instead of `https://prompt-app-dan.netlify.app/`.
+- **Target Files**:
+  - `public/robots.txt`
+  - `public/sitemap.xml`
+- **Refactoring Strategy**:
+  - Update `robots.txt` to point `Sitemap:` to `https://prompt-app-dan.netlify.app/sitemap.xml`.
+  - Update all `<loc>` entries in `sitemap.xml` to `https://prompt-app-dan.netlify.app/`.
 
-* **Aviso original:** `security/http-to-https` (1 HTTP URL(s) redirect to HTTPS)
-  * `http://prompt-app-dan.netlify.app/` redireciona para `https://prompt-app-dan.netlify.app/` com status `301`.
-* **Causa Raiz:** O redirecionamento de segurança está funcionando conforme esperado no Netlify.
-* **Estratégia de Refatoração:** Nenhuma ação necessária, pois o comportamento de redirecionamento 301 para HTTPS é a prática recomendada de segurança.
+### 2. AI Agent Experience & Discovery (MEDIUM / Warning)
+- **Original Error**: `ax/llms-txt` — No `/llms.txt` found.
+- **Target Files**:
+  - `public/llms.txt` [NEW]
+- **Refactoring Strategy**:
+  - Create a structured `/llms.txt` detailing the application capabilities, local-first offline storage, JSON schema formats, and navigation routes for AI agents.
+
+### 3. Netlify SPA Routing & Headers (MEDIUM / Warning)
+- **Original Error**: Potential SPA route redirection overriding static files on Netlify.
+- **Target Files**:
+  - `public/_redirects` [NEW]
+  - `public/_headers`
+- **Refactoring Strategy**:
+  - Add explicit `public/_redirects` rule `/*  /index.html  200` to support client-side React Router while maintaining raw file serving for `sitemap.xml`, `robots.txt`, `llms.txt`, and templates.
+
+### 4. SEO Fallback Metadata (MEDIUM / Warning)
+- **Original Error**: Outdated static dates in fallback HTML header and missing link rels.
+- **Target Files**:
+  - `index.html`
+- **Refactoring Strategy**:
+  - Update date published/modified in JSON-LD and fallback content. Ensure semantic tags and accessibility links are intact.
 
 ---
 
-## 3. Estratégia de Correção (Mapeamento Reverso)
-
-Modificaremos o arquivo [`netlify.toml`](file:///Users/PROJETOS-DEV/PROMPT-APP/netlify.toml) na seção de redirects para retornar `404` para os seguintes caminhos:
-* `/page-sitemap.xml`
-* `/news-sitemap.xml`
-* `/category-sitemap.xml`
-* `/post_tag-sitemap.xml`
-* `/author-sitemap.xml`
-* `/product-sitemap.xml`
-* `/tag-sitemap.xml`
-
-Isso elevará a pontuação de Crawlability para 100%, eliminando o erro de formato de sitemap inválido.
+## Validation Strategy
+1. **TypeScript Type Check**: `pnpm type-check`
+2. **Unit Tests**: `pnpm test`
+3. **Production Build**: `pnpm build`
+4. **Local Re-audit**: Run `squirrel audit` locally or verify asset generation.

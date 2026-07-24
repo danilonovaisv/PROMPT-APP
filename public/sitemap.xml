@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://project-vwlgp.vercel.app/</loc>
+    <loc>https://prompt-app-dan.netlify.app/</loc>
     <lastmod>2026-06-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://project-vwlgp.vercel.app/categorias</loc>
+    <loc>https://prompt-app-dan.netlify.app/categorias</loc>
     <lastmod>2026-06-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://project-vwlgp.vercel.app/menus</loc>
+    <loc>https://prompt-app-dan.netlify.app/menus</loc>
     <lastmod>2026-06-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://project-vwlgp.vercel.app/sobre</loc>
+    <loc>https://prompt-app-dan.netlify.app/sobre</loc>
     <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://project-vwlgp.vercel.app/contato</loc>
+    <loc>https://prompt-app-dan.netlify.app/contato</loc>
     <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://project-vwlgp.vercel.app/privacidade</loc>
+    <loc>https://prompt-app-dan.netlify.app/privacidade</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

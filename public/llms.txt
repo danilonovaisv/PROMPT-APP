@@ -1,0 +1,33 @@
+# Prompt App — Prompt Engineering & Workflow Management
+
+> Prompt App is a local-first web application designed for creating, organizing, and exporting structured prompts for Large Language Models (LLMs) with context menus, smart categories, and optional cloud synchronization.
+
+## Key Features
+
+- **Local-First Storage**: Instant access and offline functionality using IndexedDB (Dexie.js).
+- **Context Menus**: Reusable prompt modules and snippets for system roles, constraints, target audiences, and output formats.
+- **Structured Prompts**: JSON schema validation enforcing standardized prompt structures (roles, tasks, few-shot examples, and parameters).
+- **JSON Import/Export**: Import and export templates and bulk prompt packages seamlessly.
+- **Cloud Sync**: Bi-directional optional synchronization powered by Supabase.
+
+## Primary Routes
+
+- `/`: Home dashboard & prompt library editor
+- `/categorias`: Category management & grouping
+- `/menus`: Context menu definitions & variable shortcuts
+- `/sobre`: Project background & methodology
+- `/contato`: Contact & developer links
+- `/privacidade`: Privacy & data handling details
+
+## Templates & JSON Schemas
+
+Prompt App exports prompts in standard JSON format:
+- `PROMPT-TEMPLATE.json`: Single prompt definition template.
+- `MENU-TEMPLATE.json`: Context menu template.
+- `sample-menus-import.json`: Sample menus import pack.
+
+## Developer & Links
+
+- **Author**: Danilo Novais
+- **Repository**: https://github.com/danilonovaisv/PROMPT-APP
+- **Live Application**: https://prompt-app-dan.netlify.app/

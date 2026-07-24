@@ -1,755 +1,329 @@
-# 🧠 Prompt App
+# Prompt App
 
-> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.
+Prompt App e uma SPA em React + Vite para criar, organizar, testar, importar, exportar e sincronizar templates de prompt. O projeto segue um modelo local-first: o estado principal vive no navegador via IndexedDB com Dexie, e a sincronizacao com Supabase e opcional.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue?style=flat-square)
-![Vite](https://img.shields.io/badge/Vite-8.0.5-646CFF?style=flat-square&logo=vite)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0.2-3178C6?style=flat-square&logo=typescript)
-![React](https://img.shields.io/badge/React-19.0.0-61DAFB?style=flat-square&logo=react)
-![Dexie](https://img.shields.io/badge/Dexie.js-4.0.1-008080?style=flat-square)
-![Supabase](https://img.shields.io/badge/Supabase-Synced-3ECF8E?style=flat-square&logo=supabase)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)
+## Stack real do projeto
 
----
+- React 19
+- Vite 8
+- TypeScript
+- React Router 7
+- Dexie + dexie-react-hooks
+- Supabase JS 2
+- Supabase Realtime
+- Jest + Testing Library
+- Playwright
+- ESLint
+- Vercel rewrite para SPA em `vercel.json`
 
-## 📋 Índice
+## O que o app faz hoje
 
-- [Visão Geral](#-visão-geral)
-- [Tech Stack](#-tech-stack)
-- [Funcionalidades](#-funcionalidades)
-- [Início Rápido](#-início-rápido)
-- [Arquitetura](#-arquitetura)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [Guia de Uso](#-guia-de-uso)
-- [Schema JSON de Exportação](#-schema-json-de-exportação)
-- [Menus de Contexto Hierárquicos](#-menus-de-contexto-hierárquicos)
-- [Deploy](#-deploy)
-- [Performance / Cache / Netlify usage limits](#-performance--cache--netlify-usage-limits)
-- [Scripts Disponíveis](#-scripts-disponíveis)
-- [Personalização](#-personalização)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
+- Gerencia categorias de templates.
+- Gerencia menus de contexto customizaveis.
+- Cria templates estruturados com payload tipado.
+- Compila template + selecao do usuario em prompt final.
+- Mantem memoria fixa por template.
+- Importa e exporta JSON individual e em lote.
+- Funciona offline com IndexedDB.
+- Sincroniza categorias, menus, prompts e memoria com Supabase quando configurado.
+- Usa Realtime para refletir mudancas entre abas e dispositivos.
 
----
+## Arquitetura
 
-## 🌐 Visão Geral
+### Frontend
 
-O **Prompt App** é uma ferramenta local-first para engenharia de prompts profissional. Ele permite:
+- A aplicacao e uma SPA com `BrowserRouter`.
+- As telas principais estao em `src/pages/`.
+- Os formularios do editor ficam em `src/components/editor/`.
+- O estado de cloud sync fica em `src/context/CloudSyncContext.tsx`.
 
-- ✅ Criar prompts estruturados com **system role**, **task**, **context**, **constraints** e **negative prompt**
-- ✅ Organizar prompts em **categorias** personalizáveis com ícones e cores
-- ✅ Configurar **menus de contexto hierárquicos** (Tom, Público, Idioma, Estilo) com sub-opções
-- ✅ Exportar em **formato JSON cognitivo** — otimizado para alimentar LLMs
-- ✅ Importar/exportar prompts em lote com backup completo
-- ✅ **Sincronização em Nuvem (Cloud Sync)** — Sincronize dados entre dispositivos via Supabase
-- ✅ **Offline First** — Funciona 100% offline via IndexedDB, sincronizando quando há conexão
+### Persistencia local
 
----
+- O banco local usa Dexie em `src/db/database.ts`.
+- As colecoes principais sao:
+  - `categories`
+  - `prompts`
+  - `contextMenus`
+  - `promptMemory`
+- O schema Dexie possui historico de migracoes versionadas dentro do proprio arquivo.
 
-## ⚡ Tech Stack
+### Supabase
 
-| Camada | Tecnologia | Versão |
-| :--- | :--- | :--- |
-| **Build Tool** | Vite | 8.0.5 |
-| **Linguagem** | TypeScript | 6.0.2 |
-| **Framework** | React | 19.0.0 |
-| **Banco de Dados** | Dexie.js | 4.0.1 |
-| **Backend/Sync** | Supabase | Latest |
-| **Validação** | Zod | 3.24.2 |
-| **Roteamento** | React Router | 7.3.0 |
-| **Ícones** | Lucide React | 0.477.0 |
-| **Tipografia** | Inter (Google Fonts) | — |
-| **Estilização** | Vanilla CSS (sem Tailwind) | — |
+- O cliente do browser fica em `src/lib/supabase.ts`.
+- A resolucao das variaveis de ambiente fica em `src/lib/supabaseConfig.ts`.
+- O sync principal fica em `src/services/syncService.ts`.
+- Os handlers de sync por entidade ficam em `src/services/sync/`.
+- O Realtime fica em `src/services/realtimeService.ts`.
 
-> **Nota:** A aplicação segue o paradigma **Local-First**. Todos os dados são persistidos no navegador via IndexedDB. A sincronização com o Supabase é opcional e ocorre automaticamente caso as chaves de API sejam configuradas.
+Tabelas publicas encontradas no projeto Supabase conectado:
 
----
+- `categories`
+- `client_errors`
+- `context_menus`
+- `media_assets`
+- `prompt_memory_context`
+- `prompts`
 
-## ✨ Funcionalidades
+Observacao: nem toda tabela remota e necessariamente usada pela UI atual. O nucleo funcional do app gira em torno de `categories`, `context_menus`, `prompts` e `prompt_memory_context`.
 
-### 🏠 Dashboard (Home)
+### Deploy
 
-- Visão geral de todas as categorias com contador de prompts
-- Cards com ícones e cores personalizáveis
-- Navegação rápida para categorias e editor
+- O projeto esta configurado como SPA em Vercel via rewrite para `index.html`.
+- O arquivo atual e [vercel.json](/Users/PROJETOS-DEV/PROMPT-APP/vercel.json).
+- O padrao configurado bate com a documentacao da Vercel para fallback de SPA.
 
-### 📁 Gerenciador de Categorias
+## Estrutura relevante
 
-- CRUD completo de categorias
-- 32 emojis disponíveis como ícones
-- 16 cores na paleta de seleção
-- Exclusão com confirmação (remove prompts associados)
+```text
+src/
+  components/
+    editor/
+    layout/
+    menu-manager/
+    ui/
+  context/
+  db/
+  hooks/
+  lib/
+  models/
+  pages/
+  services/
+    storage/
+    sync/
+  styles/
+  utils/
 
-### ✏️ Editor de Prompts
+supabase/
+  config.toml
+  functions/
+  migrations/
+  seed.sql
 
-O coração da aplicação. Campos disponíveis:
-
-| Campo                 | Descrição                                           |
-| :-------------------- | :-------------------------------------------------- |
-| **Título**            | Nome identificador do prompt                        |
-| **System Role**       | Instrução de personalidade para o LLM               |
-| **Tarefa**            | O que o modelo deve fazer                           |
-| **Contexto**          | Informações de background relevantes                |
-| **Menus de Contexto** | Seleção hierárquica de Tom, Público, Idioma, Estilo |
-| **Restrições**        | Lista de regras que o modelo DEVE seguir            |
-| **Negative Prompt**   | O que o modelo NÃO deve fazer                       |
-| **Schema de Saída**   | Formato (texto/json/markdown/imagem/code) e estrutura esperada  |
-| **URL de Referência** | String opcional, não buscada automaticamente; apenas repassada como contexto |
-
-### 🧩 Menus de Contexto Hierárquicos (v2)
-
-- Menus totalmente customizáveis pelo usuário
-- Opções de **nível 1** (ex: Formal, Informal, Técnico)
-- Sub-opções de **nível 2** (ex: Formal → Corporativo, Acadêmico, Jurídico)
-- UI com chevrons animados para expandir/colapsar sub-opções
-- Badges visuais indicando quantidade de sub-opções selecionadas
-
-### 📤 Importar / Exportar
-
-- **Exportar individual:** Download `.json` de um único prompt
-- **Exportar todos:** Backup completo em formato `BulkExport` (inclui categorias, menus e prompts)
-- **Importar:** Lê arquivos `.json` — detecta automaticamente formato individual ou bulk
-- **Copiar JSON:** Copia o prompt formatado direto para a área de transferência
-- **Preview JSON:** Visualização inline do JSON antes de exportar
-
-### ☁️ Cloud Sync & Autenticação
-
-- **Backup Automático:** Sincronização bi-direcional entre IndexedDB e Supabase
-- **Conflitos Inteligentes:** Resolução baseada em timestamps (`updated_at`)
-- **Realtime:** Atualizações em tempo real entre diferentes abas ou dispositivos
-- **Soft-deletes:** Recuperação de itens excluídos via sincronização
-
----
-
-## 🚀 Início Rápido
-
-### Pré-requisitos
-
-- **Node.js** ≥ 18.x
-- **pnpm** ≥ 9.x (ou equivalente: npm, yarn, bun)
-
-### Instalação
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/danilonovaisv/PROMPT-APP.git
-cd prompt-app
-
-# 2. Instale as dependências
-pnpm install
-
-# 3. Inicie o servidor de desenvolvimento
-pnpm run dev
+tests/
+  unit/
+  integration/
+  e2e/
+  mocks/
 ```
 
-A aplicação estará disponível em **<http://localhost:5173/>**
+## Fluxo de dados
 
-### 🔐 Variáveis de ambiente (Supabase)
+### Modo local
 
-Para usar autenticação e sincronização em nuvem (incluindo envio de tarefas/prompts para a nuvem), gere o arquivo de ambiente local e preencha as chaves do Supabase:
+1. O usuario cria ou edita um template.
+2. O estado e salvo no Dexie.
+3. O app continua funcional sem Supabase.
+
+### Modo cloud sync
+
+1. O usuario autentica via Supabase Auth.
+2. O app inicializa Realtime para as tabelas principais.
+3. Alteracoes locais entram no pipeline de sync.
+4. O app faz upload ou download por fases:
+   - Categorias
+   - Menus
+   - Prompts
+   - Memoria fixa
+
+## Requisitos
+
+- Node.js 18 ou superior
+- pnpm
+
+Opcional, mas recomendado para deploy e operacao em Vercel:
+
+- `npm i -g vercel`
+
+## Instalacao
+
+```bash
+pnpm install
+```
+
+## Desenvolvimento local
+
+```bash
+pnpm dev
+```
+
+App em desenvolvimento:
+
+- `http://localhost:5173`
+
+## Variaveis de ambiente
+
+O projeto funciona sem Supabase, mas recursos de autenticacao e sync exigem configuracao.
+
+Crie o template:
 
 ```bash
 pnpm run setup:cloud-env
 ```
 
-Isso cria `.env.local` com o template:
+Isso gera um `.env.local` com o formato:
 
 ```env
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+
+# Optional legacy fallback
+# VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY=YOUR_LEGACY_PUBLISHABLE_KEY
+
+# Optional observability
+# VITE_SENTRY_DSN=YOUR_SENTRY_DSN
 ```
 
-> Sem essas variáveis, o app continua funcionando localmente (IndexedDB), mas recursos de nuvem ficam desativados e exibem mensagem de configuração ausente.
+Variaveis reconhecidas pelo app:
 
-### Build de Produção
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY`
+- `VITE_SENTRY_DSN`
+
+Importante:
+
+- Nao exponha `SUPABASE_SERVICE_ROLE_KEY` no frontend.
+- Nao versione `.env`, `.env.local` ou qualquer credencial.
+
+## Supabase local
+
+O repositorio inclui configuracao de Supabase CLI em `supabase/config.toml`.
+
+Pontos relevantes:
+
+- API local na porta `54321`
+- Studio local na porta `54323`
+- Inbucket na porta `54324`
+- Realtime habilitado
+- Storage habilitado
+- Seed configurado com `supabase/seed.sql`
+
+Se voce usa Supabase CLI no fluxo local, os arquivos principais sao:
+
+- `supabase/config.toml`
+- `supabase/migrations/`
+- `supabase/seed.sql`
+
+## Scripts
+
+### App
 
 ```bash
-# Compila TypeScript + gera bundle otimizado
-pnpm run build
-
-# Preview local do build de produção
-pnpm run preview
+pnpm dev
+pnpm build
+pnpm preview
+pnpm lint
+pnpm type-check
+pnpm test
+pnpm test:coverage
+pnpm test:watch
 ```
 
-O output é gerado na pasta `dist/`.
+### E2E
 
----
+```bash
+pnpm test:e2e
+pnpm test:e2e:ui
+pnpm test:e2e:debug
+```
 
-## 🏗️ Arquitetura
+### Banco e ambiente
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+pnpm db:studio
+pnpm setup:cloud-env
+```
+
+### Limpeza
+
+```bash
+pnpm clean
+pnpm clean:build
+pnpm clean:cache
+pnpm clean:reports
+pnpm clean:modules
+pnpm clean:reset
+```
+
+## Testes e verificacao
+
+Fluxo minimo recomendado antes de merge:
+
+```bash
+pnpm lint
+pnpm type-check
+pnpm test
+pnpm build
+```
+
+O projeto tambem possui:
+
+- testes unitarios em `tests/unit/`
+- testes de integracao em `tests/integration/`
+- testes E2E em `tests/e2e/`
+
+## Deploy em Vercel
+
+O deploy esperado hoje e de SPA estatica.
+
+Build command:
+
+```bash
+pnpm build
+```
+
+Output directory:
 
 ```text
-┌──────────────────────────────────────────────────┐
-│                    Browser                        │
-│  ┌────────────────────────────────────────────┐  │
-│  │              React 19 SPA                  │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌─────────┐  │  │
-│  │  │  Pages   │  │Components│  │ Context  │  │  │
-│  │  │          │  │          │  │ (Toast)  │  │  │
-│  │  └────┬─────┘  └────┬─────┘  └────┬─────┘  │  │
-│  │       │              │              │       │  │
-│  │       └──────────────┼──────────────┘       │  │
-│  │                      │                       │  │
-│  │  ┌───────────────────┼───────────────────┐  │  │
-│  │  │           Dexie.js ORM                │  │  │
-│  │  │  ┌──────────┐ ┌───────┐ ┌──────────┐ │  │  │
-│  │  │  │categories│ │prompts│ │contextMenus│ │  │  │
-│  │  │  └──────────┘ └───────┘ └──────────┘ │  │  │
-│  │  └───────────────────┼───────────────────┘  │  │
-│  │                      │                       │  │
-│  │              ┌───────┴────────┐              │  │
-│  │              │   IndexedDB    │              │  │
-│  │              │  (PromptAppDB) │              │  │
-│  │              └────────────────┘              │  │
-│  └────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────┘
+dist
 ```
 
-### Padrões Adotados
+Configuracao atual:
 
-- **Local-First:** Zero dependência de servidor/API
-- **Strict TypeScript:** `noUnusedLocals`, `noUnusedParameters`, `strict: true`
-- **Path Aliases:** `@/` resolve para `src/` (configurado em `vite.config.ts` e `tsconfig.app.json`)
-- **CSS Utilitário:** Classes reutilizáveis em `index.css` — sem Tailwind, sem inline styles
-- **Database Versioning:** Migrações automáticas via `db.version()` do Dexie.js
+- rewrite de rotas para `index.html`
+- adequada para `BrowserRouter`
 
----
-
-## 📂 Estrutura de Pastas
-
-```text
-prompt-app/
-├── index.html                   # Entry point HTML
-├── vite.config.ts               # Configuração do Vite (plugins, aliases)
-├── tsconfig.json                # TypeScript config (referências)
-├── tsconfig.app.json            # TS config da app (strict, paths)
-├── tsconfig.node.json           # TS config do Node (scripts)
-├── package.json                 # Dependências e scripts
-├── netlify.toml                 # Configuração de deploy Netlify
-│
-├── public/                      # Assets estáticos (favicon, etc.)
-│
-└── src/
-     ├── main.tsx                 # Bootstrap do React
-     ├── App.tsx                  # Roteamento principal
-     ├── index.css                # Design system (variáveis, componentes, utilitários)
-     ├── instrument.ts            # Monitoramento de erros (Sentry)
-     ├── vite-env.d.ts            # Tipos do Vite
-     │
-     ├── models/
-     │   ├── types.ts             # Interfaces e tipos (Category, Prompt, ContextMenu, etc.)
-     │   └── promptSchema.ts      # Validação Zod para prompts
-     │
-     ├── services/
-     │   ├── syncService.ts       # Sincronização inteligente com Supabase
-     │   └── supabaseClient.ts    # Configuração do cliente Supabase
-     │
-     ├── hooks/
-     │   └── useAutoSync.ts        # Hook para sincronização automática
-     │
-     ├── context/
-     │   └── ToastContext.tsx     # Provider de notificações toast
-     │
-     ├── db/
-     │   └── database.ts          # Dexie.js — schema, migrações, seed data
-    │
-    ├── components/
-    │   ├── Layout.tsx            # Shell da app (sidebar + conteúdo)
-    │   ├── SEO.tsx               # Componente de Meta Tags e SEO
-    │   └── ImportExportModal.tsx # Modal de importar/exportar prompts
-    │
-    ├── pages/
-    │   ├── HomePage.tsx          # Dashboard com categorias
-    │   ├── CategoryPage.tsx      # Lista de prompts de uma categoria
-    │   ├── CategoryManagerPage.tsx # CRUD de categorias
-    │   ├── EditorPage.tsx        # Editor completo de prompts
-    │   └── MenuManagerPage.tsx   # CRUD de menus de contexto hierárquicos
-    │
-    └── utils/
-        ├── constants.ts         # Ícones e paleta de cores
-        ├── backupManager.ts     # Sistema de backup automático e manual
-        ├── exportJson.ts        # Exportação JSON (individual e bulk)
-        └── importJson.ts        # Importação JSON (individual e bulk)
-
-├── .context/                    # Memória do Agente (Ghost System Memory)
-│   ├── knowledge-graph.md       # Mapa de arquitetura e dependências
-│   ├── design-tokens.md         # Definições visuais extraídas
-│   └── logs/                    # Histórico de ajustes do sistema
-```
-
----
-
-## 📖 Guia de Uso
-
-### 1. Criar uma Categoria
-
-1. Navegue até **Gerenciar Categorias** no sidebar
-2. Clique em **+ Nova Categoria**
-3. Escolha um nome, ícone (emoji) e cor
-4. Clique em **Salvar**
-
-### 2. Criar um Prompt
-
-1. Navegue até uma categoria
-2. Clique em **+ Novo Prompt**
-3. Preencha os campos do editor:
-   - **System Role:** Define a personalidade do LLM
-   - **Tarefa:** O objetivo principal
-   - **Contexto:** Informações relevantes
-   - **Menus de Contexto:** Selecione opções de Tom, Público, Idioma e Estilo
-   - **Restrições:** Regras obrigatórias
-   - **Negative Prompt:** O que evitar
-   - **Schema de Saída:** Formato (texto/json/markdown/imagem/code) e estrutura esperados
-   - **URL de Referência (opcional):** Apenas string; não fazemos fetch automático
-4. Clique em **Salvar Prompt**
-
-### 3. Exportar Prompts
-
-- **Prompt individual:** No editor, clique em **Baixar** (ícone de download)
-- **Copiar JSON:** Clique em **Copiar** para copiar direto para a clipboard
-- **Exportar tudo:** No sidebar, clique em **Exportar Todos**
-
-### 4. Importar Prompts
-
-1. No sidebar, clique em **Importar Prompts**
-2. Selecione um arquivo `.json` (individual ou bulk export)
-3. A app detecta automaticamente o formato e importa os dados
-
-### 5. Gerenciar Menus de Contexto
-
-1. No sidebar, clique em **Menus de Contexto**
-2. Visualize os menus existentes com sua estrutura em árvore
-3. Clique em **+ Novo Menu** para criar um novo
-4. Adicione opções e sub-opções conforme necessário
-5. Clique em **Salvar Menu**
-
----
-
-## 📊 Schema JSON de Exportação
-
-### Prompt Individual (`PromptExportFormat`)
-
-```json
-{
-  "system_role": "Você é um especialista em copywriting...",
-  "task": "Escreva um email de vendas...",
-  "input_data": {
-    "context": "A empresa X vende software B2B...",
-    "menus_selecionados": {
-      "tom": {
-        "opcao": "formal",
-        "sub_opcoes": ["corporativo"]
-      },
-      "publico": {
-        "opcao": "executivos",
-        "sub_opcoes": []
-      },
-      "idioma": {
-        "opcao": "pt-br",
-        "sub_opcoes": []
-      },
-      "estilo": {
-        "opcao": "detalhado",
-        "sub_opcoes": ["com_exemplos"]
-      }
-    }
-  },
-  "constraints": ["Máximo de 500 palavras", "Incluir CTA no final"],
-  "negative_prompt": ["Não usar jargões técnicos", "Evitar tom agressivo"],
-  "output_schema": {
-    "formato": "texto",
-    "estrutura": "Assunto, Saudação, Corpo (3 parágrafos), CTA, Assinatura"
-  },
-  "few_shot_examples": [
-    {
-      "input": "Empresa de SaaS, público: CTOs",
-      "output": "Assunto: Reduza 40% do tempo de deploy..."
-    }
-  ]
-}
-```
-
-### Exportação em Lote (`BulkExport`)
-
-```json
-{
-  "app": "Prompt App",
-  "version": "2.0.0",
-  "exportedAt": "2026-02-10T19:00:00.000Z",
-  "contextMenus": [
-    {
-      "menuId": "tom",
-      "menuName": "Tom",
-      "description": "Define o tom de comunicação do prompt",
-      "options": [
-        {
-          "label": "Formal",
-          "value": "formal",
-          "subOptions": [
-            { "label": "Corporativo", "value": "corporativo" },
-            { "label": "Acadêmico", "value": "academico" }
-          ]
-        }
-      ]
-    }
-  ],
-  "prompts": [
-    {
-      "title": "Email de Vendas",
-      "category": "Copywriting",
-      "prompt": { "...PromptExportFormat" }
-    }
-  ]
-}
-```
-
----
-
-## 🧩 Menus de Contexto Hierárquicos
-
-A v2.0 introduziu um sistema de menus totalmente customizáveis:
-
-### Menus Pré-configurados
-
-| Menu        | Opções                                                                          | Sub-opções (exemplos)                        |
-| :---------- | :------------------------------------------------------------------------------ | :------------------------------------------- |
-| **Tom**     | Formal, Informal, Técnico, Didático, Persuasivo, Neutro                         | Formal → Corporativo, Acadêmico, Jurídico    |
-| **Público** | Desenvolvedores, Executivos, Estudantes, Público Geral, Especialistas, Crianças | Desenvolvedores → Júnior, Sênior, Full Stack |
-| **Idioma**  | Português (BR), Inglês, Espanhol, Francês, Alemão                               | Inglês → Americano, Britânico                |
-| **Estilo**  | Conciso, Detalhado, Passo a passo, Lista, Narrativo, Comparativo                | Narrativo → Storytelling, Metáforas          |
-
-### Modelo de Dados
-
-```typescript
-interface ContextMenu {
-  id?: number;
-  menuId: string; // slug único ("tom", "frameworks", etc.)
-  menuName: string; // nome legível ("Tom", "Frameworks")
-  description: string; // propósito do menu
-  options: ContextMenuOption[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface ContextMenuOption {
-  label: string; // rótulo visível
-  value: string; // valor interno
-  subOptions: ContextMenuSubOption[];
-}
-
-interface ContextMenuSubOption {
-  label: string;
-  value: string;
-}
-```
-
-### Como funciona no Editor
-
-1. O **Editor** carrega todos os menus do banco `contextMenus`
-2. As opções de nível 1 são exibidas como **tags** clicáveis
-3. Ao selecionar uma opção, um **chevron** aparece para expandir as sub-opções
-4. As sub-opções são exibidas abaixo como tags menores
-5. Um **badge** numérico indica quantas sub-opções foram selecionadas
-6. Todas as seleções são salvas no campo `contextMenus` do prompt como `MenuSelectionsMap`
-
----
-
-## 🚢 Deploy
-
-### Netlify (Recomendado)
-
-O projeto já inclui `netlify.toml` pré-configurado:
-
-```toml
-[build]
-  command = "pnpm run build"
-  publish = "dist"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-```
-
-**Passos:**
-
-1. Conecte o repositório GitHub ao [Netlify](https://app.netlify.com)
-2. O build é detectado automaticamente
-3. Cada push na branch principal dispara um novo deploy
-
-**Ou via CLI:**
+Comandos uteis, se voce usa Vercel CLI:
 
 ```bash
-# Instalar CLI do Netlify
-pnpm install -g netlify-cli
-
-# Login
-netlify login
-
-# Deploy
-netlify deploy --prod --dir=dist
+vercel link
+vercel env pull
+vercel deploy
 ```
 
-### Vercel
+## Observabilidade
 
-```bash
-# Instalar CLI do Vercel
-pnpm install -g vercel
+O projeto inclui instrumentacao cliente via Sentry:
 
-# Deploy
-vercel --prod
-```
+- `src/instrument.ts`
+- `@sentry/browser`
+- `@sentry/react`
+- `@sentry/vite-plugin`
 
-> A configuração SPA será detectada automaticamente. Caso contrário, adicione um `vercel.json`:
+Se `VITE_SENTRY_DSN` nao estiver configurada, a observabilidade externa continua opcional.
 
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
+## Notas importantes de manutencao
 
-### GitHub Pages
+- O projeto nao e Next.js. E uma SPA em Vite.
+- O estado principal e local-first, nao server-first.
+- O fluxo de sync com Supabase foi recentemente endurecido para reduzir egress desnecessario.
+- O README antigo estava desatualizado em stack, deploy e estrutura de pastas; este arquivo foi alinhado ao estado real do repositorio em 2026-07-24.
 
-```bash
-# Build
-pnpm run build
+## Arquivos chave
 
-# Deploy manual (ou usar github-pages action)
-npx gh-pages -d dist
-```
+- [package.json](/Users/PROJETOS-DEV/PROMPT-APP/package.json)
+- [vercel.json](/Users/PROJETOS-DEV/PROMPT-APP/vercel.json)
+- [src/App.tsx](/Users/PROJETOS-DEV/PROMPT-APP/src/App.tsx)
+- [src/db/database.ts](/Users/PROJETOS-DEV/PROMPT-APP/src/db/database.ts)
+- [src/lib/supabase.ts](/Users/PROJETOS-DEV/PROMPT-APP/src/lib/supabase.ts)
+- [src/lib/supabaseConfig.ts](/Users/PROJETOS-DEV/PROMPT-APP/src/lib/supabaseConfig.ts)
+- [src/services/syncService.ts](/Users/PROJETOS-DEV/PROMPT-APP/src/services/syncService.ts)
+- [src/services/realtimeService.ts](/Users/PROJETOS-DEV/PROMPT-APP/src/services/realtimeService.ts)
+- [scripts/setup-cloud-env.sh](/Users/PROJETOS-DEV/PROMPT-APP/scripts/setup-cloud-env.sh)
 
-> **Nota:** Para GitHub Pages com path prefix, configure `base` no `vite.config.ts`:
+## Licenca
 
-```ts
-export default defineConfig({
-  base: "/prompt-app/",
-  plugins: [react()],
-  // ...
-});
-```
-
-### Docker
-
-```dockerfile
-# Dockerfile
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-COPY . .
-RUN pnpm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-```
-
-```nginx
-# nginx.conf
-server {
-    listen 80;
-    root /usr/share/nginx/html;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
-
-```bash
-docker build -t prompt-app .
-docker run -p 3000:80 prompt-app
-```
-
----
-
-## 🚦 Performance / Cache / Netlify usage limits
-
-### Regras de cache (Netlify)
-
-As regras de cache e headers ficam em `public/_headers` e são copiadas para `dist/_headers` durante o build.
-
-- `/*` (HTML): `Cache-Control: public, max-age=0, must-revalidate`
-- `/assets/*` (bundles Vite com hash): `Cache-Control: public, max-age=31536000, immutable`
-- Fontes (`.woff2`, `.woff`, `.ttf`, `.otf`): cache longo imutável
-- `/*.map`: `no-store` + `noindex`
-
-> Observação: para evitar duplicidade de regras, os headers de cache estão centralizados no `public/_headers` (não em `[[headers]]` do `netlify.toml`).
-
-### Build menor e mais cacheável
-
-- `vite.config.ts` está com `build.sourcemap = false` para produção.
-- O projeto já usa `manualChunks` para separar `vendor-react`, `vendor-supabase`, etc., melhorando reaproveitamento de cache entre deploys.
-
-### Como verificar tamanho do `dist`
-
-```bash
-# build de produção
-pnpm run build
-
-# tamanho total do output
-du -sh dist
-
-# maiores arquivos gerados
-find dist/assets -type f -printf "%s %p\n" | sort -nr | head -n 15
-```
-
-### Como validar headers no deploy
-
-Depois do deploy no Netlify, teste:
-
-```bash
-curl -I https://SEU-SITE.netlify.app/
-curl -I https://SEU-SITE.netlify.app/assets/index-XXXXXXXX.js
-```
-
-Esperado:
-
-- HTML com `Cache-Control: public, max-age=0, must-revalidate`
-- Asset versionado com `Cache-Control: public, max-age=31536000, immutable`
-
-### Redução de tráfego abusivo/hotlink
-
-- Coloque o domínio atrás do Cloudflare (plano free já ajuda com cache de edge e proteção básica).
-- Considere WAF/rate-limit para bloquear scraping agressivo.
-- Evite publicar links diretos de arquivos pesados fora do app (reduz hotlink).
-- Para imagens grandes no repositório, prefira `.webp`/`.avif` quando possível.
-
----
-
-## 📜 Scripts Disponíveis
-
-| Script | Comando | Descrição |
-| :--- | :--- | :--- |
-| **Dev** | `pnpm run dev` | Servidor de desenvolvimento com HMR (Vite) |
-| **Build** | `pnpm run build` | Type-check + bundle de produção |
-| **Preview** | `pnpm run preview` | Serve o build de produção localmente |
-| **Type Check** | `pnpm run type-check` | Verifica tipos sem emitir arquivos |
-| **Lint** | `pnpm run lint` | Analisa código com ESLint |
-| **Test** | `pnpm run test` | Executa testes unitários (Jest) |
-| **Test:E2E** | `pnpm run test:e2e` | Executa testes ponta-a-ponta (Playwright) |
-| **Config Cloud** | `pnpm run setup:cloud-env` | Gera template `.env.local` para Supabase |
----
-
-## 🎨 Personalização
-
-### Design Tokens
-
-As variáveis CSS estão definidas em `src/index.css` sob `:root`:
-
-| Token                    | Descrição              | Default                     |
-| :----------------------- | :--------------------- | :-------------------------- |
-| `--color-primary`        | Cor primária de ação   | `#0048ff`                   |
-| `--color-bg-void`        | Fundo principal (void) | `#040013`                   |
-| `--color-bg-card`        | Fundo de cards         | `rgba(255, 255, 255, 0.03)` |
-| `--color-border`         | Bordas                 | `rgba(255, 255, 255, 0.08)` |
-| `--color-text-primary`   | Texto principal        | `#f0f0f0`                   |
-| `--color-text-secondary` | Texto secundário       | `#8b8b9e`                   |
-| `--color-success`        | Feedback positivo      | `#00d68f`                   |
-| `--color-danger`         | Feedback negativo      | `#ff4466`                   |
-| `--radius-md`            | Border radius padrão   | `12px`                      |
-| `--transition-fast`      | Transição rápida       | `0.15s ease`                |
-
-### Categorias Iniciais
-
-Você pode modificar as categorias seed em `src/db/database.ts` na função `seedDatabase()`. As categorias são criadas apenas se o banco estiver vazio.
-
-### Menus de Contexto Iniciais
-
-Os menus seed (Tom, Público, Idioma, Estilo) também estão em `src/db/database.ts`. Depois do primeiro acesso, podem ser editados diretamente pela UI em `/menus`.
-
----
-
-## 🛠️ Desenvolvimento
-
-### Requisitos
-
-```bash
-node --version   # ≥ 18.x
-pnpm --version    # ≥ 9.x
-```
-
-### Configuração do Editor
-
-**VS Code (recomendado):**
-
-```json
-// .vscode/settings.json
-{
-  "editor.formatOnSave": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
-}
-```
-
-### Path Aliases
-
-O alias `@/` está configurado em dois lugares:
-
-```ts
-// vite.config.ts
-resolve: {
-    alias: {
-        '@': '/src',
-    },
-},
-```
-
-```json
-// tsconfig.app.json
-"paths": {
-    "@/*": ["src/*"]
-}
-```
-
-### Banco de Dados
-
-O IndexedDB é gerenciado pelo [Dexie.js](https://dexie.org/). As tabelas são:
-
-| Tabela         | Campos Indexados                                | Descrição                   |
-| :------------- | :---------------------------------------------- | :-------------------------- |
-| `categories`   | `++id, name, createdAt`                         | Categorias de prompts       |
-| `prompts`      | `++id, categoryId, title, createdAt, updatedAt` | Prompts completos           |
-| `menuOptions`  | `++id, menuKey, value`                          | Opções de menu (v1, legado) |
-| `contextMenus` | `++id, menuId, menuName, createdAt`             | Menus hierárquicos (v2)     |
-
-**Migrações:** Ao alterar o schema, crie uma nova versão em `database.ts`:
-
-```ts
-db.version(3)
-  .stores({
-    // ... schema atualizado
-  })
-  .upgrade(async (tx) => {
-    // ... lógica de migração
-  });
-```
-
----
-
-## 🤝 Contribuição
-
-1. **Fork** o repositório
-2. Crie uma branch de feature: `git checkout -b feature/minha-feature`
-3. Faça commit das mudanças: `git commit -m 'feat: minha feature'`
-4. Push para a branch: `git push origin feature/minha-feature`
-5. Abra um **Pull Request**
-
-### Convenções
-
-- **Commits:** Seguir [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `refactor:`)
-- **Código:** TypeScript strict, sem inline styles, CSS utility classes em `index.css`
-- **Componentes:** Um arquivo por componente, exports default
-
----
-
-## 📄 Licença
-
-MIT © [Danilo Novais](https://github.com/danilonovaisv)
-
----
-
-<p align="center">
-  <strong>Prompt App v2.0.0</strong> — Feito com 🧠 e ☕ para engenheiros de IA
-</p>
+Uso interno, salvo definicao diferente do proprietario do repositorio.
