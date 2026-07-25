@@ -127,38 +127,38 @@ export type SyncStatus = 'pending' | 'synced' | 'error';
 
 export interface BaseRemoteEntity {
   id: number;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   is_deleted: boolean;
 }
 
 export interface RemoteCategory extends BaseRemoteEntity {
   name: string;
-  icon: string;
-  color: string;
+  icon: string | null;
+  color: string | null;
 }
 
 export interface RemoteContextMenu extends BaseRemoteEntity {
   menu_id: string;
   menu_name: string;
-  description: string;
-  selection_mode: MenuSelectionMode;
-  options: ContextMenuOption[];
+  description: string | null;
+  selection_mode: MenuSelectionMode | string | null;
+  options: ContextMenuOption[] | unknown;
 }
 
 export interface RemotePrompt extends BaseRemoteEntity {
   user_id: string;
   category_id: number | null;
   title: string;
-  prompt_payload_jsonb: TemplatePayload;
-  selected_menu_ids: number[];
+  prompt_payload_jsonb: TemplatePayload | unknown;
+  selected_menu_ids: number[] | unknown;
   schema_version: string;
   output_format: string;
   language: string;
   reference_url: string | null;
-  few_shot_examples: FewShotExample[];
-  selection_payload_jsonb?: UserSelection;
-  compiled_payload_jsonb?: CompiledPromptPayload;
+  few_shot_examples: FewShotExample[] | unknown;
+  selection_payload_jsonb?: UserSelection | unknown;
+  compiled_payload_jsonb?: CompiledPromptPayload | unknown;
 }
 
 export interface PromptMemory {
@@ -179,8 +179,8 @@ export interface RemotePromptMemory {
   key: string;
   value: string;
   template_id: string;
-  is_deleted: boolean;
+  is_deleted: boolean | null;
   deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }

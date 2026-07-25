@@ -177,7 +177,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     for (const remote of remoteCategories) {
       const local = localCategoriesMap.get(remote.id);
       if (local) {
-        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at || 0);
         const localUpdated = getLocalUpdatedAt(local);
 
         if (remoteUpdated > localUpdated) {
@@ -204,7 +204,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     for (const remote of remotePrompts) {
       const local = localPromptsMap.get(remote.id);
       if (local) {
-        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at || 0);
         const localUpdated = new Date(
           local.updatedAt || local.createdAt,
         );
@@ -232,7 +232,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     for (const remote of remoteMenus) {
       const local = localMenusMap.get(remote.id);
       if (local) {
-        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at || 0);
         const localUpdated = new Date(local.updatedAt || local.createdAt);
 
         if (remoteUpdated > localUpdated) {
@@ -257,7 +257,7 @@ export async function detectConflicts(): Promise<AssetUpdate[]> {
     for (const remote of remoteMemory) {
       const local = localMemoryMap.get(`${remote.template_id}|${remote.key}`);
       if (local) {
-        const remoteUpdated = new Date(remote.updated_at || remote.created_at);
+        const remoteUpdated = new Date(remote.updated_at || remote.created_at || 0);
         const localUpdated = new Date(local.updatedAt || local.createdAt);
 
         if (remoteUpdated > localUpdated) {
@@ -513,91 +513,109 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
 
   console.log(`📤 Enviando mudanças locais para ${update.type} #${update.id}`);
 
-  let table = "";
-  let payload: Record<string, unknown> = {};
+  type Json = import('@/lib/supabase.types').Json;
+
+  let newRemoteId: number | string | undefined;
 
   switch (update.type) {
     case "category": {
       const category = localItem as Category;
-      table = "categories";
-      payload = {
+      const payload = {
         name: category.name,
         icon: category.icon,
         color: category.color,
         user_id: session.user.id,
+        updated_at: new Date().toISOString(),
       };
+      if (localItem.remoteId) {
+        const { error } = await supabase.from("categories").update(payload).eq("id", localItem.remoteId as number).eq("user_id", session.user.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("categories").insert({ ...payload, created_at: new Date().toISOString() }).select("id").single();
+        if (error) throw error;
+        newRemoteId = data.id;
+      }
       break;
     }
     case "prompt": {
       const prompt = localItem as Prompt;
       const promptSummary = getPromptSummaryFields(prompt.promptPayload as Parameters<typeof getPromptSummaryFields>[0]);
-      table = "prompts";
-      payload = {
+      const legacyCols = getLegacyPromptColumns(
+        prompt.promptPayload as Parameters<typeof getLegacyPromptColumns>[0],
+        prompt.selectionPayload as Parameters<typeof getLegacyPromptColumns>[1],
+        prompt.compiledPayload as Parameters<typeof getLegacyPromptColumns>[2],
+      );
+      const payload = {
         category_id: prompt.categoryId,
         title: promptSummary.title,
-        prompt_payload_jsonb: prompt.promptPayload,
+        prompt_payload_jsonb: prompt.promptPayload as unknown as Json,
         schema_version: promptSummary.schemaVersion,
         output_format: promptSummary.outputFormat,
         language: promptSummary.language,
         reference_url: null,
-        few_shot_examples: prompt.fewShotExamples || [],
+        few_shot_examples: (prompt.fewShotExamples || []) as unknown as Json,
         user_id: session.user.id,
-        ...getLegacyPromptColumns(
-          prompt.promptPayload as Parameters<typeof getLegacyPromptColumns>[0],
-          prompt.selectionPayload as Parameters<typeof getLegacyPromptColumns>[1],
-          prompt.compiledPayload as Parameters<typeof getLegacyPromptColumns>[2],
-        ),
+        updated_at: new Date().toISOString(),
+        ...(legacyCols.selection_payload_jsonb ? { selection_payload_jsonb: legacyCols.selection_payload_jsonb as unknown as Json } : {}),
+        ...(legacyCols.compiled_payload_jsonb ? { compiled_payload_jsonb: legacyCols.compiled_payload_jsonb as unknown as Json } : {}),
       };
+      if (localItem.remoteId) {
+        const { error } = await supabase.from("prompts").update(payload).eq("id", localItem.remoteId as number).eq("user_id", session.user.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("prompts").insert({ ...payload, created_at: new Date().toISOString() }).select("id").single();
+        if (error) throw error;
+        newRemoteId = data.id;
+      }
       break;
     }
     case "menu": {
       const menu = localItem as ContextMenu;
-      table = "context_menus";
-      payload = {
+      const payload = {
         menu_id: menu.menuId,
         menu_name: menu.menuName,
         description: menu.description,
         selection_mode: menu.selectionMode || "single",
-        options: menu.options || [],
+        options: (menu.options || []) as unknown as Json,
         user_id: session.user.id,
+        updated_at: new Date().toISOString(),
       };
+      if (localItem.remoteId) {
+        const { error } = await supabase.from("context_menus").update(payload).eq("id", localItem.remoteId as number).eq("user_id", session.user.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("context_menus").insert({ ...payload, created_at: new Date().toISOString() }).select("id").single();
+        if (error) throw error;
+        newRemoteId = data.id;
+      }
       break;
     }
     case "memory": {
       const memory = localItem as PromptMemory;
-      table = "prompt_memory_context";
-      payload = {
+      const payload = {
         template_id: memory.templateId,
         key: memory.key,
         value: memory.value,
         is_deleted: !!memory.isDeleted,
         deleted_at: memory.isDeleted ? memory.updatedAt.toISOString() : null,
         user_id: session.user.id,
+        updated_at: new Date().toISOString(),
       };
+      if (localItem.remoteId) {
+        const { error } = await supabase.from("prompt_memory_context").update(payload).eq("id", localItem.remoteId as string).eq("user_id", session.user.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("prompt_memory_context").insert({ ...payload, created_at: new Date().toISOString() }).select("id").single();
+        if (error) throw error;
+        newRemoteId = data.id;
+      }
       break;
     }
   }
 
-  if (localItem.remoteId) {
-    const { error } = await supabase
-      .from(table)
-      .update({ ...payload, updated_at: new Date().toISOString() })
-      .eq("id", localItem.remoteId)
-      .eq("user_id", session.user.id);
-    if (error) throw error;
-  } else {
-    const { data, error } = await supabase
-      .from(table)
-      .insert({
-        ...payload,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .select("id")
-      .single();
-    if (error) throw error;
+  let table = update.type === "category" ? "categories" : update.type === "prompt" ? "prompts" : update.type === "menu" ? "context_menus" : "prompt_memory_context";
 
-    // Atualiza localmente com o novo remoteId
+  if (!localItem.remoteId && newRemoteId !== undefined) {
     const localTableName =
       table === "context_menus"
         ? "contextMenus"
@@ -607,7 +625,7 @@ async function pushLocalChanges(update: AssetUpdate): Promise<void> {
 
     await (db as unknown as Record<string, { update: (id: number, changes: object) => Promise<number> }>)[localTableName]
       .update(update.id, {
-        remoteId: data.id,
+        remoteId: newRemoteId,
         syncStatus: "synced",
       });
   }

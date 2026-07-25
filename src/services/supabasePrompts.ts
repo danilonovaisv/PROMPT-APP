@@ -41,23 +41,24 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     const summary = getPromptSummaryFields(promptPayload);
     const legacyColumns = getLegacyPromptColumns(promptPayload, input.selectionPayload, input.compiledPayload);
 
-    const payload: Record<string, unknown> = {
+    type Json = import('@/lib/supabase.types').Json;
+
+    const payload = {
         user_id: user.id,
         category_id: remoteCategoryId,
         title: summary.title,
-        prompt_payload_jsonb: promptPayload,
-        selected_menu_ids: input.selectedMenuIds || [],
+        prompt_payload_jsonb: promptPayload as unknown as Json,
+        selected_menu_ids: (input.selectedMenuIds || []) as unknown as Json,
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
         reference_url: null,
-        // few_shot_examples: campo novo (migration 20260327000001)
-        few_shot_examples: input.fewShotExamples || [],
-        // Garantir que itens salvos nunca sejam marcados como excluídos
+        few_shot_examples: (input.fewShotExamples || []) as unknown as Json,
         is_deleted: false,
         updated_at: new Date().toISOString(),
         deleted_at: null,
-        ...legacyColumns,
+        ...(legacyColumns.selection_payload_jsonb ? { selection_payload_jsonb: legacyColumns.selection_payload_jsonb as unknown as Json } : {}),
+        ...(legacyColumns.compiled_payload_jsonb ? { compiled_payload_jsonb: legacyColumns.compiled_payload_jsonb as unknown as Json } : {}),
     };
 
     if (input.remoteId) {
@@ -73,10 +74,13 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
         return data;
     }
 
-    payload.created_at = new Date().toISOString();
+    const insertPayload = {
+        ...payload,
+        created_at: new Date().toISOString(),
+    };
     const { data, error } = await supabase
         .from('prompts')
-        .insert(payload)
+        .insert(insertPayload)
         .select()
         .single();
 

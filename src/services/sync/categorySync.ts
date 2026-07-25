@@ -63,15 +63,18 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
           .eq("is_deleted", false)
       );
       
-      remoteData?.forEach((r: { id: number; updated_at: string }) => {
-        remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
+      remoteData?.forEach((r: { id: number; updated_at: string | null }) => {
+        if (r.updated_at) {
+          remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
+        }
       });
     }
 
     const categoriesWithRemoteId = categoriesToSync.filter((cat) => !!cat.remoteId);
     const categoriesWithoutRemoteId = categoriesToSync.filter((cat) => !cat.remoteId);
 
-    const payloads: Record<string, unknown>[] = [];
+    type CategoryInsert = import('@/lib/supabase.types').Database['public']['Tables']['categories']['Insert'];
+    const payloads: CategoryInsert[] = [];
 
     for (const cat of categoriesWithRemoteId) {
       const remoteTs = remoteTimestampMap.get(cat.remoteId!) || 0;
@@ -201,10 +204,10 @@ export const downloadCategories = async (): Promise<Map<number, number>> => {
       id: existing?.id,
       remoteId: c.id,
       name: c.name,
-      icon: c.icon,
-      color: c.color,
-      createdAt: new Date(c.created_at),
-      updatedAt: new Date(c.updated_at),
+      icon: c.icon ?? '',
+      color: c.color ?? '',
+      createdAt: c.created_at ? new Date(c.created_at) : new Date(),
+      updatedAt: c.updated_at ? new Date(c.updated_at) : new Date(),
       syncStatus: "synced",
     };
 

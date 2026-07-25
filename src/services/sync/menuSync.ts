@@ -55,13 +55,14 @@ export const syncMenus = async (userId: string, contextMenus: ContextMenu[]) => 
   );
 
   if (menusToSync.length > 0) {
-    const payloads = menusToSync.map(menu => ({
+    type MenuInsert = import('@/lib/supabase.types').Database['public']['Tables']['context_menus']['Insert'];
+    const payloads: MenuInsert[] = menusToSync.map(menu => ({
       user_id: userId,
       menu_id: menu.menuId,
       menu_name: menu.menuName,
       description: menu.description,
       selection_mode: menu.selectionMode || "single",
-      options: normalizeContextMenuOptions(menu.options),
+      options: normalizeContextMenuOptions(menu.options) as unknown as import('@/lib/supabase.types').Json,
       is_deleted: false,
       updated_at: new Date().toISOString(),
     }));
@@ -132,11 +133,11 @@ export const downloadMenus = async (): Promise<Map<number, number>> => {
         remoteId: m.id,
         menuId: m.menu_id,
         menuName: m.menu_name,
-        description: m.description,
-        selectionMode: m.selection_mode,
-        options: m.options,
-        createdAt: new Date(m.created_at),
-        updatedAt: new Date(m.updated_at),
+        description: m.description ?? '',
+        selectionMode: (m.selection_mode as import('@/models/promptSchema').MenuSelectionMode) || 'single',
+        options: (m.options as import('@/models/types').ContextMenuOption[]) || [],
+        createdAt: m.created_at ? new Date(m.created_at) : new Date(),
+        updatedAt: m.updated_at ? new Date(m.updated_at) : new Date(),
         syncStatus: "synced",
       };
 

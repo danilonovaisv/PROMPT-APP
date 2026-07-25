@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { db } from "@/db/database";
-import { Prompt, RemotePrompt } from "@/models/types";
+import { Prompt, RemotePrompt, FewShotExample } from "@/models/types";
 import { withRetry, fetchAllPages } from "./utils";
 import { 
   getPromptSummaryFields, 
@@ -72,15 +72,19 @@ export const syncPrompts = async (
           .select("id, updated_at")
           .in("id", remoteIdsToCheck)
       );
-      remoteData?.forEach((r: { id: number; updated_at: string }) => {
-        remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
+      remoteData?.forEach((r: { id: number; updated_at: string | null }) => {
+        if (r.updated_at) {
+          remoteTimestampMap.set(r.id, Math.floor(new Date(r.updated_at).getTime() / 1000));
+        }
       });
     }
 
     const promptsWithRemoteId = promptsToSync.filter((prompt) => !!prompt.remoteId);
     const promptsWithoutRemoteId = promptsToSync.filter((prompt) => !prompt.remoteId);
 
-    const payloads: Record<string, unknown>[] = [];
+    type PromptInsert = import('@/lib/supabase.types').Database['public']['Tables']['prompts']['Insert'];
+    type Json = import('@/lib/supabase.types').Json;
+    const payloads: PromptInsert[] = [];
 
     for (const prompt of promptsWithRemoteId) {
       const { id: _unusedId, remoteId, ...data } = prompt;
@@ -109,16 +113,17 @@ export const syncPrompts = async (
         user_id: userId,
         category_id: remoteCategoryId || null,
         title: summary.title,
-        prompt_payload_jsonb: data.promptPayload,
-        selected_menu_ids: data.selectedMenuIds || [],
+        prompt_payload_jsonb: data.promptPayload as unknown as Json,
+        selected_menu_ids: (data.selectedMenuIds || []) as unknown as Json,
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
         reference_url: null,
-        few_shot_examples: data.fewShotExamples || [],
+        few_shot_examples: (data.fewShotExamples || []) as unknown as Json,
         is_deleted: false,
         updated_at: new Date().toISOString(),
-        ...legacyColumns,
+        ...(legacyColumns.selection_payload_jsonb ? { selection_payload_jsonb: legacyColumns.selection_payload_jsonb as unknown as Json } : {}),
+        ...(legacyColumns.compiled_payload_jsonb ? { compiled_payload_jsonb: legacyColumns.compiled_payload_jsonb as unknown as Json } : {}),
       });
     }
 
@@ -144,7 +149,7 @@ export const syncPrompts = async (
       }
     }
 
-    const newPayloads: Record<string, unknown>[] = [];
+    const newPayloads: PromptInsert[] = [];
     for (const prompt of promptsWithoutRemoteId) {
       const remoteCategoryId = localToRemoteCategoryMap.get(prompt.categoryId);
       const summary = getPromptSummaryFields(prompt.promptPayload);
@@ -158,16 +163,17 @@ export const syncPrompts = async (
         user_id: userId,
         category_id: remoteCategoryId || null,
         title: summary.title,
-        prompt_payload_jsonb: prompt.promptPayload,
-        selected_menu_ids: prompt.selectedMenuIds || [],
+        prompt_payload_jsonb: prompt.promptPayload as unknown as Json,
+        selected_menu_ids: (prompt.selectedMenuIds || []) as unknown as Json,
         schema_version: summary.schemaVersion,
         output_format: summary.outputFormat,
         language: summary.language,
         reference_url: null,
-        few_shot_examples: prompt.fewShotExamples || [],
+        few_shot_examples: (prompt.fewShotExamples || []) as unknown as Json,
         is_deleted: false,
         updated_at: new Date().toISOString(),
-        ...legacyColumns,
+        ...(legacyColumns.selection_payload_jsonb ? { selection_payload_jsonb: legacyColumns.selection_payload_jsonb as unknown as Json } : {}),
+        ...(legacyColumns.compiled_payload_jsonb ? { compiled_payload_jsonb: legacyColumns.compiled_payload_jsonb as unknown as Json } : {}),
       });
     }
 
@@ -210,9 +216,10 @@ export const downloadPrompts = async (
   remoteToLocalCatMap: Map<number, number>,
   remoteToLocalMenuMap: Map<number, number>
 ): Promise<void> => {
-  const promptData = await fetchAllPages<RemotePrompt>((r) =>
+  const rawData = await fetchAllPages<unknown>((r) =>
     supabase.from("prompts").select("*").eq("is_deleted", false).range(r[0], r[1])
   );
+  const promptData = rawData as RemotePrompt[];
 
   if (promptData.length === 0) return;
 
@@ -234,7 +241,7 @@ export const downloadPrompts = async (
     const localCategoryId = p.category_id ? remoteToLocalCatMap.get(p.category_id) : undefined;
     
     // Traduzir selected_menu_ids de IDs remotos para IDs locais
-    const localMenuIds = (p.selected_menu_ids || [])
+    const localMenuIds = (((p.selected_menu_ids as number[]) || []))
       .map((rid: number) => remoteToLocalMenuMap.get(rid))
       .filter((id: number | undefined): id is number => id !== undefined);
 
@@ -243,16 +250,16 @@ export const downloadPrompts = async (
       remoteId: p.id,
       categoryId: localCategoryId || 0,
       title: p.title,
-      promptPayload: p.prompt_payload_jsonb,
+      promptPayload: p.prompt_payload_jsonb as any,
       selectedMenuIds: localMenuIds,
-      selectionPayload: p.selection_payload_jsonb,
-      compiledPayload: p.compiled_payload_jsonb,
+      selectionPayload: p.selection_payload_jsonb as any,
+      compiledPayload: p.compiled_payload_jsonb as any,
       schemaVersion: p.schema_version,
       language: p.language,
       outputFormat: p.output_format as PromptOutputFormat,
-      fewShotExamples: p.few_shot_examples,
-      createdAt: new Date(p.created_at),
-      updatedAt: new Date(p.updated_at),
+      fewShotExamples: (p.few_shot_examples as FewShotExample[]) || [],
+      createdAt: p.created_at ? new Date(p.created_at) : new Date(),
+      updatedAt: p.updated_at ? new Date(p.updated_at) : new Date(),
       syncStatus: "synced",
     };
 

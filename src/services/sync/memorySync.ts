@@ -64,11 +64,11 @@ export const downloadMemoryFromCloud = async () => {
       template_id: string;
       key: string;
       value: string;
-      is_deleted: boolean;
-      created_at: string;
-      updated_at: string;
+      is_deleted: boolean | null;
+      created_at: string | null;
+      updated_at: string | null;
     }>((r) =>
-      supabase.from("prompt_memory_context").select("*").range(r[0], r[1])
+      supabase.from("prompt_memory_context").select("template_id, key, value, is_deleted, created_at, updated_at").range(r[0], r[1])
     );
 
     if (remoteData.length === 0) return;
@@ -97,7 +97,7 @@ export const downloadMemoryFromCloud = async () => {
     for (const item of remoteData) {
       const lookupKey = `${item.template_id}|${item.key}`;
       const existing = localByKey.get(lookupKey);
-      const remoteUpdatedAt = new Date(item.updated_at).getTime();
+      const remoteUpdatedAt = item.updated_at ? new Date(item.updated_at).getTime() : 0;
 
       if (existing) {
         // Só atualiza se o remoto for mais recente
@@ -108,7 +108,7 @@ export const downloadMemoryFromCloud = async () => {
               value: item.value,
               isDeleted: !!item.is_deleted,
               syncStatus: 'synced',
-              updatedAt: new Date(item.updated_at),
+              updatedAt: item.updated_at ? new Date(item.updated_at) : new Date(),
             },
           });
         }
@@ -120,8 +120,8 @@ export const downloadMemoryFromCloud = async () => {
           value: item.value,
           isDeleted: false,
           syncStatus: 'synced',
-          createdAt: new Date(item.created_at),
-          updatedAt: new Date(item.updated_at),
+          createdAt: item.created_at ? new Date(item.created_at) : new Date(),
+          updatedAt: item.updated_at ? new Date(item.updated_at) : new Date(),
         });
       }
     }

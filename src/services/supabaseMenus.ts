@@ -9,14 +9,17 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
-    const payload: Record<string, unknown> = {
+    if (!input.menuId || !input.menuName) {
+        throw new Error("menuId e menuName são obrigatórios");
+    }
+
+    const payload = {
         user_id: user.id,
         menu_id: input.menuId,
         menu_name: input.menuName,
-        description: input.description,
+        description: input.description ?? null,
         selection_mode: input.selectionMode || "single",
-        options: normalizeContextMenuOptions(input.options),
-        // Garantir que itens salvos nunca sejam marcados como excluídos
+        options: normalizeContextMenuOptions(input.options) as unknown as import('@/lib/supabase.types').Json,
         is_deleted: false,
         updated_at: new Date().toISOString(),
         deleted_at: null,
@@ -34,10 +37,13 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         if (error) throw error;
         return data;
     } else {
-        payload.created_at = new Date().toISOString();
+        const insertPayload = {
+            ...payload,
+            created_at: new Date().toISOString(),
+        };
         const { data, error } = await supabase
             .from('context_menus')
-            .upsert(payload, { onConflict: 'user_id,menu_id' })
+            .upsert(insertPayload, { onConflict: 'user_id,menu_id' })
             .select()
             .single();
 
@@ -55,14 +61,16 @@ export async function saveMenusToSupabaseBulk(inputs: Partial<ContextMenu>[]) {
     const user = auth?.user;
     if (!user) throw new Error("Usuário não autenticado");
 
-    const payloads = inputs.map(input => ({
+    const validInputs = inputs.filter((i): i is Partial<ContextMenu> & { menuId: string; menuName: string } => !!i.menuId && !!i.menuName);
+
+    const payloads = validInputs.map(input => ({
         ...(input.remoteId ? { id: input.remoteId } : {}),
         user_id: user.id,
         menu_id: input.menuId,
         menu_name: input.menuName,
-        description: input.description,
+        description: input.description ?? null,
         selection_mode: input.selectionMode || "single",
-        options: normalizeContextMenuOptions(input.options),
+        options: normalizeContextMenuOptions(input.options) as unknown as import('@/lib/supabase.types').Json,
         is_deleted: false,
         updated_at: new Date().toISOString(),
         deleted_at: null,
