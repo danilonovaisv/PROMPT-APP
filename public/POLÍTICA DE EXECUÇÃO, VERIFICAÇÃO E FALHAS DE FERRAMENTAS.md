@@ -1,6 +1,6 @@
 # POLÍTICA DE EXECUÇÃO, VERIFICAÇÃO E FALHAS DE FERRAMENTAS
 
-Você deve tentar executar as consultas, validações e verificações exigidas pela tarefa quando as ferramentas correspondentes estiverem disponíveis e forem relevantes, incluindo Supabase MCP, Context7 MCP, arquivos locais e demais integrações configuradas.
+Você deve tentar executar as consultas, validações e verificações exigidas pela tarefa quando as ferramentas correspondentes estiverem disponíveis e forem relevantes, incluindo Supabase MCP, Context7 MCP, arquivos locais e demais integrações configuradas. Essa tentativa é obrigatória quando a ferramenta estiver disponível, mas sua falha ou indisponibilidade não bloqueia um artefato que possa ser validado localmente.
 
 1. Proibição de fabricação
 
@@ -46,7 +46,7 @@ Use um dos seguintes estados somente no relatório operacional:
 * blocked: não é seguro gerar o payload principal porque faltam informações essenciais;
 * failed: ocorreu uma falha estrutural que impede produzir qualquer payload válido.
 
-A falha de uma integração não implica automaticamente blocked. Use partial quando ainda for possível gerar um artefato tecnicamente válido e descreva as verificações pendentes fora do JSON importável.
+A falha de uma integração não implica automaticamente blocked. Falhas ou indisponibilidade de Supabase MCP e Context7 MCP resultam em partial sempre que ainda for possível gerar e validar localmente um artefato tecnicamente válido. Descreva as verificações pendentes fora do JSON importável e nunca recuse automaticamente o JSON por esse motivo.
 
 4. Regra específica para Supabase MCP
 
@@ -68,8 +68,8 @@ O relatório deve informar apenas que a consulta foi tentada, qual categoria de 
 
 Quando o Context7 estiver disponível:
 
-* registre no relatório a biblioteca ou tecnologia consultada;
-* registre no relatório a documentação utilizada;
+* registre no relatório, quando houver canal externo, a biblioteca ou tecnologia consultada;
+* registre no relatório, quando houver canal externo, a documentação utilizada;
 * diferencie documentação oficial de exemplos secundários;
 * não trate a validação no Context7 como substituta da validação no Supabase.
 
@@ -91,7 +91,7 @@ Quando o contrato do artefato exigir “somente JSON”, essa restrição aplica
 * não insira diagnósticos operacionais no objeto;
 * mantenha avisos, limitações e pendências no relatório da mensagem de entrega.
 
-Se a superfície não permitir arquivo ou relatório separado, priorize a validade do schema e não afirme verificações que não ocorreram.
+Se a superfície não permitir arquivo ou relatório separado, entregue somente o JSON válido. Omita ou adie o relatório, não misture diagnósticos ao artefato e não afirme verificações que não ocorreram.
 
 7. Compatibilidade com schema estrito
 
@@ -107,6 +107,8 @@ Antes de gerar o resultado:
 6. explique o bloqueio no relatório sem fabricar um schema de erro.
 
 8. Regra de precedência
+
+Esta política prevalece sobre os demais documentos quando houver conflito relacionado à execução de ferramentas, tratamento de indisponibilidade, estado operacional ou separação entre artefato e relatório. Ela não autoriza alterar o schema definido pelo guia e pelos templates canônicos.
 
 Em caso de conflito, use esta ordem:
 
@@ -139,3 +141,5 @@ Use sempre dois canais conceituais:
 2. relatório operacional: informa verificações executadas, falhas, riscos e pendências.
 
 O relatório pode ser texto da mensagem de entrega. Ele não é importado pelo aplicativo e não deve ser incorporado ao arquivo JSON.
+
+Se o contrato de resposta admitir apenas JSON e não houver canal externo independente, entregue o artefato JSON sem relatório. A ausência desse canal não transforma uma execução partial em blocked.

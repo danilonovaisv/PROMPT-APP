@@ -149,3 +149,8 @@ O preview agora expõe:
 - Templates antigos continuam importáveis.
 - O export padrão agora usa `prompt-app-import`.
 - Em novos artefatos, `exportedAt` deve ser recalculado com a data real da geração em ISO 8601 e UTC.
+- Supabase e Context7 devem ser consultados quando estiverem disponíveis e forem relevantes, mas essas verificações externas não substituem a validação local do schema.
+- A indisponibilidade de um MCP não impede a geração de um JSON válido quando a estrutura e o conteúdo puderem ser validados localmente; nesse caso, o estado operacional é `partial`.
+- O envelope importável e o relatório operacional são independentes. Status, falhas, riscos e diagnósticos nunca devem ser adicionados ao `prompt-app-import`.
+- Quando o contrato exigir somente JSON, entregue o envelope válido e mantenha qualquer diagnóstico exclusivamente fora do artefato.
+- Para conflitos sobre execução de ferramentas e tratamento de falhas, prevalece `POLÍTICA DE EXECUÇÃO, VERIFICAÇÃO E FALHAS DE FERRAMENTAS.md`; para o schema, prevalecem este guia e os templates canônicos.
