@@ -14,8 +14,8 @@ export class Vike extends BaseFramework {
     };
     logo = {
         default: '/logos/vike/light.svg',
-        light: '/logos/vite/light.svg',
-        dark: '/logos/vite/dark.svg',
+        light: '/logos/NEXT/light.svg',
+        dark: '/logos/NEXT/dark.svg',
     };
 }
 //# sourceMappingURL=vike.js.map

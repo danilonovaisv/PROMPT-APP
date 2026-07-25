@@ -49,13 +49,13 @@
       "norm_label": "instrument.ts"
     },
     {
-      "label": "vite-env.d.ts",
+      "label": "VITE-env.d.ts",
       "file_type": "code",
-      "source_file": "vite-env.d.ts",
+      "source_file": "VITE-env.d.ts",
       "source_location": "L1",
-      "id": "vite_env_d_ts",
+      "id": "VITE_env_d_ts",
       "community": 39,
-      "norm_label": "vite-env.d.ts"
+      "norm_label": "VITE-env.d.ts"
     },
     {
       "label": "ConfirmContext.tsx",
@@ -1255,13 +1255,13 @@
       "norm_label": "handleoffline()"
     },
     {
-      "label": "navItemClass()",
+      "label": "naVITEmClass()",
       "file_type": "code",
       "source_file": "components/Layout.tsx",
       "source_location": "L46",
-      "id": "components_layout_navitemclass",
+      "id": "components_layout_naVITEmclass",
       "community": 15,
-      "norm_label": "navitemclass()"
+      "norm_label": "naVITEmclass()"
     },
     {
       "label": "PromptCard.tsx",
@@ -5132,7 +5132,7 @@
       "source_location": "L46",
       "weight": 1.0,
       "source": "components_layout_tsx",
-      "target": "components_layout_navitemclass",
+      "target": "components_layout_naVITEmclass",
       "confidence_score": 1.0
     },
     {

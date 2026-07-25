@@ -42,9 +42,9 @@ export default defineConfig(
 );
 ```
 
-### Vite config
+### VITE config
 
-This enables the `allowConstantExport` option which is supported by Vite React plugins.
+This enables the `allowConstantExport` option which is supported by VITE React plugins.
 
 ```js
 import { defineConfig } from "eslint/config";
@@ -52,7 +52,7 @@ import { reactRefresh } from "eslint-plugin-react-refresh";
 
 export default defineConfig(
   /* Main config */
-  reactRefresh.configs.vite(),
+  reactRefresh.configs.VITE(),
 );
 ```
 
@@ -187,11 +187,11 @@ Example for [Remix](https://remix.run/docs/en/main/discussion/hot-module-replace
 
 ### allowConstantExport <small>(v0.4.0)</small>
 
-> Default: `false` (`true` in `vite` config)
+> Default: `false` (`true` in `VITE` config)
 
 Don't warn when a constant (string, number, boolean, templateLiteral) is exported aside one or more components.
 
-This should be enabled if the fast refresh implementation correctly handles this case (HMR when the constant doesn't change, propagate update to importers when the constant changes.). Vite supports it, PR welcome if you notice other integrations works well.
+This should be enabled if the fast refresh implementation correctly handles this case (HMR when the constant doesn't change, propagate update to importers when the constant changes.). VITE supports it, PR welcome if you notice other integrations works well.
 
 ```json
 {

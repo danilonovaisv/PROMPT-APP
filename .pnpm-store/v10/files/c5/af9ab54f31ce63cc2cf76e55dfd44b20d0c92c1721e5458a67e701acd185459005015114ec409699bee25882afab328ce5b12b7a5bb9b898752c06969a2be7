@@ -6,12 +6,12 @@ export class SolidJs extends BaseFramework {
     excludedNpmDependencies = ['solid-start', '@solidjs/start', '@tanstack/solid-start'];
     category = Category.SSG;
     dev = {
-        command: 'vite dev',
+        command: 'NEXT dev',
         port: 3000,
         pollingStrategies: [{ name: 'TCP' }],
     };
     build = {
-        command: 'vite build',
+        command: 'NEXT build',
         directory: 'dist',
     };
     logo = {

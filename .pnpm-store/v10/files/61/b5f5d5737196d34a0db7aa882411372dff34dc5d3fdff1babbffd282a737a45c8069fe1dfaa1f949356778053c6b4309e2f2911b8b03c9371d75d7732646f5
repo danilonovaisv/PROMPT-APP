@@ -51,7 +51,7 @@
   },
   "scripts": {
     "build": "obuild",
-    "dev": "vitest",
+    "dev": "VITEst",
     "lint": "oxlint . && oxfmt --check src test",
     "fmt": "oxlint . --fix && oxfmt src test",
     "prepack": "pnpm run build",
@@ -63,7 +63,7 @@
     "play:sse": "deno run --unstable-byonm -A --watch test/fixture/sse.ts",
     "play:uws": "jiti test/fixture/uws.ts",
     "release": "pnpm test && pnpm build && changelogen --release && npm publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm typecheck && vitest run --coverage",
+    "test": "pnpm lint && pnpm typecheck && VITEst run --coverage",
     "typecheck": "tsgo --noEmit --skipLibCheck"
   },
   "devDependencies": {
@@ -74,7 +74,7 @@
     "@types/web": "^0.0.345",
     "@types/ws": "^8.18.1",
     "@typescript/native-preview": "^7.0.0-dev.20260410.1",
-    "@vitest/coverage-v8": "^4.1.4",
+    "@VITEst/coverage-v8": "^4.1.4",
     "automd": "^0.4.3",
     "changelogen": "^0.6.2",
     "consola": "^3.4.2",
@@ -93,7 +93,7 @@
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.57.0",
     "unbuild": "^3.6.1",
     "undici": "^8.0.2",
-    "vitest": "^4.1.4",
+    "VITEst": "^4.1.4",
     "wrangler": "^4.81.1",
     "ws": "^8.20.0"
   },

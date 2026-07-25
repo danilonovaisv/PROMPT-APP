@@ -1,19 +1,19 @@
 import {
-  TemplatePayloadSchema,
-  type TemplatePayload,
   type MenuDefinition,
-} from '@/models/promptSchema';
-import {
-  type FewShotExample,
-} from '@/models/types';
+  type TemplatePayload,
+  TemplatePayloadSchema,
+} from "@/models/promptSchema";
+import { type FewShotExample } from "@/models/types";
 import {
   CURRENT_PROMPT_SCHEMA_VERSION,
   getPromptSchemaWarning,
   getVersionCompatibility,
-} from '@/utils/schemaCompatibility';
+} from "@/utils/schemaCompatibility";
 
 function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+  return Array.from(
+    new Set(values.map((value) => value.trim()).filter(Boolean)),
+  );
 }
 
 export interface TemplateMigrationResult {
@@ -22,11 +22,13 @@ export interface TemplateMigrationResult {
   warnings: string[];
 }
 
-export function migrateTemplateToCurrentSchema(template: TemplatePayload): TemplateMigrationResult {
+export function migrateTemplateToCurrentSchema(
+  template: TemplatePayload,
+): TemplateMigrationResult {
   const warnings: string[] = [];
   const compatibility = getVersionCompatibility(
     template.meta.schema_version,
-    CURRENT_PROMPT_SCHEMA_VERSION
+    CURRENT_PROMPT_SCHEMA_VERSION,
   );
 
   // Pre-sanitize to avoid .strict() validation errors from extra fields
@@ -34,53 +36,77 @@ export function migrateTemplateToCurrentSchema(template: TemplatePayload): Templ
     template_id: template.meta.template_id,
     template_name: template.meta.template_name,
     template_type: template.meta.template_type,
-    schema_version:
-      compatibility === 'legacy'
-        ? CURRENT_PROMPT_SCHEMA_VERSION
-        : template.meta.schema_version,
-    language: template.meta.language || 'pt-BR',
-    status: template.meta.status || 'draft',
+    schema_version: compatibility === "legacy"
+      ? CURRENT_PROMPT_SCHEMA_VERSION
+      : template.meta.schema_version,
+    language: template.meta.language || "pt-BR",
+    status: template.meta.status || "draft",
   };
 
   // Rebuild the entire object to strictly match TemplatePayloadSchema and avoid .strict() errors
-  const nextTemplate = TemplatePayloadSchema.parse({
+  const VITETemplate = TemplatePayloadSchema.parse({
     meta: sanitizedMeta,
     prompt_definition: {
-      system_role: template.prompt_definition?.system_role || '',
-      task: template.prompt_definition?.task || '',
-      context: template.prompt_definition?.context || '',
-      user_scene_description: template.prompt_definition?.user_scene_description || '',
+      system_role: template.prompt_definition?.system_role || "",
+      task: template.prompt_definition?.task || "",
+      context: template.prompt_definition?.context || "",
+      user_scene_description:
+        template.prompt_definition?.user_scene_description || "",
       constraints: template.prompt_definition?.constraints || [],
       negative_prompt: template.prompt_definition?.negative_prompt || [],
-      few_shot_examples: (template.prompt_definition?.few_shot_examples || []).map((ex: FewShotExample) => ({
-        input: ex.input || '',
-        output: ex.output || '',
-      })),
+      few_shot_examples: (template.prompt_definition?.few_shot_examples || [])
+        .map((ex: FewShotExample) => ({
+          input: ex.input || "",
+          output: ex.output || "",
+        })),
     },
-    menu_definitions: (template.menu_definitions || []).map((menu: MenuDefinition) => ({
+    menu_definitions: (template.menu_definitions || []).map((
+      menu: MenuDefinition,
+    ) => ({
       menu_id: menu.menu_id,
       menu_name: menu.menu_name,
-      description: menu.description || '',
-      selection_mode: menu.selection_mode || 'single',
+      description: menu.description || "",
+      selection_mode: menu.selection_mode || "single",
       required: !!menu.required,
       options: (menu.options || []).map((opt) => ({
         value: opt.value,
         label: opt.label,
-        description: opt.description || '',
+        description: opt.description || "",
         sub_options: (opt.sub_options || []).map((sub) => ({
           value: sub.value,
           label: sub.label,
-          description: sub.description || '',
+          description: sub.description || "",
         })),
       })),
     })),
     menu_ids: uniqueStrings([
       ...(template.menu_ids || []),
-      ...(template.menu_definitions || []).map((menu: MenuDefinition) => menu.menu_id),
+      ...(template.menu_definitions || []).map((menu: MenuDefinition) =>
+        menu.menu_id
+      ),
     ]),
+    prompt_memory_context: template.prompt_memory_context
+      ? {
+        enabled: template.prompt_memory_context.enabled !== false,
+        merge_strategy: template.prompt_memory_context.merge_strategy ||
+          "preserve_existing",
+        entries: (template.prompt_memory_context.entries || []).map((
+          entry,
+        ) => ({
+          key: entry.key,
+          label: entry.label,
+          value: entry.value || "",
+          type: entry.type || "text",
+          scope: entry.scope || "user",
+          required: !!entry.required,
+          editable: entry.editable !== false,
+          description: entry.description || "",
+        })),
+      }
+      : undefined,
     output_contract: {
-      format: template.output_contract?.format || 'markdown',
-      language: template.output_contract?.language || 'pt-BR',
+      format: template.output_contract?.format || "markdown",
+      language: template.output_contract?.language || "pt-BR",
       strict_mode: template.output_contract?.strict_mode !== false,
       required_fields: template.output_contract?.required_fields || [],
       response_rules: template.output_contract?.response_rules || [],
@@ -88,20 +114,22 @@ export function migrateTemplateToCurrentSchema(template: TemplatePayload): Templ
     },
   });
 
-  if (compatibility === 'legacy') {
+  if (compatibility === "legacy") {
     warnings.push(
-      `Template normalizado do schema ${template.meta.schema_version} para ${CURRENT_PROMPT_SCHEMA_VERSION}.`
+      `Template normalizado do schema ${template.meta.schema_version} para ${CURRENT_PROMPT_SCHEMA_VERSION}.`,
     );
   } else {
-    const compatibilityWarning = getPromptSchemaWarning(template.meta.schema_version);
+    const compatibilityWarning = getPromptSchemaWarning(
+      template.meta.schema_version,
+    );
     if (compatibilityWarning) {
       warnings.push(compatibilityWarning);
     }
   }
 
   return {
-    template: nextTemplate,
-    migrated: compatibility === 'legacy',
+    template: VITETemplate,
+    migrated: compatibility === "legacy",
     warnings,
   };
 }

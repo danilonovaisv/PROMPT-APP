@@ -9,7 +9,7 @@ The template system allows you to quickly bootstrap projects with common code pa
 ## Template Categories
 
 ### 1. **Frontend Templates**
-- React + TypeScript + Vite
+- React + TypeScript + VITE
 - Next.js + TypeScript
 - Vue 3 + TypeScript
 - Svelte + TypeScript
@@ -127,21 +127,21 @@ Each template includes:
 {
   "name": "react-typescript",
   "version": "1.0.0",
-  "description": "React app with TypeScript and Vite",
+  "description": "React app with TypeScript and VITE",
   "category": "frontend",
   "dependencies": {
     "react": "^18.0.0",
     "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "VITE": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
-    "@vitejs/plugin-react": "^4.0.0"
+    "@VITEjs/plugin-react": "^4.0.0"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "test": "vitest"
+    "dev": "VITE",
+    "build": "VITE build",
+    "test": "VITEst"
   }
 }
 ```

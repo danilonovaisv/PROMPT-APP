@@ -77,7 +77,7 @@
         "prepublishOnly": "tshy",
         "prettier": "prettier '**/*.{ts,md,json,yml}'",
         "test": "npm run test:vi && npm run lint",
-        "test:vi": "vitest run"
+        "test:vi": "VITEst run"
     },
     "prettier": {
         "proseWrap": "always",
@@ -87,7 +87,7 @@
         "@types/node": "^22.15.30",
         "@typescript-eslint/eslint-plugin": "^8.33.1",
         "@typescript-eslint/parser": "^8.33.1",
-        "@vitest/coverage-v8": "^2.1.8",
+        "@VITEst/coverage-v8": "^2.1.8",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-n": "^17.19.0",
@@ -97,7 +97,7 @@
         "tsx": "^4.19.4",
         "typedoc": "^0.28.5",
         "typescript": "^5.8.3",
-        "vitest": "^2.0.2"
+        "VITEst": "^2.0.2"
     },
     "engines": {
         "node": ">=0.12"

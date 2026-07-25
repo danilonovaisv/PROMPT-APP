@@ -28,9 +28,9 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "e2e": "playwright test",
-    "test": "vitest run",
-    "test:dev": "vitest --ui",
-    "test:ci": "vitest run --reporter=default"
+    "test": "VITEst run",
+    "test:dev": "VITEst --ui",
+    "test:ci": "VITEst run --reporter=default"
   },
   "keywords": [],
   "license": "MIT",
@@ -58,12 +58,12 @@
     "@playwright/test": "^1.53.1",
     "@types/node": "^18.19.111",
     "@types/semver": "^7.3.13",
-    "@vitest/ui": "^3.0.0",
+    "@VITEst/ui": "^3.0.0",
     "execa": "^8.0.0",
     "memfs": "^4.0.0",
     "typescript": "^5.0.0",
     "unionfs": "^4.4.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   },
   "engines": {
     "node": ">=18.14.0"

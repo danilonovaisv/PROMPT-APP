@@ -1,6 +1,6 @@
 # @rolldown/pluginutils
 
-A utility library for building flexible, composable filter expressions that can be used in plugin hook filters of Rolldown/Vite/Rollup/Unplugin plugins.
+A utility library for building flexible, composable filter expressions that can be used in plugin hook filters of Rolldown/VITE/Rollup/Unplugin plugins.
 
 ## Installation
 
@@ -40,7 +40,7 @@ const myPlugin = {
 ### Composable Filters
 
 > [!WARNING]
-> Composable filters are not yet supported in legacy Vite or unplugin. They can be used in Rolldown/Rolldown-Vite/Vite Beta plugins only.
+> Composable filters are not yet supported in legacy VITE or unplugin. They can be used in Rolldown/Rolldown-VITE/VITE Beta plugins only.
 
 ```ts
 import { and, id, include, moduleType, query } from '@rolldown/pluginutils';
@@ -80,4 +80,4 @@ const myPlugin = {
 
 ### Utilities
 
-- `filterVitePlugins(plugins)` — Filters out Vite plugins with `apply: 'serve'`.
+- `filterVITEPlugins(plugins)` — Filters out VITE plugins with `apply: 'serve'`.

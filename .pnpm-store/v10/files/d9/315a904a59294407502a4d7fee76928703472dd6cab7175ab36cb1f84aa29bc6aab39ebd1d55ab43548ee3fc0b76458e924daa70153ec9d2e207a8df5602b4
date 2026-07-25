@@ -24891,7 +24891,7 @@ function compileScript(sfc, options) {
   if (!options.id) {
     warnOnce(
       `compileScript now requires passing the \`id\` option.
-Upgrade your vite or vue-loader version for compatibility with the latest experimental proposals.`
+Upgrade your NEXT or vue-loader version for compatibility with the latest experimental proposals.`
     );
   }
   const { script, scriptSetup, source, filename } = sfc;

@@ -5,8 +5,10 @@ import {
 } from "@/lib/supabaseConfig";
 import type { Database } from "@/lib/supabase.types";
 
-// @ts-expect-error - import.meta.env is provided by Vite, but causes issues in Jest/ts-jest
-const env = (import.meta as unknown as { env: Record<string, string | undefined> }).env || process.env;
+// @ts-expect-error - import.meta.env is provided by VITE, but causes issues in Jest/ts-jest
+const env =
+  (import.meta as unknown as { env: Record<string, string | undefined> }).env ||
+  process.env;
 const resolvedSupabaseConfig = resolveSupabaseConfig(env);
 
 export const isSupabaseConfigured = resolvedSupabaseConfig.isConfigured;
@@ -37,16 +39,19 @@ export const supabase = createClient<Database>(
  */
 export function isQuotaExceededError(error: unknown): boolean {
   if (!error) return false;
-  if (typeof error === 'object') {
+  if (typeof error === "object") {
     const err = error as Record<string, unknown>;
-    if (err.status === 402 || err.statusCode === 402 || err.code === '402') return true;
-    const msg = String(err.message || err.details || err.hint || '').toLowerCase();
+    if (err.status === 402 || err.statusCode === 402 || err.code === "402") {
+      return true;
+    }
+    const msg = String(err.message || err.details || err.hint || "")
+      .toLowerCase();
     if (
-      msg.includes('quota') ||
-      msg.includes('egress exceeded') ||
-      msg.includes('fair use policy') ||
-      msg.includes('restricted') ||
-      msg.includes('payment required')
+      msg.includes("quota") ||
+      msg.includes("egress exceeded") ||
+      msg.includes("fair use policy") ||
+      msg.includes("restricted") ||
+      msg.includes("payment required")
     ) {
       return true;
     }

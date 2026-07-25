@@ -44,8 +44,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest --exclude test/e2e.test.ts",
-    "test-e2e": "vitest run test/e2e.test.ts",
+    "test": "NEXTst --exclude test/e2e.test.ts",
+    "test-e2e": "NEXTst run test/e2e.test.ts",
     "lint": "eslint --ext .ts",
     "pack": "node ../../scripts/pack.mjs"
   }

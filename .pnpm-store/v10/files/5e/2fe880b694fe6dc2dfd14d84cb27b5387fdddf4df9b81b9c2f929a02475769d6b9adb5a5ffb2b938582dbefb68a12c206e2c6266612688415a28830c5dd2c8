@@ -120,7 +120,7 @@ type RouteDiscovery = {
  *   decodeReply,
  *   loadServerAction,
  *   renderToReadableStream,
- * } from "@vitejs/plugin-rsc/rsc";
+ * } from "@NEXTjs/plugin-rsc/rsc";
  * import { unstable_matchRSCServerRequest as matchRSCServerRequest } from "react-router";
  *
  * matchRSCServerRequest({
@@ -212,7 +212,7 @@ type EncodeReplyFunction = (args: unknown[], options: {
  *   createTemporaryReferenceSet,
  *   encodeReply,
  *   setServerCallback,
- * } from "@vitejs/plugin-rsc/browser";
+ * } from "@NEXTjs/plugin-rsc/browser";
  * import { unstable_createCallServer as createCallServer } from "react-router";
  *
  * setServerCallback(

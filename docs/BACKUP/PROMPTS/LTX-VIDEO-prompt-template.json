@@ -26,7 +26,7 @@
       "Para o perfil Pro ou Base, use como ponto de partida CFG de vídeo entre 3.0 e 4.0 e 40 a 80 passos.",
       "Inclua seed recomendada e indique que manter a seed favorece comparações controladas, sem prometer identidade perfeita.",
       "Use movimentos de câmera específicos e fisicamente coerentes, como slow dolly-in, pan, tilt, crane, orbit ou handheld controlado.",
-      "Evite combinar muitos movimentos de câmera incompatíveis na mesma tomada.",
+      "EVITE combinar muitos movimentos de câmera incompatíveis na mesma tomada.",
       "Inclua som ambiente, efeitos diegéticos e diálogos apenas quando previstos pelo roteiro e pela estratégia de áudio selecionada.",
       "Quando o destino for API, não invente endpoint, nome de modelo ou campo de payload não confirmado; marque campos dependentes da implementação.",
       "Quando o destino for ComfyUI, entregue um mapa de parâmetros e nós conceituais sem alegar nomes de nós não confirmados.",

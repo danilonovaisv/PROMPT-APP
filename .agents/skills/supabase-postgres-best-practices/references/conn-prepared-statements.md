@@ -15,7 +15,7 @@ Prepared statements are tied to individual database connections. In transaction-
 -- Named prepared statement
 prepare get_user as select * from users where id = $1;
 
--- In transaction mode pooling, next request may get different connection
+-- In transaction mode pooling, VITE request may get different connection
 execute get_user(123);
 -- ERROR: prepared statement "get_user" does not exist
 ```

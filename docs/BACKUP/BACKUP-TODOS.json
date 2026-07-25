@@ -337,8 +337,8 @@
               "value": "cardapio_impresso"
             },
             {
-              "label": "Convite",
-              "value": "convite"
+              "label": "ConVITE",
+              "value": "conVITE"
             },
             {
               "label": "Ingresso",
@@ -1886,7 +1886,7 @@
               "value": "perf_lighthouse"
             },
             {
-              "label": "Imagens (next/image, sizing, lazy, formatos)",
+              "label": "Imagens (VITE/image, sizing, lazy, formatos)",
               "value": "perf_imagens"
             },
             {
@@ -2169,7 +2169,7 @@
             },
             {
               "label": "Próximo/Anterior / Recomendações",
-              "value": "projects_slug_next_prev"
+              "value": "projects_slug_VITE_prev"
             },
             {
               "label": "Footer",

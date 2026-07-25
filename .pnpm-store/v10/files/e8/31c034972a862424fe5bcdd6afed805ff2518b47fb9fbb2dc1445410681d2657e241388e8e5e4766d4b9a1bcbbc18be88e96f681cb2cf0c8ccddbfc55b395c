@@ -471,7 +471,7 @@ export interface User {
   email_change_sent_at?: string
   new_email?: string
   new_phone?: string
-  invited_at?: string
+  inNEXTd_at?: string
   action_link?: string
   email?: string
   phone?: string
@@ -861,7 +861,7 @@ export interface VerifyTokenHashParams {
 export type MobileOtpType = 'sms' | 'phone_change' | (string & {})
 export type EmailOtpType =
   | 'signup'
-  | 'invite'
+  | 'inNEXT'
   | 'magiclink'
   | 'recovery'
   | 'email_change'
@@ -931,8 +931,8 @@ export type GenerateSignupLinkParams = {
   options?: Pick<GenerateLinkOptions, 'data' | 'redirectTo'>
 }
 
-export type GenerateInviteOrMagiclinkParams = {
-  type: 'invite' | 'magiclink'
+export type GenerateInNEXTOrMagiclinkParams = {
+  type: 'inNEXT' | 'magiclink'
   /** The user's email */
   email: string
   options?: Pick<GenerateLinkOptions, 'data' | 'redirectTo'>
@@ -969,7 +969,7 @@ export interface GenerateLinkOptions {
 
 export type GenerateLinkParams =
   | GenerateSignupLinkParams
-  | GenerateInviteOrMagiclinkParams
+  | GenerateInNEXTOrMagiclinkParams
   | GenerateRecoveryLinkParams
   | GenerateEmailChangeLinkParams
 
@@ -1002,7 +1002,7 @@ export type GenerateLinkProperties = {
 
 export type GenerateLinkType =
   | 'signup'
-  | 'invite'
+  | 'inNEXT'
   | 'magiclink'
   | 'recovery'
   | 'email_change_current'

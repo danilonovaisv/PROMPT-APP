@@ -34,8 +34,8 @@
       "description": "Define a stack esperada para comparar contra o código real.",
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "nextjs_app_router",
+          "label": "VITE.js App Router",
+          "value": "VITEjs_app_router",
           "sub_options": []
         },
         {

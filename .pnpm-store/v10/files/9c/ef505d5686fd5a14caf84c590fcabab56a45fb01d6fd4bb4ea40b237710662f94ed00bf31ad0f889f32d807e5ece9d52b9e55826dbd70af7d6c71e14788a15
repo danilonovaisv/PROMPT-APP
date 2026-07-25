@@ -56,7 +56,7 @@
         "lint:ts": "tsc --noEmit",
         "prepublishOnly": "npm run build",
         "test": "npm run test:vi && npm run lint",
-        "test:vi": "vitest run"
+        "test:vi": "VITEst run"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.7",
@@ -75,7 +75,7 @@
         "typedoc": "^0.28.17",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.57.1",
-        "vitest": "^4.0.17"
+        "VITEst": "^4.0.17"
     },
     "engines": {
         "node": ">=20.19.0"

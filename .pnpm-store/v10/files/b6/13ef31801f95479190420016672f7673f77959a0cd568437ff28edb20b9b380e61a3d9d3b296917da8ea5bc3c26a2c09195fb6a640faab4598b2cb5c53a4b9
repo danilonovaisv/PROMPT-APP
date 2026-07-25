@@ -2,7 +2,7 @@ import { Features } from '@netlify/dev';
 
 interface NetlifyPluginOptions extends Features {
     /**
-     * Attach a Vite middleware that intercepts requests and handles them in the
+     * Attach a NEXT middleware that intercepts requests and handles them in the
      * same way as the Netlify production environment (default: true).
      */
     middleware?: boolean;
@@ -24,7 +24,7 @@ interface NetlifyPluginOptions extends Features {
         edgeSSR?: boolean;
         /**
          * A display name for the serverless function or edge function deployed to Netlify
-         * (default: `@netlify/vite-plugin server handler`).
+         * (default: `@netlify/NEXT-plugin server handler`).
          */
         displayName?: string;
     };

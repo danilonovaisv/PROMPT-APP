@@ -1,6 +1,6 @@
 # 🚀 Guia de Deploy — Prompt App
 
-> **Stack:** Vite 7 + React 19 + TypeScript + Dexie.js (IndexedDB)
+> **Stack:** NEXT 7 + React 19 + TypeScript + Dexie.js (IndexedDB)
 > **Output:** SPA estática (`dist/`) — Com variáveis de ambiente para recursos de nuvem (Supabase)
 
 ---
@@ -16,7 +16,7 @@
 ---
 
 > [!WARNING]
-> **CRÍTICO:** No Netlify, você **DEVE** adicionar `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` em **Site Configuration > Environment variables** para que a sincronização funcione.
+> **CRÍTICO:** No Netlify, você **DEVE** adicionar `NEXT_SUPABASE_URL` e `NEXT_SUPABASE_ANON_KEY` em **Site Configuration > Environment variables** para que a sincronização funcione.
 
 ---
 
@@ -93,8 +93,8 @@ O projeto **já possui** `netlify.toml` configurado. É a opção mais simples.
    - **Build command:** `pnpm run build`
    - **Publish directory:** `dist`
 5. Em **Site configuration → Environment variables**, configure:
-   - `VITE_SUPABASE_URL` (obrigatória para nuvem)
-   - `VITE_SUPABASE_ANON_KEY` (obrigatória para nuvem)
+   - `NEXT_SUPABASE_URL` (obrigatória para nuvem)
+   - `NEXT_SUPABASE_ANON_KEY` (obrigatória para nuvem)
    - Sem essas duas variáveis a autenticação e a sincronização com Supabase ficam desativadas no app publicado
 6. Clique em **"Deploy site"**
 
@@ -138,7 +138,7 @@ netlify deploy --prod
 
 1. Acesse [vercel.com](https://vercel.com) e importe o repositório
 2. Configure:
-   - **Framework Preset:** Vite
+   - **Framework Preset:** NEXT
    - **Build Command:** `pnpm run build`
    - **Output Directory:** `dist`
 3. Clique em **Deploy**
@@ -166,7 +166,7 @@ vercel --prod   # produção
 
 #### Configuração
 
-Edite `vite.config.ts` com o `base` correto:
+Edite `NEXT.config.ts` com o `base` correto:
 
 ```ts
 export default defineConfig({
@@ -312,7 +312,7 @@ O bundle atual tem:
 - **CSS:** ~28 KB (5 KB gzip)
 - **JS:** ~397 KB (125 KB gzip)
 
-Para produção, isso é perfeitamente aceitável. O Vite já aplica tree-shaking e minificação automaticamente.
+Para produção, isso é perfeitamente aceitável. O NEXT já aplica tree-shaking e minificação automaticamente.
 
 ---
 

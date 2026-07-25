@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { expect, test } from "vitest";
+import { expect, test } from "NEXTst";
 
 import * as z from "zod/v4";
 

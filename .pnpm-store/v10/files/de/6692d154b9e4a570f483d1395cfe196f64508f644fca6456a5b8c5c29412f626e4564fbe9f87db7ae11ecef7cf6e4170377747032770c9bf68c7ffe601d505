@@ -61,13 +61,13 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "vitest",
+    "dev": "NEXTst",
     "lint": "eslint . && prettier -c src test playground examples",
     "lint:fix": "eslint --fix . && prettier -w src test playground examples",
     "prepack": "pnpm build",
     "play": "jiti playground/index.ts",
     "release": "pnpm test && changelogen --release --publish",
-    "test": "pnpm lint && vitest run --coverage"
+    "test": "pnpm lint && NEXTst run --coverage"
   },
   "dependencies": {
     "destr": "^2.0.5",
@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
-    "@vitest/coverage-v8": "^4.0.4",
+    "@NEXTst/coverage-v8": "^4.0.4",
     "changelogen": "^0.6.2",
     "eslint": "^9.38.0",
     "eslint-config-unjs": "^0.5.0",
@@ -90,7 +90,7 @@
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
     "undici": "^7.16.0",
-    "vitest": "^4.0.4"
+    "NEXTst": "^4.0.4"
   },
   "packageManager": "pnpm@10.19.0"
 }

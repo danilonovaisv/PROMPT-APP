@@ -1,4 +1,4 @@
-import "@vite/env";
+import "@NEXT/env";
 //#region ../../node_modules/.pnpm/nanoid@5.1.11/node_modules/nanoid/non-secure/index.js
 let urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
 let nanoid = (size = 21) => {
@@ -84,12 +84,12 @@ var HMRContext = class {
 	decline() {}
 	invalidate(message) {
 		const firstInvalidatedBy = this.hmrClient.currentFirstInvalidatedBy ?? this.ownerPath;
-		this.hmrClient.notifyListeners("vite:invalidate", {
+		this.hmrClient.notifyListeners("NEXT:invalidate", {
 			path: this.ownerPath,
 			message,
 			firstInvalidatedBy
 		});
-		this.send("vite:invalidate", {
+		this.send("NEXT:invalidate", {
 			path: this.ownerPath,
 			message,
 			firstInvalidatedBy
@@ -259,7 +259,7 @@ const createInvokeableTransport = (transport) => {
 		async invoke(name, data) {
 			const result = await transport.invoke({
 				type: "custom",
-				event: "vite:invoke",
+				event: "NEXT:invoke",
 				data: {
 					id: "send",
 					name,
@@ -277,7 +277,7 @@ const createInvokeableTransport = (transport) => {
 		connect({ onMessage, onDisconnection }) {
 			return transport.connect({
 				onMessage(payload) {
-					if (payload.type === "custom" && payload.event === "vite:invoke") {
+					if (payload.type === "custom" && payload.event === "NEXT:invoke") {
 						const data = payload.data;
 						if (data.id.startsWith("response:")) {
 							const invokeId = data.id.slice(9);
@@ -310,7 +310,7 @@ const createInvokeableTransport = (transport) => {
 			const promiseId = nanoid();
 			const wrappedData = {
 				type: "custom",
-				event: "vite:invoke",
+				event: "NEXT:invoke",
 				data: {
 					name,
 					id: `send:${promiseId}`,
@@ -414,7 +414,7 @@ const createWebSocketModuleRunnerTransport = (options) => {
 					}
 					onMessage({
 						type: "custom",
-						event: "vite:ws:disconnect",
+						event: "NEXT:ws:disconnect",
 						data: { webSocket: socket }
 					});
 					onDisconnection();
@@ -422,7 +422,7 @@ const createWebSocketModuleRunnerTransport = (options) => {
 			});
 			onMessage({
 				type: "custom",
-				event: "vite:ws:connect",
+				event: "NEXT:ws:connect",
 				data: { webSocket: socket }
 			});
 			ws = socket;
@@ -479,7 +479,7 @@ function setupForwardConsoleHandler(transport, options) {
 	function sendError(type, error) {
 		transport.send({
 			type: "custom",
-			event: "vite:forward-console",
+			event: "NEXT:forward-console",
 			data: {
 				type,
 				data: {
@@ -493,7 +493,7 @@ function setupForwardConsoleHandler(transport, options) {
 	function sendLog(level, args) {
 		transport.send({
 			type: "custom",
-			event: "vite:forward-console",
+			event: "NEXT:forward-console",
 			data: {
 				type: "log",
 				data: {
@@ -819,12 +819,12 @@ var ErrorOverlay = class extends HTMLElement {
 		document.removeEventListener("keydown", this.closeOnEsc);
 	}
 };
-const overlayId = "vite-error-overlay";
+const overlayId = "NEXT-error-overlay";
 const { customElements } = globalThis;
-if (customElements && !customElements.get("vite-error-overlay")) customElements.define(overlayId, ErrorOverlay);
+if (customElements && !customElements.get("NEXT-error-overlay")) customElements.define(overlayId, ErrorOverlay);
 //#endregion
 //#region src/client/client.ts
-console.debug("[vite] connecting...");
+console.debug("[NEXT] connecting...");
 const importMetaUrl = new URL(import.meta.url);
 const serverHost = __SERVER_HOST__;
 const socketProtocol = __HMR_PROTOCOL__ || (importMetaUrl.protocol === "https:" ? "wss" : "ws");
@@ -838,7 +838,7 @@ const isBundleMode = __BUNDLED_DEV__;
 const forwardConsole = __SERVER_FORWARD_CONSOLE__;
 const transport = normalizeModuleRunnerTransport((() => {
 	let wsTransport = createWebSocketModuleRunnerTransport({
-		createConnection: () => new WebSocket(`${socketProtocol}://${socketHost}?token=${wsToken}`, "vite-hmr"),
+		createConnection: () => new WebSocket(`${socketProtocol}://${socketHost}?token=${wsToken}`, "NEXT-hmr"),
 		pingInterval: hmrTimeout
 	});
 	return {
@@ -848,24 +848,24 @@ const transport = normalizeModuleRunnerTransport((() => {
 			} catch (e) {
 				if (!hmrPort) {
 					wsTransport = createWebSocketModuleRunnerTransport({
-						createConnection: () => new WebSocket(`${socketProtocol}://${directSocketHost}?token=${wsToken}`, "vite-hmr"),
+						createConnection: () => new WebSocket(`${socketProtocol}://${directSocketHost}?token=${wsToken}`, "NEXT-hmr"),
 						pingInterval: hmrTimeout
 					});
 					try {
 						await wsTransport.connect(handlers);
-						console.info("[vite] Direct websocket connection fallback. Check out https://vite.dev/config/server-options.html#server-hmr to remove the previous connection error.");
+						console.info("[NEXT] Direct websocket connection fallback. Check out https://NEXT.dev/config/server-options.html#server-hmr to remove the previous connection error.");
 					} catch (e) {
 						if (e instanceof Error && e.message.includes("WebSocket closed without opened.")) {
 							const currentScriptHostURL = new URL(import.meta.url);
-							const currentScriptHost = currentScriptHostURL.host + currentScriptHostURL.pathname.replace(/@vite\/client$/, "");
-							console.error(`[vite] failed to connect to websocket.
+							const currentScriptHost = currentScriptHostURL.host + currentScriptHostURL.pathname.replace(/@NEXT\/client$/, "");
+							console.error(`[NEXT] failed to connect to websocket.
 your current setup:
-  (browser) ${currentScriptHost} <--[HTTP]--> ${serverHost} (server)\n  (browser) ${socketHost} <--[WebSocket (failing)]--> ${directSocketHost} (server)\nCheck out your Vite / network configuration and https://vite.dev/config/server-options.html#server-hmr .`);
+  (browser) ${currentScriptHost} <--[HTTP]--> ${serverHost} (server)\n  (browser) ${socketHost} <--[WebSocket (failing)]--> ${directSocketHost} (server)\nCheck out your NEXT / network configuration and https://NEXT.dev/config/server-options.html#server-hmr .`);
 						}
 					}
 					return;
 				}
-				console.error(`[vite] failed to connect to websocket (${e}). `);
+				console.error(`[NEXT] failed to connect to websocket (${e}). `);
 				throw e;
 			}
 		},
@@ -882,7 +882,7 @@ if (typeof window !== "undefined") window.addEventListener?.("beforeunload", () 
 	willUnload = true;
 });
 function cleanUrl(pathname) {
-	const url = new URL(pathname, "http://vite.dev");
+	const url = new URL(pathname, "http://NEXT.dev");
 	url.searchParams.delete("direct");
 	return url.pathname + url.search;
 }
@@ -902,23 +902,23 @@ const debounceReload = (time) => {
 };
 const pageReload = debounceReload(20);
 const hmrClient = new HMRClient({
-	error: (err) => console.error("[vite]", err),
-	debug: (...msg) => console.debug("[vite]", ...msg)
+	error: (err) => console.error("[NEXT]", err),
+	debug: (...msg) => console.debug("[NEXT]", ...msg)
 }, transport, isBundleMode ? async function importUpdatedModule({ url, acceptedPath, isWithinCircularImport }) {
 	const importPromise = import(base + url).then(() => globalThis.__rolldown_runtime__.loadExports(acceptedPath));
 	if (isWithinCircularImport) importPromise.catch(() => {
-		console.info(`[hmr] ${acceptedPath} failed to apply HMR as it's within a circular import. Reloading page to reset the execution order. To debug and break the circular import, you can run \`vite --debug hmr\` to log the circular dependency path if a file change triggered it.`);
+		console.info(`[hmr] ${acceptedPath} failed to apply HMR as it's within a circular import. Reloading page to reset the execution order. To debug and break the circular import, you can run \`NEXT --debug hmr\` to log the circular dependency path if a file change triggered it.`);
 		pageReload();
 	});
 	return await importPromise;
 } : async function importUpdatedModule({ acceptedPath, timestamp, explicitImportRequired, isWithinCircularImport }) {
 	const [acceptedPathWithoutQuery, query] = acceptedPath.split(`?`);
 	const importPromise = import(
-		/* @vite-ignore */
+		/* @NEXT-ignore */
 		base + acceptedPathWithoutQuery.slice(1) + `?${explicitImportRequired ? "import&" : ""}t=${timestamp}${query ? `&${query}` : ""}`
 );
 	if (isWithinCircularImport) importPromise.catch(() => {
-		console.info(`[hmr] ${acceptedPath} failed to apply HMR as it's within a circular import. Reloading page to reset the execution order. To debug and break the circular import, you can run \`vite --debug hmr\` to log the circular dependency path if a file change triggered it.`);
+		console.info(`[hmr] ${acceptedPath} failed to apply HMR as it's within a circular import. Reloading page to reset the execution order. To debug and break the circular import, you can run \`NEXT --debug hmr\` to log the circular dependency path if a file change triggered it.`);
 		pageReload();
 	});
 	return await importPromise;
@@ -928,10 +928,10 @@ setupForwardConsoleHandler(transport, forwardConsole);
 async function handleMessage(payload) {
 	switch (payload.type) {
 		case "connected":
-			console.debug(`[vite] connected.`);
+			console.debug(`[NEXT] connected.`);
 			break;
 		case "update":
-			await hmrClient.notifyListeners("vite:beforeUpdate", payload);
+			await hmrClient.notifyListeners("NEXT:beforeUpdate", payload);
 			if (hasDocument) if (isFirstUpdate && hasErrorOverlay()) {
 				location.reload();
 				return;
@@ -951,7 +951,7 @@ async function handleMessage(payload) {
 					newLinkTag.href = new URL(newPath, el.href).href;
 					const removeOldEl = () => {
 						el.remove();
-						console.debug(`[vite] css hot updated: ${searchUrl}`);
+						console.debug(`[NEXT] css hot updated: ${searchUrl}`);
 						resolve();
 					};
 					newLinkTag.addEventListener("load", removeOldEl);
@@ -960,13 +960,13 @@ async function handleMessage(payload) {
 					el.after(newLinkTag);
 				});
 			}));
-			await hmrClient.notifyListeners("vite:afterUpdate", payload);
+			await hmrClient.notifyListeners("NEXT:afterUpdate", payload);
 			break;
 		case "custom":
 			await hmrClient.notifyListeners(payload.event, payload.data);
-			if (payload.event === "vite:ws:disconnect") {
+			if (payload.event === "NEXT:ws:disconnect") {
 				if (hasDocument && !willUnload) {
-					console.log(`[vite] server connection lost. Polling for restart...`);
+					console.log(`[NEXT] server connection lost. Polling for restart...`);
 					const socket = payload.data.webSocket;
 					const url = new URL(socket.url);
 					url.search = "";
@@ -976,7 +976,7 @@ async function handleMessage(payload) {
 			}
 			break;
 		case "full-reload":
-			await hmrClient.notifyListeners("vite:beforeFullReload", payload);
+			await hmrClient.notifyListeners("NEXT:beforeFullReload", payload);
 			if (hasDocument) if (payload.path && payload.path.endsWith(".html")) {
 				const pagePath = decodeURI(location.pathname);
 				const payloadPath = base + payload.path.slice(1);
@@ -985,15 +985,15 @@ async function handleMessage(payload) {
 			} else pageReload();
 			break;
 		case "prune":
-			await hmrClient.notifyListeners("vite:beforePrune", payload);
+			await hmrClient.notifyListeners("NEXT:beforePrune", payload);
 			await hmrClient.prunePaths(payload.paths);
 			break;
 		case "error":
-			await hmrClient.notifyListeners("vite:error", payload);
+			await hmrClient.notifyListeners("NEXT:error", payload);
 			if (hasDocument) {
 				const err = payload.err;
 				if (enableOverlay) createErrorOverlay(err);
-				else console.error(`[vite] Internal Server Error\n${err.message}\n${err.stack}`);
+				else console.error(`[NEXT] Internal Server Error\n${err.message}\n${err.stack}`);
 			}
 			break;
 		case "ping": break;
@@ -1073,13 +1073,13 @@ function pingWorkerContentMain(socketUrl) {
 		port.addEventListener("message", (event) => {
 			const { visibility } = event.data;
 			visibilityManager.currentState = visibility;
-			console.debug("[vite] new window visibility", visibility);
+			console.debug("[NEXT] new window visibility", visibility);
 			for (const listener of visibilityManager.listeners) listener(visibility);
 		});
 		port.start();
-		console.debug("[vite] connected from window");
+		console.debug("[NEXT] connected from window");
 		waitForSuccessfulPingInternal(socketUrl, visibilityManager).then(() => {
-			console.debug("[vite] ping successful");
+			console.debug("[NEXT] ping successful");
 			try {
 				port.postMessage({ type: "success" });
 			} catch (error) {
@@ -1089,7 +1089,7 @@ function pingWorkerContentMain(socketUrl) {
 				});
 			}
 		}, (error) => {
-			console.debug("[vite] error happened", error);
+			console.debug("[NEXT] error happened", error);
 			try {
 				port.postMessage({
 					type: "error",
@@ -1110,7 +1110,7 @@ async function waitForSuccessfulPingInternal(socketUrl, visibilityManager, ms = 
 	}
 	async function ping() {
 		try {
-			const socket = new WebSocket(socketUrl, "vite-ping");
+			const socket = new WebSocket(socketUrl, "NEXT-ping");
 			return new Promise((resolve) => {
 				function onOpen() {
 					resolve(true);
@@ -1153,11 +1153,11 @@ async function waitForSuccessfulPingInternal(socketUrl, visibilityManager, ms = 
 const sheetsMap = /* @__PURE__ */ new Map();
 const linkSheetsMap = /* @__PURE__ */ new Map();
 if ("document" in globalThis) {
-	document.querySelectorAll("style[data-vite-dev-id]").forEach((el) => {
-		sheetsMap.set(el.getAttribute("data-vite-dev-id"), el);
+	document.querySelectorAll("style[data-NEXT-dev-id]").forEach((el) => {
+		sheetsMap.set(el.getAttribute("data-NEXT-dev-id"), el);
 	});
-	document.querySelectorAll("link[rel=\"stylesheet\"][data-vite-dev-id]").forEach((el) => {
-		linkSheetsMap.set(el.getAttribute("data-vite-dev-id"), el);
+	document.querySelectorAll("link[rel=\"stylesheet\"][data-NEXT-dev-id]").forEach((el) => {
+		linkSheetsMap.set(el.getAttribute("data-NEXT-dev-id"), el);
 	});
 }
 let lastInsertedStyle;
@@ -1167,7 +1167,7 @@ function updateStyle(id, content) {
 	if (!style) {
 		style = document.createElement("style");
 		style.setAttribute("type", "text/css");
-		style.setAttribute("data-vite-dev-id", id);
+		style.setAttribute("data-NEXT-dev-id", id);
 		style.textContent = content;
 		if (cspNonce) style.setAttribute("nonce", cspNonce);
 		if (!lastInsertedStyle) {
@@ -1182,8 +1182,8 @@ function updateStyle(id, content) {
 }
 function removeStyle(id) {
 	if (linkSheetsMap.has(id)) {
-		document.querySelectorAll(`link[rel="stylesheet"][data-vite-dev-id]`).forEach((el) => {
-			if (el.getAttribute("data-vite-dev-id") === id) el.remove();
+		document.querySelectorAll(`link[rel="stylesheet"][data-NEXT-dev-id]`).forEach((el) => {
+			if (el.getAttribute("data-NEXT-dev-id") === id) el.remove();
 		});
 		linkSheetsMap.delete(id);
 	}
@@ -1202,12 +1202,12 @@ function createHotContext(ownerPath) {
 function injectQuery(url, queryToInject) {
 	if (url[0] !== "." && url[0] !== "/") return url;
 	const pathname = url.replace(/[?#].*$/, "");
-	const { search, hash } = new URL(url, "http://vite.dev");
+	const { search, hash } = new URL(url, "http://NEXT.dev");
 	return `${pathname}?${queryToInject}${search ? `&` + search.slice(1) : ""}${hash || ""}`;
 }
 if (isBundleMode && typeof DevRuntime !== "undefined") {
 	var _ref;
-	class ViteDevRuntime extends DevRuntime {
+	class NEXTDevRuntime extends DevRuntime {
 		createModuleHotContext(moduleId) {
 			const ctx = createHotContext(moduleId);
 			ctx._internal = {
@@ -1223,7 +1223,7 @@ if (isBundleMode && typeof DevRuntime !== "undefined") {
 			case "hmr:module-registered":
 				transport.send({
 					type: "custom",
-					event: "vite:module-loaded",
+					event: "NEXT:module-loaded",
 					data: { modules: message.modules.slice() }
 				});
 				break;
@@ -1231,7 +1231,7 @@ if (isBundleMode && typeof DevRuntime !== "undefined") {
 		}
 	} };
 	const clientId = nanoid();
-	(_ref = globalThis).__rolldown_runtime__ ?? (_ref.__rolldown_runtime__ = new ViteDevRuntime(wrappedSocket, clientId));
+	(_ref = globalThis).__rolldown_runtime__ ?? (_ref.__rolldown_runtime__ = new NEXTDevRuntime(wrappedSocket, clientId));
 }
 //#endregion
 export { ErrorOverlay, createHotContext, injectQuery, removeStyle, updateStyle };

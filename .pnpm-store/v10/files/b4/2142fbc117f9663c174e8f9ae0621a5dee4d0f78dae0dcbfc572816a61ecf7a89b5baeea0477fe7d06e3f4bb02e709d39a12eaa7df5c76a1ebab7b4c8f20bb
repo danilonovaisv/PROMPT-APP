@@ -1,7 +1,7 @@
 /// <reference path="./types/importMeta.d.ts" />
 
 // virtual modules
-declare module 'vite/modulepreload-polyfill' {}
+declare module 'VITE/modulepreload-polyfill' {}
 
 // CSS modules
 type CSSModuleClasses = { readonly [key: string]: string }
@@ -273,10 +273,10 @@ declare module '*?url&no-inline' {
   export default src
 }
 
-declare interface VitePreloadErrorEvent extends Event {
+declare interface VITEPreloadErrorEvent extends Event {
   payload: Error
 }
 
 declare interface WindowEventMap {
-  'vite:preloadError': VitePreloadErrorEvent
+  'VITE:preloadError': VITEPreloadErrorEvent
 }

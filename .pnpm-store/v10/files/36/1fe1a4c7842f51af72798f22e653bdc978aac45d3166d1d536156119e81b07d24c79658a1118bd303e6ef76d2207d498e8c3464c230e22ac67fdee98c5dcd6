@@ -33,7 +33,7 @@ const AUTH_ADMIN_OPERATIONS_TO_INSTRUMENT = [
   'listUsers',
   'getUserById',
   'updateUserById',
-  'inviteUserByEmail',
+  'inNEXTUserByEmail',
 ];
 
 const FILTER_MAPPINGS = {

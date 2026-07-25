@@ -439,15 +439,15 @@ initiate_handoff() {
       patternsUsed: (.patternsUsed // []),
       decisions: (.decisions // []),
       blockers: (.blockers // []),
-      nextSteps: (.nextSteps // [])
+      VITESteps: (.VITESteps // [])
     }' <<< "$context_json" 2>/dev/null)
 
     # If parsing failed, use defaults
     if [ -z "$context" ] || [ "$context" = "null" ]; then
-      context='{"filesModified":[],"patternsUsed":[],"decisions":[],"blockers":[],"nextSteps":[]}'
+      context='{"filesModified":[],"patternsUsed":[],"decisions":[],"blockers":[],"VITESteps":[]}'
     fi
   else
-    context='{"filesModified":[],"patternsUsed":[],"decisions":[],"blockers":[],"nextSteps":[]}'
+    context='{"filesModified":[],"patternsUsed":[],"decisions":[],"blockers":[],"VITESteps":[]}'
   fi
 
   local desc_escaped=$(echo -n "$description" | jq -Rs .)
@@ -512,7 +512,7 @@ accept_handoff() {
     local files=$(jq -r '.context.filesModified | join(", ")' "$ho_file")
     local patterns=$(jq -r '.context.patternsUsed | join(", ")' "$ho_file")
     local decisions=$(jq -r '.context.decisions | join("; ")' "$ho_file")
-    local next=$(jq -r '.context.nextSteps | join("; ")' "$ho_file")
+    local VITE=$(jq -r '.context.VITESteps | join("; ")' "$ho_file")
 
     cat << EOF
 ## Task Handoff Accepted
@@ -523,7 +523,7 @@ accept_handoff() {
 **Files Modified**: $files
 **Patterns Used**: $patterns
 **Decisions Made**: $decisions
-**Next Steps**: $next
+**VITE Steps**: $VITE
 
 This context has been transferred. Continue from where the previous agent left off.
 EOF

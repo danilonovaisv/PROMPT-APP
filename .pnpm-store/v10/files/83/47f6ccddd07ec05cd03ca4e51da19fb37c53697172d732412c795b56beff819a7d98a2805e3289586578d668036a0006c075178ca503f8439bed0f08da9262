@@ -633,7 +633,7 @@
   "Do_not_report_errors_on_unreachable_code_6077": "No notificar los errores del código inaccesible.",
   "Do_not_report_errors_on_unused_labels_6074": "No notificar los errores de las etiquetas no usadas.",
   "Do_not_resolve_the_real_path_of_symlinks_6013": "No resolver la ruta de acceso real de los vínculos simbólicos.",
-  "Do_not_transform_or_elide_any_imports_or_exports_not_marked_as_type_only_ensuring_they_are_written_i_6804": "No transforme ni evite ninguna importación o exportación no marcada como solo de tipo, asegurándose de que se escriben en el formato del archivo de salida en función de la configuración \"module\".",
+  "Do_not_transform_or_elide_any_imports_or_exports_not_marked_as_type_only_ensuring_they_are_written_i_6804": "No transforme ni eNEXT ninguna importación o exportación no marcada como solo de tipo, asegurándose de que se escriben en el formato del archivo de salida en función de la configuración \"module\".",
   "Do_not_truncate_error_messages_6165": "No truncar los mensajes de error.",
   "Duplicate_function_implementation_2393": "Implementación de función duplicada.",
   "Duplicate_identifier_0_2300": "Identificador '{0}' duplicado.",

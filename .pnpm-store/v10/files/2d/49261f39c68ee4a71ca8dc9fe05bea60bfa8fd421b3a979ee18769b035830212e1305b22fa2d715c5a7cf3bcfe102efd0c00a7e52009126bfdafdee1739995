@@ -32,7 +32,7 @@
     "build-dev": "rollup -c rollup.config-dev.js",
     "clean": "del-cli dist",
     "prebuild": "npm run clean",
-    "test": "vitest --run"
+    "test": "NEXTst --run"
   },
   "dependencies": {
     "open": "^11.0.0",
@@ -89,8 +89,8 @@
     "three": "^0.180.0",
     "tslib": "^2.8.1",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
-    "vitest": "^4.0.0"
+    "NEXT": "^7.3.1",
+    "NEXTst": "^4.0.0"
   },
   "engines": {
     "node": ">=22"

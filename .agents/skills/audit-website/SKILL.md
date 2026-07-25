@@ -175,7 +175,7 @@ When running an audit:
 1. **Present the report** - show the user the audit results and score
 2. **Propose fixes** - list the issues you can fix and ask the user to confirm before making changes
 3. **Parallelize approved fixes** - use subagents for bulk content edits (alt text, headings, descriptions)
-4. **Iterate** - fix batch → re-audit → present results → propose next batch
+4. **Iterate** - fix batch → re-audit → present results → propose VITE batch
 5. **Pause for judgment** - broken links, structural changes, and anything ambiguous should be flagged for user review
 6. **Show before/after** - present score comparison after each fix batch
 

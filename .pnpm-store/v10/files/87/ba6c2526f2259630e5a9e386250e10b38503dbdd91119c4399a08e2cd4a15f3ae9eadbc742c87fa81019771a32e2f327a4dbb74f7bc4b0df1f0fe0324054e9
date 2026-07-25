@@ -29,8 +29,8 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest watch",
+    "test": "NEXTst run",
+    "test:watch": "NEXTst watch",
     "test:integration": "bash scripts/test-integration.sh",
     "test:integration:ci": "bash scripts/test-integration.sh --cleanup",
     "test:compatibility": "bash test/compatibility/run-all.sh",
@@ -69,7 +69,7 @@
     "typedoc": "^0.28.14",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.47.0",
-    "vitest": "^4.0.12"
+    "NEXTst": "^4.0.12"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -6,10 +6,10 @@ import dedent from "dedent";
 
 // src/lib/logger.ts
 import { netlifyBanner } from "@netlify/dev-utils";
-var createLoggerFromViteLogger = (viteLogger) => ({
-  error: (msg) => viteLogger.error(msg ?? "", { timestamp: true, environment: netlifyBanner }),
-  log: (msg) => viteLogger.info(msg ?? "", { timestamp: true, environment: netlifyBanner }),
-  warn: (msg) => viteLogger.warn(msg ?? "", { timestamp: true, environment: netlifyBanner })
+var createLoggerFromNEXTLogger = (NEXTLogger) => ({
+  error: (msg) => NEXTLogger.error(msg ?? "", { timestamp: true, environment: netlifyBanner }),
+  log: (msg) => NEXTLogger.info(msg ?? "", { timestamp: true, environment: netlifyBanner }),
+  warn: (msg) => NEXTLogger.warn(msg ?? "", { timestamp: true, environment: netlifyBanner })
 });
 
 // src/lib/build.ts
@@ -19,13 +19,13 @@ import { sep as posixSep } from "path/posix";
 import js from "dedent";
 
 // package.json
-var name = "@netlify/vite-plugin";
+var name = "@netlify/NEXT-plugin";
 var version = "2.12.1";
 
 // src/lib/build.ts
 var NETLIFY_FUNCTIONS_DIR = ".netlify/v1/functions";
 var NETLIFY_FUNCTION_FILENAME = "server.mjs";
-var NETLIFY_FUNCTION_DEFAULT_NAME = "@netlify/vite-plugin server handler";
+var NETLIFY_FUNCTION_DEFAULT_NAME = "@netlify/NEXT-plugin server handler";
 var toPosixPath = (path) => path.split(sep).join(posixSep);
 var createNetlifyFunctionHandler = (serverEntrypointPath, displayName) => js`
 import serverEntrypoint from "${serverEntrypointPath}";
@@ -58,13 +58,13 @@ var getServerEntrypoint = (bundle, outDir) => {
 function createBuildPlugin(options) {
   let resolvedConfig;
   return {
-    name: "vite-plugin-netlify:build",
+    name: "NEXT-plugin-netlify:build",
     apply: "build",
-    /** @see {@link https://vite.dev/guide/api-environment-plugins.html#per-environment-plugins} */
+    /** @see {@link https://NEXT.dev/guide/api-environment-plugins.html#per-environment-plugins} */
     applyToEnvironment({ name: name2 }) {
       return name2 === "ssr";
     },
-    /** @see {@link https://vite.dev/guide/api-plugin.html#configresolved} */
+    /** @see {@link https://NEXT.dev/guide/api-plugin.html#configresolved} */
     configResolved(config) {
       resolvedConfig = config;
     },
@@ -81,7 +81,7 @@ function createBuildPlugin(options) {
           options?.displayName ?? NETLIFY_FUNCTION_DEFAULT_NAME
         )
       );
-      createLoggerFromViteLogger(resolvedConfig.logger).log(
+      createLoggerFromNEXTLogger(resolvedConfig.logger).log(
         `\u2713 Wrote SSR entry point to ${join(NETLIFY_FUNCTIONS_DIR, NETLIFY_FUNCTION_FILENAME)}
 `
       );
@@ -95,12 +95,12 @@ function netlify(options = {}) {
     return [];
   }
   const devPlugin = {
-    name: "vite-plugin-netlify",
-    async configureServer(viteDevServer) {
-      if (!viteDevServer.httpServer) {
+    name: "NEXT-plugin-netlify",
+    async configureServer(NEXTDevServer) {
+      if (!NEXTDevServer.httpServer) {
         return;
       }
-      const logger = createLoggerFromViteLogger(viteDevServer.config.logger);
+      const logger = createLoggerFromNEXTLogger(NEXTDevServer.config.logger);
       warnOnDuplicatePlugin(logger);
       const {
         blobs,
@@ -125,18 +125,18 @@ function netlify(options = {}) {
         serverAddress: null,
         staticFiles: {
           ...staticFiles,
-          directories: [viteDevServer.config.root, viteDevServer.config.publicDir]
+          directories: [NEXTDevServer.config.root, NEXTDevServer.config.publicDir]
         },
-        projectRoot: viteDevServer.config.root
+        projectRoot: NEXTDevServer.config.root
       });
       await netlifyDev.start();
-      viteDevServer.httpServer.once("close", () => {
-        delete process.env.__VITE_PLUGIN_NETLIFY_LOADED__;
+      NEXTDevServer.httpServer.once("close", () => {
+        delete process.env.__NEXT_PLUGIN_NETLIFY_LOADED__;
         netlifyDev.stop();
       });
       logger.log("Environment loaded");
       if (middleware) {
-        viteDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
+        NEXTDevServer.middlewares.use(async function netlifyPreMiddleware(nodeReq, nodeRes, next) {
           const headers = {};
           const result = await netlifyDev.handleAndIntrospectNodeRequest(nodeReq, {
             headersCollector: (key, value) => {
@@ -167,17 +167,17 @@ function netlify(options = {}) {
   return [devPlugin, ...enabled === true ? [createBuildPlugin(buildOptions)] : []];
 }
 var warnOnDuplicatePlugin = (logger) => {
-  if (process.env.__VITE_PLUGIN_NETLIFY_LOADED__) {
+  if (process.env.__NEXT_PLUGIN_NETLIFY_LOADED__) {
     logger.warn(
       warning(dedent`
-        Multiple instances of @netlify/vite-plugin have been loaded. This may cause unexpected \
+        Multiple instances of @netlify/NEXT-plugin have been loaded. This may cause unexpected \
         behavior if the plugin is configured differently in each instance. If you have one \
-        instance of this plugin in your Vite config, you may safely remove it.
+        instance of this plugin in your NEXT config, you may safely remove it.
       `)
     );
     return;
   }
-  process.env.__VITE_PLUGIN_NETLIFY_LOADED__ = "true";
+  process.env.__NEXT_PLUGIN_NETLIFY_LOADED__ = "true";
 };
 export {
   netlify as default

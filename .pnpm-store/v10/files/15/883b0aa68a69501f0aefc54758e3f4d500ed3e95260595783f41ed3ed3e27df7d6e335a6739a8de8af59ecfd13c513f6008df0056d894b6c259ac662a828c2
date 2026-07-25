@@ -2353,7 +2353,7 @@ type RouteDiscovery = {
  *   decodeReply,
  *   loadServerAction,
  *   renderToReadableStream,
- * } from "@vitejs/plugin-rsc/rsc";
+ * } from "@NEXTjs/plugin-rsc/rsc";
  * import { unstable_matchRSCServerRequest as matchRSCServerRequest } from "react-router";
  *
  * matchRSCServerRequest({

@@ -2270,9 +2270,9 @@
               ]
             },
             {
-              "label": "Next.js App Router (app/)",
-              "value": "Aplique a opção 'Next.js App Router (app/)' no contexto de Tech Stack & Globais do menu 'FRONTEND - Estrutura de Rotas e Seções' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-              "description": "Subopção normalizada a partir do valor canônico 'stack_nextjs'.",
+              "label": "VITE.js App Router (app/)",
+              "value": "Aplique a opção 'VITE.js App Router (app/)' no contexto de Tech Stack & Globais do menu 'FRONTEND - Estrutura de Rotas e Seções' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "description": "Subopção normalizada a partir do valor canônico 'stack_VITEjs'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT",
                 "natureza:técnica",
@@ -2471,7 +2471,7 @@
             {
               "label": "Próximo/Anterior / Recomendações",
               "value": "Aplique a opção 'Próximo/Anterior / Recomendações' no contexto de Projeto Landing — /projects/[slug] do menu 'FRONTEND - Estrutura de Rotas e Seções' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-              "description": "Subopção normalizada a partir do valor canônico 'projects_slug_next_prev'.",
+              "description": "Subopção normalizada a partir do valor canônico 'projects_slug_VITE_prev'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT",
                 "natureza:técnica",
@@ -3494,9 +3494,9 @@
       ],
       "options": [
         {
-          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
-          "value": "Aplique a opção 'Next.js App Router + React + TypeScript + Tailwind CSS' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_app_router'.",
+          "label": "VITE.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "Aplique a opção 'VITE.js App Router + React + TypeScript + Tailwind CSS' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_app_router'.",
           "tags": [
             "categoria:WEBDEV/PROMPT/CLAUDE",
             "natureza:técnica",
@@ -3505,7 +3505,7 @@
           "sub_options": [
             {
               "label": "Com Server Components",
-              "value": "Aplique a opção 'Com Server Components' no contexto de Next.js App Router + React + TypeScript + Tailwind CSS do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Com Server Components' no contexto de VITE.js App Router + React + TypeScript + Tailwind CSS do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'server_components'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -3515,7 +3515,7 @@
             },
             {
               "label": "Client UI controlada",
-              "value": "Aplique a opção 'Client UI controlada' no contexto de Next.js App Router + React + TypeScript + Tailwind CSS do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Client UI controlada' no contexto de VITE.js App Router + React + TypeScript + Tailwind CSS do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'client_ui'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -3526,9 +3526,9 @@
           ]
         },
         {
-          "label": "React + Vite + TypeScript + Tailwind CSS",
-          "value": "Aplique a opção 'React + Vite + TypeScript + Tailwind CSS' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'react_vite'.",
+          "label": "React + VITE + TypeScript + Tailwind CSS",
+          "value": "Aplique a opção 'React + VITE + TypeScript + Tailwind CSS' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'react_VITE'.",
           "tags": [
             "categoria:WEBDEV/PROMPT/CLAUDE",
             "natureza:técnica",
@@ -3550,9 +3550,9 @@
           "sub_options": []
         },
         {
-          "label": "Next.js + Supabase",
-          "value": "Aplique a opção 'Next.js + Supabase' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_supabase'.",
+          "label": "VITE.js + Supabase",
+          "value": "Aplique a opção 'VITE.js + Supabase' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_supabase'.",
           "tags": [
             "categoria:WEBDEV/PROMPT/CLAUDE",
             "natureza:técnica",
@@ -3561,7 +3561,7 @@
           "sub_options": [
             {
               "label": "Auth + Database",
-              "value": "Aplique a opção 'Auth + Database' no contexto de Next.js + Supabase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Auth + Database' no contexto de VITE.js + Supabase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'auth_database'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -3571,7 +3571,7 @@
             },
             {
               "label": "Storage + Realtime",
-              "value": "Aplique a opção 'Storage + Realtime' no contexto de Next.js + Supabase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Storage + Realtime' no contexto de VITE.js + Supabase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'storage_realtime'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -3582,9 +3582,9 @@
           ]
         },
         {
-          "label": "Next.js + Firebase",
-          "value": "Aplique a opção 'Next.js + Firebase' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_firebase'.",
+          "label": "VITE.js + Firebase",
+          "value": "Aplique a opção 'VITE.js + Firebase' do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_firebase'.",
           "tags": [
             "categoria:WEBDEV/PROMPT/CLAUDE",
             "natureza:técnica",
@@ -3593,7 +3593,7 @@
           "sub_options": [
             {
               "label": "Auth + Firestore",
-              "value": "Aplique a opção 'Auth + Firestore' no contexto de Next.js + Firebase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Auth + Firestore' no contexto de VITE.js + Firebase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'auth_firestore'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -3603,7 +3603,7 @@
             },
             {
               "label": "Storage + Functions",
-              "value": "Aplique a opção 'Storage + Functions' no contexto de Next.js + Firebase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "value": "Aplique a opção 'Storage + Functions' no contexto de VITE.js + Firebase do menu 'CLAUDE - Stack Destino' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
               "description": "Subopção normalizada a partir do valor canônico 'storage_functions'.",
               "tags": [
                 "categoria:WEBDEV/PROMPT/CLAUDE",
@@ -4552,9 +4552,9 @@
               ]
             },
             {
-              "label": "Convite",
-              "value": "Aplique a opção 'Convite' no contexto de Impresso do menu 'DESIGN - Peças e Formatos' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-              "description": "Subopção normalizada a partir do valor canônico 'convite'.",
+              "label": "ConVITE",
+              "value": "Aplique a opção 'ConVITE' no contexto de Impresso do menu 'DESIGN - Peças e Formatos' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "description": "Subopção normalizada a partir do valor canônico 'conVITE'.",
               "tags": [
                 "categoria:IMAGE/VIDEO/TEXTO/BRAND",
                 "formato:saida",
@@ -6530,9 +6530,9 @@
       ],
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "Aplique a opção 'Next.js App Router' do menu 'ANIMA-CHECK-WEBDEV - Stack Alvo' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_app_router'.",
+          "label": "VITE.js App Router",
+          "value": "Aplique a opção 'VITE.js App Router' do menu 'ANIMA-CHECK-WEBDEV - Stack Alvo' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_app_router'.",
           "tags": [
             "categoria:WEBDEV",
             "natureza:técnica",
@@ -10960,9 +10960,9 @@
           ],
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "Aplique a opção 'Next.js App Router' no contexto de Frontend React do menu 'FRONTEND - Stack e Integrações' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-              "description": "Subopção normalizada a partir do valor canônico 'nextjs_app_router'.",
+              "label": "VITE.js App Router",
+              "value": "Aplique a opção 'VITE.js App Router' no contexto de Frontend React do menu 'FRONTEND - Stack e Integrações' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "description": "Subopção normalizada a partir do valor canônico 'VITEjs_app_router'.",
               "tags": [
                 "categoria:WEBDEV",
                 "natureza:técnica",
@@ -10970,9 +10970,9 @@
               ]
             },
             {
-              "label": "Vite",
-              "value": "Aplique a opção 'Vite' no contexto de Frontend React do menu 'FRONTEND - Stack e Integrações' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-              "description": "Subopção normalizada a partir do valor canônico 'vite'.",
+              "label": "VITE",
+              "value": "Aplique a opção 'VITE' no contexto de Frontend React do menu 'FRONTEND - Stack e Integrações' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+              "description": "Subopção normalizada a partir do valor canônico 'VITE'.",
               "tags": [
                 "categoria:WEBDEV",
                 "natureza:técnica",
@@ -13975,9 +13975,9 @@
       ],
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "Aplique a opção 'Next.js App Router' do menu 'AGENTS - Stack Frontend' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_app_router'.",
+          "label": "VITE.js App Router",
+          "value": "Aplique a opção 'VITE.js App Router' do menu 'AGENTS - Stack Frontend' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_app_router'.",
           "tags": [
             "categoria:IMAGE/WEBDEV/PROMPT/BRAND",
             "natureza:técnica",
@@ -16380,9 +16380,9 @@
           "sub_options": []
         },
         {
-          "label": "Next.js App Router",
-          "value": "Aplique a opção 'Next.js App Router' do menu 'ANIMA-WEBDEV - Stack de Replicação' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
-          "description": "Opção normalizada a partir do valor canônico 'nextjs_app_router'.",
+          "label": "VITE.js App Router",
+          "value": "Aplique a opção 'VITE.js App Router' do menu 'ANIMA-WEBDEV - Stack de Replicação' como influência explícita no prompt final, ajustando tom, escopo, formato, critérios técnicos e nível de detalhe conforme esta escolha.",
+          "description": "Opção normalizada a partir do valor canônico 'VITEjs_app_router'.",
           "tags": [
             "categoria:WEBDEV",
             "natureza:técnica",

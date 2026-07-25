@@ -53,7 +53,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
         return map;
     }, [prompts]);
 
-    const navItemClass = ({ isActive }: { isActive: boolean }) =>
+    const naVITEmClass = ({ isActive }: { isActive: boolean }) =>
         `app-sidebar__nav-item ${isActive ? 'app-sidebar__nav-item--active' : ''}`;
 
     return (
@@ -73,7 +73,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
             </button>
 
             {/* Sidebar */}
-            <aside 
+            <aside
                 id="app-sidebar"
                 className={`app-sidebar ${sidebarOpen ? 'app-sidebar--open' : ''}`}
             >
@@ -86,7 +86,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                     {/* Navegação principal */}
                     <NavLink
                         to="/"
-                        className={navItemClass}
+                        className={naVITEmClass}
                         onClick={() => setSidebarOpen(false)}
                     >
                         <Home size={18} aria-hidden="true" />
@@ -95,7 +95,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                     <NavLink
                         to="/categorias"
-                        className={navItemClass}
+                        className={naVITEmClass}
                         onClick={() => setSidebarOpen(false)}
                     >
                         <FolderPlus size={18} aria-hidden="true" />
@@ -104,7 +104,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
 
                     <NavLink
                         to="/menus"
-                        className={navItemClass}
+                        className={naVITEmClass}
                         onClick={() => setSidebarOpen(false)}
                     >
                         <Layers size={18} aria-hidden="true" />
@@ -119,7 +119,7 @@ export default function Layout({ children, onOpenImportExport }: LayoutProps) {
                             <NavLink
                                 key={cat.id}
                                 to={`/categoria/${cat.id}`}
-                                className={navItemClass}
+                                className={naVITEmClass}
                                 onClick={() => setSidebarOpen(false)}
                             >
                                 <span>{cat.icon}</span>

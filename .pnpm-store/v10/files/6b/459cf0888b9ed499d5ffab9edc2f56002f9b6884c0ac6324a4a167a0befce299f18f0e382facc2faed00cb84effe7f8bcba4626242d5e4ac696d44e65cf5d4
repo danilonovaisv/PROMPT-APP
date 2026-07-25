@@ -1,7 +1,7 @@
 // @ts-ignore
 import { File as WebFile } from "@web-std/file";
 
-import { afterEach, beforeEach, expect, test } from "vitest";
+import { afterEach, beforeEach, expect, test } from "NEXTst";
 
 import * as z from "zod/v4";
 

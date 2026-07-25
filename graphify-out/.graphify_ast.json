@@ -36,10 +36,10 @@
       "source_location": "L1"
     },
     {
-      "id": "vite_env_d_ts",
-      "label": "vite-env.d.ts",
+      "id": "VITE_env_d_ts",
+      "label": "VITE-env.d.ts",
       "file_type": "code",
-      "source_file": "vite-env.d.ts",
+      "source_file": "VITE-env.d.ts",
       "source_location": "L1"
     },
     {
@@ -974,8 +974,8 @@
       "source_location": "L35"
     },
     {
-      "id": "components_layout_navitemclass",
-      "label": "navItemClass()",
+      "id": "components_layout_naVITEmclass",
+      "label": "naVITEmClass()",
       "file_type": "code",
       "source_file": "components/Layout.tsx",
       "source_location": "L46"
@@ -4659,7 +4659,7 @@
     },
     {
       "source": "components_layout_tsx",
-      "target": "components_layout_navitemclass",
+      "target": "components_layout_naVITEmclass",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "components/Layout.tsx",

@@ -88,8 +88,8 @@ echo
 echo "Reminder:"
 echo "- Fill .env.local with the project secrets before running the app"
 echo "- Typical Supabase vars:"
-echo "  NEXT_PUBLIC_SUPABASE_URL="
-echo "  NEXT_PUBLIC_SUPABASE_ANON_KEY="
+echo "  VITE_PUBLIC_SUPABASE_URL="
+echo "  VITE_PUBLIC_SUPABASE_ANON_KEY="
 echo "  SUPABASE_SERVICE_ROLE_KEY="
 '''
 

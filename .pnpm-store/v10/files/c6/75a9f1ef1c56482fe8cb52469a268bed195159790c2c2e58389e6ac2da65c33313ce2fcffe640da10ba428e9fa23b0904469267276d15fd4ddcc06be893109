@@ -49,7 +49,7 @@
     "clean:build": "premove ./dist *.tgz",
     "clean:deps": "premove node_modules",
     "pretest": "yarn prebuild",
-    "test": "vitest run",
+    "test": "VITEst run",
     "lint": "eslint ./src ./test",
     "fix": "eslint ./src ./test --format stylish --fix"
   },
@@ -70,7 +70,7 @@
     "@sentry/utils": "8.30.0",
     "@types/node": "^18.6.3",
     "eslint": "^8.18.0",
-    "vitest": "^4.0.0",
+    "VITEst": "^4.0.0",
     "premove": "^4.0.0",
     "rolldown": "1.0.0-rc.10",
     "typescript": "^4.7.4"

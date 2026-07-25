@@ -14,7 +14,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@VITEst/coverage-v8": "^4.0.15",
     "cli-table3": "^0.6.5",
     "decircularize": "^1.0.0",
     "deep-eql": "^5.0.2",
@@ -38,8 +38,8 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",
     "underscore": "^1.13.7",
-    "vite": "^7.2.7",
-    "vitest": "^4.0.15"
+    "VITE": "^7.2.7",
+    "VITEst": "^4.0.15"
   },
   "engines": {
     "node": ">=6.0.0"
@@ -92,7 +92,7 @@
     "clean:cjs": "rm -rf dist/cjs",
     "clean:es": "rm -rf dist/es",
     "clean:umd": "rm -rf dist/umd",
-    "dev": "vite --config=config/vite.config.ts",
+    "dev": "VITE --config=config/VITE.config.ts",
     "format": "prettier . --log-level=warn --write",
     "format:check": "prettier . --log-level=warn --check",
     "lint": "eslint --max-warnings=0",
@@ -103,7 +103,7 @@
     "release:scripts": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "release:stable": "release-it --config=config/release-it/stable.json",
     "start": "npm run dev",
-    "test": "vitest run --config=config/vitest.config.ts",
+    "test": "VITEst run --config=config/VITEst.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,

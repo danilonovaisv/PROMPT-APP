@@ -1,4 +1,4 @@
-import { test } from "vitest";
+import { test } from "NEXTst";
 import * as z from "zod/v3";
 
 const crazySchema = z.object({

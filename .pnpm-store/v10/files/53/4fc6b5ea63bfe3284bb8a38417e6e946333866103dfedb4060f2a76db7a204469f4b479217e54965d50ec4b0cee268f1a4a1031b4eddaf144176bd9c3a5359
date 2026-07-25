@@ -1229,7 +1229,7 @@ type SSRCreateFromReadableStreamFunction = (body: ReadableStream<Uint8Array>) =>
  * renders to HTML for a document request.
  *
  * @example
- * import { createFromReadableStream } from "@vitejs/plugin-rsc/ssr";
+ * import { createFromReadableStream } from "@NEXTjs/plugin-rsc/ssr";
  * import * as ReactDomServer from "react-dom/server.edge";
  * import {
  *   unstable_RSCStaticRouter as RSCStaticRouter,
@@ -1298,7 +1298,7 @@ interface RSCStaticRouterProps {
  * {@link unstable_routeRSCServerRequest}'s `renderHTML` callback.
  *
  * @example
- * import { createFromReadableStream } from "@vitejs/plugin-rsc/ssr";
+ * import { createFromReadableStream } from "@NEXTjs/plugin-rsc/ssr";
  * import * as ReactDomServer from "react-dom/server.edge";
  * import {
  *   unstable_RSCStaticRouter as RSCStaticRouter,

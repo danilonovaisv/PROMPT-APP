@@ -1,7 +1,9 @@
 import { z } from "zod";
 
-const DEFAULT_SCHEMA_VERSION = "1.0.0";
+const DEFAULT_SCHEMA_VERSION = "1.1.0";
 const DEFAULT_LANGUAGE = "pt-BR";
+const DEFAULT_IMPORT_FORMAT = "prompt-app-import";
+const DEFAULT_APP_NAME = "Prompt App";
 
 export const MENU_SELECTION_MODES = ["single", "multiple"] as const;
 export const PROMPT_OUTPUT_FORMATS = [
@@ -12,10 +14,21 @@ export const PROMPT_OUTPUT_FORMATS = [
   "code",
 ] as const;
 export const TEMPLATE_STATUS = ["draft", "active", "archived"] as const;
+export const MEMORY_ENTRY_TYPES = ["text"] as const;
+export const MEMORY_ENTRY_SCOPES = ["user"] as const;
+export const MEMORY_MERGE_STRATEGIES = [
+  "preserve_existing",
+  "overwrite",
+  "fill_empty",
+  "skip",
+] as const;
 
 const SelectionModeSchema = z.enum(MENU_SELECTION_MODES);
 const PromptOutputFormatSchema = z.enum(PROMPT_OUTPUT_FORMATS);
 const TemplateStatusSchema = z.enum(TEMPLATE_STATUS);
+const MemoryEntryTypeSchema = z.enum(MEMORY_ENTRY_TYPES);
+const MemoryEntryScopeSchema = z.enum(MEMORY_ENTRY_SCOPES);
+const MemoryMergeStrategySchema = z.enum(MEMORY_MERGE_STRATEGIES);
 
 function slugify(value: string): string {
   return value
@@ -41,6 +54,16 @@ function uniqueStrings(values: string[]): string[] {
       }).filter(Boolean),
     ),
   );
+}
+
+export function normalizeMemoryKey(value: string): string {
+  return slugify(value.trim());
+}
+
+export function getTemplateSchemaVersion(value: {
+  meta?: { schema_version?: string };
+} | null | undefined): string {
+  return value?.meta?.schema_version || DEFAULT_SCHEMA_VERSION;
 }
 
 
@@ -147,6 +170,30 @@ export const PromptOutputContractSchema = z
   })
   .strict();
 
+export const PromptMemoryEntrySchema = z
+  .object({
+    key: z.string().trim().min(1).transform(normalizeMemoryKey),
+    label: z.string().trim().min(1),
+    value: z.string().default(""),
+    type: MemoryEntryTypeSchema.default("text"),
+    scope: MemoryEntryScopeSchema.default("user"),
+    required: z.boolean().default(false),
+    editable: z.boolean().default(true),
+    description: z.string().default(""),
+  })
+  .strict();
+
+export const PromptMemoryContextSchema = z
+  .object({
+    enabled: z.boolean().default(true),
+    merge_strategy: MemoryMergeStrategySchema.default("preserve_existing"),
+    entries: z
+      .array(PromptMemoryEntrySchema)
+      .default([])
+      .superRefine(uniqueArrayBy((item) => item.key, "Memory key")),
+  })
+  .strict();
+
 export const TemplatePayloadSchema = z
   .object({
     meta: TemplateMetaSchema,
@@ -156,12 +203,16 @@ export const TemplatePayloadSchema = z
       .default([])
       .superRefine(uniqueArrayBy((item) => item.menu_id, "Menu id")),
     menu_ids: z.array(z.string()).default([]),
+    prompt_memory_context: PromptMemoryContextSchema.optional(),
     output_contract: PromptOutputContractSchema,
   })
   .strict();
-  
+
 export type TemplatePayload = z.infer<typeof TemplatePayloadSchema>;
 export type MenuDefinition = z.infer<typeof MenuDefinitionSchema>;
+export type PromptMemoryContext = z.infer<typeof PromptMemoryContextSchema>;
+export type PromptMemoryEntry = z.infer<typeof PromptMemoryEntrySchema>;
+export type MemoryMergeStrategy = z.infer<typeof MemoryMergeStrategySchema>;
 
 export const SelectedMenuOptionSchema = z
   .object({
@@ -287,7 +338,175 @@ type LegacyPromptRecord = Partial<{
   language: string;
   schemaVersion: string;
   fewShotExamples: z.infer<typeof FewShotExampleSchema>[];
+  prompt_memory_context: z.infer<typeof PromptMemoryContextSchema>;
 }>;
+
+export type ImportSourceFormat =
+  | "canonical-envelope"
+  | "legacy-bulk-export"
+  | "legacy-menu-import"
+  | "legacy-prompt-template"
+  | "legacy-prompt-array"
+  | "invalid";
+
+export interface ImportIssue {
+  path: string;
+  message: string;
+  code?: string;
+}
+
+export const ImportEnvelopeSchema = z
+  .object({
+    app: z.literal(DEFAULT_APP_NAME).default(DEFAULT_APP_NAME),
+    version: z.string().trim().min(1).default("3.0.0"),
+    format: z.literal(DEFAULT_IMPORT_FORMAT).default(DEFAULT_IMPORT_FORMAT),
+    schemaVersion: z.string().trim().min(1).default(DEFAULT_SCHEMA_VERSION),
+    exportedAt: z.string().trim().min(1),
+    context_menus: z.array(MenuDefinitionSchema).default([]),
+    prompts: z.array(TemplatePayloadSchema).default([]),
+  })
+  .strict();
+
+export type ImportEnvelope = z.infer<typeof ImportEnvelopeSchema>;
+
+function normalizePromptMemoryContext(
+  rawValue: unknown,
+): z.infer<typeof PromptMemoryContextSchema> | undefined {
+  if (!rawValue || typeof rawValue !== "object" || Array.isArray(rawValue)) {
+    return undefined;
+  }
+
+  const raw = rawValue as Record<string, unknown>;
+  const rawEntries = Array.isArray(raw.entries)
+    ? raw.entries
+    : Array.isArray(raw.memory_entries)
+    ? raw.memory_entries
+    : [];
+
+  return PromptMemoryContextSchema.parse({
+    enabled: typeof raw.enabled === "boolean" ? raw.enabled : true,
+    merge_strategy:
+      typeof raw.merge_strategy === "string"
+        ? raw.merge_strategy
+        : typeof raw.mergeStrategy === "string"
+        ? raw.mergeStrategy
+        : "preserve_existing",
+    entries: rawEntries.map((entry) => {
+      const rawEntry = entry && typeof entry === "object"
+        ? (entry as Record<string, unknown>)
+        : {};
+
+      return {
+        key:
+          typeof rawEntry.key === "string"
+            ? rawEntry.key
+            : typeof rawEntry.id === "string"
+            ? rawEntry.id
+            : "",
+        label:
+          typeof rawEntry.label === "string"
+            ? rawEntry.label
+            : typeof rawEntry.key === "string"
+            ? rawEntry.key
+            : "",
+        value: typeof rawEntry.value === "string" ? rawEntry.value : "",
+        type: typeof rawEntry.type === "string" ? rawEntry.type : "text",
+        scope: typeof rawEntry.scope === "string" ? rawEntry.scope : "user",
+        required: typeof rawEntry.required === "boolean" ? rawEntry.required : false,
+        editable: typeof rawEntry.editable === "boolean" ? rawEntry.editable : true,
+        description:
+          typeof rawEntry.description === "string" ? rawEntry.description : "",
+      };
+    }),
+  });
+}
+
+export function normalizeTemplatePayloadAliases(rawPayload: unknown): unknown {
+  if (!rawPayload || typeof rawPayload !== "object" || Array.isArray(rawPayload)) {
+    return rawPayload;
+  }
+
+  const raw = rawPayload as Record<string, unknown>;
+  const menuDefinitions = Array.isArray(raw.menu_definitions)
+    ? raw.menu_definitions
+    : Array.isArray(raw.context_menus)
+    ? raw.context_menus
+    : [];
+  const menuIds = Array.isArray(raw.menu_ids)
+    ? raw.menu_ids
+    : Array.isArray(raw.menuIds)
+    ? raw.menuIds
+    : [];
+
+  const normalized: Record<string, unknown> = {};
+  Object.entries(raw).forEach(([key, value]) => {
+    if (
+      key === "context_menus" ||
+      key === "contextMenus" ||
+      key === "menuDefinitions" ||
+      key === "menuIds" ||
+      key === "memory_context" ||
+      key === "memory_entries"
+    ) {
+      return;
+    }
+    normalized[key] = value;
+  });
+  normalized.menu_definitions = menuDefinitions;
+  normalized.menu_ids = menuIds;
+
+  const promptMemoryContext = normalizePromptMemoryContext(
+    raw.prompt_memory_context ?? raw.memory_context ?? raw.memory_entries,
+  );
+  if (promptMemoryContext) {
+    normalized.prompt_memory_context = promptMemoryContext;
+  }
+
+  return normalized;
+}
+
+export function listMemoryPlaceholderKeys(template: TemplatePayload): string[] {
+  const segments = [
+    template.prompt_definition.system_role,
+    template.prompt_definition.task,
+    template.prompt_definition.context,
+    template.prompt_definition.user_scene_description,
+    ...template.prompt_definition.constraints,
+    ...template.prompt_definition.negative_prompt,
+    ...template.output_contract.required_fields,
+    ...template.output_contract.response_rules,
+    ...template.prompt_definition.few_shot_examples.flatMap((example) => [
+      example.input,
+      example.output,
+    ]),
+  ];
+
+  const matches = new Set<string>();
+  const pattern = /\{\{\s*memory\.([a-zA-Z0-9_]+)\s*\}\}/g;
+  segments.forEach((segment) => {
+    for (const match of segment.matchAll(pattern)) {
+      matches.add(normalizeMemoryKey(match[1] || ""));
+    }
+  });
+
+  return Array.from(matches);
+}
+
+export function getMissingRequiredMemoryKeys(
+  template: TemplatePayload,
+  values: Record<string, string>,
+): string[] {
+  const requiredEntries = (template.prompt_memory_context?.entries || [])
+    .filter((entry) => entry.required)
+    .map((entry) => entry.key);
+  const placeholderEntries = listMemoryPlaceholderKeys(template);
+  const requiredKeys = Array.from(new Set([...requiredEntries, ...placeholderEntries]));
+
+  return requiredKeys.filter((key) => {
+    const value = values[key];
+    return typeof value !== "string" || value.trim() === "";
+  });
+}
 
 function normalizeOutputFormat(raw: unknown): PromptOutputFormat {
   if (typeof raw !== "string" && typeof raw !== "number") {
@@ -378,11 +597,18 @@ export function createEmptyTemplatePayload(
       system_role: "",
       task: "",
       context: "",
+      user_scene_description: "",
       constraints: [],
       negative_prompt: [],
       few_shot_examples: [],
     },
     menu_definitions: [],
+    menu_ids: [],
+    prompt_memory_context: {
+      enabled: false,
+      merge_strategy: "preserve_existing",
+      entries: [],
+    },
     output_contract: createDefaultOutputContract(),
   });
 }
@@ -580,6 +806,7 @@ export function createTemplatePayloadFromLegacyRecord(
     menu_definitions: menuDefinitions,
     menu_ids: legacyPrompt.enabledMenuIds ||
       Object.keys(legacyPrompt.contextMenus || {}),
+    prompt_memory_context: legacyPrompt.prompt_memory_context,
     output_contract: {
       format: normalizeOutputFormat(legacyPrompt.outputSchema?.formato),
       language: legacyPrompt.language || DEFAULT_LANGUAGE,
@@ -614,7 +841,8 @@ export function parseTemplatePayload(
     }
   }
 
-  const parsedTemplate = TemplatePayloadSchema.safeParse(rawPayload);
+  const normalizedPayload = normalizeTemplatePayloadAliases(rawPayload);
+  const parsedTemplate = TemplatePayloadSchema.safeParse(normalizedPayload);
   if (parsedTemplate.success) {
     if (
       parsedTemplate.data.menu_definitions.length > 0 ||
@@ -700,6 +928,11 @@ export function parseTemplatePayload(
           : fallback?.enabledMenuIds,
         fewShotExamples: normalizeFewShotExamples(
           legacyPromptContract.few_shot_examples,
+        ),
+        prompt_memory_context: normalizePromptMemoryContext(
+          legacyPromptContract.prompt_memory_context ??
+            legacyPromptContract.memory_context ??
+            legacyPromptContract.memory_entries,
         ),
       };
 
@@ -857,6 +1090,15 @@ export function compilePromptPayload(
   options: { lenient?: boolean } = {}
 ): CompiledPromptPayload {
   const selection = sanitizeUserSelection(template, rawSelection, options);
+  const missingMemoryKeys = getMissingRequiredMemoryKeys(
+    template,
+    selection.fixed_variables || {},
+  );
+  if (!options.lenient && missingMemoryKeys.length > 0) {
+    throw new Error(
+      `Memória obrigatória ausente: ${missingMemoryKeys.join(", ")}`,
+    );
+  }
   const definitionMap = new Map(
     template.menu_definitions.map((menu) => [menu.menu_id, menu]),
   );

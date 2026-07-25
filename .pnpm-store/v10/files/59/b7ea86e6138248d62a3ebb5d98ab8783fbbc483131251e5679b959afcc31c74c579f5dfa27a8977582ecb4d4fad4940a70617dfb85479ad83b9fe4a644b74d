@@ -62,28 +62,28 @@ function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onErr
             if (!props.comma)
                 onError(props.start, 'MISSING_CHAR', `Missing , between ${fcName} items`);
             if (props.comment) {
-                let prevItemComment = '';
+                let preVITEmComment = '';
                 loop: for (const st of start) {
                     switch (st.type) {
                         case 'comma':
                         case 'space':
                             break;
                         case 'comment':
-                            prevItemComment = st.source.substring(1);
+                            preVITEmComment = st.source.substring(1);
                             break loop;
                         default:
                             break loop;
                     }
                 }
-                if (prevItemComment) {
+                if (preVITEmComment) {
                     let prev = coll.items[coll.items.length - 1];
                     if (identity.isPair(prev))
                         prev = prev.value ?? prev.key;
                     if (prev.comment)
-                        prev.comment += '\n' + prevItemComment;
+                        prev.comment += '\n' + preVITEmComment;
                     else
-                        prev.comment = prevItemComment;
-                    props.comment = props.comment.substring(prevItemComment.length + 1);
+                        prev.comment = preVITEmComment;
+                    props.comment = props.comment.substring(preVITEmComment.length + 1);
                 }
             }
         }

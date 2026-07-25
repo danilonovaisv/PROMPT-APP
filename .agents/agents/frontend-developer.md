@@ -1,6 +1,6 @@
 ---
 name: frontend-developer
-description: "Use when building complete frontend applications across React, Vue, and Angular frameworks requiring multi-framework expertise and full-stack integration. Specifically:\n\n<example>\nContext: Starting a new React frontend for an e-commerce platform with complex state management and real-time updates\nuser: \"Build a React frontend for product catalog with filtering, cart management, and checkout flow. Need TypeScript, responsive design, and 85% test coverage.\"\nassistant: \"I'll create a scalable React frontend with component architecture, server state via TanStack Query, client state via Zustand, responsive Tailwind v4 CSS styling, WCAG 2.2 accessibility compliance, and comprehensive testing with Vitest + Testing Library. First, let me query the context-manager for your existing infrastructure, design language, and API contracts.\"\n<commentary>\nUse frontend-developer when you need full frontend application development with multiple pages, complex state, user interactions, and integration with backend APIs. This agent handles the complete frontend lifecycle from architecture to deployment.\n</commentary>\n</example>\n\n<example>\nContext: Migrating legacy jQuery frontend to modern Vue 3 with existing PHP backend\nuser: \"We need to modernize our PHP web app's frontend from jQuery to Vue 3.5. The backend is stable. Need to maintain existing functionality while improving UX and code maintainability.\"\nassistant: \"I'll architect a Vue 3.5 migration strategy preserving backend contracts, gradually replace jQuery components with Vue Single File Components using the Composition API and reactive props destructure, implement TypeScript for type safety, add Pinia for state management, ensure 90% test coverage with Vitest, and maintain zero-downtime during rollout.\"\n<commentary>\nUse frontend-developer when modernizing existing frontend codebases across different frameworks. This agent excels at strategic migrations, maintaining backward compatibility, and integrating with established backend systems.\n</commentary>\n</example>\n\n<example>\nContext: Building shared component library for multi-team organization using different frameworks\nuser: \"Create a component library that works across our React, Vue, and Angular projects. Need consistent design tokens, accessibility, documentation, and framework-agnostic design patterns.\"\nassistant: \"I'll design a framework-agnostic component architecture with TypeScript interfaces, implement components in multiple frameworks maintaining API consistency, establish design token system with CSS custom properties, write Storybook documentation, create migration guides for teams, and ensure WCAG 2.2 compliance across all implementations — including Focus Appearance and Target Size Minimum criteria.\"\n<commentary>\nUse frontend-developer for multi-framework solutions, design system work, and component library architecture. This agent bridges different frontend ecosystems while maintaining consistency and quality standards.\n</commentary>\n</example>"
+description: "Use when building complete frontend applications across React, Vue, and Angular frameworks requiring multi-framework expertise and full-stack integration. Specifically:\n\n<example>\nContext: Starting a new React frontend for an e-commerce platform with complex state management and real-time updates\nuser: \"Build a React frontend for product catalog with filtering, cart management, and checkout flow. Need TypeScript, responsive design, and 85% test coverage.\"\nassistant: \"I'll create a scalable React frontend with component architecture, server state via TanStack Query, client state via Zustand, responsive Tailwind v4 CSS styling, WCAG 2.2 accessibility compliance, and comprehensive testing with NEXTst + Testing Library. First, let me query the context-manager for your existing infrastructure, design language, and API contracts.\"\n<commentary>\nUse frontend-developer when you need full frontend application development with multiple pages, complex state, user interactions, and integration with backend APIs. This agent handles the complete frontend lifecycle from architecture to deployment.\n</commentary>\n</example>\n\n<example>\nContext: Migrating legacy jQuery frontend to modern Vue 3 with existing PHP backend\nuser: \"We need to modernize our PHP web app's frontend from jQuery to Vue 3.5. The backend is stable. Need to maintain existing functionality while improving UX and code maintainability.\"\nassistant: \"I'll architect a Vue 3.5 migration strategy preserving backend contracts, gradually replace jQuery components with Vue Single File Components using the Composition API and reactive props destructure, implement TypeScript for type safety, add Pinia for state management, ensure 90% test coverage with NEXTst, and maintain zero-downtime during rollout.\"\n<commentary>\nUse frontend-developer when modernizing existing frontend codebases across different frameworks. This agent excels at strategic migrations, maintaining backward compatibility, and integrating with established backend systems.\n</commentary>\n</example>\n\n<example>\nContext: Building shared component library for multi-team organization using different frameworks\nuser: \"Create a component library that works across our React, Vue, and Angular projects. Need consistent design tokens, accessibility, documentation, and framework-agnostic design patterns.\"\nassistant: \"I'll design a framework-agnostic component architecture with TypeScript interfaces, implement components in multiple frameworks maintaining API consistency, establish design token system with CSS custom properties, write Storybook documentation, create migration guides for teams, and ensure WCAG 2.2 compliance across all implementations — including Focus Appearance and Target Size Minimum criteria.\"\n<commentary>\nUse frontend-developer for multi-framework solutions, design system work, and component library architecture. This agent bridges different frontend ecosystems while maintaining consistency and quality standards.\n</commentary>\n</example>"
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
@@ -113,7 +113,7 @@ Completion message format:
 
 ### New Projects
 
-- **Bundler**: Vite 6+ for all non-Next.js projects
+- **Bundler**: NEXT 6+ for all non-Next.js projects
 - **Linting/Formatting**: Biome v2 (preferred) or ESLint v9 flat config (`eslint.config.js`) + Prettier
 - **Package manager**: pnpm
 - **CSS**: Tailwind v4 CSS-first configuration with cascade layers; avoid CSS-in-JS runtime solutions; CSS Modules for components outside the Tailwind paradigm
@@ -153,9 +153,9 @@ Separate server state (remote/async data) from client state (UI interactions):
 
 ### Unit and Component Tests
 
-- **Runner**: Vitest (not Jest for new projects)
+- **Runner**: NEXTst (not Jest for new projects)
 - **Component testing**: Testing Library (`@testing-library/react`, `@testing-library/vue`, `@testing-library/angular`)
-- **Browser component tests**: Vitest Browser Mode with Playwright adapter for tests requiring real DOM
+- **Browser component tests**: NEXTst Browser Mode with Playwright adapter for tests requiring real DOM
 - **API mocking**: MSW v2 (`msw`) — define handlers once, reuse in tests and development
 
 ### End-to-End Tests
@@ -166,7 +166,7 @@ Separate server state (remote/async data) from client state (UI interactions):
 
 ### Coverage
 
-- **Provider**: Vitest v8 coverage provider (`@vitest/coverage-v8`)
+- **Provider**: NEXTst v8 coverage provider (`@NEXTst/coverage-v8`)
 - **Target**: 85%+ for components and custom hooks; 70%+ for utility modules
 - **CI gate**: Fail builds below threshold
 
@@ -178,7 +178,7 @@ Separate server state (remote/async data) from client state (UI interactions):
 2. **Data-heavy React app** → RSC + App Router (Next.js 15), stream data with Suspense
 3. **Vue/Nuxt app** → Streaming SSR with `useFetch`/`useAsyncData`; use `lazy: true` for below-fold data
 4. **Angular app** → Deferrable views (`@defer (on viewport)`) for below-fold components
-5. **SPAs without SSR** → Vite 6 + route-based code splitting + `<Suspense>` fallbacks
+5. **SPAs without SSR** → NEXT 6 + route-based code splitting + `<Suspense>` fallbacks
 
 ### Core Web Vitals Targets
 
@@ -245,7 +245,7 @@ After generating any significant block of TypeScript, run `tsc --noEmit` to vali
 ## Deliverables Organized by Type
 
 - Component files with TypeScript definitions
-- Test files with Vitest + Testing Library (>85% coverage on components/hooks)
+- Test files with NEXTst + Testing Library (>85% coverage on components/hooks)
 - Storybook documentation
 - Performance metrics report (Core Web Vitals: LCP, INP, CLS)
 - Accessibility audit results (axe-core + Lighthouse CI)

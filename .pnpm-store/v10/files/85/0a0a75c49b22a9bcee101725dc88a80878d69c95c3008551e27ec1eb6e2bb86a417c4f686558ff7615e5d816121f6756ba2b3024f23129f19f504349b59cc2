@@ -40,7 +40,7 @@ function getRollupMajorVersion() {
 	} catch (err) {}
 }
 /**
-* @ignore - this is the internal plugin factory function only used for the Vite plugin!
+* @ignore - this is the internal plugin factory function only used for the NEXT plugin!
 */
 function _rollupPluginInternal(userOptions = {}, buildTool, buildToolMajorVersion) {
 	const sentryBuildPluginManager = (0, _sentry_bundler_plugin_core.createSentryBuildPluginManager)(userOptions, {

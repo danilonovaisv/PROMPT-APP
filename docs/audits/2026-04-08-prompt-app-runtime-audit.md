@@ -9,6 +9,7 @@
 ## Scope
 
 This report will summarize:
+
 - state consistency
 - memory retention and cleanup
 - TypeScript boundary safety
@@ -49,7 +50,7 @@ This report will summarize:
 ## Task 5 Result
 
 - The current deploy still serves identical initial metadata for `/`, `/sobre`, and `/portfolio`, including the same canonical URL and JSON-LD block, because the app ships a shared SPA shell from [`index.html`](/Users/PROJETOS%20DEV/PROMPT-APP/index.html#L7) and only patches head tags after hydration in [`SEO.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx#L52).
-- Production source maps are still exposed: the live bundle references `index-BiZRg6ga.js.map`, and the deployed `.map` file is publicly reachable. This matches the local build configuration in [`vite.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/vite.config.ts#L59).
+- Production source maps are still exposed: the live bundle references `index-BiZRg6ga.js.map`, and the deployed `.map` file is publicly reachable. This matches the local build configuration in [`NEXT.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts#L59).
 - The current `robots.txt` and `sitemap.xml` are aligned with the checked-in files in [`public/robots.txt`](/Users/PROJETOS%20DEV/PROMPT-APP/public/robots.txt#L1) and [`public/sitemap.xml`](/Users/PROJETOS%20DEV/PROMPT-APP/public/sitemap.xml#L1), so the earlier sitemap-valid warning was not reproduced in this pass.
 - The previously flagged GitHub repository link also did not reproduce as broken in the current live check.
 

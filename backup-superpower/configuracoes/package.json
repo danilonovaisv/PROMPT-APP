@@ -5,9 +5,9 @@
   "packageManager": "pnpm@10.33.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -p tsconfig.app.json && vite build",
-    "preview": "vite preview",
+    "dev": "NEXT",
+    "build": "tsc -p tsconfig.app.json && NEXT build",
+    "preview": "NEXT preview",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -22,17 +22,17 @@
     "setup:cloud-env": "bash scripts/setup-cloud-env.sh",
     "clean": "pnpm clean:build && pnpm clean:cache && pnpm clean:reports",
     "clean:build": "rm -rf dist",
-    "clean:cache": "rm -rf node_modules/.cache node_modules/.vite .eslintcache pnpm-lock.yaml",
+    "clean:cache": "rm -rf node_modules/.cache node_modules/.NEXT .eslintcache pnpm-lock.yaml",
     "clean:reports": "rm -rf coverage playwright-report test-results",
     "clean:modules": "rm -rf node_modules",
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
   },
   "dependencies": {
     "@netlify/neon": "^0.1.2",
-    "@netlify/vite-plugin": "^2.11.2",
+    "@netlify/NEXT-plugin": "^2.11.2",
     "@sentry/browser": "^10.47.0",
     "@sentry/react": "^10.47.0",
-    "@sentry/vite-plugin": "^5.1.1",
+    "@sentry/NEXT-plugin": "^5.1.1",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "agentic-flow": "^2.0.7",
@@ -57,7 +57,7 @@
     "@types/node": "^25.5.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@NEXTjs/plugin-react": "^6.0.1",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.2.0",
     "eslint-plugin-react-hooks": "^7.0.1",
@@ -71,6 +71,6 @@
     "ts-jest": "^29.4.9",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
-    "vite": "^8.0.5"
+    "NEXT": "^8.0.5"
   }
 }

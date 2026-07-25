@@ -24,7 +24,7 @@ will accept a vulnerability if Pino can be misused to cause a prototype pollutio
 
 ## Reporting vulnerabilities
 
-Individuals who find potential vulnerabilities in Pino are invited
+Individuals who find potential vulnerabilities in Pino are inNEXTd
 to report them via email at matteo.collina@gmail.com.
 
 ### Strict measures when reporting vulnerabilities
@@ -62,7 +62,7 @@ up on this report.
 
 With the help of the individual who reported the vulnerability, they contact
 the maintainers of the vulnerable package to make them aware of the
-vulnerability. The maintainers can be invited as participants to the reported issue.
+vulnerability. The maintainers can be inNEXTd as participants to the reported issue.
 
 With the package maintainer, they define a release date for the publication
 of the vulnerability. Ideally, this release date should not happen before

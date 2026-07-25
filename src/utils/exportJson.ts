@@ -1,14 +1,14 @@
 import { db } from "@/db/database";
 import {
   type CompiledPromptPayload,
+  ImportEnvelopeSchema,
   type PromptContract,
   PromptContractSchema,
   type TemplatePayload,
 } from "@/models/promptSchema";
-import type { BulkExport, Prompt, ContextMenu } from "@/models/types";
+import type { Prompt, ContextMenu } from "@/models/types";
 import { contextMenuToDefinition } from "@/utils/promptArtifacts";
 import {
-  CURRENT_BULK_EXPORT_VERSION,
   CURRENT_PROMPT_SCHEMA_VERSION,
 } from "@/utils/schemaCompatibility";
 
@@ -49,56 +49,63 @@ export async function downloadPrompt(prompt: Prompt) {
 
 export async function downloadAllPrompts() {
   const prompts = await db.prompts.toArray();
-  const categories = await db.categories.toArray();
   const contextMenus = await db.contextMenus.toArray();
-  const categoryMap = new Map(
-    categories.map((category) => [category.id!, category.name]),
-  );
-
-  const bulk: BulkExport = {
+  const bulk = ImportEnvelopeSchema.parse({
     app: "Prompt App",
-    version: CURRENT_BULK_EXPORT_VERSION,
-    format: "prompt-app-bulk-export",
+    version: "3.0.0",
+    format: "prompt-app-import",
     schemaVersion: CURRENT_PROMPT_SCHEMA_VERSION,
     exportedAt: new Date().toISOString(),
-    menuDefinitions: contextMenus.map(contextMenuToDefinition),
-    prompts: prompts.map((prompt) => ({
-      title: prompt.title,
-      category: categoryMap.get(prompt.categoryId) || "Sem categoria",
-      schemaVersion: prompt.schemaVersion,
-      prompt: toExportFormat(prompt, contextMenus),
-    })),
-  };
+    context_menus: contextMenus.map(contextMenuToDefinition),
+    prompts: prompts.map((prompt) => toExportFormat(prompt, contextMenus)),
+  });
 
   downloadJson(bulk, `prompt_app_export_${Date.now()}`);
 }
 
 export function getTemplateFile(): Blob {
-  const template = PromptContractSchema.parse({
-    meta: {
-      template_id: "novo_template",
-      template_name: "Novo Template",
-      template_type: "generic_prompt",
-      schema_version: CURRENT_PROMPT_SCHEMA_VERSION,
-      language: "pt-BR",
-      status: "draft",
-    },
-    prompt_definition: {
-      system_role: "",
-      task: "",
-      context: "",
-      constraints: [],
-      negative_prompt: [],
-      few_shot_examples: [],
-    },
-    menu_definitions: [],
-    output_contract: {
-      format: "text",
-      language: "pt-BR",
-      strict_mode: true,
-      required_fields: [],
-      response_rules: [],
-    },
+  const template = ImportEnvelopeSchema.parse({
+    app: "Prompt App",
+    version: "3.0.0",
+    format: "prompt-app-import",
+    schemaVersion: CURRENT_PROMPT_SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    context_menus: [],
+    prompts: [
+      PromptContractSchema.parse({
+        meta: {
+          template_id: "novo_template",
+          template_name: "Novo Template",
+          template_type: "generic_prompt",
+          schema_version: CURRENT_PROMPT_SCHEMA_VERSION,
+          language: "pt-BR",
+          status: "draft",
+        },
+        prompt_definition: {
+          system_role: "",
+          task: "",
+          context: "",
+          user_scene_description: "",
+          constraints: [],
+          negative_prompt: [],
+          few_shot_examples: [],
+        },
+        menu_definitions: [],
+        menu_ids: [],
+        prompt_memory_context: {
+          enabled: false,
+          merge_strategy: "preserve_existing",
+          entries: [],
+        },
+        output_contract: {
+          format: "text",
+          language: "pt-BR",
+          strict_mode: true,
+          required_fields: [],
+          response_rules: [],
+        },
+      }),
+    ],
   });
 
   return new Blob([JSON.stringify(template, null, 2)], {

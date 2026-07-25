@@ -35,8 +35,8 @@
         "build:rollup": "rollup -c",
         "clean": "rimraf .nyc_output coverage index.* dist",
         "coverage": "opener ./coverage/lcov-report/index.html",
-        "docs:build": "vitepress build docs",
-        "docs:watch": "vitepress dev docs",
+        "docs:build": "NEXTpress build docs",
+        "docs:watch": "NEXTpress dev docs",
         "format": "npm run -s format:prettier -- --write",
         "format:prettier": "prettier .",
         "format:check": "npm run -s format:prettier -- --check",
@@ -76,7 +76,7 @@
         "rollup-plugin-sourcemaps": "^0.6.3",
         "semver": "^7.6.3",
         "typescript": "^4.9.5",
-        "vitepress": "^1.4.1",
+        "NEXTpress": "^1.4.1",
         "warun": "^1.0.0"
     },
     "peerDependencies": {

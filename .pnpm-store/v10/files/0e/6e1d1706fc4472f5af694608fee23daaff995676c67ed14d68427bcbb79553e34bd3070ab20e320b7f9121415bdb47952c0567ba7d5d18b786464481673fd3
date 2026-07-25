@@ -16,12 +16,12 @@ import { EventEmitter } from "node:events";
 import { Server as HttpsServer, ServerOptions as HttpsServerOptions } from "node:https";
 import * as net from "node:net";
 import { Duplex, DuplexOptions, Stream } from "node:stream";
-import { FetchFunction, FetchFunctionOptions, FetchResult, FetchResult as moduleRunner_FetchResult, ModuleEvaluator, ModuleRunner, ModuleRunnerHmr, ModuleRunnerOptions } from "vite/module-runner";
+import { FetchFunction, FetchFunctionOptions, FetchResult, FetchResult as moduleRunner_FetchResult, ModuleEvaluator, ModuleRunner, ModuleRunnerHmr, ModuleRunnerOptions } from "NEXT/module-runner";
 import { DepsOptimizerEsbuildOptions, EsbuildTarget, EsbuildTransformOptions, EsbuildTransformOptions as esbuildOptions_EsbuildTransformOptions, EsbuildTransformResult } from "#types/internal/esbuildOptions";
 import { SecureContextOptions } from "node:tls";
 import { URL as url_URL } from "node:url";
 import { ZlibOptions } from "node:zlib";
-import { ChunkMetadata, CustomPluginOptionsVite } from "#types/metadata";
+import { ChunkMetadata, CustomPluginOptionsNEXT } from "#types/metadata";
 import { Terser, TerserMinifyOptions } from "#types/internal/terserOptions";
 import * as PostCSS from "postcss";
 import { LightningCSSOptions, LightningCSSOptions as lightningcssOptions_LightningCSSOptions } from "#types/internal/lightningcssOptions";
@@ -31,7 +31,7 @@ import { GeneralImportGlobOptions, ImportGlobFunction, ImportGlobOptions, KnownA
 
 //#region \0rolldown/runtime.js
 //#endregion
-//#region ../../node_modules/.pnpm/@vitejs+devtools@0.1.19_typescript@6.0.2_vite@packages+vite/node_modules/@vitejs/devtools/dist/cli-commands.d.ts
+//#region ../../node_modules/.pnpm/@NEXTjs+devtools@0.1.19_typescript@6.0.2_NEXT@packages+NEXT/node_modules/@NEXTjs/devtools/dist/cli-commands.d.ts
 //#region src/node/cli-commands.d.ts
 interface StartOptions {
   root?: string;
@@ -41,12 +41,12 @@ interface StartOptions {
   open?: boolean;
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@vitejs+devtools@0.1.19_typescript@6.0.2_vite@packages+vite/node_modules/@vitejs/devtools/dist/config.d.ts
+//#region ../../node_modules/.pnpm/@NEXTjs+devtools@0.1.19_typescript@6.0.2_NEXT@packages+NEXT/node_modules/@NEXTjs/devtools/dist/config.d.ts
 //#region src/node/config.d.ts
 interface DevToolsConfig extends Partial<StartOptions> {
   enabled: boolean;
   /**
-   * Vite environments to enable DevTools for. Defaults to all environments.
+   * NEXT environments to enable DevTools for. Defaults to all environments.
    */
   environments?: string[];
   /**
@@ -598,13 +598,13 @@ declare function createLogger(level?: LogLevel, options?: LoggerOptions): Logger
 //#region src/node/http.d.ts
 interface CommonServerOptions {
   /**
-  * Specify server port. Note if the port is already being used, Vite will
+  * Specify server port. Note if the port is already being used, NEXT will
   * automatically try the next available port so this may not be the actual
   * port the server ends up listening on.
   */
   port?: number;
   /**
-  * If enabled, vite will exit if specified port is already in use
+  * If enabled, NEXT will exit if specified port is already in use
   */
   strictPort?: boolean;
   /**
@@ -613,7 +613,7 @@ interface CommonServerOptions {
   */
   host?: string | boolean;
   /**
-  * The hostnames that Vite is allowed to respond to.
+  * The hostnames that NEXT is allowed to respond to.
   * `localhost` and subdomains under `.localhost` and all IP addresses are allowed by default.
   * When using HTTPS, this check is skipped.
   *
@@ -639,7 +639,7 @@ interface CommonServerOptions {
   * Uses [`http-proxy-3`](https://github.com/sagemathinc/http-proxy-3).
   * Full options [here](https://github.com/sagemathinc/http-proxy-3#options).
   *
-  * Example `vite.config.js`:
+  * Example `NEXT.config.js`:
   * ``` js
   * module.exports = {
   *   proxy: {
@@ -715,7 +715,7 @@ interface PreviewOptions extends CommonServerOptions {}
 interface ResolvedPreviewOptions extends RequiredExceptFor<PreviewOptions, "host" | "https" | "proxy"> {}
 interface PreviewServer {
   /**
-  * The resolved vite config object
+  * The resolved NEXT config object
   */
   config: ResolvedConfig;
   /**
@@ -736,7 +736,7 @@ interface PreviewServer {
   */
   httpServer: HttpServer;
   /**
-  * The resolved urls Vite prints on the CLI (URL-encoded). Returns `null`
+  * The resolved urls NEXT prints on the CLI (URL-encoded). Returns `null`
   * if the server is not listening on any port.
   */
   resolvedUrls: ResolvedServerUrls | null;
@@ -751,12 +751,12 @@ interface PreviewServer {
 }
 type PreviewServerHook = (this: MinimalPluginContextWithoutEnvironment, server: PreviewServer) => (() => void) | void | Promise<(() => void) | void>;
 /**
-* Starts the Vite server in preview mode, to simulate a production deployment
+* Starts the NEXT server in preview mode, to simulate a production deployment
 */
 declare function preview(inlineConfig?: InlineConfig): Promise<PreviewServer>;
 //#endregion
 //#region src/node/shortcuts.d.ts
-type BindCLIShortcutsOptions<Server = ViteDevServer | PreviewServer> = {
+type BindCLIShortcutsOptions<Server = NEXTDevServer | PreviewServer> = {
   /**
   * Print a one-line shortcuts "help" hint to the terminal
   */
@@ -768,7 +768,7 @@ type BindCLIShortcutsOptions<Server = ViteDevServer | PreviewServer> = {
   */
   customShortcuts?: CLIShortcut<Server>[];
 };
-type CLIShortcut<Server = ViteDevServer | PreviewServer> = {
+type CLIShortcut<Server = NEXTDevServer | PreviewServer> = {
   key: string;
   description: string;
   action?(server: Server): void | Promise<void>;
@@ -848,10 +848,10 @@ interface DepOptimizationConfig {
   * Options to pass to esbuild during the dep scanning and optimization
   *
   * Certain options are omitted since changing them would not be compatible
-  * with Vite's dep optimization.
+  * with NEXT's dep optimization.
   *
-  * - `external` is also omitted, use Vite's `optimizeDeps.exclude` option
-  * - `plugins` are merged with Vite's dep plugin
+  * - `external` is also omitted, use NEXT's `optimizeDeps.exclude` option
+  * - `plugins` are merged with NEXT's dep plugin
   *
   * https://esbuild.github.io/api
   *
@@ -868,9 +868,9 @@ interface DepOptimizationConfig {
   * Options to pass to rolldown during the dep scanning and optimization
   *
   * Certain options are omitted since changing them would not be compatible
-  * with Vite's dep optimization.
+  * with NEXT's dep optimization.
   *
-  * - `plugins` are merged with Vite's dep plugin
+  * - `plugins` are merged with NEXT's dep plugin
   */
   rolldownOptions?: Omit<RolldownOptions, "input" | "logLevel" | "output"> & {
     output?: Omit<OutputOptions, "format" | "sourcemap" | "dir" | "banner">;
@@ -879,14 +879,14 @@ interface DepOptimizationConfig {
   * List of file extensions that can be optimized. A corresponding esbuild
   * plugin must exist to handle the specific extension.
   *
-  * By default, Vite can optimize `.mjs`, `.js`, `.ts`, and `.mts` files. This option
+  * By default, NEXT can optimize `.mjs`, `.js`, `.ts`, and `.mts` files. This option
   * allows specifying additional extensions.
   *
   * @experimental
   */
   extensions?: string[];
   /**
-  * Deps optimization during build was removed in Vite 5.1. This option is
+  * Deps optimization during build was removed in NEXT 5.1. This option is
   * now redundant and will be removed in a future version. Switch to using
   * `optimizeDeps.noDiscovery` and an empty or undefined `optimizeDeps.include`.
   * true or 'dev' disables the optimizer, false or 'build' leaves it enabled.
@@ -914,7 +914,7 @@ interface DepOptimizationConfig {
   */
   holdUntilCrawlEnd?: boolean;
   /**
-  * When enabled, Vite will not throw an error when an outdated optimized
+  * When enabled, NEXT will not throw an error when an outdated optimized
   * dependency is requested. Enabling this option may cause a single module
   * to have a multiple reference.
   * @default false
@@ -924,14 +924,14 @@ interface DepOptimizationConfig {
 }
 type DepOptimizationOptions = DepOptimizationConfig & {
   /**
-  * By default, Vite will crawl your `index.html` to detect dependencies that
-  * need to be pre-bundled. If `build.rollupOptions.input` is specified, Vite
+  * By default, NEXT will crawl your `index.html` to detect dependencies that
+  * need to be pre-bundled. If `build.rollupOptions.input` is specified, NEXT
   * will crawl those entry points instead.
   *
   * If neither of these fit your needs, you can specify custom entries using
   * this option - the value should be a tinyglobby pattern or array of patterns
   * (https://github.com/SuperchupuDev/tinyglobby) that are relative from
-  * vite project root. This will overwrite default entries inference.
+  * NEXT project root. This will overwrite default entries inference.
   */
   entries?: string | string[];
   /**
@@ -1000,7 +1000,7 @@ interface DepOptimizationMetadata {
 }
 /**
 * Scan and optimize dependencies within a project.
-* Used by Vite CLI when running `vite optimize`.
+* Used by NEXT CLI when running `NEXT optimize`.
 *
 * @deprecated the optimization process runs automatically and does not need to be called
 */
@@ -1173,14 +1173,14 @@ interface HotUpdateOptions {
   timestamp: number;
   modules: Array<EnvironmentModuleNode>;
   read: () => string | Promise<string>;
-  server: ViteDevServer;
+  server: NEXTDevServer;
 }
 interface HmrContext {
   file: string;
   timestamp: number;
   modules: Array<ModuleNode>;
   read: () => string | Promise<string>;
-  server: ViteDevServer;
+  server: NEXTDevServer;
 }
 interface HotChannelClient {
   send(payload: hmrPayload_HotPayload): void;
@@ -1239,7 +1239,7 @@ interface NormalizedHotChannel<Api = any> {
   */
   on<T extends string>(event: T, listener: (data: InferCustomEventPayload<T>, client: NormalizedHotChannelClient) => void): void;
   /**
-  * @deprecated use `vite:client:connect` event instead
+  * @deprecated use `NEXT:client:connect` event instead
   */
   on(event: "connection", listener: () => void): void;
   /**
@@ -1615,7 +1615,7 @@ declare class DevEnvironment extends BaseEnvironment {
   * - previous instance `close`
   * - new instance `listen`
   */
-  listen(server: ViteDevServer): Promise<void>;
+  listen(server: NEXTDevServer): Promise<void>;
   /**
   * Called by the module runner to retrieve information about the specified
   * module. Internally calls `transformRequest` and wraps the result in the
@@ -1880,7 +1880,7 @@ interface RollupDynamicImportVarsOptions {
 //#region src/node/plugins/terser.d.ts
 interface TerserOptions extends TerserMinifyOptions {
   /**
-  * Vite-specific option to specify the max number of workers to spawn
+  * NEXT-specific option to specify the max number of workers to spawn
   * when minifying files with terser.
   *
   * @default number of CPUs minus 1
@@ -1982,7 +1982,7 @@ interface LicenseOptions {
   * The output file name of the license file relative to the output directory.
   * Specify a path that ends with `.json` to output the raw JSON metadata.
   *
-  * @default '.vite/license.md'
+  * @default '.NEXT/license.md'
   */
   fileName: string;
 }
@@ -2120,15 +2120,15 @@ interface BuildEnvironmentOptions {
   */
   copyPublicDir?: boolean;
   /**
-  * Whether to emit a `.vite/license.md` file that includes all bundled dependencies'
+  * Whether to emit a `.NEXT/license.md` file that includes all bundled dependencies'
   * licenses. Pass an object to customize the output file name.
   * @default false
   */
   license?: boolean | LicenseOptions;
   /**
-  * Whether to emit a .vite/manifest.json in the output dir to map hash-less filenames
+  * Whether to emit a .NEXT/manifest.json in the output dir to map hash-less filenames
   * to their hashed versions. Useful when you want to generate your own HTML
-  * instead of using the one generated by Vite.
+  * instead of using the one generated by NEXT.
   *
   * Example:
   *
@@ -2275,7 +2275,7 @@ declare class BuildEnvironment extends BaseEnvironment {
   });
   init(): Promise<void>;
 }
-interface ViteBuilder {
+interface NEXTBuilder {
   environments: Record<string, BuildEnvironment>;
   config: ResolvedConfig;
   buildApp(): Promise<void>;
@@ -2297,15 +2297,15 @@ interface BuilderOptions {
   * @experimental
   */
   sharedPlugins?: boolean;
-  buildApp?: (builder: ViteBuilder) => Promise<void>;
+  buildApp?: (builder: NEXTBuilder) => Promise<void>;
 }
 type ResolvedBuilderOptions = Required<BuilderOptions>;
 /**
-* Creates a ViteBuilder to orchestrate building multiple environments.
+* Creates a NEXTBuilder to orchestrate building multiple environments.
 * @experimental
 */
-declare function createBuilder(inlineConfig?: InlineConfig, useLegacyBuilder?: null | boolean): Promise<ViteBuilder>;
-type BuildAppHook = (this: MinimalPluginContextWithoutEnvironment, builder: ViteBuilder) => Promise<void>;
+declare function createBuilder(inlineConfig?: InlineConfig, useLegacyBuilder?: null | boolean): Promise<NEXTBuilder>;
+type BuildAppHook = (this: MinimalPluginContextWithoutEnvironment, builder: NEXTBuilder) => Promise<void>;
 //#endregion
 //#region src/node/environment.d.ts
 type Environment = DevEnvironment | BuildEnvironment | ScanEnvironment | UnknownEnvironment;
@@ -2464,7 +2464,7 @@ interface ServerOptions$1 extends CommonServerOptions {
   */
   watch?: WatchOptions | null;
   /**
-  * Create Vite dev server to be used as a middleware in an existing server
+  * Create NEXT dev server to be used as a middleware in an existing server
   * @default false
   */
   middlewareMode?: boolean | {
@@ -2517,7 +2517,7 @@ interface ServerOptions$1 extends CommonServerOptions {
   * Run HMR tasks, by default the HMR propagation is done in parallel for all environments
   * @experimental
   */
-  hotUpdateEnvironments?: (server: ViteDevServer, hmr: (environment: DevEnvironment) => Promise<void>) => Promise<void>;
+  hotUpdateEnvironments?: (server: NEXTDevServer, hmr: (environment: DevEnvironment) => Promise<void>) => Promise<void>;
   forwardConsole?: boolean | ForwardConsoleOptions;
 }
 interface ResolvedServerOptions extends Omit<RequiredExceptFor<ServerOptions$1, "host" | "https" | "proxy" | "hmr" | "ws" | "watch" | "origin" | "hotUpdateEnvironments">, "fs" | "middlewareMode" | "sourcemapIgnoreList" | "forwardConsole"> {
@@ -2552,11 +2552,11 @@ interface FileSystemServeOptions {
   */
   deny?: string[];
 }
-type ServerHook = (this: MinimalPluginContextWithoutEnvironment, server: ViteDevServer) => (() => void) | void | Promise<(() => void) | void>;
+type ServerHook = (this: MinimalPluginContextWithoutEnvironment, server: NEXTDevServer) => (() => void) | void | Promise<(() => void) | void>;
 type HttpServer = http.Server | Http2SecureServer;
-interface ViteDevServer {
+interface NEXTDevServer {
   /**
-  * The resolved vite config object
+  * The resolved NEXT config object
   */
   config: ResolvedConfig;
   /**
@@ -2593,7 +2593,7 @@ interface ViteDevServer {
   */
   pluginContainer: PluginContainer;
   /**
-  * Module execution environments attached to the Vite server.
+  * Module execution environments attached to the NEXT server.
   */
   environments: Record<"client" | "ssr" | (string & {}), DevEnvironment>;
   /**
@@ -2602,7 +2602,7 @@ interface ViteDevServer {
   */
   moduleGraph: ModuleGraph;
   /**
-  * The resolved urls Vite prints on the CLI (URL-encoded). Returns `null`
+  * The resolved urls NEXT prints on the CLI (URL-encoded). Returns `null`
   * in middleware mode or if the server is not listening on any port.
   */
   resolvedUrls: ResolvedServerUrls | null;
@@ -2618,7 +2618,7 @@ interface ViteDevServer {
   */
   warmupRequest(url: string, options?: TransformOptions): Promise<void>;
   /**
-  * Apply vite built-in HTML transforms and any plugin HTML transforms.
+  * Apply NEXT built-in HTML transforms and any plugin HTML transforms.
   */
   transformIndexHtml(url: string, html: string, originalUrl?: string): Promise<string>;
   /**
@@ -2649,7 +2649,7 @@ interface ViteDevServer {
   /**
   * Start the server.
   */
-  listen(port?: number, isRestart?: boolean): Promise<ViteDevServer>;
+  listen(port?: number, isRestart?: boolean): Promise<NEXTDevServer>;
   /**
   * Stop the server.
   */
@@ -2661,7 +2661,7 @@ interface ViteDevServer {
   /**
   * Bind CLI shortcuts
   */
-  bindCLIShortcuts(options?: BindCLIShortcutsOptions<ViteDevServer>): void;
+  bindCLIShortcuts(options?: BindCLIShortcutsOptions<NEXTDevServer>): void;
   /**
   * Restart the server.
   *
@@ -2684,7 +2684,7 @@ interface ResolvedServerUrls {
   local: string[];
   network: string[];
 }
-declare function createServer(inlineConfig?: InlineConfig | ResolvedConfig): Promise<ViteDevServer>;
+declare function createServer(inlineConfig?: InlineConfig | ResolvedConfig): Promise<NEXTDevServer>;
 //#endregion
 //#region src/node/plugins/html.d.ts
 interface HtmlTagDescriptor {
@@ -2712,7 +2712,7 @@ interface IndexHtmlTransformContext {
   * filename on disk
   */
   filename: string;
-  server?: ViteDevServer;
+  server?: NEXTDevServer;
   bundle?: OutputBundle;
   chunk?: OutputChunk;
   originalUrl?: string;
@@ -2731,9 +2731,9 @@ type StringFilter<Value = string | RegExp> = Value | Array<Value> | {
 //#endregion
 //#region src/node/plugin.d.ts
 /**
-* Vite plugins extends the Rollup plugin interface with a few extra
-* vite-specific options. A valid vite plugin is also a valid Rollup plugin.
-* On the contrary, a Rollup plugin may or may NOT be a valid vite universal
+* NEXT plugins extends the Rollup plugin interface with a few extra
+* NEXT-specific options. A valid NEXT plugin is also a valid Rollup plugin.
+* On the contrary, a Rollup plugin may or may NOT be a valid NEXT universal
 * plugin, since some Rollup features do not make sense in an unbundled
 * dev server context. That said, as long as a rollup plugin doesn't have strong
 * coupling between its bundle phase and output phase hooks then it should
@@ -2758,12 +2758,12 @@ type StringFilter<Value = string | RegExp> = Value | Array<Value> | {
 */
 interface PluginContextExtension {
   /**
-  * Vite-specific environment instance
+  * NEXT-specific environment instance
   */
   environment: Environment;
 }
 interface PluginContextMetaExtension {
-  viteVersion: string;
+  NEXTVersion: string;
 }
 interface ConfigPluginContext extends Omit<MinimalPluginContext, "meta" | "environment"> {
   meta: Omit<PluginContextMeta, "watchMode">;
@@ -2774,7 +2774,7 @@ declare module "rolldown" {
   interface PluginContextMeta extends PluginContextMetaExtension {}
 }
 /**
-* There are two types of plugins in Vite. App plugins and environment plugins.
+* There are two types of plugins in NEXT. App plugins and environment plugins.
 * Environment Plugins are defined by a constructor function that will be called
 * once per each environment allowing users to have completely different plugins
 * for each of them. The constructor gets the resolved environment after the server
@@ -2836,7 +2836,7 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
   /**
   * Opt-in this plugin into the shared plugins pipeline.
   * For backward-compatibility, plugins are re-recreated for each environment
-  * during `vite build --app`
+  * during `NEXT build --app`
   * We have an opt-in per plugin, and a general `builder.sharedPlugins`
   * In a future major, we'll flip the default to be shared by default
   * @experimental
@@ -2865,11 +2865,11 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
   * Plugin invocation order:
   * - alias resolution
   * - `enforce: 'pre'` plugins
-  * - vite core plugins
+  * - NEXT core plugins
   * - normal plugins
-  * - vite build plugins
+  * - NEXT build plugins
   * - `enforce: 'post'` plugins
-  * - vite build post plugins
+  * - NEXT build post plugins
   */
   enforce?: "pre" | "post";
   /**
@@ -2883,7 +2883,7 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
   */
   applyToEnvironment?: (environment: PartialEnvironment) => boolean | Promise<boolean> | PluginOption;
   /**
-  * Modify vite config before it's resolved. The hook can either mutate the
+  * Modify NEXT config before it's resolved. The hook can either mutate the
   * passed-in config directly, or return a partial config object that will be
   * deeply merged into existing config.
   *
@@ -2909,11 +2909,11 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
     isSsrTargetWebworker?: boolean;
   }) => EnvironmentOptions | null | void | Promise<EnvironmentOptions | null | void>>;
   /**
-  * Use this hook to read and store the final resolved vite config.
+  * Use this hook to read and store the final resolved NEXT config.
   */
   configResolved?: ObjectHook<(this: MinimalPluginContextWithoutEnvironment, config: ResolvedConfig) => void | Promise<void>>;
   /**
-  * Configure the vite server. The hook receives the {@link ViteDevServer}
+  * Configure the NEXT server. The hook receives the {@link NEXTDevServer}
   * instance. This can also be used to store a reference to the server
   * for use in other hooks.
   *
@@ -2940,7 +2940,7 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
   * - ctx: IndexHtmlTransformContext, which contains:
   *    - path: public path when served
   *    - filename: filename on disk
-  *    - server?: ViteDevServer (only present during serve)
+  *    - server?: NEXTDevServer (only present during serve)
   *    - bundle?: rollup.OutputBundle (only present during build)
   *    - chunk?: rollup.OutputChunk
   *    - originalUrl?: string
@@ -2948,8 +2948,8 @@ interface Plugin<A = any> extends Rolldown.Plugin<A> {
   * It can either return a transformed string, or a list of html tag
   * descriptors that will be injected into the `<head>` or `<body>`.
   *
-  * By default the transform is applied **after** vite's internal html
-  * transform. If you need to apply the transform before vite, use an object:
+  * By default the transform is applied **after** NEXT's internal html
+  * transform. If you need to apply the transform before NEXT, use an object:
   * `{ order: 'pre', handler: hook }`
   */
   transformIndexHtml?: IndexHtmlTransform;
@@ -3017,7 +3017,7 @@ interface CSSOptions {
   /**
   * Options for preprocessors.
   *
-  * In addition to options specific to each processors, Vite supports `additionalData` option.
+  * In addition to options specific to each processors, NEXT supports `additionalData` option.
   * The `additionalData` option can be used to inject extra code for each style content.
   */
   preprocessorOptions?: {
@@ -3178,8 +3178,8 @@ declare function transformWithOxc(code: string, filename: string, options?: roll
 //#region src/node/config.d.ts
 interface ConfigEnv {
   /**
-  * 'serve': during dev (`vite` command)
-  * 'build': when building for production (`vite build` command)
+  * 'serve': during dev (`NEXT` command)
+  * 'build': when building for production (`NEXT build` command)
   */
   command: "build" | "serve";
   mode: string;
@@ -3199,7 +3199,7 @@ type UserConfigFnPromise = (env: ConfigEnv) => Promise<UserConfig>;
 type UserConfigFn = (env: ConfigEnv) => UserConfig | Promise<UserConfig>;
 type UserConfigExport = UserConfig | Promise<UserConfig> | UserConfigFnObject | UserConfigFnPromise | UserConfigFn;
 /**
-* Type helper to make it easier to use vite.config.ts
+* Type helper to make it easier to use NEXT.config.ts
 * accepts a direct {@link UserConfig} object, or a function that returns it.
 * The function receives a {@link ConfigEnv} object.
 */
@@ -3336,12 +3336,12 @@ interface UserConfig extends DefaultEnvironmentOptions {
   publicDir?: string | false;
   /**
   * Directory to save cache files. Files in this directory are pre-bundled
-  * deps or some other cache files that generated by vite, which can improve
+  * deps or some other cache files that generated by NEXT, which can improve
   * the performance. You can use `--force` flag or manually delete the directory
   * to regenerate the cache files. The value can be either an absolute file
   * system path or a path relative to project root.
-  * Default to `.vite` when no `package.json` is detected.
-  * @default 'node_modules/.vite'
+  * Default to `.NEXT` when no `package.json` is detected.
+  * @default 'node_modules/.NEXT'
   */
   cacheDir?: string;
   /**
@@ -3350,7 +3350,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
   */
   mode?: string;
   /**
-  * Array of vite plugins to use.
+  * Array of NEXT plugins to use.
   */
   plugins?: PluginOption[];
   /**
@@ -3398,7 +3398,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
   * Experimental features
   *
   * Features under this field could change in the future and might NOT follow semver.
-  * Please be careful and always pin Vite's version when using them.
+  * Please be careful and always pin NEXT's version when using them.
   * @experimental
   */
   experimental?: ExperimentalOptions;
@@ -3410,7 +3410,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
   * Legacy options
   *
   * Features under this field only follow semver for patches, they could be removed in a
-  * future minor version. Please always pin Vite's version to a minor when using them.
+  * future minor version. Please always pin NEXT's version to a minor when using them.
   */
   legacy?: LegacyOptions;
   /**
@@ -3434,7 +3434,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
   envDir?: string | false;
   /**
   * Env variables starts with `envPrefix` will be exposed to your client source code via import.meta.env.
-  * @default 'VITE_'
+  * @default 'NEXT_'
   */
   envPrefix?: string | string[];
   /**
@@ -3447,7 +3447,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
     */
     format?: "es" | "iife";
     /**
-    * Vite plugins that apply to worker bundle. The plugins returned by this function
+    * NEXT plugins that apply to worker bundle. The plugins returned by this function
     * should be new instances every time it is called, because they are used for each
     * rolldown worker bundling process.
     */
@@ -3484,7 +3484,7 @@ interface UserConfig extends DefaultEnvironmentOptions {
   */
   appType?: AppType;
   /**
-  * Enable devtools integration. Ensure that `@vitejs/devtools` is installed as a dependency.
+  * Enable devtools integration. Ensure that `@NEXTjs/devtools` is installed as a dependency.
   * This feature is currently supported only in build mode.
   * @experimental
   * @default false
@@ -3543,26 +3543,26 @@ interface ExperimentalOptions {
 }
 interface LegacyOptions {
   /**
-  * In Vite 6.0.8 and below, WebSocket server was able to connect from any web pages. However,
+  * In NEXT 6.0.8 and below, WebSocket server was able to connect from any web pages. However,
   * that could be exploited by a malicious web page.
   *
-  * In Vite 6.0.9+, the WebSocket server now requires a token to connect from a web page.
+  * In NEXT 6.0.9+, the WebSocket server now requires a token to connect from a web page.
   * But this may break some plugins and frameworks that connects to the WebSocket server
-  * on their own. Enabling this option will make Vite skip the token check.
+  * on their own. Enabling this option will make NEXT skip the token check.
   *
   * **We do not recommend enabling this option unless you are sure that you are fine with
   * that security weakness.**
   */
   skipWebSocketTokenCheck?: boolean;
   /**
-  * Opt-in to the pre-Vite 8 CJS interop behavior, which was inconsistent.
+  * Opt-in to the pre-NEXT 8 CJS interop behavior, which was inconsistent.
   *
-  * In pre-Vite 8 versions, Vite had inconsistent CJS interop behavior. This was due to
+  * In pre-NEXT 8 versions, NEXT had inconsistent CJS interop behavior. This was due to
   * the different behavior of esbuild and the Rollup commonjs plugin.
-  * Vite 8+ uses Rolldown for both the dependency optimization in dev and the production build,
+  * NEXT 8+ uses Rolldown for both the dependency optimization in dev and the production build,
   * which aligns the behavior to esbuild.
   *
-  * See the Vite 8 migration guide for more details.
+  * See the NEXT 8 migration guide for more details.
   */
   inconsistentCjsInterop?: boolean;
 }
@@ -3624,7 +3624,7 @@ interface ResolvedConfig extends Readonly<Omit<UserConfig, "plugins" | "css" | "
   * environments. The `aliasOnly` option is also not being used anymore.
   * Plugins should move to `createIdResolver(environment.config)` instead.
   *
-  * @deprecated Use `createIdResolver` from `vite` instead.
+  * @deprecated Use `createIdResolver` from `NEXT` instead.
   */
   createResolver: (options?: Partial<InternalResolveOptions>) => ResolveFn;
   optimizeDeps: DepOptimizationOptions;
@@ -3689,7 +3689,7 @@ declare const createServerModuleRunnerTransport: (options: {
   channel: NormalizedServerHotChannel;
 }) => ModuleRunnerTransport;
 /**
-* Create an instance of the Vite SSR runtime that support HMR.
+* Create an instance of the NEXT SSR runtime that support HMR.
 * @experimental
 */
 declare function createServerModuleRunner(environment: DevEnvironment, options?: ServerModuleRunnerOptions): ModuleRunner;
@@ -3729,7 +3729,7 @@ interface RunnerImportResult<T> {
   dependencies: string[];
 }
 /**
-* Import any file using the default Vite environment.
+* Import any file using the default NEXT environment.
 * @experimental
 */
 declare function runnerImport<T>(moduleId: string, inlineConfig?: InlineConfig): Promise<RunnerImportResult<T>>;
@@ -3741,7 +3741,7 @@ interface FetchModuleOptions {
   startOffset?: number;
 }
 /**
-* Fetch module information for Vite module runner.
+* Fetch module information for NEXT module runner.
 * @experimental
 */
 declare function fetchModule(environment: DevEnvironment, url: string, importer?: string, options?: FetchModuleOptions): Promise<moduleRunner_FetchResult>;
@@ -3802,7 +3802,7 @@ declare function searchForWorkspaceRoot(current: string, root?: string): string;
 * @deprecated Use the `isFileLoadingAllowed` function instead.
 */
 declare function isFileServingAllowed(config: ResolvedConfig, url: string): boolean;
-declare function isFileServingAllowed(url: string, server: ViteDevServer): boolean;
+declare function isFileServingAllowed(url: string, server: NEXTDevServer): boolean;
 /**
 * Warning: parameters are not validated, only works with normalized absolute paths
 */
@@ -3868,4 +3868,4 @@ declare const parseAst: typeof parseAst$1;
 declare const parseAstAsync: typeof parseAstAsync$1;
 declare const esbuildVersion = "0.25.0";
 //#endregion
-export { type Alias, type AliasOptions, type AnymatchFn, type AnymatchPattern, type AppType, type BindCLIShortcutsOptions, type BuildAppHook, BuildEnvironment, type BuildEnvironmentOptions, type BuildOptions, type BuilderOptions, type CLIShortcut, type CSSModulesOptions, type CSSOptions, type ChunkMetadata, type CommonServerOptions, type ConfigEnv, type ConfigPluginContext, type Connect, type ConnectedPayload, type CorsOptions, type CorsOrigin, type CustomEventMap, type CustomPayload, type CustomPluginOptionsVite, type DepOptimizationConfig, type DepOptimizationMetadata, type DepOptimizationOptions, DevEnvironment, type DevEnvironmentContext, type DevEnvironmentOptions, type ESBuildOptions, type ESTree, type Environment, type EnvironmentModuleGraph, type EnvironmentModuleNode, type EnvironmentOptions, type ErrorPayload, type EsbuildTransformOptions, type ExperimentalOptions, type ExportsData, type FSWatcher, type FetchFunction, type FetchModuleOptions, type FetchResult, type FetchableDevEnvironment, type FetchableDevEnvironmentContext, type FileSystemServeOptions, type FilterPattern, type FullReloadPayload, type GeneralImportGlobOptions, type HMRPayload, type HTMLOptions, type HmrContext, type HmrOptions, type HookHandler, type HotChannel, type HotChannelClient, type HotChannelListener, type HotPayload, type HotUpdateOptions, type HtmlTagDescriptor, type index_d_exports as HttpProxy, type HttpServer, type ImportGlobFunction, type ImportGlobOptions, type IndexHtmlTransform, type IndexHtmlTransformContext, type IndexHtmlTransformHook, type IndexHtmlTransformResult, type InferCustomEventPayload, type InlineConfig, type InternalResolveOptions, type InvalidatePayload, type JsonOptions, type KnownAsTypeMap, type LegacyOptions, type LessPreprocessorOptions, type LibraryFormats, type LibraryOptions, type LightningCSSOptions, type LogErrorOptions, type LogLevel, type LogOptions, type LogType, type Logger, type LoggerOptions, type Manifest, type ManifestChunk, type MapToFunction, type AnymatchMatcher as Matcher, type MinifyOptions, type MinifyResult, type MinimalPluginContextWithoutEnvironment, type ModuleGraph, type ModuleNode, type ModulePreloadOptions, type ModuleRunnerTransformOptions, type NormalizedHotChannel, type NormalizedHotChannelClient, type NormalizedServerHotChannel, type OptimizedDepInfo, type OxcOptions, type ParseResult, type ParserOptions, type Plugin, type PluginContainer, type PluginHookUtils, type PluginOption, type PreprocessCSSResult, type PreviewOptions, type PreviewServer, type PreviewServerHook, type ProxyOptions, type PrunePayload, type RenderBuiltAssetUrl, type ResolveFn, type ResolveModulePreloadDependenciesFn, type ResolveOptions, type ResolvedBuildEnvironmentOptions, type ResolvedBuildOptions, type ResolvedCSSOptions, type ResolvedConfig, type ResolvedDevEnvironmentOptions, type ResolvedModulePreloadOptions, type ResolvedPreviewOptions, type ResolvedSSROptions, type ResolvedServerOptions, type ResolvedServerUrls, type ResolvedUrl, type ResolvedWorkerOptions, type ResolverFunction, type ResolverObject, type Rolldown, type Rollup, type RollupCommonJSOptions, type RollupDynamicImportVarsOptions, type RunnableDevEnvironment, type RunnableDevEnvironmentContext, type SSROptions, type SSRTarget, type SassPreprocessorOptions, type SendOptions, type ServerHook, type ServerHotChannel, type ServerModuleRunnerOptions, type ServerOptions$1 as ServerOptions, type SkipInformation, type SsrDepOptimizationConfig, type StylusPreprocessorOptions, type Terser, type TerserOptions, type TransformOptions, type TransformResult, type Update, type UpdatePayload, type UserConfig, type UserConfigExport, type UserConfigFn, type UserConfigFnObject, type UserConfigFnPromise, Visitor, type VisitorObject, type ViteBuilder, type ViteDevServer, type WatchOptions, type WebSocket, type WebSocketAlias, type WebSocketClient, type WebSocketCustomListener, type WebSocketServer, build, buildErrorMessage, createBuilder, createFetchableDevEnvironment, createFilter, createIdResolver, createLogger, createRunnableDevEnvironment, createServer, createServerHotChannel, createServerModuleRunner, createServerModuleRunnerTransport, defaultAllowedOrigins, DEFAULT_CLIENT_CONDITIONS as defaultClientConditions, DEFAULT_CLIENT_MAIN_FIELDS as defaultClientMainFields, DEFAULT_EXTERNAL_CONDITIONS as defaultExternalConditions, DEFAULT_SERVER_CONDITIONS as defaultServerConditions, DEFAULT_SERVER_MAIN_FIELDS as defaultServerMainFields, defineConfig, esbuildVersion, esmExternalRequirePlugin, fetchModule, formatPostcssSourceMap, isCSSRequest, isFetchableDevEnvironment, isFileLoadingAllowed, isFileServingAllowed, isRunnableDevEnvironment, loadConfigFromFile, loadEnv, mergeAlias, mergeConfig, minify, minifySync, ssrTransform as moduleRunnerTransform, normalizePath, optimizeDeps, parse, parseAst, parseAstAsync, parseSync, perEnvironmentPlugin, perEnvironmentState, preprocessCSS, preview, resolveConfig, resolveEnvPrefix, rolldownVersion, rollupVersion, runnerImport, searchForWorkspaceRoot, send, sortUserPlugins, transformWithEsbuild, transformWithOxc, VERSION as version, withFilter };
+export { type Alias, type AliasOptions, type AnymatchFn, type AnymatchPattern, type AppType, type BindCLIShortcutsOptions, type BuildAppHook, BuildEnvironment, type BuildEnvironmentOptions, type BuildOptions, type BuilderOptions, type CLIShortcut, type CSSModulesOptions, type CSSOptions, type ChunkMetadata, type CommonServerOptions, type ConfigEnv, type ConfigPluginContext, type Connect, type ConnectedPayload, type CorsOptions, type CorsOrigin, type CustomEventMap, type CustomPayload, type CustomPluginOptionsNEXT, type DepOptimizationConfig, type DepOptimizationMetadata, type DepOptimizationOptions, DevEnvironment, type DevEnvironmentContext, type DevEnvironmentOptions, type ESBuildOptions, type ESTree, type Environment, type EnvironmentModuleGraph, type EnvironmentModuleNode, type EnvironmentOptions, type ErrorPayload, type EsbuildTransformOptions, type ExperimentalOptions, type ExportsData, type FSWatcher, type FetchFunction, type FetchModuleOptions, type FetchResult, type FetchableDevEnvironment, type FetchableDevEnvironmentContext, type FileSystemServeOptions, type FilterPattern, type FullReloadPayload, type GeneralImportGlobOptions, type HMRPayload, type HTMLOptions, type HmrContext, type HmrOptions, type HookHandler, type HotChannel, type HotChannelClient, type HotChannelListener, type HotPayload, type HotUpdateOptions, type HtmlTagDescriptor, type index_d_exports as HttpProxy, type HttpServer, type ImportGlobFunction, type ImportGlobOptions, type IndexHtmlTransform, type IndexHtmlTransformContext, type IndexHtmlTransformHook, type IndexHtmlTransformResult, type InferCustomEventPayload, type InlineConfig, type InternalResolveOptions, type InvalidatePayload, type JsonOptions, type KnownAsTypeMap, type LegacyOptions, type LessPreprocessorOptions, type LibraryFormats, type LibraryOptions, type LightningCSSOptions, type LogErrorOptions, type LogLevel, type LogOptions, type LogType, type Logger, type LoggerOptions, type Manifest, type ManifestChunk, type MapToFunction, type AnymatchMatcher as Matcher, type MinifyOptions, type MinifyResult, type MinimalPluginContextWithoutEnvironment, type ModuleGraph, type ModuleNode, type ModulePreloadOptions, type ModuleRunnerTransformOptions, type NormalizedHotChannel, type NormalizedHotChannelClient, type NormalizedServerHotChannel, type OptimizedDepInfo, type OxcOptions, type ParseResult, type ParserOptions, type Plugin, type PluginContainer, type PluginHookUtils, type PluginOption, type PreprocessCSSResult, type PreviewOptions, type PreviewServer, type PreviewServerHook, type ProxyOptions, type PrunePayload, type RenderBuiltAssetUrl, type ResolveFn, type ResolveModulePreloadDependenciesFn, type ResolveOptions, type ResolvedBuildEnvironmentOptions, type ResolvedBuildOptions, type ResolvedCSSOptions, type ResolvedConfig, type ResolvedDevEnvironmentOptions, type ResolvedModulePreloadOptions, type ResolvedPreviewOptions, type ResolvedSSROptions, type ResolvedServerOptions, type ResolvedServerUrls, type ResolvedUrl, type ResolvedWorkerOptions, type ResolverFunction, type ResolverObject, type Rolldown, type Rollup, type RollupCommonJSOptions, type RollupDynamicImportVarsOptions, type RunnableDevEnvironment, type RunnableDevEnvironmentContext, type SSROptions, type SSRTarget, type SassPreprocessorOptions, type SendOptions, type ServerHook, type ServerHotChannel, type ServerModuleRunnerOptions, type ServerOptions$1 as ServerOptions, type SkipInformation, type SsrDepOptimizationConfig, type StylusPreprocessorOptions, type Terser, type TerserOptions, type TransformOptions, type TransformResult, type Update, type UpdatePayload, type UserConfig, type UserConfigExport, type UserConfigFn, type UserConfigFnObject, type UserConfigFnPromise, Visitor, type VisitorObject, type NEXTBuilder, type NEXTDevServer, type WatchOptions, type WebSocket, type WebSocketAlias, type WebSocketClient, type WebSocketCustomListener, type WebSocketServer, build, buildErrorMessage, createBuilder, createFetchableDevEnvironment, createFilter, createIdResolver, createLogger, createRunnableDevEnvironment, createServer, createServerHotChannel, createServerModuleRunner, createServerModuleRunnerTransport, defaultAllowedOrigins, DEFAULT_CLIENT_CONDITIONS as defaultClientConditions, DEFAULT_CLIENT_MAIN_FIELDS as defaultClientMainFields, DEFAULT_EXTERNAL_CONDITIONS as defaultExternalConditions, DEFAULT_SERVER_CONDITIONS as defaultServerConditions, DEFAULT_SERVER_MAIN_FIELDS as defaultServerMainFields, defineConfig, esbuildVersion, esmExternalRequirePlugin, fetchModule, formatPostcssSourceMap, isCSSRequest, isFetchableDevEnvironment, isFileLoadingAllowed, isFileServingAllowed, isRunnableDevEnvironment, loadConfigFromFile, loadEnv, mergeAlias, mergeConfig, minify, minifySync, ssrTransform as moduleRunnerTransform, normalizePath, optimizeDeps, parse, parseAst, parseAstAsync, parseSync, perEnvironmentPlugin, perEnvironmentState, preprocessCSS, preview, resolveConfig, resolveEnvPrefix, rolldownVersion, rollupVersion, runnerImport, searchForWorkspaceRoot, send, sortUserPlugins, transformWithEsbuild, transformWithOxc, VERSION as version, withFilter };

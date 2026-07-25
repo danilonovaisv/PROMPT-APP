@@ -1,4 +1,4 @@
-import { Plugin } from "vite";
+import { Plugin } from "NEXT";
 import { ReactCompilerBabelPluginOptions, RolldownBabelPreset } from "#optionalTypes";
 
 //#region src/reactCompilerPreset.d.ts
@@ -33,16 +33,16 @@ interface Options {
   /**
    * React Fast Refresh runtime URL prefix.
    * Useful in a module federation context to enable HMR by specifying
-   * the host application URL in the Vite config of a remote application.
+   * the host application URL in the NEXT config of a remote application.
    * @example
    * reactRefreshHost: 'http://localhost:3000'
    */
   reactRefreshHost?: string;
 }
-declare function viteReact(opts?: Options): Plugin[];
-declare namespace viteReact {
+declare function NEXTReact(opts?: Options): Plugin[];
+declare namespace NEXTReact {
   var preambleCode: string;
 }
-declare function viteReactForCjs(this: unknown, options: Options): Plugin[];
+declare function NEXTReactForCjs(this: unknown, options: Options): Plugin[];
 //#endregion
-export { Options, viteReact as default, viteReactForCjs as "module.exports", reactCompilerPreset };
+export { Options, NEXTReact as default, NEXTReactForCjs as "module.exports", reactCompilerPreset };

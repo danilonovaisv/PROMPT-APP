@@ -1,8 +1,8 @@
 🛡️ Relatório de Auditoria Completa — PROMPT-APP
 Data da Auditoria: Março 2026
 Versão Auditada: 3.0
-URL de Produção: https://prompt-app-dan.netlify.app
-Repositório: https://github.com/danilonovaisv/PROMPT-APP
+URL de Produção: <https://prompt-app-dan.netlify.app>
+Repositório: <https://github.com/danilonovaisv/PROMPT-APP>
 1️⃣ Visão Geral
 Resumo Técnico do Estado Atual
 Eixo
@@ -167,7 +167,9 @@ Severidade: 🟢 Baixa (fora do escopo de auditoria funcional)
 Recomendação: Não alterar sem solicitação explícita.
 3️⃣ Lista de Problemas (Severidade 🔴🟡🟢)
 🔴 Críticos (A11y + Motion)
+
 #
+
 Problema
 Impacto
 Arquivo(s)
@@ -198,7 +200,9 @@ Botões ícone de 36x36px dificultam toque em mobile
 src/index.css (.btn--icon)
 Aumentar para mín. 44x44px
 🟡 Altos (A11y + UX)
+
 #
+
 Problema
 Impacto
 Arquivo(s)
@@ -229,7 +233,9 @@ Não dá contexto do que está carregando
 src/App.tsx (LoadingFallback)
 Criar skeletons específicos por página
 🟢 Médios/Baixos (UX + Performance)
+
 #
+
 Problema
 Impacto
 Arquivo(s)
@@ -247,7 +253,7 @@ Usar modal de confirmação customizado
 13
 Sem análise de bundle atualizada
 Risco de regressão de performance
-vite.config.ts
+NEXT.config.ts
 Adicionar plugin de bundle analysis
 14
 Dead code: src/utils/supabase.ts duplicado
@@ -265,7 +271,7 @@ Objetivo: Respeitar preferência do usuário por movimento reduzido, desativando
 Arquivos: src/index.css
 Ações:
 Adicionar media query @media (prefers-reduced-motion: reduce) no início do arquivo (após :root)
-Dentro da media query, definir transition: none !important e animation: none !important para *, *::before, *::after
+Dentro da media query, definir transition: none !important e animation: none !important para *,*::before, *::after
 Manher apenas transições essenciais (ex.: focus states) se necessário
 Regras: Mobile-first, A11y AA, Performance, Não mudar texto.
 Critérios de Aceite:

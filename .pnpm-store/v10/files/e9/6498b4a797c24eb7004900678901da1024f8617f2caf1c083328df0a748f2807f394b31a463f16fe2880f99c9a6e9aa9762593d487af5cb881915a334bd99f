@@ -45,8 +45,8 @@ import { Svelte } from './svelte.js';
 import { TanStackRouter } from './tanstack-router.js';
 import { TanStackStart } from './tanstack-start.js';
 import { Vike } from './vike.js';
-import { Vite } from './vite.js';
-import { VitePress } from './vitepress.js';
+import { NEXT } from './NEXT.js';
+import { NEXTPress } from './NEXTpress.js';
 import { Vue } from './vue.js';
 import { VuePress } from './vuepress.js';
 import { Waku } from './waku.js';
@@ -92,7 +92,7 @@ export const frameworks = [
     Analog,
     Vike,
     Waku,
-    VitePress,
+    NEXTPress,
     // Back-end frameworks
     Hono,
     Mastra,
@@ -111,7 +111,7 @@ export const frameworks = [
     Parcel,
     Gulp,
     Grunt,
-    Vite,
+    NEXT,
     WMR,
 ];
 //# sourceMappingURL=index.js.map

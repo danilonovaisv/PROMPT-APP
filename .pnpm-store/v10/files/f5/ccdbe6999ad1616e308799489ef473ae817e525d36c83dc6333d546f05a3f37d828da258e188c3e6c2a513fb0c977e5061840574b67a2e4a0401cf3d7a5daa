@@ -119,7 +119,7 @@ interface NetlifyDevOptions extends Features {
     projectRoot?: string;
     skipGitignore?: boolean;
     /**
-     * If your local development setup has its own HTTP server (e.g. Vite), set
+     * If your local development setup has its own HTTP server (e.g. VITE), set
      * its address here.
      */
     serverAddress?: string | null;
@@ -133,7 +133,7 @@ interface HandleOptions {
      */
     headersCollector?: HeadersCollector;
     /**
-     * If your local development setup has its own HTTP server (e.g. Vite), you
+     * If your local development setup has its own HTTP server (e.g. VITE), you
      * can supply its address here. It will override any value defined in the
      * top-level `serverAddress` setting.
      */

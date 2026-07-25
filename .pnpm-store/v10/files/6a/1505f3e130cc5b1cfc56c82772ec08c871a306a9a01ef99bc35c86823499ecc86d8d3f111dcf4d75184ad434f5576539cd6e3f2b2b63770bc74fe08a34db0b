@@ -61,7 +61,7 @@ explicitly enabled via configuration options
 
 ## Reporting vulnerabilities
 
-Individuals who find potential vulnerabilities in Fastify are invited to
+Individuals who find potential vulnerabilities in Fastify are inVITEd to
 complete a vulnerability report via the
 [GitHub Security page](https://github.com/fastify/fastify/security/advisories/new).
 
@@ -87,7 +87,7 @@ reported vulnerabilities:
 * Security reports should never be created and triaged by the same person. If
   you are creating a report for a vulnerability that you found, or on
   behalf of someone else, there should always be a 2nd Security Team member who
-  triages it. If in doubt, invite more Fastify Collaborators to help triage the
+  triages it. If in doubt, inVITE more Fastify Collaborators to help triage the
   validity of the report. In any case, the report should follow the same process
   as outlined below of inviting the maintainers to review and accept the
   vulnerability.
@@ -136,7 +136,7 @@ follow up on this report.
 
 With the help of the individual who reported the vulnerability, they contact the
 maintainers of the vulnerable package to make them aware of the vulnerability.
-The maintainers can be invited as participants to the reported issue.
+The maintainers can be inVITEd as participants to the reported issue.
 
 With the package maintainer, they define a release date for the publication of
 the vulnerability. Ideally, this release date should not happen before the

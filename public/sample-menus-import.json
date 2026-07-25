@@ -11,8 +11,8 @@
                     "value": "react",
                     "sub_options": [
                         {
-                            "label": "Next.js",
-                            "value": "nextjs"
+                            "label": "VITE.js",
+                            "value": "VITEjs"
                         },
                         {
                             "label": "Remix",

@@ -160,15 +160,15 @@ function buildFormStateFromPrompt(prompt: Prompt, contextMenus: ContextMenu[]): 
     persistedMenuIds.length > 0
       ? persistedMenuIds
       : contextMenus
-          .filter(
-            (menu): menu is ContextMenu & { id: number } =>
-              typeof menu.id === 'number' &&
-              [
-                ...(parsedTemplate.menu_ids || []),
-                ...parsedTemplate.menu_definitions.map((menuDefinition) => menuDefinition.menu_id),
-              ].includes(menu.menuId),
-          )
-          .map((menu) => menu.id);
+        .filter(
+          (menu): menu is ContextMenu & { id: number } =>
+            typeof menu.id === 'number' &&
+            [
+              ...(parsedTemplate.menu_ids || []),
+              ...parsedTemplate.menu_definitions.map((menuDefinition) => menuDefinition.menu_id),
+            ].includes(menu.menuId),
+        )
+        .map((menu) => menu.id);
   const selection = parseUserSelection(prompt.selectionPayload, parsedTemplate.meta.template_id, {
     title: prompt.title,
     schemaVersion: prompt.schemaVersion,
@@ -282,10 +282,10 @@ export default function EditorPage() {
   const contextMenus = useLiveQuery(async () => {
     return await db.contextMenus.filter((m) => !m.isDeleted).toArray();
   }) ?? EMPTY_MENUS;
-  
+
   const debouncedForm = useDebounce(form, 300);
   const debouncedFixedMemory = useDebounce(fixedMemory, 800);
-  
+
   const availableContextMenus = useMemo(
     () => Array.from(new Map(contextMenus.map((menu) => [menu.menuId, menu])).values()),
     [contextMenus]
@@ -366,7 +366,7 @@ export default function EditorPage() {
 
       if (draftData?.template?.meta?.template_name) {
         draftAppliedRef.current = true;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+        // eslint-disable-VITE-line react-hooks/set-state-in-effect
         setForm({ ...baseState, ...draftData });
         setDraftRestored(true);
         showToast('Rascunho recuperado automaticamente!', 'info');
@@ -415,7 +415,7 @@ export default function EditorPage() {
     }
 
     setForm((current) => {
-      let nextState = current;
+      let VITEState = current;
 
       // If a draft was applied, its selectedMenuIds take precedence — do not
       // overwrite them with the inference from menu_ids.
@@ -430,14 +430,14 @@ export default function EditorPage() {
           .map((menu) => menu.id);
 
         if (inferredSelectedMenuIds.length > 0) {
-          nextState = {
+          VITEState = {
             ...current,
             selectedMenuIds: inferredSelectedMenuIds,
           };
         }
       }
 
-      return syncFormMenus(nextState, availableContextMenus);
+      return syncFormMenus(VITEState, availableContextMenus);
     });
   }, [availableContextMenus, loaded]);
 
@@ -453,7 +453,7 @@ export default function EditorPage() {
     startTransition(() => {
       setForm((current) => ({ ...current, ...draftData }));
     });
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-VITE-line react-hooks/set-state-in-effect
     setDraftRestored(true);
     showToast('Rascunho recuperado automaticamente!', 'info');
   }, [id, loaded, showToast]);
@@ -652,12 +652,12 @@ export default function EditorPage() {
 
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
     setForm((current) => {
-      const nextTemplate = updater(current.template);
-      const nextSelection =
+      const VITETemplate = updater(current.template);
+      const VITESelection =
         current.selection.template_id === current.template.meta.template_id
-          ? { ...current.selection, template_id: nextTemplate.meta.template_id }
+          ? { ...current.selection, template_id: VITETemplate.meta.template_id }
           : current.selection;
-      return { ...current, template: nextTemplate, selection: nextSelection };
+      return { ...current, template: VITETemplate, selection: VITESelection };
     });
   };
 
@@ -670,12 +670,12 @@ export default function EditorPage() {
     value: TemplatePayload['prompt_definition'][K]
   ) => {
     updateTemplate((current) => {
-      const nextDefinition = { ...current.prompt_definition, [field]: value };
+      const VITEDefinition = { ...current.prompt_definition, [field]: value };
       // Strip incomplete few-shot entries so Zod's min(1) constraint doesn't
       // fire while the user is actively typing into a newly-added row.
       return TemplatePayloadSchema.parse({
         ...current,
-        prompt_definition: nextDefinition,
+        prompt_definition: VITEDefinition,
       });
     });
   };
@@ -701,11 +701,11 @@ export default function EditorPage() {
           item.menu_id !== menuId
             ? item
             : {
-                ...item,
-                selected_options: hasOption
-                  ? item.selected_options.filter((selectedOption) => selectedOption.option_value !== optionValue)
-                  : [...item.selected_options, { option_value: optionValue, selected_sub_options: [] }],
-              }
+              ...item,
+              selected_options: hasOption
+                ? item.selected_options.filter((selectedOption) => selectedOption.option_value !== optionValue)
+                : [...item.selected_options, { option_value: optionValue, selected_sub_options: [] }],
+            }
         );
       } else {
         selected_menus = [...selected_menus, { menu_id: menuId, selected_options: [{ option_value: optionValue, selected_sub_options: [] }] }];
@@ -747,8 +747,8 @@ export default function EditorPage() {
     }));
   };
 
-  const updateFreeInput = (index: number, nextEntry: FreeInputEntry) => {
-    setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? nextEntry : entry)) }));
+  const updateFreeInput = (index: number, VITEEntry: FreeInputEntry) => {
+    setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? VITEEntry : entry)) }));
   };
 
   const addFreeInput = () => setForm((current) => ({ ...current, freeInputs: [...current.freeInputs, { key: '', value: '' }] }));
@@ -770,9 +770,9 @@ export default function EditorPage() {
     try {
       await deleteMemory(form.template.meta.template_id, key);
       setFixedMemory((prev) => {
-        const next = { ...prev };
-        delete next[key];
-        return next;
+        const VITE = { ...prev };
+        delete VITE[key];
+        return VITE;
       });
       showToast('Chave de memória removida', 'success');
     } catch (error) {
@@ -797,13 +797,13 @@ export default function EditorPage() {
       showToast(previewState.error || 'Payload inválido', 'error');
       return;
     }
-    
+
     // Use structured markdown format
     const templatePayload = previewState.template as TemplatePayload | null;
     const markdownPrompt = templatePayload && previewState.payload
       ? formatPromptAsMarkdown(templatePayload, previewState.payload)
       : previewState.renderedPrompt;
-    
+
     const ok = await copyToClipboard(markdownPrompt);
     showToast(ok ? 'Prompt final copiado!' : 'Erro ao copiar', ok ? 'success' : 'error');
   };
@@ -860,8 +860,8 @@ export default function EditorPage() {
               Rascunho salvo às {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           )}
-          <button 
-            className={`btn btn--ghost ${isFocusMode ? 'btn--active' : ''}`} 
+          <button
+            className={`btn btn--ghost ${isFocusMode ? 'btn--active' : ''}`}
             onClick={() => setIsFocusMode(!isFocusMode)}
             title={isFocusMode ? "Sair do modo foco" : "Modo foco"}
           >
@@ -878,24 +878,24 @@ export default function EditorPage() {
           </button>
         </div>
         <div className="mobile-only flex-row-center editor-mobile-actions">
-             <button 
-                className={`btn btn--ghost btn--icon ${isFocusMode ? 'btn--active' : ''}`} 
-                onClick={() => setIsFocusMode(!isFocusMode)} 
-                aria-label="Modo Foco"
-                data-tooltip="Modo Foco"
-             >
-                <Eye size={20} />
-             </button>
-             <button 
-                className="btn btn--ghost btn--icon" 
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-                aria-label="Playground"
-                aria-expanded={isSidebarOpen ? "true" : "false"}
-                aria-controls="editor-playground-panel"
-                data-tooltip="Playground"
-             >
-                <Settings2 size={20} />
-             </button>
+          <button
+            className={`btn btn--ghost btn--icon ${isFocusMode ? 'btn--active' : ''}`}
+            onClick={() => setIsFocusMode(!isFocusMode)}
+            aria-label="Modo Foco"
+            data-tooltip="Modo Foco"
+          >
+            <Eye size={20} />
+          </button>
+          <button
+            className="btn btn--ghost btn--icon"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            aria-label="Playground"
+            aria-expanded={isSidebarOpen ? "true" : "false"}
+            aria-controls="editor-playground-panel"
+            data-tooltip="Playground"
+          >
+            <Settings2 size={20} />
+          </button>
         </div>
       </header>
 

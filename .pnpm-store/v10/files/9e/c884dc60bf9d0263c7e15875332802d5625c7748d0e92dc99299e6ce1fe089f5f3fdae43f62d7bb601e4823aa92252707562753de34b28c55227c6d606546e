@@ -354,8 +354,8 @@
       "help": "Les images réactives côté serveur ne devraient pas être utilisées"
     },
     "skip-link": {
-      "description": "Vérifier que tous les liens d’évitement ont une cible pouvant recevoir le focus",
-      "help": "La cible d’un lien d’évitement doit exister et pouvoir recevoir le focus"
+      "description": "Vérifier que tous les liens d’éVITEment ont une cible pouvant recevoir le focus",
+      "help": "La cible d’un lien d’éVITEment doit exister et pouvoir recevoir le focus"
     },
     "svg-img-alt": {
       "description": "Vérifier que les éléments svg avec un rôle 'img', 'graphics-document', ou 'graphics-symbol' ont un texte accessible",
@@ -804,8 +804,8 @@
       "incomplete": "Vérifier que les liens ont la même finalité ou sont volontairement ambigus."
     },
     "internal-link-present": {
-      "pass": "Lien d’évitement valide trouvé",
-      "fail": "Aucun lien d’évitement valide trouvé"
+      "pass": "Lien d’éVITEment valide trouvé",
+      "fail": "Aucun lien d’éVITEment valide trouvé"
     },
     "landmark": {
       "pass": "La page a une région",
@@ -824,9 +824,9 @@
       "fail": "Contenu non imbriqué dans une région ARIA"
     },
     "skip-link": {
-      "pass": "La cible du lien d’évitement existe",
-      "incomplete": "La cible du lien d’évitement devrait devenir visible lors de l’activation",
-      "fail": "Lien d’évitement sans cible"
+      "pass": "La cible du lien d’éVITEment existe",
+      "incomplete": "La cible du lien d’éVITEment devrait devenir visible lors de l’activation",
+      "fail": "Lien d’éVITEment sans cible"
     },
     "unique-frame-title": {
       "pass": "L’attribut title de l’élément est unique",

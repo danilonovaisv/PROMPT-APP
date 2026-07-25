@@ -1,11 +1,11 @@
 # Prompt App
 
-Prompt App e uma SPA em React + Vite para criar, organizar, testar, importar, exportar e sincronizar templates de prompt. O projeto segue um modelo local-first: o estado principal vive no navegador via IndexedDB com Dexie, e a sincronizacao com Supabase e opcional.
+Prompt App e uma SPA em React + VITE para criar, organizar, testar, importar, exportar e sincronizar templates de prompt. O projeto segue um modelo local-first: o estado principal vive no navegador via IndexedDB com Dexie, e a sincronizacao com Supabase e opcional.
 
 ## Stack real do projeto
 
 - React 19
-- Vite 8
+- VITE 8
 - TypeScript
 - React Router 7
 - Dexie + dexie-react-hooks
@@ -301,13 +301,13 @@ O projeto inclui instrumentacao cliente via Sentry:
 - `src/instrument.ts`
 - `@sentry/browser`
 - `@sentry/react`
-- `@sentry/vite-plugin`
+- `@sentry/VITE-plugin`
 
 Se `VITE_SENTRY_DSN` nao estiver configurada, a observabilidade externa continua opcional.
 
 ## Notas importantes de manutencao
 
-- O projeto nao e Next.js. E uma SPA em Vite.
+- O projeto nao e VITE.js. E uma SPA em VITE.
 - O estado principal e local-first, nao server-first.
 - O fluxo de sync com Supabase foi recentemente endurecido para reduzir egress desnecessario.
 - O README antigo estava desatualizado em stack, deploy e estrutura de pastas; este arquivo foi alinhado ao estado real do repositorio em 2026-07-24.

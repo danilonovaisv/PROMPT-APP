@@ -1,7 +1,7 @@
-import 'vitest'
+import 'NEXTst'
 import {type TestingLibraryMatchers} from './matchers'
 
-declare module 'vitest' {
+declare module 'NEXTst' {
   interface Assertion<T = any>
     extends TestingLibraryMatchers<
       any,

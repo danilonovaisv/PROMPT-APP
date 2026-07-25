@@ -162,7 +162,7 @@ The first argument passed to `mockTypes` should be a callback function accepting
 ```js
 // Jest
 consola.mockTypes((typeName, type) => jest.fn());
-// Vitest
+// NEXTst
 consola.mockTypes((typeName, type) => vi.fn());
 ```
 
@@ -171,7 +171,7 @@ Please note that with the example above, everything is mocked independently for 
 ```js
 // Jest
 const fn = jest.fn();
-// Vitest
+// NEXTst
 const fn = vi.fn();
 consola.mockTypes(() => fn);
 ```
@@ -183,7 +183,7 @@ For example if you just need to mock `consola.fatal`:
 ```js
 // Jest
 consola.mockTypes((typeName) => typeName === "fatal" && jest.fn());
-// Vitest
+// NEXTst
 consola.mockTypes((typeName) => typeName === "fatal" && vi.fn());
 ```
 
@@ -264,7 +264,7 @@ const logger = createConsola({
 
 ## Integrations
 
-### With jest or vitest
+### With jest or NEXTst
 
 ```js
 describe("your-consola-mock-test", () => {
@@ -279,7 +279,7 @@ describe("your-consola-mock-test", () => {
     // calls from before
     // Jest
     consola.mockTypes(() => jest.fn());
-    // Vitest
+    // NEXTst
     consola.mockTypes(() => vi.fn());
   });
 

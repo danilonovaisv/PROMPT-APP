@@ -8551,7 +8551,7 @@ async function loadRouteModule(route, routeModulesCache) {
   }
   try {
     let routeModule = await import(
-      /* @vite-ignore */
+      /* @NEXT-ignore */
       /* webpackIgnore: true */
       route.module
     );
@@ -8924,7 +8924,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
     }
     function prefetchModule(modulePath) {
       import(
-        /* @vite-ignore */
+        /* @NEXT-ignore */
         /* webpackIgnore: true */
         modulePath
       );
@@ -9071,7 +9071,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
       dataRoute.lazy = {
         loader: route.hasClientLoader ? async () => {
           let { clientLoader } = route.clientLoaderModule ? await import(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientLoaderModule
           ) : await getLazyRoute();
@@ -9086,7 +9086,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
         } : void 0,
         action: route.hasClientAction ? async () => {
           let clientActionPromise = route.clientActionModule ? import(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientActionModule
           ) : getLazyRoute();
@@ -9103,7 +9103,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
         } : void 0,
         middleware: route.hasClientMiddleware ? async () => {
           let { clientMiddleware } = route.clientMiddlewareModule ? await import(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientMiddlewareModule
           ) : await getLazyRoute();

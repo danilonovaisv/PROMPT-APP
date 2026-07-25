@@ -17,7 +17,7 @@
       "Mantenha o tom profissional e direto."
     ],
     "negative_prompt": [
-      "Evite clichês de marketing genéricos.",
+      "EVITE clichês de marketing genéricos.",
       "Não use emojis em excesso."
     ],
     "few_shot_examples": [

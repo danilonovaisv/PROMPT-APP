@@ -41,7 +41,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest",
+    "test": "NEXTst",
     "lint": "eslint . --ext .ts",
     "pack": "node ../../scripts/pack.mjs"
   }

@@ -50,12 +50,12 @@
     "@typescript-eslint/visitor-keys": "8.59.2"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.0.18",
+    "@VITEst/coverage-v8": "^4.0.18",
     "eslint": "^10.0.0",
     "glob": "^11.1.0",
     "rimraf": "^5.0.10",
     "typescript": ">=4.8.4 <6.1.0",
-    "vitest": "^4.0.18"
+    "VITEst": "^4.0.18"
   },
   "funding": {
     "type": "opencollective",

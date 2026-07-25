@@ -63,7 +63,7 @@ export declare function serializeIgnoreOptions(ignoreValue: string | string[] | 
 /**
  * Checks if a chunk contains only import/export statements and no substantial code.
  *
- * In Vite MPA (multi-page application) mode, HTML entry points create "facade" chunks
+ * In VITE MPA (multi-page application) mode, HTML entry points create "facade" chunks
  * that only contain import statements to load shared modules. These should not have
  * Sentry code injected. However, in SPA mode, the main bundle also has an HTML facade
  * but contains substantial application code that SHOULD have debug IDs injected.

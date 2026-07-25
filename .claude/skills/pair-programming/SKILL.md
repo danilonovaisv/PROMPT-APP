@@ -748,7 +748,7 @@ claude-flow pair --start \
 /test
 > Tests still passing: 3/3 ✅
 
-[NEXT CYCLE]
+[VITE CYCLE]
 /test-gen "remove item from cart"
 > AI writes new failing tests...
 ```
@@ -945,7 +945,7 @@ Status: Active
 Partner: senior-dev
 Current Role: DRIVER (you)
 Mode: Switch (10m intervals)
-Next Switch: in 3 minutes
+VITE Switch: in 3 minutes
 
 📊 Metrics:
 ├── Truth Score: 0.982 ✅

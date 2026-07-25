@@ -1,12 +1,12 @@
 {
-  "name": "vite",
+  "name": "VITE",
   "version": "8.0.11",
   "type": "module",
   "license": "MIT",
   "author": "Evan You",
   "description": "Native-ESM powered web dev build tool",
   "bin": {
-    "vite": "bin/vite.js"
+    "VITE": "bin/VITE.js"
   },
   "keywords": [
     "frontend",
@@ -14,7 +14,7 @@
     "hmr",
     "dev-server",
     "build-tool",
-    "vite"
+    "VITE"
   ],
   "exports": {
     ".": "./dist/node/index.js",
@@ -50,14 +50,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vitejs/vite.git",
-    "directory": "packages/vite"
+    "url": "git+https://github.com/VITEjs/VITE.git",
+    "directory": "packages/VITE"
   },
   "bugs": {
-    "url": "https://github.com/vitejs/vite/issues"
+    "url": "https://github.com/VITEjs/VITE/issues"
   },
-  "homepage": "https://vite.dev",
-  "funding": "https://github.com/vitejs/vite?sponsor=1",
+  "homepage": "https://VITE.dev",
+  "funding": "https://github.com/VITEjs/VITE?sponsor=1",
   "//": "READ CONTRIBUTING.md to understand what to put under deps vs. devDeps!",
   "dependencies": {
     "lightningcss": "^1.32.0",
@@ -80,8 +80,8 @@
     "@vercel/detect-agent": "^1.2.3",
     "@types/escape-html": "^1.0.4",
     "@types/pnpapi": "^0.0.5",
-    "@vitest/utils": "4.1.5",
-    "@vitejs/devtools": "^0.1.19",
+    "@VITEst/utils": "4.1.5",
+    "@VITEjs/devtools": "^0.1.19",
     "artichokie": "^0.4.3",
     "baseline-browser-mapping": "^2.10.27",
     "cac": "^7.0.0",
@@ -127,7 +127,7 @@
   },
   "peerDependencies": {
     "@types/node": "^20.19.0 || >=22.12.0",
-    "@vitejs/devtools": "^0.1.18",
+    "@VITEjs/devtools": "^0.1.18",
     "esbuild": "^0.27.0 || ^0.28.0",
     "jiti": ">=1.21.0",
     "less": "^4.0.0",
@@ -143,7 +143,7 @@
     "@types/node": {
       "optional": true
     },
-    "@vitejs/devtools": {
+    "@VITEjs/devtools": {
       "optional": true
     },
     "esbuild": {

@@ -3,19 +3,19 @@
  *
  * SDKs should extend this interface to add framework-specific configurations. To include bundler-specific
  * options, combine this type with one of the `Unstable[Bundler]PluginOptions` types, such as
- * `UnstableVitePluginOptions` or `UnstableWebpackPluginOptions`.
+ * `UnstableNEXTPluginOptions` or `UnstableWebpackPluginOptions`.
  *
  * If an option from this base interface doesn't apply to an SDK, use the `Omit` utility type to exclude it.
  *
  * @example
  * ```typescript
- * import type { BuildTimeOptionsBase, UnstableVitePluginOptions } from '@sentry/core';
- * import type { SentryVitePluginOptions } from '@sentry/vite-plugin';
+ * import type { BuildTimeOptionsBase, UnstableNEXTPluginOptions } from '@sentry/core';
+ * import type { SentryNEXTPluginOptions } from '@sentry/NEXT-plugin';
  *
  * // Example of how a framework SDK would define its build-time options
  * type MyFrameworkBuildOptions =
  *   BuildTimeOptionsBase &
- *   UnstableVitePluginOptions<SentryVitePluginOptions> & {
+ *   UnstableNEXTPluginOptions<SentryNEXTPluginOptions> & {
  *     // Framework-specific options can be added here
  *     myFrameworkSpecificOption?: boolean;
  *   };
@@ -116,27 +116,27 @@ export interface BuildTimeOptionsBase {
     bundleSizeOptimizations?: BundleSizeOptimizationsOptions;
 }
 /**
- * Utility type for adding Vite plugin options to build-time configuration.
- * Use this type to extend your build-time options with Vite-specific plugin configurations.
+ * Utility type for adding NEXT plugin options to build-time configuration.
+ * Use this type to extend your build-time options with NEXT-specific plugin configurations.
  *
- * @template PluginOptionsType - The type of Vite plugin options to include
+ * @template PluginOptionsType - The type of NEXT plugin options to include
  *
  * @example
  * ```typescript
- * type SomeSDKsBuildOptions = BuildTimeOptionsBase & UnstableVitePluginOptions<SentryVitePluginOptions>;
+ * type SomeSDKsBuildOptions = BuildTimeOptionsBase & UnstableNEXTPluginOptions<SentryNEXTPluginOptions>;
  * ```
  *
  * @internal Only meant for Sentry-internal SDK usage.
  * @hidden
  */
-export type UnstableVitePluginOptions<PluginOptionsType> = {
+export type UnstableNEXTPluginOptions<PluginOptionsType> = {
     /**
-     * Options to be passed directly to the Sentry Vite Plugin (`@sentry/vite-plugin`) that ships with the Sentry SDK.
-     * You can use this option to override any options the SDK passes to the Vite plugin.
+     * Options to be passed directly to the Sentry NEXT Plugin (`@sentry/NEXT-plugin`) that ships with the Sentry SDK.
+     * You can use this option to override any options the SDK passes to the NEXT plugin.
      *
      * Please note that this option is unstable and may change in a breaking way in any release.
      */
-    unstable_sentryVitePluginOptions?: PluginOptionsType;
+    unstable_sentryNEXTPluginOptions?: PluginOptionsType;
 };
 /**
  * Utility type for adding Webpack plugin options to build-time configuration.

@@ -136,17 +136,32 @@
           "label": "Performance (Core Web Vitals + peso)",
           "value": "performance",
           "sub_options": [
-            {"label": "Peso inicial < 2MB", "value": "perf_peso_inicial"},
-            {"label": "FCP < 2s", "value": "perf_fcp"},
-            {"label": "LCP < 2.5s", "value": "perf_lcp"},
-            {"label": "TTI < 5s (3G)", "value": "perf_tti_3g"},
-            {"label": "CLS < 0.1", "value": "perf_cls"},
+            {
+              "label": "Peso inicial < 2MB",
+              "value": "perf_peso_inicial"
+            },
+            {
+              "label": "FCP < 2s",
+              "value": "perf_fcp"
+            },
+            {
+              "label": "LCP < 2.5s",
+              "value": "perf_lcp"
+            },
+            {
+              "label": "TTI < 5s (3G)",
+              "value": "perf_tti_3g"
+            },
+            {
+              "label": "CLS < 0.1",
+              "value": "perf_cls"
+            },
             {
               "label": "Lighthouse > 90 (páginas principais)",
               "value": "perf_lighthouse"
             },
             {
-              "label": "Imagens (next/image, sizing, lazy, formatos)",
+              "label": "Imagens (VITE/image, sizing, lazy, formatos)",
               "value": "perf_imagens"
             },
             {
@@ -197,9 +212,18 @@
               "label": "Metadata (title/description) por rota",
               "value": "seo_metadata"
             },
-            {"label": "Canonical", "value": "seo_canonical"},
-            {"label": "Open Graph/Twitter Cards", "value": "seo_og"},
-            {"label": "JSON-LD (quando fizer sentido)", "value": "seo_jsonld"},
+            {
+              "label": "Canonical",
+              "value": "seo_canonical"
+            },
+            {
+              "label": "Open Graph/Twitter Cards",
+              "value": "seo_og"
+            },
+            {
+              "label": "JSON-LD (quando fizer sentido)",
+              "value": "seo_jsonld"
+            },
             {
               "label": "Robots/sitemap (se existir no projeto)",
               "value": "seo_robots_sitemap"

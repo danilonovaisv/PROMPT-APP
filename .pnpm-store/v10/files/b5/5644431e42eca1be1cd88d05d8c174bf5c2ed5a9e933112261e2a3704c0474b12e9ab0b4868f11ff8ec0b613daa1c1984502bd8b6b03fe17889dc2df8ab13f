@@ -17,9 +17,9 @@
     "dev": "tsup-node --watch",
     "prepack": "npm run build",
     "publint": "npx -y publint --strict",
-    "test": "vitest run",
-    "test:ci": "npm run build && vitest run",
-    "test:dev": "vitest"
+    "test": "VITEst run",
+    "test:ci": "npm run build && VITEst run",
+    "test:dev": "VITEst"
   },
   "keywords": [
     "netlify",
@@ -39,7 +39,7 @@
     "@netlify/dev-utils": "^4.4.3",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
-    "vitest": "^3.1.4"
+    "VITEst": "^3.1.4"
   },
   "dependencies": {
     "@netlify/headers-parser": "^9.0.3"

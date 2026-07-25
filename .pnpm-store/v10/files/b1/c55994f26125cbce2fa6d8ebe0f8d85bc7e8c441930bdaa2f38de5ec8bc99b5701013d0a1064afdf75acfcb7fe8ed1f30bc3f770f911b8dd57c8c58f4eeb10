@@ -1,35 +1,35 @@
 import { a as makeBuiltinPluginCallable, n as BuiltinPlugin, t as normalizedStringOrRegex } from "./normalize-string-or-regex-WerlQkgD.mjs";
 //#region src/builtin-plugin/constructors.ts
-function viteModulePreloadPolyfillPlugin(config) {
-	return new BuiltinPlugin("builtin:vite-module-preload-polyfill", config);
+function NEXTModulePreloadPolyfillPlugin(config) {
+	return new BuiltinPlugin("builtin:NEXT-module-preload-polyfill", config);
 }
-function viteDynamicImportVarsPlugin(config) {
+function NEXTDynamicImportVarsPlugin(config) {
 	if (config) {
 		config.include = normalizedStringOrRegex(config.include);
 		config.exclude = normalizedStringOrRegex(config.exclude);
 	}
-	return new BuiltinPlugin("builtin:vite-dynamic-import-vars", config);
+	return new BuiltinPlugin("builtin:NEXT-dynamic-import-vars", config);
 }
-function viteImportGlobPlugin(config) {
-	return new BuiltinPlugin("builtin:vite-import-glob", config);
+function NEXTImportGlobPlugin(config) {
+	return new BuiltinPlugin("builtin:NEXT-import-glob", config);
 }
-function viteReporterPlugin(config) {
-	return new BuiltinPlugin("builtin:vite-reporter", config);
+function NEXTReporterPlugin(config) {
+	return new BuiltinPlugin("builtin:NEXT-reporter", config);
 }
-function viteWasmFallbackPlugin() {
-	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:vite-wasm-fallback"));
+function NEXTWasmFallbackPlugin() {
+	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:NEXT-wasm-fallback"));
 }
-function viteLoadFallbackPlugin() {
-	return new BuiltinPlugin("builtin:vite-load-fallback");
+function NEXTLoadFallbackPlugin() {
+	return new BuiltinPlugin("builtin:NEXT-load-fallback");
 }
-function viteJsonPlugin(config) {
-	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:vite-json", config));
+function NEXTJsonPlugin(config) {
+	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:NEXT-json", config));
 }
-function viteBuildImportAnalysisPlugin(config) {
-	return new BuiltinPlugin("builtin:vite-build-import-analysis", config);
+function NEXTBuildImportAnalysisPlugin(config) {
+	return new BuiltinPlugin("builtin:NEXT-build-import-analysis", config);
 }
-function viteResolvePlugin(config) {
-	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:vite-resolve", {
+function NEXTResolvePlugin(config) {
+	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:NEXT-resolve", {
 		...config,
 		yarnPnp: typeof process === "object" && !!process.versions?.pnp
 	}));
@@ -37,8 +37,8 @@ function viteResolvePlugin(config) {
 function isolatedDeclarationPlugin(config) {
 	return new BuiltinPlugin("builtin:isolated-declaration", config);
 }
-function viteWebWorkerPostPlugin() {
-	return new BuiltinPlugin("builtin:vite-web-worker-post");
+function NEXTWebWorkerPostPlugin() {
+	return new BuiltinPlugin("builtin:NEXT-web-worker-post");
 }
 /**
 * A plugin that converts CommonJS require() calls for external dependencies into ESM import statements.
@@ -57,12 +57,12 @@ function esmExternalRequirePlugin(config) {
 function oxcRuntimePlugin() {
 	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:oxc-runtime"));
 }
-function viteReactRefreshWrapperPlugin(config) {
+function NEXTReactRefreshWrapperPlugin(config) {
 	if (config) {
 		config.include = normalizedStringOrRegex(config.include);
 		config.exclude = normalizedStringOrRegex(config.exclude);
 	}
-	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:vite-react-refresh-wrapper", config));
+	return makeBuiltinPluginCallable(new BuiltinPlugin("builtin:NEXT-react-refresh-wrapper", config));
 }
 //#endregion
-export { viteDynamicImportVarsPlugin as a, viteLoadFallbackPlugin as c, viteReporterPlugin as d, viteResolvePlugin as f, viteBuildImportAnalysisPlugin as i, viteModulePreloadPolyfillPlugin as l, viteWebWorkerPostPlugin as m, isolatedDeclarationPlugin as n, viteImportGlobPlugin as o, viteWasmFallbackPlugin as p, oxcRuntimePlugin as r, viteJsonPlugin as s, esmExternalRequirePlugin as t, viteReactRefreshWrapperPlugin as u };
+export { NEXTDynamicImportVarsPlugin as a, NEXTLoadFallbackPlugin as c, NEXTReporterPlugin as d, NEXTResolvePlugin as f, NEXTBuildImportAnalysisPlugin as i, NEXTModulePreloadPolyfillPlugin as l, NEXTWebWorkerPostPlugin as m, isolatedDeclarationPlugin as n, NEXTImportGlobPlugin as o, NEXTWasmFallbackPlugin as p, oxcRuntimePlugin as r, NEXTJsonPlugin as s, esmExternalRequirePlugin as t, NEXTReactRefreshWrapperPlugin as u };

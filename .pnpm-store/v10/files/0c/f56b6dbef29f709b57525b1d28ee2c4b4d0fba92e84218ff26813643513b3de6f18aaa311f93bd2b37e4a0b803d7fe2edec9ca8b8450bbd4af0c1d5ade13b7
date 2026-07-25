@@ -1,5 +1,5 @@
 import { Validator } from "@seriousme/openapi-schema-validator";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "VITEst";
 import * as z from "zod";
 // import * as zCore from "zod/v4/core";
 
@@ -18,7 +18,7 @@ const validateOpenAPI30Schema = async (zodJSONSchema: Record<string, unknown>): 
   });
 
   if (!res.valid) {
-    // `console.error` should make `vitest` trow an unhandled error
+    // `console.error` should make `VITEst` trow an unhandled error
     // printing the validation messages in consoles
     console.error(
       `OpenAPI schema is not valid against ${openAPI30Validator.version}`,

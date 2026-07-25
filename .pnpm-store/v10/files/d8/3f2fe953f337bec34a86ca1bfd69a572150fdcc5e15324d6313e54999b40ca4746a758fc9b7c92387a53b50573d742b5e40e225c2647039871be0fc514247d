@@ -222,7 +222,7 @@
 * refactor: use `TsJestTransformerOptions` type everywhere possibly ([7d001be](https://github.com/kulshekhar/ts-jest/commit/7d001be))
 * refactor(cli): use new preset util functions to initialize test config ([c2b56ca](https://github.com/kulshekhar/ts-jest/commit/c2b56ca))
 * refactor(presets): use create preset util functions for cjs presets ([922d6d0](https://github.com/kulshekhar/ts-jest/commit/922d6d0))
-* test: switch `react-app` to use Vite ([827c8ad](https://github.com/kulshekhar/ts-jest/commit/827c8ad))
+* test: switch `react-app` to use VITE ([827c8ad](https://github.com/kulshekhar/ts-jest/commit/827c8ad))
 
 
 ## DEPRECATIONS

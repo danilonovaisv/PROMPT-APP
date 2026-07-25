@@ -9,7 +9,7 @@
 
 | Atributo | Valor |
 |---|---|
-| Stack principal | React 19 + TypeScript + Vite 8 |
+| Stack principal | React 19 + TypeScript + VITE 8 |
 | Banco local | IndexedDB (Dexie.js v4) |
 | Banco na nuvem | Supabase (PostgreSQL) |
 | Deploy | Netlify |
@@ -28,7 +28,7 @@
 │                   PROMPT-APP (PWA)                   │
 │                                                     │
 │  ┌──────────┐    ┌──────────────┐   ┌───────────┐  │
-│  │  Vite +  │    │  React 19    │   │  Dexie.js │  │
+│  │  VITE +  │    │  React 19    │   │  Dexie.js │  │
 │  │ React 19 │───▶│  Components  │──▶│ IndexedDB │  │
 │  └──────────┘    └──────────────┘   └─────┬─────┘  │
 │                                           │         │
@@ -369,7 +369,7 @@ VITE_SENTRY_DSN=...
 pnpm dev
 
 # Build
-pnpm build   # tsc + vite build
+pnpm build   # tsc + VITE build
 
 # Deploy (Netlify CI/CD)
 # Push para main → build automático
@@ -378,7 +378,7 @@ pnpm build   # tsc + vite build
 ### Arquivos de Configuração
 | Arquivo | Função |
 |---|---|
-| `vite.config.ts` | Build Vite + aliases `@/` |
+| `VITE.config.ts` | Build VITE + aliases `@/` |
 | `netlify.toml` | Configuração de deploy Netlify |
 | `tsconfig.app.json` | TypeScript strict para src/ |
 | `jest.config.cjs` | Configuração Jest com ts-jest |

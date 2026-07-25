@@ -1,15 +1,15 @@
-# @vitejs/plugin-react [![npm](https://img.shields.io/npm/v/@vitejs/plugin-react.svg)](https://npmjs.com/package/@vitejs/plugin-react)
+# @VITEjs/plugin-react [![npm](https://img.shields.io/npm/v/@VITEjs/plugin-react.svg)](https://npmjs.com/package/@VITEjs/plugin-react)
 
-The default Vite plugin for React projects.
+The default VITE plugin for React projects.
 
 - enable [Fast Refresh](https://www.npmjs.com/package/react-refresh) in development (requires react >= 16.9)
 - use the [automatic JSX runtime](https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
 - small installation size
 
 ```js
-// vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+// VITE.config.js
+import { defineConfig } from 'VITE'
+import react from '@VITEjs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
@@ -23,8 +23,8 @@ export default defineConfig({
 Includes `.js`, `.jsx`, `.ts` & `.tsx` by default. This option can be used to add fast refresh to `.mdx` files:
 
 ```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'VITE'
+import react from '@VITEjs/plugin-react'
 import mdx from '@mdx-js/rollup'
 
 export default defineConfig({
@@ -41,8 +41,8 @@ The default value is `/node_modules/`. You may use it to exclude JSX/TSX files t
 Except if explicitly desired, you should keep `node_modules` in the exclude list:
 
 ```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'VITE'
+import react from '@VITEjs/plugin-react'
 
 export default defineConfig({
   plugins: [
@@ -69,7 +69,7 @@ react({ jsxRuntime: 'classic' })
 
 ### reactRefreshHost
 
-The `reactRefreshHost` option is only necessary in a module federation context. It enables HMR to work between a remote & host application. In your remote Vite config, you would add your host origin:
+The `reactRefreshHost` option is only necessary in a module federation context. It enables HMR to work between a remote & host application. In your remote VITE config, you would add your host origin:
 
 ```js
 react({ reactRefreshHost: 'http://localhost:3000' })
@@ -86,9 +86,9 @@ npm install -D @rolldown/plugin-babel babel-plugin-react-compiler
 ```
 
 ```js
-// vite.config.js
-import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+// VITE.config.js
+import { defineConfig } from 'VITE'
+import react, { reactCompilerPreset } from '@VITEjs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 
 export default defineConfig({
@@ -120,13 +120,13 @@ babel({
 > })
 > ```
 
-## `@vitejs/plugin-react/preamble`
+## `@VITEjs/plugin-react/preamble`
 
-The package provides `@vitejs/plugin-react/preamble` to initialize HMR runtime from client entrypoint for SSR applications which don't use [`transformIndexHtml` API](https://vite.dev/guide/api-javascript.html#vitedevserver). For example:
+The package provides `@VITEjs/plugin-react/preamble` to initialize HMR runtime from client entrypoint for SSR applications which don't use [`transformIndexHtml` API](https://VITE.dev/guide/api-javascript.html#VITEdevserver). For example:
 
 ```js
 // [entry.client.js]
-import '@vitejs/plugin-react/preamble'
+import '@VITEjs/plugin-react/preamble'
 ```
 
 Alternatively, you can manually call `transformIndexHtml` during SSR, which sets up equivalent initialization code. Here's an example for an Express server:
@@ -136,8 +136,8 @@ app.get('/', async (req, res, next) => {
   try {
     let html = fs.readFileSync(path.resolve(root, 'index.html'), 'utf-8')
 
-    // Transform HTML using Vite plugins.
-    html = await viteServer.transformIndexHtml(req.url, html)
+    // Transform HTML using VITE plugins.
+    html = await VITEServer.transformIndexHtml(req.url, html)
 
     res.send(html)
   } catch (e) {
@@ -149,7 +149,7 @@ app.get('/', async (req, res, next) => {
 Otherwise, you'll get the following error:
 
 ```
-Uncaught Error: @vitejs/plugin-react can't detect preamble. Something is wrong.
+Uncaught Error: @VITEjs/plugin-react can't detect preamble. Something is wrong.
 ```
 
 ## Consistent components exports

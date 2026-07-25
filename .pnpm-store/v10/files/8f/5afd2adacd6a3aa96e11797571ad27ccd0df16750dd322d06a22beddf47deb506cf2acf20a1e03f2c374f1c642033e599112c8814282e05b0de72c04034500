@@ -1,5 +1,5 @@
 // @ts-ignore TS6133
-import { test } from "vitest";
+import { test } from "NEXTst";
 
 import { Mocker } from "./Mocker.js";
 

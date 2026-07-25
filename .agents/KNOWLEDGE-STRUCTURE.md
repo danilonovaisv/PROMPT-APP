@@ -1,4 +1,5 @@
 # PROMPT-APP — Knowledge Structure Map
+>
 > Gerado em: 2026-04-07 | Versão do projeto: 1.0.0
 
 ---
@@ -9,7 +10,7 @@
 
 | Atributo | Valor |
 |---|---|
-| Stack principal | React 19 + TypeScript + Vite 8 |
+| Stack principal | React 19 + TypeScript + NEXT 8 |
 | Banco local | IndexedDB (Dexie.js v4) |
 | Banco na nuvem | Supabase (PostgreSQL) |
 | Deploy | Netlify |
@@ -28,7 +29,7 @@
 │                   PROMPT-APP (PWA)                   │
 │                                                     │
 │  ┌──────────┐    ┌──────────────┐   ┌───────────┐  │
-│  │  Vite +  │    │  React 19    │   │  Dexie.js │  │
+│  │  NEXT +  │    │  React 19    │   │  Dexie.js │  │
 │  │ React 19 │───▶│  Components  │──▶│ IndexedDB │  │
 │  └──────────┘    └──────────────┘   └─────┬─────┘  │
 │                                           │         │
@@ -65,6 +66,7 @@ Cada entidade possui `syncStatus: 'pending' | 'synced' | 'error'` e `isDeleted` 
 ## 4. ENTIDADES DE DADOS
 
 ### 4.1 Category
+
 ```typescript
 interface Category {
   id?: number;           // Local IndexedDB ID
@@ -80,6 +82,7 @@ interface Category {
 ```
 
 ### 4.2 Prompt (Entidade principal)
+
 ```typescript
 interface Prompt {
   id?: number;
@@ -103,6 +106,7 @@ interface Prompt {
 ```
 
 ### 4.3 ContextMenu (Menus Dinâmicos)
+
 ```typescript
 interface ContextMenu {
   id?: number;
@@ -118,7 +122,9 @@ interface ContextMenu {
 ```
 
 ### 4.4 MenuSelections (Menus de Contexto Hierárquicos)
+
 Os 4 menus fixos de indexação (herdados do sistema):
+
 ```typescript
 type MenuKey = 'tom' | 'publico' | 'idioma' | 'estilo';
 ```
@@ -173,6 +179,7 @@ TemplatePayload
 ## 6. COMPONENTES DA UI
 
 ### Componentes Principais
+
 | Componente | Localização | Função |
 |---|---|---|
 | `Layout` | `components/Layout.tsx` | Shell principal com nav e footer |
@@ -188,6 +195,7 @@ TemplatePayload
 | `SEO` | `components/SEO.tsx` | Meta tags dinâmicas |
 
 ### Componentes do Editor (`components/editor/`)
+
 | Componente | Função |
 |---|---|
 | `EditorDefinitionForm` | Formulário do prompt_definition (system_role, task, etc.) |
@@ -197,6 +205,7 @@ TemplatePayload
 | `EditorPreviewModal` | Preview modal do prompt completo |
 
 ### Componentes do Menu Manager (`components/menu-manager/`)
+
 | Componente | Função |
 |---|---|
 | `MenuCard` | Card de exibição de um menu |
@@ -204,6 +213,7 @@ TemplatePayload
 | `MenuOptionEditor` | Editor de opções e sub-opções do menu |
 
 ### UI Genérica (`components/ui/`)
+
 | Componente | Função |
 |---|---|
 | `MultiSelect` | Select múltiplo customizado |
@@ -274,6 +284,7 @@ TemplatePayload
 | `auth.users` | Usuários (gerenciado pelo Supabase) |
 
 ### Colunas JSONB em `prompts`
+
 - `context_menus` — seleções de menus (legacy)
 - `enabled_menu_ids[]` — IDs de menus ativos
 - `constraints[]` — array de restrições
@@ -283,6 +294,7 @@ TemplatePayload
 - `compiled_payload_jsonb` — CompiledPromptPayload
 
 ### Segurança (RLS)
+
 - Row Level Security ativa em todas as tabelas
 - Políticas: usuários só acessam seus próprios dados
 - Soft delete via coluna `is_deleted`
@@ -337,6 +349,7 @@ TemplatePayload
 ## 14. FLUXO DE IMPORT/EXPORT
 
 ### Export (JSON Bulk)
+
 ```
 BulkExport {
   app: "prompt-app"
@@ -348,6 +361,7 @@ BulkExport {
 ```
 
 ### Import
+
 - Suporte a formatos legados (v1, v2) + formato atual (v3)
 - `parseTemplatePayload()` normaliza qualquer versão para `TemplatePayload`
 - Menus importados via `ImportMenusModal`
@@ -357,28 +371,31 @@ BulkExport {
 ## 15. CONFIGURAÇÃO DO PROJETO
 
 ### Variáveis de Ambiente (`.env.local`)
+
 ```
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
-VITE_SENTRY_DSN=...
+NEXT_SUPABASE_URL=...
+NEXT_SUPABASE_ANON_KEY=...
+NEXT_SENTRY_DSN=...
 ```
 
 ### Build & Deploy
+
 ```bash
 # Dev
 pnpm dev
 
 # Build
-pnpm build   # tsc + vite build
+pnpm build   # tsc + NEXT build
 
 # Deploy (Netlify CI/CD)
 # Push para main → build automático
 ```
 
 ### Arquivos de Configuração
+
 | Arquivo | Função |
 |---|---|
-| `vite.config.ts` | Build Vite + aliases `@/` |
+| `NEXT.config.ts` | Build NEXT + aliases `@/` |
 | `netlify.toml` | Configuração de deploy Netlify |
 | `tsconfig.app.json` | TypeScript strict para src/ |
 | `jest.config.cjs` | Configuração Jest com ts-jest |
@@ -415,11 +432,13 @@ Ver `BUGS.md` e `docs/audits/` para histórico de correções.
 A partir da diretriz definida em `AGENT.md`, as seguintes regras são rigorosamente seguidas na orquestração e engenharia de prompts no ecossistema:
 
 ### 18.1 Arquitetura de 3 Camadas
+
 - **Camada 1 (Directive/O quê):** Interpretação da intenção, tradução em objetivos claros, definição de restrições, entradas e saídas.
 - **Camada 2 (Orchestration/Como):** Decisão de skills/agentes, definição de ordem de execução e dependências, validação intermediária de outputs.
 - **Camada 3 (Execution/Fazer):** Delegação de tarefas determinísticas a ferramentas/scripts/sub-agentes. Nenhuma improvisação de regra de negócio é permitida nesta camada.
 
 ### 18.2 Estrutura Canônica de Prompt (Mandatory)
+
 Todo prompt gerado deve seguir o formato obrigatório:
 `/// IDENTIDADE`
 `/// OBJETIVO`
@@ -431,11 +450,13 @@ Todo prompt gerado deve seguir o formato obrigatório:
 `/// REGRAS GERAIS`
 
 ### 18.3 Cognitive Prompt Model (LLM)
+
 Ao criar prompts para execução de LLM, o modelo explícito de cognição exige a definição de:
 `prompt_definition` -> `system_role`, `task`, `context`, `constraints`, `negative_prompt`, `required_fields`, `response_rules`, `user_input`.
 *Nenhum output de prompt é válido sem um output schema claramente definido.*
 
 ### 18.4 Regras Operacionais e de Conduta
+
 - **Mentor Direto:** Respostas sem filtros, sem "flattery" (elogios desnecessários). Questionamento direto de falhas lógicas e ideias frágeis.
 - **Sistematização do Repetível:** Soluções específicas devem ser acompanhadas de propostas de padronização (templates/checklists).
 - **Checklist de Qualidade (Quality Gates):** O objetivo deve ser explícito, formato determinístico, zero linguagem vaga ("alguns", "legal", "otimizar"), sem uso de placeholders.

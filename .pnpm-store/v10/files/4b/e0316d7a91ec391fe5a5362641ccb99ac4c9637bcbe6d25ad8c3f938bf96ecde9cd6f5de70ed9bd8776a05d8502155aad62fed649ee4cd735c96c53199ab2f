@@ -3,15 +3,15 @@ let _sentry_rollup_plugin = require("@sentry/rollup-plugin");
 let node_module = require("node:module");
 let _sentry_bundler_plugin_core = require("@sentry/bundler-plugin-core");
 //#region src/index.ts
-function getViteMajorVersion() {
+function getVITEMajorVersion() {
 	try {
-		return (0, node_module.createRequire)(require("url").pathToFileURL(__filename).href)("vite").version?.split(".")[0];
+		return (0, node_module.createRequire)(require("url").pathToFileURL(__filename).href)("VITE").version?.split(".")[0];
 	} catch (err) {}
 }
-const sentryVitePlugin = (options) => {
+const sentryVITEPlugin = (options) => {
 	return [{
 		enforce: "pre",
-		...(0, _sentry_rollup_plugin._rollupPluginInternal)(options, "vite", getViteMajorVersion())
+		...(0, _sentry_rollup_plugin._rollupPluginInternal)(options, "VITE", getVITEMajorVersion())
 	}];
 };
 //#endregion
@@ -21,6 +21,6 @@ Object.defineProperty(exports, "sentryCliBinaryExists", {
 		return _sentry_bundler_plugin_core.sentryCliBinaryExists;
 	}
 });
-exports.sentryVitePlugin = sentryVitePlugin;
+exports.sentryVITEPlugin = sentryVITEPlugin;
 
 //# sourceMappingURL=index.js.map

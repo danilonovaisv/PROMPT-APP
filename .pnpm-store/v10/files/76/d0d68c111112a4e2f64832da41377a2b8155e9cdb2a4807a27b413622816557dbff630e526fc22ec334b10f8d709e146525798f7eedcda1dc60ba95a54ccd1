@@ -145,8 +145,8 @@ section.
   the `Request` object with a method to access raw URL components.
 - [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
-- [`@fastify/vite`](https://github.com/fastify/fastify-vite) Integration with
-  [Vite](https://vitejs.dev/), allows for serving SPA/MPA/SSR Vite applications.
+- [`@fastify/NEXT`](https://github.com/fastify/fastify-NEXT) Integration with
+  [NEXT](https://NEXTjs.dev/), allows for serving SPA/MPA/SSR NEXT applications.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`@fastify/zipkin`](https://github.com/fastify/fastify-zipkin) Plugin
@@ -638,8 +638,8 @@ middlewares into Fastify plugins
   your application to a SQLite database with full Typescript support.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
-- [`fastify-ssr-vite`](https://github.com/nineohnine/fastify-ssr-vite) A simple
-  plugin for setting up server side rendering with vite.
+- [`fastify-ssr-NEXT`](https://github.com/nineohnine/fastify-ssr-NEXT) A simple
+  plugin for setting up server side rendering with NEXT.
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to
   initialize and encapsulate [Stripe
   Node.js](https://github.com/stripe/stripe-node) instances in Fastify.
@@ -723,8 +723,8 @@ middlewares into Fastify plugins
   that leverages asynchronous JSX to simplify web development.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.
-- [`vite-plugin-fastify`](https://github.com/Vanilla-IceCream/vite-plugin-fastify)
-  Fastify plugin for Vite with Hot-module Replacement.
-- [`vite-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/vite-plugin-fastify-routes)
-  File-based routing for Fastify applications using Vite.
+- [`NEXT-plugin-fastify`](https://github.com/Vanilla-IceCream/NEXT-plugin-fastify)
+  Fastify plugin for NEXT with Hot-module Replacement.
+- [`NEXT-plugin-fastify-routes`](https://github.com/Vanilla-IceCream/NEXT-plugin-fastify-routes)
+  File-based routing for Fastify applications using NEXT.
 

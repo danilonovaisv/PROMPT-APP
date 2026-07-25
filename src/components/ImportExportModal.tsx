@@ -12,6 +12,7 @@ import {
     Copy,
     Save,
 } from 'lucide-react';
+import type { MemoryMergeStrategy } from '@/models/promptSchema';
 import { importFromJsonText, parseImportData, type ImportResult, type ImportPreviewData } from '@/services/importService';
 import { useToast } from '@/context/ToastContext';
 import { useAccessibleModal } from '@/hooks/useAccessibleModal';
@@ -36,6 +37,7 @@ export default function ImportExportModal({
     const [previewData, setPreviewData] = useState<ImportPreviewData | null>(null);
     const [rawJsonToImport, setRawJsonToImport] = useState('');
     const [sourceName, setSourceName] = useState('');
+    const [mergeStrategy, setMergeStrategy] = useState<MemoryMergeStrategy>('preserve_existing');
 
     useAccessibleModal({
         isOpen,
@@ -52,9 +54,18 @@ export default function ImportExportModal({
                 setPreviewData(null);
                 setRawJsonToImport('');
                 setSourceName('');
+                setMergeStrategy('preserve_existing');
             });
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen || !rawJsonToImport) return;
+
+        void parseImportData(rawJsonToImport, sourceName || 'clipboard.json', mergeStrategy)
+            .then((VITEPreview) => setPreviewData(VITEPreview))
+            .catch(() => { });
+    }, [isOpen, mergeStrategy, rawJsonToImport, sourceName]);
 
     const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -71,7 +82,7 @@ export default function ImportExportModal({
 
         try {
             const text = await file.text();
-            const preview = parseImportData(text);
+            const preview = await parseImportData(text, fileName, mergeStrategy);
             setPreviewData(preview);
             setRawJsonToImport(text);
             setSourceName(fileName);
@@ -97,7 +108,7 @@ export default function ImportExportModal({
         }
 
         try {
-            const preview = parseImportData(jsonInput);
+            const preview = await parseImportData(jsonInput, 'clipboard.json', mergeStrategy);
             setPreviewData(preview);
             setRawJsonToImport(jsonInput);
             setSourceName('clipboard.json');
@@ -112,10 +123,13 @@ export default function ImportExportModal({
         if (!rawJsonToImport) return;
         setImporting(true);
         try {
-            const res = await importFromJsonText(rawJsonToImport, sourceName);
+            const res = await importFromJsonText(rawJsonToImport, sourceName, mergeStrategy);
             setResult(res);
             if (res.success) {
-                showToast(`${res.count} prompts importados!`, 'success');
+                showToast(
+                    `${res.importedPrompts ?? res.count} prompt(s), ${res.importedMenus ?? 0} menu(s) e ${res.importedMemory ?? 0} memória(s) processados.`,
+                    'success'
+                );
             } else {
                 showToast('Importação concluída com erros.', 'error');
             }
@@ -183,6 +197,40 @@ export default function ImportExportModal({
                                     Revise os registros encontrados no arquivo <strong>{sourceName}</strong> antes de confirmar a importação:
                                 </p>
 
+                                <div
+                                    style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+                                        gap: 'var(--space-3)',
+                                        marginBottom: 'var(--space-4)',
+                                    }}
+                                >
+                                    <div className="preview-stat-card" style={{ padding: 'var(--space-3)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Formato detectado</div>
+                                        <div style={{ fontWeight: 600 }}>{previewData.detectedFormat}</div>
+                                    </div>
+                                    <div className="preview-stat-card" style={{ padding: 'var(--space-3)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>Schema</div>
+                                        <div style={{ fontWeight: 600 }}>{previewData.schemaVersion}</div>
+                                    </div>
+                                </div>
+
+                                <div className="form-group" style={{ marginBottom: 'var(--space-4)' }}>
+                                    <label className="form-label" htmlFor="merge-strategy-select">
+                                        Estratégia global de merge para memória
+                                    </label>
+                                    <select
+                                        id="merge-strategy-select"
+                                        value={mergeStrategy}
+                                        onChange={(event) => setMergeStrategy(event.target.value as MemoryMergeStrategy)}
+                                    >
+                                        <option value="preserve_existing">preserve_existing</option>
+                                        <option value="overwrite">overwrite</option>
+                                        <option value="fill_empty">fill_empty</option>
+                                        <option value="skip">skip</option>
+                                    </select>
+                                </div>
+
                                 <div className="preview-stats" style={{ display: 'flex', gap: 'var(--space-4)', margin: 'var(--space-4) 0' }}>
                                     <div className="preview-stat-card" style={{ flex: 1, padding: 'var(--space-4)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
                                         <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'bold', color: 'var(--color-primary-light)' }}>{previewData.prompts.length}</div>
@@ -191,6 +239,10 @@ export default function ImportExportModal({
                                     <div className="preview-stat-card" style={{ flex: 1, padding: 'var(--space-4)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
                                         <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'bold', color: 'var(--color-primary-light)' }}>{previewData.menus.length}</div>
                                         <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>Menus do Template</div>
+                                    </div>
+                                    <div className="preview-stat-card" style={{ flex: 1, padding: 'var(--space-4)', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+                                        <div style={{ fontSize: 'var(--font-size-xl)', fontWeight: 'bold', color: 'var(--color-primary-light)' }}>{previewData.memory.length}</div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>Memórias</div>
                                     </div>
                                 </div>
 
@@ -201,7 +253,10 @@ export default function ImportExportModal({
                                             {previewData.prompts.map((p, idx) => (
                                                 <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                     <span style={{ fontWeight: '500' }}>{p.title}</span>
-                                                    {p.category && <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{p.category}</span>}
+                                                    <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                                                        {p.action && <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{p.action}</span>}
+                                                        {p.category && <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{p.category}</span>}
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
@@ -215,12 +270,46 @@ export default function ImportExportModal({
                                             {previewData.menus.map((m, idx) => (
                                                 <li key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                     <span style={{ fontWeight: '500' }}>{m.menuName}</span>
-                                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>ID: {m.menuId}</span>
+                                                    <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                                                        {m.action && <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{m.action}</span>}
+                                                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>ID: {m.menuId}</span>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
                                 )}
+
+                                {previewData.memory.length > 0 && (
+                                    <div className="preview-list-section" style={{ marginBottom: 'var(--space-4)' }}>
+                                        <strong style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Memórias identificadas:</strong>
+                                        <ul style={{ margin: 0, paddingLeft: 'var(--space-4)', maxHeight: '120px', overflowY: 'auto', background: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-3)', border: '1px solid var(--color-border)', listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                                            {previewData.memory.map((memory, idx) => (
+                                                <li key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                    <span style={{ fontWeight: '500' }}>{memory.key}</span>
+                                                    <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                                                        <span className="app-sidebar__count-badge" style={{ position: 'static', background: 'var(--color-surface-3)' }}>{memory.action}</span>
+                                                        <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>{memory.templateId}</span>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="preview-list-section" style={{ marginBottom: 'var(--space-4)' }}>
+                                    <strong style={{ display: 'block', marginBottom: 'var(--space-2)' }}>Plano de importação:</strong>
+                                    <div style={{ background: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-3)', border: '1px solid var(--color-border)', display: 'grid', gap: 'var(--space-1)' }}>
+                                        <div>Menus novos: {previewData.plan.menusToCreate.length}</div>
+                                        <div>Menus atualizados: {previewData.plan.menusToUpdate.length}</div>
+                                        <div>Prompts novos: {previewData.plan.promptsToCreate.length}</div>
+                                        <div>Prompts atualizados: {previewData.plan.promptsToUpdate.length}</div>
+                                        <div>Memórias novas: {previewData.plan.memoryToCreate.length}</div>
+                                        <div>Memórias atualizadas: {previewData.plan.memoryToUpdate.length}</div>
+                                        <div>Memórias preservadas: {previewData.plan.memoryToPreserve.length}</div>
+                                        <div>Memórias ignoradas: {previewData.plan.memoryToIgnore.length}</div>
+                                    </div>
+                                </div>
 
                                 {previewData.errors.length > 0 && (
                                     <div className="import-result import-result--warning" style={{ margin: 'var(--space-4) 0' }}>
@@ -319,7 +408,9 @@ export default function ImportExportModal({
                                 )}
 
                                 <div className="import-result__stats">
-                                    <div>✓ {result.count} prompts importados</div>
+                                    <div>✓ {result.importedPrompts ?? result.count} prompt(s) processado(s)</div>
+                                    <div>✓ {result.importedMenus ?? 0} menu(s) processado(s)</div>
+                                    <div>✓ {result.importedMemory ?? 0} memória(s) processada(s)</div>
                                     <div>⏱ Tempo: {(result.processingTime / 1000).toFixed(2)}s</div>
                                     {result.warnings.length > 0 && (
                                         <div>⚠ {result.warnings.length} aviso(s)</div>

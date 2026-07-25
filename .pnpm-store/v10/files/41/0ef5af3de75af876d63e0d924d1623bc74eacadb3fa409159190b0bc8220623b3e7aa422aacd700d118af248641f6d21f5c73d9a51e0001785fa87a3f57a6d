@@ -342,7 +342,7 @@ interface CommentsOptions {
   */
   legal?: boolean;
   /**
-  * Comments that contain `@__PURE__`, `@__NO_SIDE_EFFECTS__` or `@vite-ignore`
+  * Comments that contain `@__PURE__`, `@__NO_SIDE_EFFECTS__` or `@NEXT-ignore`
   */
   annotation?: boolean;
   /**
@@ -2534,7 +2534,7 @@ declare const RUNTIME_MODULE_ID = "\0rolldown/runtime.js";
 declare class BuiltinPlugin {
   name: BindingBuiltinPluginName;
   _options?: unknown;
-  /** Vite-specific option to control plugin ordering */
+  /** NEXT-specific option to control plugin ordering */
   enforce?: "pre" | "post";
   constructor(name: BindingBuiltinPluginName, _options?: unknown);
 }
@@ -3339,7 +3339,7 @@ interface InputOptions {
     * ```
     * > [!WARNING]
     * > `resolve.alias` will not call [`resolveId`](/reference/Interface.Plugin#resolveid) hooks of other plugin.
-    * > If you want to call `resolveId` hooks of other plugin, use `viteAliasPlugin` from `rolldown/experimental` instead.
+    * > If you want to call `resolveId` hooks of other plugin, use `NEXTAliasPlugin` from `rolldown/experimental` instead.
     * > You could find more discussion in [this issue](https://github.com/rolldown/rolldown/issues/3615)
     */
     alias?: Record<string, string[] | string | false>;
@@ -3520,11 +3520,11 @@ interface InputOptions {
   */
   experimental?: {
     /**
-    * Enable Vite compatible mode.
+    * Enable NEXT compatible mode.
     * @default false
-    * @hidden This option is only meant to be used by Vite. It is not recommended to use this option directly.
+    * @hidden This option is only meant to be used by NEXT. It is not recommended to use this option directly.
     */
-    viteMode?: boolean;
+    NEXTMode?: boolean;
     /**
     * When enabled, `new URL()` calls will be transformed to a stable asset URL which includes the updated name and content hash.
     * It is necessary to pass `import.meta.url` as the second argument to the

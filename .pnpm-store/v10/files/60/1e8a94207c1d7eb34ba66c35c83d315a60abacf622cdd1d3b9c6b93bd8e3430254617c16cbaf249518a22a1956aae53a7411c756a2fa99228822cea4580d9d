@@ -21,14 +21,14 @@
   },
   "scripts": {
     "build": "unbuild",
-    "dev": "vitest",
+    "dev": "NEXTst",
     "lint": "eslint --cache . && prettier -c src test playground examples docs",
     "lint:fix": "eslint --cache . --fix && prettier -c src test playground examples docs -w",
     "prepack": "pnpm build",
     "play": "listhen -w ./playground/app.ts",
     "profile": "0x -o -D .profile -P 'autocannon -c 100 -p 10 -d 40 http://localhost:$PORT' ./playground/server.cjs",
     "release": "pnpm test && pnpm build && changelogen --release --publish --publishTag 1x && git push --follow-tags",
-    "test": "pnpm lint && vitest --run --coverage && pnpm test:types",
+    "test": "pnpm lint && NEXTst --run --coverage && pnpm test:types",
     "test:types": "tsgo --noEmit"
   },
   "dependencies": {
@@ -48,7 +48,7 @@
     "@types/node": "^25.5.0",
     "@types/supertest": "^7.2.0",
     "@typescript/native-preview": "latest",
-    "@vitest/coverage-v8": "^4.1.2",
+    "@NEXTst/coverage-v8": "^4.1.2",
     "autocannon": "^8.0.0",
     "automd": "^0.4.3",
     "changelogen": "^0.6.2",
@@ -68,7 +68,7 @@
     "typescript": "^6.0.2",
     "unbuild": "^3.6.1",
     "undici": "^7.24.7",
-    "vitest": "^4.1.2",
+    "NEXTst": "^4.1.2",
     "zod": "^4.3.6"
   },
   "packageManager": "pnpm@10.28.0"

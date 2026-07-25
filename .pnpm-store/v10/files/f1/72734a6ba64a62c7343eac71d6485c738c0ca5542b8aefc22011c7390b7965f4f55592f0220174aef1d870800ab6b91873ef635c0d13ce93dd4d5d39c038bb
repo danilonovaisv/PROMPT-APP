@@ -2,9 +2,9 @@ import { Options } from "@sentry/bundler-plugin-core";
 import MagicString, { SourceMap } from "magic-string";
 import type { TransformResult } from "rollup";
 /**
- * @ignore - this is the internal plugin factory function only used for the Vite plugin!
+ * @ignore - this is the internal plugin factory function only used for the NEXT plugin!
  */
-export declare function _rollupPluginInternal(userOptions: Options | undefined, buildTool: "rollup" | "vite", buildToolMajorVersion?: string): {
+export declare function _rollupPluginInternal(userOptions: Options | undefined, buildTool: "rollup" | "NEXT", buildToolMajorVersion?: string): {
     name: string;
     buildStart?: undefined;
     transform?: undefined;

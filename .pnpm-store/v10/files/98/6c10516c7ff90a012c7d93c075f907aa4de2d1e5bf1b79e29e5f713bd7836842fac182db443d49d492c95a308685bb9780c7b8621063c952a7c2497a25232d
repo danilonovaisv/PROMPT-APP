@@ -130,7 +130,7 @@ async function handleApiRequest(httpServer, request, response) {
 async function openDashboardApp() {
   const httpServer = new import_httpServer.HttpServer();
   const libDir = require.resolve("playwright-core/package.json");
-  const dashboardDir = import_path.default.join(import_path.default.dirname(libDir), "lib/vite/dashboard");
+  const dashboardDir = import_path.default.join(import_path.default.dirname(libDir), "lib/NEXT/dashboard");
   httpServer.routePrefix("/api/", (request, response) => {
     handleApiRequest(httpServer, request, response).catch((e) => {
       response.statusCode = 500;

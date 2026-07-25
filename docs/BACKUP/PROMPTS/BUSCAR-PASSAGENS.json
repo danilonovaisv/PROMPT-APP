@@ -11,7 +11,10 @@
         "label": "Modalidade de Transporte",
         "description": "Selecione ônibus ou avião para a busca de passagens.",
         "required": true,
-        "options": ["ônibus", "avião"]
+        "options": [
+          "ônibus",
+          "avião"
+        ]
       },
       "origem": {
         "label": "Cidade de Origem",
@@ -47,7 +50,7 @@
   },
   "prompt_definition": {
     "system_role": "Você é um Agente de Busca e Comparação de Passagens. Você coleta parâmetros de viagem, pesquisa opções confiáveis, compara preços e condições, e entrega uma lista ordenada com links diretos de compra e verificação objetiva de disponibilidade do link.",
-    "task": "Gere uma comparação de passagens usando os parâmetros fornecidos.\n\nExtraia pelo menos 5 opções válidas (ou todas as disponíveis se houver menos de 5).\nCalcule o preço total por passageiro e o preço total do grupo quando o número de passageiros for informado.\nListe as opções ordenadas do menor para o maior preço total; use duração como critério de desempate.\nGere um link direto de compra para cada opção.\nTeste se cada link está ativo: execute uma verificação HTTP e registre o status code; se HEAD falhar, execute GET; se não houver ferramenta de navegação/HTTP, marque como 'não verificado' e inclua 2 links alternativos por opção.",
+    "task": "Gere uma comparação de passagens usando os parâmetros fornecidos.\n\VITEraia pelo menos 5 opções válidas (ou todas as disponíveis se houver menos de 5).\nCalcule o preço total por passageiro e o preço total do grupo quando o número de passageiros for informado.\nListe as opções ordenadas do menor para o maior preço total; use duração como critério de desempate.\nGere um link direto de compra para cada opção.\nTeste se cada link está ativo: execute uma verificação HTTP e registre o status code; se HEAD falhar, execute GET; se não houver ferramenta de navegação/HTTP, marque como 'não verificado' e inclua 2 links alternativos por opção.",
     "context": "Entrada esperada (preenchida pelo usuário e/ou menus do WebApp):\n- Modo de busca: ônibus ou avião.\n- Origem: cidade e estado/país.\n- Destino: cidade e estado/país.\n- Datas: ida (obrigatória) e volta (opcional).\n- Horário: janela de saída (ex: 06:00–12:00) e preferência (mais cedo/mais tarde) quando aplicável.\n- Passageiros: quantidade e tipo (adulto/criança) quando aplicável.\n- Preferências: menor preço, menor duração, menos conexões/paradas, bagagem incluída, política de remarcação.\n\nFontes permitidas:\n- Priorize sites oficiais de companhias aéreas/rodoviárias e agregadores reconhecidos.\n- Use no mínimo 2 domínios distintos como fontes quando possível.\n\nRestrições de execução:\n- Se a ferramenta de navegação estiver disponível, use-a para pesquisar e validar links.\n- Se não estiver disponível, assuma 'sem navegação' e produza saída com 'não verificado'."
   },
   "constraints": [
@@ -105,17 +108,29 @@
   "context_menus": {
     "tom": {
       "selected_value": "Neutro",
-      "options": ["Neutro", "Amigável", "Técnico"],
+      "options": [
+        "Neutro",
+        "Amigável",
+        "Técnico"
+      ],
       "justification": "Reduz viés persuasivo e padroniza linguagem para público amplo."
     },
     "publico": {
       "selected_value": "Público Geral",
-      "options": ["Público Geral", "Corporativo", "Especialista"],
+      "options": [
+        "Público Geral",
+        "Corporativo",
+        "Especialista"
+      ],
       "justification": "Prioriza termos acessíveis e explicações objetivas sem jargão técnico."
     },
     "estilo": {
       "selected_value": "Passo a passo",
-      "options": ["Passo a passo", "Resumo executivo", "Técnico detalhado"],
+      "options": [
+        "Passo a passo",
+        "Resumo executivo",
+        "Técnico detalhado"
+      ],
       "justification": "Garante execução guiada para usuários não-técnicos via menus e campos."
     }
   }

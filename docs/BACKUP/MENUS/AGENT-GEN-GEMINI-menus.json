@@ -42,9 +42,9 @@
       "required": true,
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "nextjs_app_router",
-          "description": "Projeto com Next.js, React, TypeScript e arquitetura App Router.",
+          "label": "VITE.js App Router",
+          "value": "VITEjs_app_router",
+          "description": "Projeto com VITE.js, React, TypeScript e arquitetura App Router.",
           "sub_options": [
             {
               "label": "Supabase",
@@ -66,7 +66,7 @@
         {
           "label": "React SPA",
           "value": "react_spa",
-          "description": "Projeto React com Vite, TypeScript e renderização client-side.",
+          "description": "Projeto React com VITE, TypeScript e renderização client-side.",
           "sub_options": []
         },
         {

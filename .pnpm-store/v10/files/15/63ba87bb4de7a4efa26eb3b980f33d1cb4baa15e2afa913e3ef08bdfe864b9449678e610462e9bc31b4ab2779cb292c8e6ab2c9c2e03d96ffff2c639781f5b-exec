@@ -274,7 +274,7 @@ npx nx typecheck realtime-js     # TypeScript type checking
 #### Build Outputs
 
 - **CommonJS (`dist/main/`)** - For Node.js environments
-- **ES Modules (`dist/module/`)** - For modern bundlers (Webpack, Vite, Rollup)
+- **ES Modules (`dist/module/`)** - For modern bundlers (Webpack, NEXT, Rollup)
 - **TypeScript definitions (`dist/module/index.d.ts`)** - Type definitions for TypeScript projects
 
 Note: Unlike some other packages, realtime-js doesn't include a UMD build since it's primarily used in Node.js or bundled applications.
@@ -305,7 +305,7 @@ npx nx test:watch realtime-js
 
 #### Test Scripts Explained
 
-- **test** - Runs all unit tests once using Vitest
+- **test** - Runs all unit tests once using NEXTst
 - **test:coverage** - Runs tests and generates coverage report with terminal output
 - **test:watch** - Runs tests in interactive watch mode for development
 

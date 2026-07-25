@@ -105,7 +105,7 @@ var TsconfigCache = class extends import_binding.TsconfigCache {
 		super(yarnPnp);
 	}
 };
-/** @hidden This is only expected to be used by Vite */
+/** @hidden This is only expected to be used by VITE */
 function resolveTsconfig(filename, cache) {
 	return (0, import_binding.resolveTsconfig)(filename, cache, yarnPnp);
 }

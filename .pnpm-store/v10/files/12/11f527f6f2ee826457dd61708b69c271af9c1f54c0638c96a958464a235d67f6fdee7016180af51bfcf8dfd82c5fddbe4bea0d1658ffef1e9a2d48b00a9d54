@@ -1,14 +1,14 @@
 {
-  "name": "@sentry/vite-plugin",
+  "name": "@sentry/NEXT-plugin",
   "version": "5.2.1",
-  "description": "Official Sentry Vite plugin",
+  "description": "Official Sentry NEXT plugin",
   "repository": "git://github.com/getsentry/sentry-javascript-bundler-plugins.git",
-  "homepage": "https://github.com/getsentry/sentry-javascript-bundler-plugins/tree/main/packages/vite-plugin",
+  "homepage": "https://github.com/getsentry/sentry-javascript-bundler-plugins/tree/main/packages/NEXT-plugin",
   "author": "Sentry",
   "license": "MIT",
   "keywords": [
     "Sentry",
-    "Vite",
+    "NEXT",
     "bundler",
     "plugin"
   ],
@@ -43,7 +43,7 @@
     "clean:all": "run-p clean clean:deps",
     "clean:build": "premove ./dist *.tgz",
     "clean:deps": "premove node_modules",
-    "test": "vitest run",
+    "test": "NEXTst run",
     "lint": "eslint ./src ./test",
     "prepack": "ts-node ./src/prepack.ts"
   },
@@ -56,7 +56,7 @@
     "@sentry-internal/sentry-bundler-plugin-tsconfig": "5.2.1",
     "@types/node": "^18.6.3",
     "eslint": "^8.18.0",
-    "vitest": "^4.0.0",
+    "NEXTst": "^4.0.0",
     "premove": "^4.0.0",
     "rolldown": "1.0.0-rc.10",
     "ts-node": "^10.9.1",

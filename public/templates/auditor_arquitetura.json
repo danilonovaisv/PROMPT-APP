@@ -10,7 +10,7 @@
   "prompt_definition": {
     "system_role": "Você é um Arquiteto de Software Sênior e Especialista em React/TypeScript, focado em aplicações web \"local-first\", performance de frontend e engenharia de prompts.",
     "task": "Auditar a estrutura de código e a arquitetura do \"PROMPT-APP\" a partir dos dados fornecidos e elaborar um plano estratégico e acionável de melhorias contínuas.",
-    "context": "O projeto analisado é o PROMPT-APP, uma ferramenta web local-first para criação e gestão de templates de prompt estruturados. Tech Stack: React 19, Vite, Dexie.js (IndexedDB), Supabase (Sync), Zod (Validação). O sistema prioriza a experiência do usuário offline com sincronização transparente na nuvem.",
+    "context": "O projeto analisado é o PROMPT-APP, uma ferramenta web local-first para criação e gestão de templates de prompt estruturados. Tech Stack: React 19, VITE, Dexie.js (IndexedDB), Supabase (Sync), Zod (Validação). O sistema prioriza a experiência do usuário offline com sincronização transparente na nuvem.",
     "user_scene_description": "O usuário fornecerá um dump JSON ou trechos de código do projeto. Você deve analisar a saúde arquitetural, identificar dívidas técnicas e propor um plano de ação seguindo o template de saída.",
     "constraints": [
       "Sugerir apenas tecnologias compatíveis com React 19 e Dexie.js.",
@@ -32,11 +32,26 @@
       "description": "Selecione a área prioritária para análise",
       "selection_mode": "multiple",
       "options": [
-        { "value": "arquitetura", "label": "Arquitetura Geral" },
-        { "value": "performance", "label": "Performance (Local-First)" },
-        { "value": "seguranca", "label": "Segurança & RLS" },
-        { "value": "acessibilidade", "label": "Acessibilidade (WCAG)" },
-        { "value": "codigo", "label": "Código & Tipagem" }
+        {
+          "value": "arquitetura",
+          "label": "Arquitetura Geral"
+        },
+        {
+          "value": "performance",
+          "label": "Performance (Local-First)"
+        },
+        {
+          "value": "seguranca",
+          "label": "Segurança & RLS"
+        },
+        {
+          "value": "acessibilidade",
+          "label": "Acessibilidade (WCAG)"
+        },
+        {
+          "value": "codigo",
+          "label": "Código & Tipagem"
+        }
       ]
     },
     {
@@ -45,13 +60,25 @@
       "description": "Nível de detalhamento da análise",
       "selection_mode": "single",
       "options": [
-        { "value": "superficial", "label": "Superficial (Sanity Check)" },
-        { "value": "padrao", "label": "Padrão (Arquitetura)" },
-        { "value": "deep", "label": "Deep Dive (Refactoring)" }
+        {
+          "value": "superficial",
+          "label": "Superficial (Sanity Check)"
+        },
+        {
+          "value": "padrao",
+          "label": "Padrão (Arquitetura)"
+        },
+        {
+          "value": "deep",
+          "label": "Deep Dive (Refactoring)"
+        }
       ]
     }
   ],
-  "menu_ids": ["foco_auditoria", "profundidade"],
+  "menu_ids": [
+    "foco_auditoria",
+    "profundidade"
+  ],
   "output_contract": {
     "format": "markdown",
     "language": "pt-BR",

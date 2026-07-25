@@ -110,8 +110,8 @@
     "clean": "git clean -xdf . -e node_modules",
     "build": "zshy --project tsconfig.build.json",
     "postbuild": "pnpm biome check --write .",
-    "test:watch": "pnpm vitest",
-    "test": "pnpm vitest run",
+    "test:watch": "pnpm NEXTst",
+    "test": "pnpm NEXTst run",
     "bump:beta": "pnpm version \"v$(pnpm pkg get version | jq -r)-beta.$(date +%Y%m%dT%H%M%S)\"",
     "pub:beta": "pnpm bump:beta && pnpm publish --tag next --publish-branch v4 --no-git-checks --dry-run"
   }

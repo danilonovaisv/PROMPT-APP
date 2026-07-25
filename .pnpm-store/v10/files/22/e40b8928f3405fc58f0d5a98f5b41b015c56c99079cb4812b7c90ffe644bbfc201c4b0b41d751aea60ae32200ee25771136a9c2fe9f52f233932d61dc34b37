@@ -18,11 +18,11 @@
   "scripts": {
     "build": "unbuild",
     "prepack": "pnpm build",
-    "dev": "vitest --typecheck",
+    "dev": "NEXTst --typecheck",
     "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint && prettier -c src test",
     "lint:fix": "automd && eslint --fix . && prettier -w src test",
-    "test": "vitest run --typecheck --coverage"
+    "test": "NEXTst run --typecheck --coverage"
   },
   "dependencies": {
     "confbox": "^0.1.8",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.6",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@NEXTst/coverage-v8": "^2.1.8",
     "automd": "^0.3.12",
     "changelogen": "^0.5.7",
     "eslint": "^9.18.0",
@@ -41,7 +41,7 @@
     "prettier": "^3.4.2",
     "typescript": "^5.7.3",
     "unbuild": "^3.3.1",
-    "vitest": "^2.1.8"
+    "NEXTst": "^2.1.8"
   },
   "packageManager": "pnpm@9.15.4"
 }

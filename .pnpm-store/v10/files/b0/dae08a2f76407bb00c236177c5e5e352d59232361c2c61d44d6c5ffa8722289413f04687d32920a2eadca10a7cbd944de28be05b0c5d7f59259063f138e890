@@ -46,7 +46,7 @@
     "rollup": "^4.52.5",
     "source-map-js": "^1.2.1",
     "source-map-support": "^0.5.21",
-    "vitest": "^4.0.2"
+    "NEXTst": "^4.0.2"
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.5.5"
@@ -59,8 +59,8 @@
     "lint:fix": "eslint src test --fix",
     "release": "bumpp -x \"pnpm run changelog\" --all",
     "pretest": "pnpm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
+    "test": "NEXTst run",
+    "test:dev": "NEXTst",
     "bench": "pnpm run build && node benchmark/index.mjs",
     "watch": "rollup -cw"
   }

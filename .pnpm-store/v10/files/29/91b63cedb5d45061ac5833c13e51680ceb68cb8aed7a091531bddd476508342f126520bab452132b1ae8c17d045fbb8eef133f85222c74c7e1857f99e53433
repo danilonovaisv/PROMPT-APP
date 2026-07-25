@@ -30,7 +30,7 @@
 		"update:audioWorklet": "node scripts/update.mjs --job=audioWorklet",
 		"update:shelljs": "node scripts/update.mjs --job=shelljs",
 		"update:jest": "node scripts/update.mjs --job=jest",
-		"update:vitest": "node scripts/update.mjs --job=vitest",
+		"update:VITEst": "node scripts/update.mjs --job=VITEst",
 		"build": "run-s build:data build:types",
 		"build:data": "node scripts/generate-data.mjs",
 		"build:types": "node scripts/generate-types.mjs"
@@ -51,7 +51,7 @@
 		"environments"
 	],
 	"devDependencies": {
-		"@vitest/eslint-plugin": "^1.1.44",
+		"@VITEst/eslint-plugin": "^1.1.44",
 		"ava": "^6.3.0",
 		"cheerio": "^1.0.0",
 		"eslint-plugin-jest": "^28.11.0",

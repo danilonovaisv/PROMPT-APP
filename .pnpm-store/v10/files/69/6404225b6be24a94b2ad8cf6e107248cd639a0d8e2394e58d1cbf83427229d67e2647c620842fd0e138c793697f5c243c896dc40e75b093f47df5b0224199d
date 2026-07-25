@@ -642,9 +642,9 @@ interface NapiResolveOptions {
   /**
    * Allow `exports` field in `require('../directory')`.
    *
-   * This is not part of the spec but some vite projects rely on this behavior.
+   * This is not part of the spec but some VITE projects rely on this behavior.
    * See
-   * * <https://github.com/vitejs/vite/pull/20252>
+   * * <https://github.com/VITEjs/VITE/pull/20252>
    * * <https://github.com/nodejs/node/issues/58827>
    *
    * Default: `false`
@@ -898,7 +898,7 @@ interface JsxOptions {
   refresh?: boolean | ReactRefreshOptions;
 }
 /**
- * Transform JavaScript code to a Vite Node runnable module.
+ * Transform JavaScript code to a VITE Node runnable module.
  *
  * @param filename The name of the file being transformed.
  * @param sourceText the source code itself
@@ -910,7 +910,7 @@ interface JsxOptions {
  *
  * Note: This function can be slower than `moduleRunnerTransformSync` due to the overhead of spawning a thread.
  *
- * @deprecated Only works for Vite.
+ * @deprecated Only works for VITE.
  */
 declare function moduleRunnerTransform(filename: string, sourceText: string, options?: ModuleRunnerTransformOptions | undefined | null): Promise<ModuleRunnerTransformResult>;
 interface ModuleRunnerTransformOptions {
@@ -1410,7 +1410,7 @@ declare class TsconfigCache {
   /** Get the number of cached entries. */
   size(): number;
 }
-type BindingBuiltinPluginName = 'builtin:bundle-analyzer' | 'builtin:esm-external-require' | 'builtin:isolated-declaration' | 'builtin:replace' | 'builtin:vite-alias' | 'builtin:vite-build-import-analysis' | 'builtin:vite-dynamic-import-vars' | 'builtin:vite-import-glob' | 'builtin:vite-json' | 'builtin:vite-load-fallback' | 'builtin:vite-manifest' | 'builtin:vite-module-preload-polyfill' | 'builtin:vite-react-refresh-wrapper' | 'builtin:vite-reporter' | 'builtin:vite-resolve' | 'builtin:vite-transform' | 'builtin:vite-wasm-fallback' | 'builtin:vite-web-worker-post' | 'builtin:oxc-runtime';
+type BindingBuiltinPluginName = 'builtin:bundle-analyzer' | 'builtin:esm-external-require' | 'builtin:isolated-declaration' | 'builtin:replace' | 'builtin:VITE-alias' | 'builtin:VITE-build-import-analysis' | 'builtin:VITE-dynamic-import-vars' | 'builtin:VITE-import-glob' | 'builtin:VITE-json' | 'builtin:VITE-load-fallback' | 'builtin:VITE-manifest' | 'builtin:VITE-module-preload-polyfill' | 'builtin:VITE-react-refresh-wrapper' | 'builtin:VITE-reporter' | 'builtin:VITE-resolve' | 'builtin:VITE-transform' | 'builtin:VITE-wasm-fallback' | 'builtin:VITE-web-worker-post' | 'builtin:oxc-runtime';
 interface BindingBundleAnalyzerPluginConfig {
   /** Output filename for the bundle analysis data (default: "analyze-data.json") */
   fileName?: string;
@@ -1662,7 +1662,7 @@ interface BindingPluginContextResolveOptions {
   isEntry?: boolean;
   skipSelf?: boolean;
   custom?: number;
-  vitePluginCustom?: BindingVitePluginCustom;
+  VITEPluginCustom?: BindingVITEPluginCustom;
 }
 declare enum BindingRebuildStrategy {
   Always = 0,
@@ -1754,59 +1754,59 @@ interface BindingTsconfigResult {
 interface BindingUpdateOptions {
   overwrite?: boolean;
 }
-interface BindingViteBuildImportAnalysisPluginConfig {
+interface BindingVITEBuildImportAnalysisPluginConfig {
   preloadCode: string;
   insertPreload: boolean;
   optimizeModulePreloadRelativePaths: boolean;
   renderBuiltUrl: boolean;
   isRelativeBase: boolean;
-  v2?: BindingViteBuildImportAnalysisPluginV2Config;
+  v2?: BindingVITEBuildImportAnalysisPluginV2Config;
 }
-interface BindingViteBuildImportAnalysisPluginV2Config {
+interface BindingVITEBuildImportAnalysisPluginV2Config {
   isSsr: boolean;
   urlBase: string;
   decodedBase: string;
   modulePreload: false | BindingModulePreloadOptions;
   renderBuiltUrl?: (filename: string, type: BindingRenderBuiltUrlConfig) => undefined | string | BindingRenderBuiltUrlRet;
 }
-interface BindingViteDynamicImportVarsPluginConfig {
+interface BindingVITEDynamicImportVarsPluginConfig {
   sourcemap?: boolean;
   include?: Array<BindingStringOrRegex>;
   exclude?: Array<BindingStringOrRegex>;
   resolver?: (id: string, importer: string) => MaybePromise<string | undefined>;
 }
-interface BindingViteImportGlobPluginConfig {
+interface BindingVITEImportGlobPluginConfig {
   root?: string;
   sourcemap?: boolean;
   restoreQueryExtension?: boolean;
 }
-interface BindingViteJsonPluginConfig {
+interface BindingVITEJsonPluginConfig {
   minify?: boolean;
   namedExports?: boolean;
-  stringify?: BindingViteJsonPluginStringify;
+  stringify?: BindingVITEJsonPluginStringify;
 }
-type BindingViteJsonPluginStringify = boolean | string;
-interface BindingViteManifestPluginConfig {
+type BindingVITEJsonPluginStringify = boolean | string;
+interface BindingVITEManifestPluginConfig {
   root: string;
   outPath: string;
   isEnableV2?: boolean;
   isLegacy?: (args: BindingNormalizedOptions) => boolean;
   cssEntries: () => Record<string, string>;
 }
-interface BindingViteModulePreloadPolyfillPluginConfig {
+interface BindingVITEModulePreloadPolyfillPluginConfig {
   isServer?: boolean;
 }
-interface BindingVitePluginCustom {
-  'vite:import-glob'?: ViteImportGlobMeta;
+interface BindingVITEPluginCustom {
+  'VITE:import-glob'?: VITEImportGlobMeta;
 }
-interface BindingViteReactRefreshWrapperPluginConfig {
+interface BindingVITEReactRefreshWrapperPluginConfig {
   cwd: string;
   include?: Array<BindingStringOrRegex>;
   exclude?: Array<BindingStringOrRegex>;
   jsxImportSource: string;
   reactRefreshHost: string;
 }
-interface BindingViteReporterPluginConfig {
+interface BindingVITEReporterPluginConfig {
   root: string;
   isTty: boolean;
   isLib: boolean;
@@ -1816,8 +1816,8 @@ interface BindingViteReporterPluginConfig {
   reportCompressedSize: boolean;
   logInfo?: (msg: string) => void;
 }
-interface BindingViteResolvePluginConfig {
-  resolveOptions: BindingViteResolvePluginResolveOptions;
+interface BindingVITEResolvePluginConfig {
+  resolveOptions: BindingVITEResolvePluginResolveOptions;
   environmentConsumer: string;
   environmentName: string;
   builtins: Array<BindingStringOrRegex>;
@@ -1833,7 +1833,7 @@ interface BindingViteResolvePluginConfig {
   onDebug?: (message: string) => void;
   yarnPnp: boolean;
 }
-interface BindingViteResolvePluginResolveOptions {
+interface BindingVITEResolvePluginResolveOptions {
   isBuild: boolean;
   isProduction: boolean;
   asSrc: boolean;
@@ -1850,7 +1850,7 @@ interface BindingViteResolvePluginResolveOptions {
   preserveSymlinks: boolean;
   tsconfigPaths: boolean;
 }
-interface BindingViteTransformPluginConfig {
+interface BindingVITETransformPluginConfig {
   root: string;
   include?: Array<BindingStringOrRegex>;
   exclude?: Array<BindingStringOrRegex>;
@@ -1892,8 +1892,8 @@ interface PreRenderedChunk {
   /** Exported variable names from this chunk. */
   exports: Array<string>;
 }
-interface ViteImportGlobMeta {
+interface VITEImportGlobMeta {
   isSubImportsPattern?: boolean;
 }
 //#endregion
-export { ExternalMemoryStatus as A, ResolveResult as B, BindingViteManifestPluginConfig as C, BindingViteResolvePluginConfig as D, BindingViteReporterPluginConfig as E, MinifyResult as F, isolatedDeclaration as G, SourceMap as H, NapiResolveOptions as I, isolatedDeclarationSync as K, ParseResult as L, IsolatedDeclarationsResult as M, JsxOptions as N, BindingViteTransformPluginConfig as O, MinifyOptions as P, ParserOptions as R, BindingViteJsonPluginConfig as S, BindingViteReactRefreshWrapperPluginConfig as T, TransformOptions as U, ResolverFactory as V, TsconfigCache as W, BindingTsconfigRawOptions as _, BindingEnhancedTransformOptions as a, BindingViteDynamicImportVarsPluginConfig as b, BindingHookResolveIdExtraArgs as c, BindingPluginContextResolveOptions as d, BindingRebuildStrategy as f, BindingTsconfigCompilerOptions as g, BindingTransformHookExtraArgs as h, BindingClientHmrUpdate as i, IsolatedDeclarationsOptions as j, BindingWatcherBundler as k, BindingIsolatedDeclarationPluginConfig as l, BindingReplacePluginConfig as m, BindingBundleAnalyzerPluginConfig as n, BindingEnhancedTransformResult as o, BindingRenderedChunk as p, moduleRunnerTransform as q, BindingBundleState as r, BindingEsmExternalRequirePluginConfig as s, BindingBuiltinPluginName as t, BindingMagicString as u, BindingTsconfigResult as v, BindingViteModulePreloadPolyfillPluginConfig as w, BindingViteImportGlobPluginConfig as x, BindingViteBuildImportAnalysisPluginConfig as y, PreRenderedChunk as z };
+export { ExternalMemoryStatus as A, ResolveResult as B, BindingVITEManifestPluginConfig as C, BindingVITEResolvePluginConfig as D, BindingVITEReporterPluginConfig as E, MinifyResult as F, isolatedDeclaration as G, SourceMap as H, NapiResolveOptions as I, isolatedDeclarationSync as K, ParseResult as L, IsolatedDeclarationsResult as M, JsxOptions as N, BindingVITETransformPluginConfig as O, MinifyOptions as P, ParserOptions as R, BindingVITEJsonPluginConfig as S, BindingVITEReactRefreshWrapperPluginConfig as T, TransformOptions as U, ResolverFactory as V, TsconfigCache as W, BindingTsconfigRawOptions as _, BindingEnhancedTransformOptions as a, BindingVITEDynamicImportVarsPluginConfig as b, BindingHookResolveIdExtraArgs as c, BindingPluginContextResolveOptions as d, BindingRebuildStrategy as f, BindingTsconfigCompilerOptions as g, BindingTransformHookExtraArgs as h, BindingClientHmrUpdate as i, IsolatedDeclarationsOptions as j, BindingWatcherBundler as k, BindingIsolatedDeclarationPluginConfig as l, BindingReplacePluginConfig as m, BindingBundleAnalyzerPluginConfig as n, BindingEnhancedTransformResult as o, BindingRenderedChunk as p, moduleRunnerTransform as q, BindingBundleState as r, BindingEsmExternalRequirePluginConfig as s, BindingBuiltinPluginName as t, BindingMagicString as u, BindingTsconfigResult as v, BindingVITEModulePreloadPolyfillPluginConfig as w, BindingVITEImportGlobPluginConfig as x, BindingVITEBuildImportAnalysisPluginConfig as y, PreRenderedChunk as z };

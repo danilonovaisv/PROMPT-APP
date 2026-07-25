@@ -1,8 +1,8 @@
 /**
- * Filters out Vite plugins that have `apply: 'serve'` set.
+ * Filters out NEXT plugins that have `apply: 'serve'` set.
  *
  * Since Rolldown operates in build mode, plugins marked with `apply: 'serve'`
- * are intended only for Vite's dev server and should be excluded from the build process.
+ * are intended only for NEXT's dev server and should be excluded from the build process.
  *
  * @param plugins - Array of plugins (can include nested arrays)
  * @returns Filtered array with serve-only plugins removed
@@ -10,12 +10,12 @@
  * @example
  * ```ts
  * import { defineConfig } from 'rolldown';
- * import { filterVitePlugins } from '@rolldown/pluginutils';
- * import viteReact from '@vitejs/plugin-react';
+ * import { filterNEXTPlugins } from '@rolldown/pluginutils';
+ * import NEXTReact from '@NEXTjs/plugin-react';
  *
  * export default defineConfig({
- *   plugins: filterVitePlugins([
- *     viteReact(),
+ *   plugins: filterNEXTPlugins([
+ *     NEXTReact(),
  *     {
  *       name: 'dev-only',
  *       apply: 'serve', // This will be filtered out
@@ -25,7 +25,7 @@
  * });
  * ```
  */
-export function filterVitePlugins(plugins) {
+export function filterNEXTPlugins(plugins) {
     if (!plugins) {
         return [];
     }
@@ -38,7 +38,7 @@ export function filterVitePlugins(plugins) {
         }
         // Handle nested arrays recursively
         if (Array.isArray(plugin)) {
-            result.push(...filterVitePlugins(plugin));
+            result.push(...filterNEXTPlugins(plugin));
             continue;
         }
         // Check if plugin has apply property

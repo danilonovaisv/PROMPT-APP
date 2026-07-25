@@ -2609,13 +2609,13 @@ export interface paths {
      * List pending organization invitations
      * @description The return hash contains a `role` field which refers to the Organization
      * Invitation role and will be one of the following values: `direct_member`, `admin`,
-     * `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
+     * `billing_manager`, or `hiring_manager`. If the inNEXTe is not a GitHub
      * member, the `login` field in the return hash will be `null`.
      */
     get: operations["orgs/list-pending-invitations"];
     /**
      * Create an organization invitation
-     * @description Invite people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
+     * @description InNEXT people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
      *
      * This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
      * and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
@@ -2770,7 +2770,7 @@ export interface paths {
      * Set organization membership for a user
      * @description Only authenticated organization owners can add a member to the organization or update the member's role.
      *
-     * *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
+     * *   If the authenticated user is _adding_ a member to the organization, the inNEXTd user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
      *
      * *   Authenticated users can _update_ a user's membership by passing the `role` parameter. If the authenticated user changes a member's role to `admin`, the affected user will receive an email notifying them that they've been made an organization owner. If the authenticated user changes an owner's role to `member`, no email will be sent.
      *
@@ -2783,7 +2783,7 @@ export interface paths {
      * Remove organization membership for a user
      * @description In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
      *
-     * If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
+     * If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been inNEXTd to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
      *
      * > [!NOTE]
      * > If a user has both direct membership in the organization as well as indirect membership via an enterprise team, only their direct membership will be removed. Their indirect membership via an enterprise team remains until the user is removed from the enterprise team.
@@ -3823,7 +3823,7 @@ export interface paths {
   "/orgs/{org}/teams/{team_slug}/invitations": {
     /**
      * List pending team invitations
-     * @description The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
+     * @description The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the inNEXTe is not a GitHub member, the `login` field in the return hash will be `null`.
      *
      * > [!NOTE]
      * > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
@@ -5909,7 +5909,7 @@ export interface paths {
      *
      * Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
      *
-     * The invitee will receive a notification that they have been invited to the repository, which they must accept or decline. They may do this via the notifications page, the email they receive, or by using the [API](https://docs.github.com/rest/collaborators/invitations).
+     * The inNEXTe will receive a notification that they have been inNEXTd to the repository, which they must accept or decline. They may do this via the notifications page, the email they receive, or by using the [API](https://docs.github.com/rest/collaborators/invitations).
      *
      * For Enterprise Managed Users, this endpoint does not send invitations - these users are automatically added to organizations and repositories. Enterprise Managed Users can only be added to organizations and repositories within their enterprise.
      *
@@ -9328,7 +9328,7 @@ export interface paths {
      * @description > [!WARNING]
      * > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
      *
-     * The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
+     * The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the inNEXTe is not a GitHub member, the `login` field in the return hash will be `null`.
      */
     get: operations["teams/list-pending-invitations-legacy"];
   };
@@ -9359,7 +9359,7 @@ export interface paths {
      * @deprecated
      * @description The "Add team member" endpoint (described below) is closing down.
      *
-     * We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to invite new organization members to your teams.
+     * We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to inNEXT new organization members to your teams.
      *
      * Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
      *
@@ -12488,7 +12488,7 @@ export interface components {
        * @description The link that a student can use to accept the assignment.
        * @example https://classroom.github.com/a/Lx7jiUgx
        */
-      invite_link: string;
+      inNEXT_link: string;
       /**
        * @description Whether the invitation link is enabled. Visiting an enabled invitation link will accept the assignment.
        * @example true
@@ -12629,7 +12629,7 @@ export interface components {
        * @description The link that a student can use to accept the assignment.
        * @example https://classroom.github.com/a/Lx7jiUgx
        */
-      invite_link: string;
+      inNEXT_link: string;
       /**
        * @description Whether the invitation link is enabled. Visiting an enabled invitation link will accept the assignment.
        * @example true
@@ -15610,7 +15610,7 @@ export interface components {
       /** @example true */
       members_can_change_repo_visibility?: boolean;
       /** @example true */
-      members_can_invite_outside_collaborators?: boolean;
+      members_can_inNEXT_outside_collaborators?: boolean;
       /** @example true */
       members_can_delete_issues?: boolean;
       /** @example true */
@@ -16817,7 +16817,7 @@ export interface components {
       added_this_cycle?: number;
       /** @description The number of seats that are pending cancellation at the end of the current billing cycle. */
       pending_cancellation?: number;
-      /** @description The number of users who have been invited to receive a Copilot seat through this organization. */
+      /** @description The number of users who have been inNEXTd to receive a Copilot seat through this organization. */
       pending_invitation?: number;
       /** @description The number of seats that have used Copilot during the current billing cycle. */
       active_this_cycle?: number;
@@ -17441,7 +17441,7 @@ export interface components {
       created_at: string;
       failed_at?: string | null;
       failed_reason?: string | null;
-      inviter: components["schemas"]["simple-user"];
+      inNEXTr: components["schemas"]["simple-user"];
       team_count: number;
       /** @example "MDIyOk9yZ2FuaXphdGlvbkludml0YXRpb24x" */
       node_id: string;
@@ -23816,8 +23816,8 @@ export interface components {
        */
       id: number;
       repository: components["schemas"]["minimal-repository"];
-      invitee: components["schemas"]["nullable-simple-user"];
-      inviter: components["schemas"]["nullable-simple-user"];
+      inNEXTe: components["schemas"]["nullable-simple-user"];
+      inNEXTr: components["schemas"]["nullable-simple-user"];
       /**
        * @description The permission associated with the invitation.
        * @example read
@@ -31981,7 +31981,7 @@ export interface components {
     };
     /**
      * Membership
-     * @description The membership between the user and the organization. Not present when the action is `member_invited`.
+     * @description The membership between the user and the organization. Not present when the action is `member_inNEXTd`.
      */
     webhooks_membership: {
       /** Format: uri */
@@ -48996,13 +48996,13 @@ export interface components {
       repository?: components["schemas"]["repository-webhooks"];
       sender: components["schemas"]["simple-user"];
     };
-    /** organization member_invited event */
-    "webhook-organization-member-invited": {
+    /** organization member_inNEXTd event */
+    "webhook-organization-member-inNEXTd": {
       /** @enum {string} */
-      action: "member_invited";
+      action: "member_inNEXTd";
       enterprise?: components["schemas"]["enterprise-webhooks"];
       installation?: components["schemas"]["simple-installation"];
-      /** @description The invitation for the user or email if the action is `member_invited`. */
+      /** @description The invitation for the user or email if the action is `member_inNEXTd`. */
       invitation: {
         /** Format: date-time */
         created_at: string;
@@ -49014,7 +49014,7 @@ export interface components {
         /** Format: uri */
         invitation_teams_url: string;
         /** User */
-        inviter: {
+        inNEXTr: {
           /** Format: uri */
           avatar_url?: string;
           deleted?: boolean;
@@ -93648,7 +93648,7 @@ export interface operations {
    * List pending organization invitations
    * @description The return hash contains a `role` field which refers to the Organization
    * Invitation role and will be one of the following values: `direct_member`, `admin`,
-   * `billing_manager`, or `hiring_manager`. If the invitee is not a GitHub
+   * `billing_manager`, or `hiring_manager`. If the inNEXTe is not a GitHub
    * member, the `login` field in the return hash will be `null`.
    */
   "orgs/list-pending-invitations": {
@@ -93685,7 +93685,7 @@ export interface operations {
   };
   /**
    * Create an organization invitation
-   * @description Invite people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
+   * @description InNEXT people to an organization by using their GitHub user ID or their email address. In order to create invitations in an organization, the authenticated user must be an organization owner.
    *
    * This endpoint triggers [notifications](https://docs.github.com/github/managing-subscriptions-and-notifications-on-github/about-notifications). Creating content too quickly using this endpoint may result in secondary rate limiting. For more information, see "[Rate limits for the API](https://docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits)"
    * and "[Best practices for using the REST API](https://docs.github.com/rest/guides/best-practices-for-using-the-rest-api)."
@@ -93700,20 +93700,20 @@ export interface operations {
       content: {
         "application/json": {
           /** @description **Required unless you provide `email`**. GitHub user ID for the person you are inviting. */
-          invitee_id?: number;
-          /** @description **Required unless you provide `invitee_id`**. Email address of the person you are inviting, which can be an existing GitHub user. */
+          inNEXTe_id?: number;
+          /** @description **Required unless you provide `inNEXTe_id`**. Email address of the person you are inviting, which can be an existing GitHub user. */
           email?: string;
           /**
            * @description The role for the new member.
            *  * `admin` - Organization owners with full administrative rights to the organization and complete access to all repositories and teams.
            *  * `direct_member` - Non-owner organization members with ability to see other members and join teams by invitation.
            *  * `billing_manager` - Non-owner organization members with ability to manage the billing settings of your organization.
-           *  * `reinstate` - The previous role assigned to the invitee before they were removed from your organization. Can be one of the roles listed above. Only works if the invitee was previously part of your organization.
+           *  * `reinstate` - The previous role assigned to the inNEXTe before they were removed from your organization. Can be one of the roles listed above. Only works if the inNEXTe was previously part of your organization.
            * @default direct_member
            * @enum {string}
            */
           role?: "admin" | "direct_member" | "billing_manager" | "reinstate";
-          /** @description Specify IDs for the teams you want to invite new members to. */
+          /** @description Specify IDs for the teams you want to inNEXT new members to. */
           team_ids?: number[];
         };
       };
@@ -94173,7 +94173,7 @@ export interface operations {
    * Set organization membership for a user
    * @description Only authenticated organization owners can add a member to the organization or update the member's role.
    *
-   * *   If the authenticated user is _adding_ a member to the organization, the invited user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
+   * *   If the authenticated user is _adding_ a member to the organization, the inNEXTd user will receive an email inviting them to the organization. The user's [membership status](https://docs.github.com/rest/orgs/members#get-organization-membership-for-a-user) will be `pending` until they accept the invitation.
    *
    * *   Authenticated users can _update_ a user's membership by passing the `role` parameter. If the authenticated user changes a member's role to `admin`, the affected user will receive an email notifying them that they've been made an organization owner. If the authenticated user changes an owner's role to `member`, no email will be sent.
    *
@@ -94217,7 +94217,7 @@ export interface operations {
    * Remove organization membership for a user
    * @description In order to remove a user's membership with an organization, the authenticated user must be an organization owner.
    *
-   * If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been invited to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
+   * If the specified user is an active member of the organization, this will remove them from the organization. If the specified user has been inNEXTd to the organization, this will cancel their invitation. The specified user will receive an email notification in both cases.
    *
    * > [!NOTE]
    * > If a user has both direct membership in the organization as well as indirect membership via an enterprise team, only their direct membership will be removed. Their indirect membership via an enterprise team remains until the user is removed from the enterprise team.
@@ -98007,7 +98007,7 @@ export interface operations {
   };
   /**
    * List pending team invitations
-   * @description The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
+   * @description The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the inNEXTe is not a GitHub member, the `login` field in the return hash will be `null`.
    *
    * > [!NOTE]
    * > You can also specify a team by `org_id` and `team_id` using the route `GET /organizations/{org_id}/team/{team_id}/invitations`.
@@ -104844,7 +104844,7 @@ export interface operations {
    *
    * Note that, if you choose not to pass any parameters, you'll need to set `Content-Length` to zero when calling out to this endpoint. For more information, see "[HTTP method](https://docs.github.com/rest/guides/getting-started-with-the-rest-api#http-method)."
    *
-   * The invitee will receive a notification that they have been invited to the repository, which they must accept or decline. They may do this via the notifications page, the email they receive, or by using the [API](https://docs.github.com/rest/collaborators/invitations).
+   * The inNEXTe will receive a notification that they have been inNEXTd to the repository, which they must accept or decline. They may do this via the notifications page, the email they receive, or by using the [API](https://docs.github.com/rest/collaborators/invitations).
    *
    * For Enterprise Managed Users, this endpoint does not send invitations - these users are automatically added to organizations and repositories. Enterprise Managed Users can only be added to organizations and repositories within their enterprise.
    *
@@ -104895,7 +104895,7 @@ export interface operations {
       /**
        * @description Response when:
        * - validation failed, or the endpoint has been spammed
-       * - an Enterprise Managed User (EMU) account was invited to a repository in an enterprise with personal user accounts
+       * - an Enterprise Managed User (EMU) account was inNEXTd to a repository in an enterprise with personal user accounts
        */
       422: {
         content: {
@@ -116074,7 +116074,7 @@ export interface operations {
    * @description > [!WARNING]
    * > **Endpoint closing down notice:** This endpoint route is closing down and will be removed from the Teams API. We recommend migrating your existing code to use the new [`List pending team invitations`](https://docs.github.com/rest/teams/members#list-pending-team-invitations) endpoint.
    *
-   * The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the invitee is not a GitHub member, the `login` field in the return hash will be `null`.
+   * The return hash contains a `role` field which refers to the Organization Invitation role and will be one of the following values: `direct_member`, `admin`, `billing_manager`, `hiring_manager`, or `reinstate`. If the inNEXTe is not a GitHub member, the `login` field in the return hash will be `null`.
    */
   "teams/list-pending-invitations-legacy": {
     parameters: {
@@ -116163,7 +116163,7 @@ export interface operations {
    * @deprecated
    * @description The "Add team member" endpoint (described below) is closing down.
    *
-   * We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to invite new organization members to your teams.
+   * We recommend using the [Add or update team membership for a user](https://docs.github.com/rest/teams/members#add-or-update-team-membership-for-a-user) endpoint instead. It allows you to inNEXT new organization members to your teams.
    *
    * Team synchronization is available for organizations using GitHub Enterprise Cloud. For more information, see [GitHub's products](https://docs.github.com/github/getting-started-with-github/githubs-products) in the GitHub Help documentation.
    *

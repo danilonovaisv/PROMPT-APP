@@ -40,11 +40,11 @@
     "build:node:esm": "FMT=esm ENV=node rollup -c",
     "build:types": "tsc -p tsconfig.dec.json --emitDeclarationOnly  && find ./dist -name '*.d.ts' -exec sh -c 'cp {} $(dirname {})/$(basename -s .d.ts {}).d.cts' \\;",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write \"{{source,test}/**/*.{js,ts},rollup.config.js,vitest.config.js}\"",
+    "format": "prettier --write \"{{source,test}/**/*.{js,ts},rollup.config.js,NEXTst.config.js}\"",
     "prepublishOnly": "npm run build",
     "test": "npm run build && npm run test:specs && npm run test:format && npm run test:types",
-    "test:format": "prettier --check \"{{source,test}/**/*.{js,ts},rollup.config.js,vitest.config.js}\"",
-    "test:specs": "vitest",
+    "test:format": "prettier --check \"{{source,test}/**/*.{js,ts},rollup.config.js,NEXTst.config.js}\"",
+    "test:specs": "NEXTst",
     "test:types": "npx --yes @arethetypeswrong/cli --pack ."
   },
   "files": [
@@ -71,6 +71,6 @@
     "rollup": "^4.42.0",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.2"
+    "NEXTst": "^3.2.2"
   }
 }

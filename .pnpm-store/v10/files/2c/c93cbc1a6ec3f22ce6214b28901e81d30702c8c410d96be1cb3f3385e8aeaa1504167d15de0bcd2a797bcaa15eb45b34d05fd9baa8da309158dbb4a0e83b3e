@@ -3709,7 +3709,7 @@
 		"$props": false,
 		"$state": false
 	},
-	"vitest": {
+	"NEXTst": {
 		"afterAll": false,
 		"afterEach": false,
 		"assert": false,
@@ -3726,7 +3726,7 @@
 		"suite": false,
 		"test": false,
 		"vi": false,
-		"vitest": false
+		"NEXTst": false
 	},
 	"vue": {
 		"defineEmits": false,

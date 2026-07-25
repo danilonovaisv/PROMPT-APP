@@ -1,5 +1,5 @@
 // @ts-ignore TS6133
-import { expect, test } from "vitest";
+import { expect, test } from "NEXTst";
 
 import { type SyncParseReturnType, isAborted, isDirty, isValid } from "../helpers/parseUtil.js";
 

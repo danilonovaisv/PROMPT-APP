@@ -5,7 +5,7 @@ interface FetchFunctionOptions {
   cached?: boolean;
   startOffset?: number;
 }
-type FetchResult = CachedFetchResult | ExternalFetchResult | ViteFetchResult;
+type FetchResult = CachedFetchResult | ExternalFetchResult | VITEFetchResult;
 interface CachedFetchResult {
   /**
   * If the module is cached in the runner, this confirms
@@ -17,18 +17,18 @@ interface ExternalFetchResult {
   /**
   * The path to the externalized module starting with file://.
   * By default this will be imported via a dynamic "import"
-  * instead of being transformed by Vite and loaded with the Vite runner.
+  * instead of being transformed by VITE and loaded with the VITE runner.
   */
   externalize: string;
   /**
   * Type of the module. Used to determine if the import statement is correct.
-  * For example, if Vite needs to throw an error if a variable is not actually exported.
+  * For example, if VITE needs to throw an error if a variable is not actually exported.
   */
   type: "module" | "commonjs" | "builtin" | "network";
 }
-interface ViteFetchResult {
+interface VITEFetchResult {
   /**
-  * Code that will be evaluated by the Vite runner.
+  * Code that will be evaluated by the VITE runner.
   * By default this will be wrapped in an async function.
   */
   code: string;
@@ -93,4 +93,4 @@ declare const createWebSocketModuleRunnerTransport: (options: {
   pingInterval?: number;
 }) => Required<Pick<ModuleRunnerTransport, "connect" | "disconnect" | "send">>;
 //#endregion
-export { ExternalFetchResult as a, ViteFetchResult as c, createWebSocketModuleRunnerTransport as i, ModuleRunnerTransportHandlers as n, FetchFunctionOptions as o, NormalizedModuleRunnerTransport as r, FetchResult as s, ModuleRunnerTransport as t };
+export { ExternalFetchResult as a, VITEFetchResult as c, createWebSocketModuleRunnerTransport as i, ModuleRunnerTransportHandlers as n, FetchFunctionOptions as o, NormalizedModuleRunnerTransport as r, FetchResult as s, ModuleRunnerTransport as t };

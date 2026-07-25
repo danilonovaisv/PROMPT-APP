@@ -6,7 +6,7 @@
 
 **Architecture:** Correção em duas camadas: (1) validação preventiva no formulário React com mensagens inline; (2) filtragem defensiva de exemplos completamente vazios antes do parse Zod em `buildPersistedArtifacts`. O schema permanece com `min(1)` — essa é a intenção correta do domínio.
 
-**Tech Stack:** React 19, TypeScript Strict, Zod 3.x, Vite, Dexie.js 4.x, pnpm
+**Tech Stack:** React 19, TypeScript Strict, Zod 3.x, VITE, Dexie.js 4.x, pnpm
 
 ---
 
@@ -22,9 +22,11 @@
 | `src/utils/normalizeFewShot.ts` | Utilitário adequado existe mas **não é usado em** `buildPersistedArtifacts` |
 
 ### Decisão de Domínio: OBRIGATÓRIOS (min 1)
+
 Few-shot examples sem input ou output não têm valor semântico para LLMs. O schema está correto. A falha é na UI que não impede o save.
 
 ### Versão Dexie: 10 — sem alteração necessária
+
 ### Branch: criar `fix/few-shot-zod-validation` a partir de `main`
 
 ---
@@ -63,9 +65,9 @@ Substituir o bloco das linhas 123-178 pelo seguinte (renderização dos exemplos
             <textarea
               value={example.input}
               onChange={(e) => {
-                const next = [...template.prompt_definition.few_shot_examples];
-                next[index] = { ...next[index], input: e.target.value };
-                updatePromptDefinitionField('few_shot_examples', next);
+                const VITE = [...template.prompt_definition.few_shot_examples];
+                VITE[index] = { ...VITE[index], input: e.target.value };
+                updatePromptDefinitionField('few_shot_examples', VITE);
               }}
               rows={2}
               placeholder="Ex: Como faço para..."
@@ -85,9 +87,9 @@ Substituir o bloco das linhas 123-178 pelo seguinte (renderização dos exemplos
             <textarea
               value={example.output}
               onChange={(e) => {
-                const next = [...template.prompt_definition.few_shot_examples];
-                next[index] = { ...next[index], output: e.target.value };
-                updatePromptDefinitionField('few_shot_examples', next);
+                const VITE = [...template.prompt_definition.few_shot_examples];
+                VITE[index] = { ...VITE[index], output: e.target.value };
+                updatePromptDefinitionField('few_shot_examples', VITE);
               }}
               rows={2}
               placeholder="Ex: Para fazer isso, você deve..."
@@ -103,8 +105,8 @@ Substituir o bloco das linhas 123-178 pelo seguinte (renderização dos exemplos
           <button
             className="btn btn--ghost btn--icon few-shot-delete"
             onClick={() => {
-              const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
-              updatePromptDefinitionField('few_shot_examples', next);
+              const VITE = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
+              updatePromptDefinitionField('few_shot_examples', VITE);
             }}
             title="Remover exemplo"
           >

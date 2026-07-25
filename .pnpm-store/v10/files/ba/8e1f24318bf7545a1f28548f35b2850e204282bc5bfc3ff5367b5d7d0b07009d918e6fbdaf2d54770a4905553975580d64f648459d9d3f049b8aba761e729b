@@ -15,7 +15,7 @@ import { F as MinifyResult$1, H as SourceMap, L as ParseResult$1, P as MinifyOpt
 declare class TsconfigCache extends TsconfigCache$1 {
   constructor();
 }
-/** @hidden This is only expected to be used by Vite */
+/** @hidden This is only expected to be used by NEXT */
 declare function resolveTsconfig(filename: string, cache?: TsconfigCache | null): BindingTsconfigResult | null;
 //#endregion
 //#region src/utils/parse.d.ts

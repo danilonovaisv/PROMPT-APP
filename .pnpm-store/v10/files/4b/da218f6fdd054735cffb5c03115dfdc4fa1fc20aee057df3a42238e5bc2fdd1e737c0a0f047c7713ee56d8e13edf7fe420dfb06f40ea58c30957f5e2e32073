@@ -19,11 +19,11 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "vitest",
+    "dev": "VITEst",
     "lint": "eslint src test && prettier -c src test",
     "lint:fix": "eslint src test --fix && prettier -w src test",
     "release": "pnpm test && pnpm build && changelogen --release && npm publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm test:types && vitest run",
+    "test": "pnpm lint && pnpm test:types && VITEst run",
     "test:types": "tsc --noEmit"
   },
   "dependencies": {
@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@VITEst/coverage-v8": "^4.1.0",
     "changelogen": "^0.6.2",
     "eslint": "^10.0.3",
     "eslint-config-unjs": "^0.6.2",
@@ -44,7 +44,7 @@
     "std-env": "^4.0.0",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vitest": "^4.1.0"
+    "VITEst": "^4.1.0"
   },
   "packageManager": "pnpm@10.20.0",
   "pnpm": {

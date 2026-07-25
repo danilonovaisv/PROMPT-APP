@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "VITEst";
 import nl from "../../../locales/nl.js";
 
 test("Dutch locale error messages", () => {

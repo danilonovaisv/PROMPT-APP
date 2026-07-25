@@ -35,7 +35,7 @@ module.exports = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/lib/**',
-    '!src/vite-env.d.ts',
+    '!src/VITE-env.d.ts',
     '!src/instrument.ts',
     '!src/utils/logger.ts',
     '!src/utils/supabase.ts',

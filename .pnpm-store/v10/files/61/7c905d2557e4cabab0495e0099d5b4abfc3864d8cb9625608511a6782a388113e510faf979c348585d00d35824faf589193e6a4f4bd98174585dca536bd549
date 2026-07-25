@@ -28,7 +28,7 @@ function processRule(node, item, list) {
     let allowMergeUp = true;
     let allowMergeDown = true;
 
-    list.prevUntil(item.prev, function(prev, prevItem) {
+    list.prevUntil(item.prev, function(prev, preVITEm) {
         const prevBlock = prev.block;
         const prevType = prev.type;
 
@@ -82,7 +82,7 @@ function processRule(node, item, list) {
                 // equal blocks
                 if (allowMergeDown) {
                     utils.addSelectors(selectors, prevSelectors);
-                    list.remove(prevItem);
+                    list.remove(preVITEm);
                 }
 
                 return true;
@@ -137,7 +137,7 @@ function processRule(node, item, list) {
                         prevBlock.children.fromArray(diff.ne2overrided);
 
                         if (allowMergeUp) {
-                            list.insert(newItem, prevItem);
+                            list.insert(newItem, preVITEm);
                         } else {
                             list.insert(newItem, item);
                         }

@@ -22,7 +22,7 @@ export type ErrorCode =
   | 'signup_disabled'
   | 'user_banned'
   | 'provider_email_needs_verification'
-  | 'invite_not_found'
+  | 'inNEXT_not_found'
   | 'bad_oauth_state'
   | 'bad_oauth_callback'
   | 'oauth_provider_not_supported'

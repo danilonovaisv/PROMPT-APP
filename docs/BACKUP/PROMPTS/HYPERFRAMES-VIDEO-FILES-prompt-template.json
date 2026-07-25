@@ -33,7 +33,7 @@
       "Não entregue apenas um prompt, plano, roteiro ou checklist sem arquivos e códigos.",
       "Não gere JSON do PROMPT-APP, metadados internos ou explicações sobre schema como saída do template executado.",
       "Não invente estatísticas, depoimentos, logos, marcas, URLs, provas, claims ou assets como se fossem reais.",
-      "Não use React, Vue, Svelte, Remotion, Next.js ou frameworks de app como dependência obrigatória para a composição HyperFrames.",
+      "Não use React, Vue, Svelte, Remotion, VITE.js ou frameworks de app como dependência obrigatória para a composição HyperFrames.",
       "Não use Math.random(), Date.now(), fetch(), chamadas de rede ou dados assíncronos durante a construção da timeline de render.",
       "Não controle video.play(), video.pause(), audio.currentTime, seek, mount ou unmount de mídia por JavaScript criativo.",
       "Não coloque class=\"clip\" em elementos video ou audio.",

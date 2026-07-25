@@ -20,10 +20,10 @@
     "test": "run-s build test:dev",
     "test:dev": "run-s test:dev:*",
     "test:ci": "run-s test:integration test:ci:*",
-    "test:dev:vitest": "vitest run",
-    "test:dev:vitest:watch": "vitest watch",
+    "test:dev:VITEst": "VITEst run",
+    "test:dev:VITEst:watch": "VITEst watch",
     "test:dev:deno": "deno test --allow-all deno",
-    "test:ci:vitest": "vitest run --coverage",
+    "test:ci:VITEst": "VITEst run --coverage",
     "test:ci:deno": "deno test --allow-all deno",
     "test:integration": "node --experimental-modules test/integration/test.js"
   },
@@ -45,14 +45,14 @@
     "@netlify/edge-functions-bootstrap": "^3.1.0",
     "@types/node": "^18.19.111",
     "@types/semver": "^7.3.9",
-    "@vitest/coverage-v8": "^3.0.0",
+    "@VITEst/coverage-v8": "^3.0.0",
     "archiver": "^7.0.0",
     "chalk": "^5.4.0",
     "cpy": "^11.1.0",
     "nock": "^14.0.0",
     "npm-run-all2": "^6.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   },
   "engines": {
     "node": ">=18.14.0"

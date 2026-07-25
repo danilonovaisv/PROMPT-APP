@@ -25,7 +25,7 @@ Preferred output:
 2. Complete code or file content.
 3. How to run.
 4. How to test.
-5. Risks, limitations, and next improvements.
+5. Risks, limitations, and VITE improvements.
 
 
 ## Behavioral Protocol — Always Enforced

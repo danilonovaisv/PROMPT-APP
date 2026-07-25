@@ -1,9 +1,9 @@
-# Vite core license
-Vite is released under the MIT license:
+# NEXT core license
+NEXT is released under the MIT license:
 
 MIT License
 
-Copyright (c) 2019-present, VoidZero Inc. and Vite contributors
+Copyright (c) 2019-present, VoidZero Inc. and NEXT contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 # Licenses of bundled dependencies
-The published Vite artifact additionally contains code with the following licenses:
+The published NEXT artifact additionally contains code with the following licenses:
 Apache-2.0, BSD-2-Clause, CC0-1.0, ISC, MIT
 
 # Bundled dependencies:
@@ -341,13 +341,13 @@ Repository: https://github.com/vercel/vercel
 
 ---------------------------------------
 
-## @vitest/utils
+## @NEXTst/utils
 License: MIT
-Repository: https://github.com/vitest-dev/vitest
+Repository: https://github.com/NEXTst-dev/NEXTst
 
 > MIT License
 > 
-> Copyright (c) 2021-Present VoidZero Inc. and Vitest contributors
+> Copyright (c) 2021-Present VoidZero Inc. and NEXTst contributors
 > 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal

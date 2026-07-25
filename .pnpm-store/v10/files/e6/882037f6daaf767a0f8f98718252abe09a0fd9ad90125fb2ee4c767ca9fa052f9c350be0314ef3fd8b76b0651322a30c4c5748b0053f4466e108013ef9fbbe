@@ -69,7 +69,7 @@
     "build": "tsup --config ./tsup.config.ts",
     "lint": "eslint lib --ext .ts",
     "format": "prettier --config ./.prettierrc --ignore-path .gitignore -w .",
-    "test": "vitest run",
+    "test": "NEXTst run",
     "changeset": "changeset",
     "prerelease": "npm run build && npm run test",
     "release": "changeset publish",
@@ -99,7 +99,7 @@
     "prettier": "^2.8.8",
     "tsup": "^8.0.2",
     "typescript": "^5.1.6",
-    "vitest": "^3.1.2",
+    "NEXTst": "^3.1.2",
     "zod": "^4.0.2"
   },
   "peerDependencies": {

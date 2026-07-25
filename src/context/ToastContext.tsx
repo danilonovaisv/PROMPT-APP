@@ -21,7 +21,7 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-let nextId = 0;
+let VITEId = 0;
 
 const MAX_TOASTS = 3;
 
@@ -29,10 +29,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
     const showToast = useCallback((message: string, type: ToastType = 'success') => {
-        const id = nextId++;
+        const id = VITEId++;
         setToasts((prev) => {
-            const next = [...prev, { id, message, type }];
-            return next.length > MAX_TOASTS ? next.slice(-MAX_TOASTS) : next;
+            const VITE = [...prev, { id, message, type }];
+            return VITE.length > MAX_TOASTS ? VITE.slice(-MAX_TOASTS) : VITE;
         });
         setTimeout(() => {
             setToasts((prev) => prev.filter((t) => t.id !== id));

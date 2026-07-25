@@ -36,11 +36,11 @@ function useMultiSelect() {
 const MultiSelect = ({ value, onValueChange, children, separator = ',', renderSelectedValues, onOpenChange, ...props }: MultiSelectProps) => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const stringValue = value.join(separator)
-  
+
   const handleValueChange = React.useCallback(
     (val: string) => {
       if (!val) return
-      
+
       if (value.includes(val)) {
         onValueChange(value.filter((v) => v !== val))
       } else {
@@ -173,9 +173,9 @@ const MultiSelectContent = React.forwardRef<
         <SelectPrimitive.ScrollUpButton className="flex cursor-default items-center justify-center py-1">
           <ChevronUpIcon className="h-4 w-4" />
         </SelectPrimitive.ScrollUpButton>
-        
+
         {showSearch && (
-          <div 
+          <div
             className="multi-select__search-wrapper"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
@@ -210,7 +210,7 @@ const MultiSelectContent = React.forwardRef<
           className={cn(
             'multi-select__options',
             position === 'popper' &&
-              'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
           )}>
           {visibleCount === 0 && searchTerm ? (
             <div className="multi-select__empty" role="status" aria-live="polite">
@@ -250,9 +250,9 @@ const MultiSelectItem = React.forwardRef<
       onClick?.(e as any)
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
-      const nextSibling = e.currentTarget.nextElementSibling as HTMLElement | null
-      if (nextSibling && nextSibling.classList.contains('multi-select__option')) {
-        nextSibling.focus()
+      const VITESibling = e.currentTarget.VITEElementSibling as HTMLElement | null
+      if (VITESibling && VITESibling.classList.contains('multi-select__option')) {
+        VITESibling.focus()
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()

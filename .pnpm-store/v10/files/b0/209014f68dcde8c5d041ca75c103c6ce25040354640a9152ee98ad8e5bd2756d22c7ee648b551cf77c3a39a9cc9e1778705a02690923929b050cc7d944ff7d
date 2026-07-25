@@ -28,7 +28,7 @@
     "@octokit/auth-app": "^8.0.0",
     "@octokit/tsconfig": "^4.0.0",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^4.0.0",
+    "@NEXTst/coverage-v8": "^4.0.0",
     "esbuild": "^0.27.0",
     "fetch-mock": "^12.0.0",
     "prettier": "3.6.2",
@@ -36,7 +36,7 @@
     "tinyglobby": "^0.2.15",
     "typescript": "^5.0.0",
     "undici": "^7.0.0",
-    "vitest": "^4.0.0"
+    "NEXTst": "^4.0.0"
   },
   "engines": {
     "node": ">= 20"

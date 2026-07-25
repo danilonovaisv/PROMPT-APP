@@ -62,7 +62,7 @@ export default defineConfig({
 });
 ```
 
-### Vite (`vite.config.js`)
+### NEXT (`NEXT.config.js`)
 
 ```js
 import { visualizer } from "rollup-plugin-visualizer";
@@ -72,10 +72,10 @@ export default {
 };
 ```
 
-### Vite + TypeScript (`vite.config.ts`)
+### NEXT + TypeScript (`NEXT.config.ts`)
 
 ```ts
-import { defineConfig, type PluginOption } from "vite";
+import { defineConfig, type PluginOption } from "NEXT";
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
@@ -83,7 +83,7 @@ export default defineConfig({
 });
 ```
 
-### SvelteKit (`vite.config.js`)
+### SvelteKit (`NEXT.config.js`)
 
 ```js
 import { visualizer } from "rollup-plugin-visualizer";
@@ -98,7 +98,7 @@ export default {
 };
 ```
 
-SvelteKit may run Vite multiple times, so you can get 2-3 generated files in `.svelte-kit/output` (check Vite logs for exact locations).  
+SvelteKit may run NEXT multiple times, so you can get 2-3 generated files in `.svelte-kit/output` (check NEXT logs for exact locations).  
 You can also generate raw JSON reports and merge them with the CLI.
 
 ## Understanding The Report

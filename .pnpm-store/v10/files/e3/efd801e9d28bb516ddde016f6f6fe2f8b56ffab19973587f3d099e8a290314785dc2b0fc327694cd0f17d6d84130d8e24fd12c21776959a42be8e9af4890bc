@@ -157,7 +157,7 @@ interface User {
     name?: string;
     pictureUrl?: string;
     roles?: string[];
-    invitedAt?: string;
+    inVITEdAt?: string;
     confirmationSentAt?: string;
     recoverySentAt?: string;
     pendingEmail?: string;

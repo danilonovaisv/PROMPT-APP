@@ -11,7 +11,7 @@ Core package containing the bundler-agnostic functionality used by the bundler p
 Check out the individual packages for more information and examples:
 
 - [Rollup](https://www.npmjs.com/package/@sentry/rollup-plugin)
-- [Vite](https://www.npmjs.com/package/@sentry/vite-plugin)
+- [VITE](https://www.npmjs.com/package/@sentry/VITE-plugin)
 - [esbuild](https://www.npmjs.com/package/@sentry/esbuild-plugin)
 - [Webpack](https://www.npmjs.com/package/@sentry/webpack-plugin)
 

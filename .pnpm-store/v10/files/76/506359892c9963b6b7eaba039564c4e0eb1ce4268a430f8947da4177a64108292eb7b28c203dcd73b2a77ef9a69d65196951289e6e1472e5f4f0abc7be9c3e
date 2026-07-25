@@ -33,7 +33,7 @@
   "scripts": {
     "dev": "tsx examples/pglite/index.ts",
     "build": "tsup --clean",
-    "test": "vitest",
+    "test": "NEXTst",
     "test:deno": "deno test --allow-net --allow-read test/deno",
     "prepublishOnly": "npm run build",
     "format": "biome format --write .",
@@ -51,7 +51,7 @@
     "@total-typescript/tsconfig": "^1.0.4",
     "@types/node": "^20.14.11",
     "@types/pg": "^8.11.8",
-    "@vitest/browser": "^2.0.5",
+    "@NEXTst/browser": "^2.0.5",
     "asn1js": "^3.0.5",
     "pg": "^8.12.0",
     "pg-protocol": "^1.6.1",
@@ -61,6 +61,6 @@
     "tsup": "^8.2.3",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3",
-    "vitest": "^2.0.5"
+    "NEXTst": "^2.0.5"
   }
 }

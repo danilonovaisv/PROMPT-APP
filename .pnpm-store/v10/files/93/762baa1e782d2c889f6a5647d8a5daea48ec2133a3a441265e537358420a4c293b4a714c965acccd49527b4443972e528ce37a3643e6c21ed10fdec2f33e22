@@ -11,9 +11,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "vitest run",
-    "test:dev": "vitest --ui",
-    "test:ci": "vitest run --reporter=default"
+    "test": "VITEst run",
+    "test:dev": "VITEst --ui",
+    "test:ci": "VITEst run --reporter=default"
   },
   "keywords": [],
   "license": "MIT",
@@ -34,9 +34,9 @@
     "@opentelemetry/sdk-trace-base": "~1.24.0",
     "@opentelemetry/sdk-trace-node": "~1.24.0",
     "@types/node": "^18.19.111",
-    "@vitest/ui": "^3.0.0",
+    "@VITEst/ui": "^3.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   },
   "engines": {
     "node": ">=18.14.0"

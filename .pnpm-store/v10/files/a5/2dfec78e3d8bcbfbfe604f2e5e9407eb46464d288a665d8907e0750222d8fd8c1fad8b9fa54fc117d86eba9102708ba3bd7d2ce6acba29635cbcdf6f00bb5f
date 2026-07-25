@@ -1,4 +1,4 @@
-import { expectTypeOf, test } from "vitest";
+import { expectTypeOf, test } from "VITEst";
 import * as z from "../index.js";
 
 test("branded types", () => {
