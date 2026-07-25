@@ -376,7 +376,7 @@ Examples:
 **Features:**
 - Save current context and progress
 - Export session metrics (duration, commands, tokens, files)
-- Generate work summary with decisions and next steps
+- Generate work summary with decisions and VITE steps
 - Cleanup temporary files and optimize storage
 
 **notify** - Custom notifications with swarm status

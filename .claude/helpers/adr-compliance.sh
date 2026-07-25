@@ -21,7 +21,7 @@ declare -A ADRS=(
   ["ADR-005"]="MCP-first API design"
   ["ADR-006"]="Unified memory service"
   ["ADR-007"]="Event sourcing for state"
-  ["ADR-008"]="Vitest over Jest"
+  ["ADR-008"]="VITEst over Jest"
   ["ADR-009"]="Hybrid memory backend"
   ["ADR-010"]="Remove Deno support"
 )
@@ -97,14 +97,14 @@ check_adr_005() {
 }
 
 check_adr_008() {
-  # ADR-008: Vitest over Jest
+  # ADR-008: VITEst over Jest
   local score=0
 
-  # Check for vitest in package.json
-  grep -q "vitest" "$PROJECT_ROOT/package.json" 2>/dev/null && score=$((score + 50))
+  # Check for VITEst in package.json
+  grep -q "VITEst" "$PROJECT_ROOT/package.json" 2>/dev/null && score=$((score + 50))
 
   # Check for no jest references
-  local jest_refs=$(grep -r "from.*jest\|jest\." "$PROJECT_ROOT/v3" "$PROJECT_ROOT/src" 2>/dev/null | grep -v node_modules | grep -v "vitest" | wc -l)
+  local jest_refs=$(grep -r "from.*jest\|jest\." "$PROJECT_ROOT/v3" "$PROJECT_ROOT/src" 2>/dev/null | grep -v node_modules | grep -v "VITEst" | wc -l)
   [ "$jest_refs" -eq 0 ] && score=$((score + 50))
 
   echo "$score"
@@ -154,7 +154,7 @@ check_compliance() {
     "ADR-005": {"score": $adr_005, "title": "MCP-first API design"},
     "ADR-006": {"score": $adr_006, "title": "Unified memory service"},
     "ADR-007": {"score": $adr_007, "title": "Event sourcing for state"},
-    "ADR-008": {"score": $adr_008, "title": "Vitest over Jest"},
+    "ADR-008": {"score": $adr_008, "title": "VITEst over Jest"},
     "ADR-009": {"score": $adr_009, "title": "Hybrid memory backend"},
     "ADR-010": {"score": $adr_010, "title": "Remove Deno support"}
   }

@@ -1,4 +1,4 @@
-import { expectTypeOf, test } from "vitest";
+import { expectTypeOf, test } from "NEXTst";
 import * as z from "zod/v4";
 
 test("ZodPreprocess<B> assignable to ZodPipe<$ZodTransform, B>", () => {

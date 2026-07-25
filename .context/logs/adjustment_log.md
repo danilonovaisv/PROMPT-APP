@@ -10,7 +10,7 @@
 - Scanned codebase for new components/utils (SEO, BackupManager, Import/Export).
 - **Refined Documentation**: Corrected linting in `README.md` and added Draft System details to `knowledge-graph.md`.
 - **CSS Refactor**: Removed all inline styles from React components, replacing them with systematic utility classes in `index.css` to comply with strict linting rules.
-- **Build Optimization**: Resolved bundle size warnings by implementing `chunking strategy` (manualChunks) in `vite.config.ts` and consolidating imports for `exportJson.ts`.
+- **Build Optimization**: Resolved bundle size warnings by implementing `chunking strategy` (manualChunks) in `VITE.config.ts` and consolidating imports for `exportJson.ts`.
 
 ### Observations
 

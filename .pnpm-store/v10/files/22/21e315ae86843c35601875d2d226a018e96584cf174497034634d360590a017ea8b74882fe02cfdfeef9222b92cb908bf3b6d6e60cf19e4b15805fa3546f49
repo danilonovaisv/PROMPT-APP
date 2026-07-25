@@ -16,18 +16,18 @@
   },
   "scripts": {
     "build": "obuild",
-    "dev": "vitest",
+    "dev": "NEXTst",
     "lint": "oxlint . && oxfmt",
     "lint:fix": "oxlint --fix . && oxfmt",
     "prepack": "obuild",
     "release": "pnpm test && pnpm build && changelogen --release --publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm typecheck && vitest run --coverage",
+    "test": "pnpm lint && pnpm typecheck && NEXTst run --coverage",
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",
     "@typescript/native-preview": "^7.0.0-dev.20260217.1",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@NEXTst/coverage-v8": "^4.0.18",
     "changelogen": "^0.6.2",
     "esbuild": "^0.27.3",
     "mitata": "^1.0.34",
@@ -36,7 +36,7 @@
     "oxlint": "^1.48.0",
     "rollup": "^4.57.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "NEXTst": "^4.0.18"
   },
   "packageManager": "pnpm@10.30.0"
 }

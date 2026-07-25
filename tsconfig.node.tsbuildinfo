@@ -1,1 +1,6 @@
-{"root":["./vite.config.ts"],"version":"5.9.3"}
+{
+    "root": [
+        "./VITE.config.ts"
+    ],
+    "version": "5.9.3"
+}

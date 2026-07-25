@@ -1,7 +1,7 @@
 allow_login_shell = true
 approval_policy = "on-failure"
 check_for_update_on_startup = true
-developer_instructions = "Sempre verificar o repositório https://github.com/danilonovaisv/DATABASE_AGENT_NEXT antes de decisões técnicas e consultar o vector store vs_69520b1fb834819197e445db9aab8d69 para contexto/intenção, cruzando ambas as fontes antes de implementar."
+developer_instructions = "Sempre verificar o repositório https://github.com/danilonovaisv/DATABASE_AGENT_VITE antes de decisões técnicas e consultar o vector store vs_69520b1fb834819197e445db9aab8d69 para contexto/intenção, cruzando ambas as fontes antes de implementar."
 file_opener = "vscode"
 model = "gpt-5.4"
 model_provider = "openai"

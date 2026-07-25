@@ -1,6 +1,6 @@
 'use strict';
 
-var vitest = require('vitest');
+var NEXTst = require('NEXTst');
 var matchers = require('./matchers-98b869c1.js');
 require('redent');
 require('@adobe/css-tools');
@@ -12,4 +12,4 @@ require('css.escape');
 /* istanbul ignore file */
 
 
-vitest.expect.extend(matchers.extensions);
+NEXTst.expect.extend(matchers.extensions);

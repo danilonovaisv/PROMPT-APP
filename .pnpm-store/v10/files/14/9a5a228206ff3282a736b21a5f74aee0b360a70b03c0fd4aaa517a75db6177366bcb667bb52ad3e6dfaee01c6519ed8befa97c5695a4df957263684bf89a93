@@ -1,7 +1,7 @@
 {
-  "name": "@netlify/vite-plugin",
+  "name": "@netlify/NEXT-plugin",
   "version": "2.12.1",
-  "description": "Vite plugin with a local emulation of the Netlify environment",
+  "description": "NEXT plugin with a local emulation of the Netlify environment",
   "type": "module",
   "engines": {
     "node": "^20.6.1 || >=22"
@@ -15,22 +15,22 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:ci": "vitest run",
+    "test": "NEXTst run",
+    "test:dev": "NEXTst",
+    "test:ci": "NEXTst run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
   "keywords": [
     "netlify",
-    "vite-plugin",
+    "NEXT-plugin",
     "dev"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/netlify/primitives.git",
-    "directory": "packages/vite-plugin"
+    "directory": "packages/NEXT-plugin"
   },
   "bugs": {
     "url": "https://github.com/netlify/primitives/issues"
@@ -40,8 +40,8 @@
     "@types/node": "^20.17.57",
     "playwright": "^1.52.0",
     "tsup": "^8.0.0",
-    "vite": "^6.3.6",
-    "vitest": "^3.0.0"
+    "NEXT": "^6.3.6",
+    "NEXTst": "^3.0.0"
   },
   "dependencies": {
     "@netlify/dev": "4.18.1",
@@ -49,6 +49,6 @@
     "dedent": "^1.7.0"
   },
   "peerDependencies": {
-    "vite": "^5 || ^6 || ^7 || ^8"
+    "NEXT": "^5 || ^6 || ^7 || ^8"
   }
 }

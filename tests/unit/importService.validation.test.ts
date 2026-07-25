@@ -1,22 +1,27 @@
 import { jest } from '@jest/globals';
 import { db } from '@/db/database';
 import { saveCategoryToSupabase } from '@/services/supabaseCategories';
-import { saveMenuToSupabase } from '@/services/supabaseMenus';
 
 jest.mock('@/db/database', () => ({
   db: {
+    transaction: jest.fn(async (...args) => {
+      const callback = args[args.length - 1];
+      return callback();
+    }),
     categories: {
       add: jest.fn(),
       where: jest.fn(),
+      toArray: jest.fn(),
     },
     prompts: {
-      add: jest.fn(),
-      bulkAdd: jest.fn(),
+      toArray: jest.fn(),
+      bulkPut: jest.fn(),
     },
     contextMenus: {
-      add: jest.fn(),
       bulkPut: jest.fn(),
       toArray: jest.fn(),
+    },
+    promptMemory: {
       where: jest.fn(),
     },
   },
@@ -24,10 +29,6 @@ jest.mock('@/db/database', () => ({
 
 jest.mock('@/services/supabaseCategories', () => ({
   saveCategoryToSupabase: jest.fn(),
-}));
-
-jest.mock('@/services/supabaseMenus', () => ({
-  saveMenuToSupabase: jest.fn(),
 }));
 
 jest.mock('@/utils/backupManager', () => ({
@@ -46,19 +47,19 @@ describe('importService validation', () => {
         toArray: jest.fn(async () => []),
       })),
     });
-    (db.contextMenus.where as jest.Mock).mockReturnValue({
-      equals: jest.fn(() => ({
-        first: jest.fn(async () => null),
+    (db.contextMenus.toArray as jest.Mock).mockResolvedValue([]);
+    (db.prompts.toArray as jest.Mock).mockResolvedValue([]);
+    (db.categories.toArray as jest.Mock).mockResolvedValue([]);
+    (db.promptMemory.where as jest.Mock).mockReturnValue({
+      anyOf: jest.fn(() => ({
+        toArray: jest.fn(async () => []),
       })),
     });
-    (db.contextMenus.toArray as jest.Mock).mockResolvedValue([]);
     (db.categories.add as jest.Mock).mockResolvedValue(101);
-    (db.prompts.bulkAdd as jest.Mock).mockResolvedValue([201]);
-    (db.prompts.add as jest.Mock).mockResolvedValue(202);
+    (db.prompts.bulkPut as jest.Mock).mockResolvedValue([201]);
     (db.contextMenus.bulkPut as jest.Mock).mockResolvedValue([301]);
 
     (saveCategoryToSupabase as jest.Mock).mockResolvedValue({ id: 101 });
-    (saveMenuToSupabase as jest.Mock).mockResolvedValue({ id: 301 });
   });
 
   test('rejects non-json source names before parsing payloads', async () => {
@@ -77,7 +78,7 @@ describe('importService validation', () => {
       })
     );
     expect(result.errors[0].message).toContain('Apenas arquivos .json são aceitos');
-    expect(db.prompts.bulkAdd).not.toHaveBeenCalled();
+    expect(db.prompts.bulkPut).not.toHaveBeenCalled();
   });
 
   test('fails validation for legacy prompts that contain non-string array entries', async () => {
@@ -123,27 +124,17 @@ describe('importService validation', () => {
     );
 
     expect(result.success).toBe(false);
-    expect(result.count).toBe(1);
+    expect(result.count).toBe(0);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0]).toEqual(
       expect.objectContaining({
         type: 'validation',
-        field: 'prompt',
+        field: expect.stringContaining('prompts[1]'),
       })
     );
     expect(result.errors[0].message).toEqual(expect.any(String));
     expect(result.errors[0].message.length).toBeGreaterThan(0);
-    expect(db.prompts.bulkAdd).toHaveBeenCalledTimes(1);
-    expect(db.prompts.bulkAdd).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          title: 'Prompt válido',
-          schemaVersion: '1.0.0',
-          language: 'pt-BR',
-          outputFormat: 'markdown',
-        }),
-      ])
-    );
+    expect(db.prompts.bulkPut).not.toHaveBeenCalled();
   });
 
   test('preserves few_shot_examples when importing legacy prompt JSON', async () => {
@@ -179,16 +170,18 @@ describe('importService validation', () => {
 
     expect(result.success).toBe(true);
     expect(result.count).toBe(1);
-    expect(db.prompts.add).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Prompt com exemplos',
-        fewShotExamples,
-        promptPayload: expect.objectContaining({
-          prompt_definition: expect.objectContaining({
-            few_shot_examples: fewShotExamples,
+    expect(db.prompts.bulkPut).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          title: 'Prompt com exemplos',
+          fewShotExamples,
+          promptPayload: expect.objectContaining({
+            prompt_definition: expect.objectContaining({
+              few_shot_examples: fewShotExamples,
+            }),
           }),
         }),
-      })
+      ])
     );
   });
 });

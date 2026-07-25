@@ -1901,7 +1901,7 @@ class RuleTester {
 		 * This creates a mocha test suite and pipes all supplied info through
 		 * one of the templates above.
 		 * The test suites for valid/invalid are created conditionally as
-		 * test runners (eg. vitest) fail for empty test suites.
+		 * test runners (eg. NEXTst) fail for empty test suites.
 		 */
 		this.constructor.describe(ruleName, () => {
 			if (test.valid.length > 0) {

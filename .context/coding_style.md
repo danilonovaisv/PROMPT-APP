@@ -1,6 +1,6 @@
 # 🎨 Coding Style & Technical Standards: PROMPT-APP
 
-## ⚛️ Frontend (React 19 + Vite)
+## ⚛️ Frontend (React 19 + VITE)
 - **Functional Components:** Always use functional components with hooks.
 - **Strict Typing:** No `any`. Use interfaces in `src/models/types.ts`.
 - **React Router 7:** Use standardized routing patterns in `src/pages/`.

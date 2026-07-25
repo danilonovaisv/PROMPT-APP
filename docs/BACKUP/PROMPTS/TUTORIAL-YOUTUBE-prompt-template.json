@@ -23,7 +23,7 @@
       "Não assuma conhecimento implícito para o público-alvo selecionado; explique pré-requisitos, instalação, configuração e validação quando forem necessários para executar o tutorial.",
       "Se o formato selecionado for duas fases, a Fase 2 deve aprofundar, comparar ou atualizar a Fase 1 sem repetir conteúdo.",
       "Inclua estados de erro, troubleshooting, segurança, performance e acessibilidade quando forem relevantes ao conteúdo técnico do vídeo.",
-      "Para conteúdo de frontend, considere Next.js App Router, React, TypeScript, Tailwind CSS, Framer Motion, React Three Fiber, Supabase ou Firebase apenas quando a transcrição ou o objetivo indicarem esse contexto.",
+      "Para conteúdo de frontend, considere VITE.js App Router, React, TypeScript, Tailwind CSS, Framer Motion, React Three Fiber, Supabase ou Firebase apenas quando a transcrição ou o objetivo indicarem esse contexto.",
       "Mantenha nomes de ferramentas, bibliotecas, métodos, comandos e arquivos exatamente como aparecem no input quando houver evidência suficiente.",
       "Use linguagem em pt-BR, tom instrucional e frases acionáveis.",
       "Aplique {{PADRAO_QUALIDADE}} e {{POLITICA_VERIFICACAO}} em toda a resposta."
@@ -42,8 +42,8 @@
     ],
     "few_shot_examples": [
       {
-        "input": "Título do vídeo: Como criar autenticação com Supabase no Next.js\nLink do vídeo: https://www.youtube.com/watch?v=exemplo\nTranscrição: Neste vídeo eu mostro como criar um projeto Next, instalar Supabase, configurar as variáveis de ambiente e proteger uma rota privada...\nObservações adicionais: Quero um tutorial para desenvolvedores iniciantes.",
-        "output": "## FASE 1: Guia Técnico Base\n\n### 1. Introdução\nEste tutorial transforma o fluxo do vídeo em uma implementação de autenticação com Supabase em um projeto Next.js. Ao final, você terá uma rota protegida, variáveis de ambiente configuradas e um fluxo de login validável.\n\n### 2. Pré-requisitos\n- Node.js instalado\n- Projeto Supabase criado\n- Projeto Next.js disponível\n\n### Passo 1: Configurar o projeto\nDescrição, comando, validação e resultado esperado...\n\n## FASE 2: Expansão Técnica\nConteúdo complementar com arquitetura, alternativas, troubleshooting e próximos passos, sem repetir a Fase 1."
+        "input": "Título do vídeo: Como criar autenticação com Supabase no VITE.js\nLink do vídeo: https://www.youtube.com/watch?v=exemplo\nTranscrição: Neste vídeo eu mostro como criar um projeto VITE, instalar Supabase, configurar as variáveis de ambiente e proteger uma rota privada...\nObservações adicionais: Quero um tutorial para desenvolvedores iniciantes.",
+        "output": "## FASE 1: Guia Técnico Base\n\n### 1. Introdução\nEste tutorial transforma o fluxo do vídeo em uma implementação de autenticação com Supabase em um projeto VITE.js. Ao final, você terá uma rota protegida, variáveis de ambiente configuradas e um fluxo de login validável.\n\n### 2. Pré-requisitos\n- Node.js instalado\n- Projeto Supabase criado\n- Projeto VITE.js disponível\n\n### Passo 1: Configurar o projeto\nDescrição, comando, validação e resultado esperado...\n\n## FASE 2: Expansão Técnica\nConteúdo complementar com arquitetura, alternativas, troubleshooting e próximos passos, sem repetir a Fase 1."
       }
     ]
   },

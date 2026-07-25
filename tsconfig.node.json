@@ -19,6 +19,6 @@
         "noUncheckedSideEffectImports": true
     },
     "include": [
-        "vite.config.ts"
+        "NEXT.config.ts"
     ]
 }

@@ -1,4 +1,4 @@
-import { expect, expectTypeOf, test } from "vitest";
+import { expect, expectTypeOf, test } from "VITEst";
 
 import * as z from "zod/v4";
 

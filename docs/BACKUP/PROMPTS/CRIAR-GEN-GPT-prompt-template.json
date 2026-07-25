@@ -23,7 +23,7 @@
       "Crie um ou dois exemplos few-shot curtos e representativos, sem inventar fatos específicos do negócio.",
       "Posicione as restrições críticas e os guardrails no final do System Prompt.",
       "Ajuste extensão, profundidade e controles ao nível de robustez selecionado, evitando complexidade sem utilidade.",
-      "Quando a plataforma selecionada possuir limitações conhecidas, escreva instruções portáteis e evite depender de recursos não confirmados.",
+      "Quando a plataforma selecionada possuir limitações conhecidas, escreva instruções portáteis e eVITE depender de recursos não confirmados.",
       "Faça uma verificação silenciosa final de completude, consistência, segurança, ausência de contradições e aderência ao formato antes de responder."
     ],
     "negative_prompt": [

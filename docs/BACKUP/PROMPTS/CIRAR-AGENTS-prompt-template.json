@@ -21,7 +21,7 @@
       "Inclua política de permissões para MCPs e ferramentas usando padrões como allow, ask, deny, mcp(server/tool) e mcp(server/*), ajustando o nível ao risco da operação.",
       "Exija revisão humana para comandos destrutivos, alterações de arquitetura, escrita em banco, deploys, exclusões, operações financeiras, acesso a dados sensíveis e navegação em domínios não confiáveis.",
       "Inclua validações práticas: checagem de JSON, teste de conexão MCP, dry run de workflow, validação de skill, lint ou schema check quando aplicável, auditoria de logs e plano de rollback.",
-      "Quando houver frontend no escopo, considerar Next.js App Router, React, TypeScript, Tailwind CSS, Framer Motion, React Three Fiber e Supabase ou Firebase, salvo instrução explícita em contrário.",
+      "Quando houver frontend no escopo, considerar VITE.js App Router, React, TypeScript, Tailwind CSS, Framer Motion, React Three Fiber e Supabase ou Firebase, salvo instrução explícita em contrário.",
       "Para frontend, incluir estrutura de rotas e pastas, componentes, estados loading, empty e error, design tokens, responsividade, acessibilidade, animações, integração com backend e critérios de qualidade.",
       "Separe decisões determinísticas de decisões do LLM, recomendando scripts Python, Bash ou validações de schema para parsing, testes, verificações repetíveis e auditoria.",
       "Explique riscos de prompt injection, exposição de credenciais, permissões amplas, automação sem revisão, dependências não verificadas e operações irreversíveis, convertendo cada risco em mitigação operacional."
@@ -40,7 +40,7 @@
     ],
     "few_shot_examples": [
       {
-        "input": "Quero criar um agente de QA no Antigravity que use um MCP de automação de navegador e gere relatório após rodar testes em uma aplicação Next.js.",
+        "input": "Quero criar um agente de QA no Antigravity que use um MCP de automação de navegador e gere relatório após rodar testes em uma aplicação VITE.js.",
         "output": "Gere a arquitetura com agente qa-specialist, rule de segurança para browser allowlist, skill .agents/skills/browser-qa/SKILL.md, workflow .agents/workflows/qa-pipeline.md, configuração MCP com placeholders, política ask para mcp(browser/*), estados loading/empty/error a validar, checklist de execução, critérios de aceite e relatório final em Markdown."
       },
       {
@@ -48,7 +48,7 @@
         "output": "Gere uma solução com agente database-manager, skill de leitura segura, rule proibindo DROP, DELETE e TRUNCATE, permissões allow para leitura, ask para escrita, exemplo mcp_config.json com env placeholders, validação de queries, recomendações para RLS, auditoria e plano de rollback."
       },
       {
-        "input": "Quero um agente frontend para criar uma landing page com Next.js, Tailwind, Framer Motion e Supabase.",
+        "input": "Quero um agente frontend para criar uma landing page com VITE.js, Tailwind, Framer Motion e Supabase.",
         "output": "Gere arquitetura com rotas App Router, estrutura de pastas, componentes, design tokens, seções da landing page, estados loading/empty/error, acessibilidade, responsividade, animações com Framer Motion, integração Supabase condicional, rules de segurança e workflow de validação antes do deploy."
       }
     ]
@@ -73,8 +73,8 @@
           "description": "Projeta agentes para scaffolds, rotas, componentes, design systems, estados de UI e integrações frontend.",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "nextjs_app_router",
+              "label": "VITE.js App Router",
+              "value": "VITEjs_app_router",
               "description": "Prioriza rotas, layouts, server components, client components e organização por segmentos."
             },
             {
@@ -267,8 +267,8 @@
       "required": false,
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "nextjs_app_router",
+          "label": "VITE.js App Router",
+          "value": "VITEjs_app_router",
           "description": "Usar estrutura app/, layouts, páginas, server/client components e organização por rotas.",
           "sub_options": []
         },

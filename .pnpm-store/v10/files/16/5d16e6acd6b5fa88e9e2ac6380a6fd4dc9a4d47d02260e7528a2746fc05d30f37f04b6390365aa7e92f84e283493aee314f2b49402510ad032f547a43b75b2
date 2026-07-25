@@ -1,4 +1,4 @@
-import { expect, expectTypeOf, test } from "vitest";
+import { expect, expectTypeOf, test } from "NEXTst";
 import { type ZodCustomStringFormat, hash } from "zod"; // adjust path as needed
 
 test("hash() API — types and runtime across all alg/enc combinations", async () => {

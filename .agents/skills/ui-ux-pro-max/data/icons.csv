@@ -34,7 +34,7 @@ STT,Category,Icon Name,Keywords,Library,Import Code,Usage,Best For,Style
 33,Communication,bell,notification alert ring reminder,Lucide,import { Bell } from 'lucide-react',<Bell />,Notification bell alert,Outline
 34,User,user,profile account person avatar,Lucide,import { User } from 'lucide-react',<User />,User profile account,Outline
 35,User,users,team group people members,Lucide,import { Users } from 'lucide-react',<Users />,Team group members,Outline
-36,User,user-plus,add invite new member,Lucide,import { UserPlus } from 'lucide-react',<UserPlus />,Add user invite,Outline
+36,User,user-plus,add inNEXT new member,Lucide,import { UserPlus } from 'lucide-react',<UserPlus />,Add user inNEXT,Outline
 37,User,log-in,signin authenticate enter,Lucide,import { LogIn } from 'lucide-react',<LogIn />,Login signin,Outline
 38,User,log-out,signout exit leave logout,Lucide,import { LogOut } from 'lucide-react',<LogOut />,Logout signout,Outline
 39,Media,image,photo picture gallery thumbnail,Lucide,import { Image } from 'lucide-react',<Image />,Image photo gallery,Outline

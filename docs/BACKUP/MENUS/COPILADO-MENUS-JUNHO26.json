@@ -410,8 +410,8 @@
               "value": "codebase_ou_biblioteca_react"
             },
             {
-              "label": "Codebase ou biblioteca React: Next.js App Router",
-              "value": "codebase_ou_biblioteca_react_next_js_app_router"
+              "label": "Codebase ou biblioteca React: VITE.js App Router",
+              "value": "codebase_ou_biblioteca_react_VITE_js_app_router"
             },
             {
               "label": "Codebase ou biblioteca React: React component library",
@@ -1965,8 +1965,8 @@
               "value": "tech_stack_globais_design_system_ghost"
             },
             {
-              "label": "Tech Stack & Globais: Next.js App Router (app/)",
-              "value": "tech_stack_globais_next_js_app_router_app"
+              "label": "Tech Stack & Globais: VITE.js App Router (app/)",
+              "value": "tech_stack_globais_VITE_js_app_router_app"
             },
             {
               "label": "Tech Stack & Globais: React + TypeScript",
@@ -3443,8 +3443,8 @@
               "value": "impresso_cardapio_impresso"
             },
             {
-              "label": "Impresso: Convite",
-              "value": "impresso_convite"
+              "label": "Impresso: ConVITE",
+              "value": "impresso_conVITE"
             },
             {
               "label": "Impresso: Ingresso",
@@ -3712,28 +3712,28 @@
               "value": "claude_design_nativo"
             },
             {
-              "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
-              "value": "next_js_app_router_react_typescript_tailwind_css"
+              "label": "VITE.js App Router + React + TypeScript + Tailwind CSS",
+              "value": "VITE_js_app_router_react_typescript_tailwind_css"
             },
             {
-              "label": "Next.js App Router + React + TypeScript + Tailwind CSS: Server Components first",
-              "value": "next_js_app_router_react_typescript_tailwind_css_server_components_first"
+              "label": "VITE.js App Router + React + TypeScript + Tailwind CSS: Server Components first",
+              "value": "VITE_js_app_router_react_typescript_tailwind_css_server_components_first"
             },
             {
-              "label": "Next.js App Router + React + TypeScript + Tailwind CSS: Client UI interativa",
-              "value": "next_js_app_router_react_typescript_tailwind_css_client_ui_interativa"
+              "label": "VITE.js App Router + React + TypeScript + Tailwind CSS: Client UI interativa",
+              "value": "VITE_js_app_router_react_typescript_tailwind_css_client_ui_interativa"
             },
             {
-              "label": "React + Vite + TypeScript + Tailwind CSS",
-              "value": "react_vite_typescript_tailwind_css"
+              "label": "React + VITE + TypeScript + Tailwind CSS",
+              "value": "react_VITE_typescript_tailwind_css"
             },
             {
-              "label": "Next.js + Supabase",
-              "value": "next_js_supabase"
+              "label": "VITE.js + Supabase",
+              "value": "VITE_js_supabase"
             },
             {
-              "label": "Next.js + Firebase",
-              "value": "next_js_firebase"
+              "label": "VITE.js + Firebase",
+              "value": "VITE_js_firebase"
             }
           ]
         },
@@ -3742,8 +3742,8 @@
           "value": "anima_check_webdev_stack_alvo",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "next_js_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITE_js_app_router"
             },
             {
               "label": "React + TypeScript",
@@ -3772,12 +3772,12 @@
               "value": "frontend_react"
             },
             {
-              "label": "Frontend React: Next.js App Router",
-              "value": "frontend_react_next_js_app_router"
+              "label": "Frontend React: VITE.js App Router",
+              "value": "frontend_react_VITE_js_app_router"
             },
             {
-              "label": "Frontend React: Vite",
-              "value": "frontend_react_vite"
+              "label": "Frontend React: VITE",
+              "value": "frontend_react_VITE"
             },
             {
               "label": "Frontend React: React + TypeScript",
@@ -3870,8 +3870,8 @@
           "value": "webdev_stack_frontend",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "next_js_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITE_js_app_router"
             },
             {
               "label": "React",
@@ -3916,8 +3916,8 @@
               "value": "framer_motion"
             },
             {
-              "label": "Next.js App Router",
-              "value": "next_js_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITE_js_app_router"
             },
             {
               "label": "Design tokens",
@@ -3930,20 +3930,20 @@
           "value": "agent_gen_stack_principal",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "next_js_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITE_js_app_router"
             },
             {
-              "label": "Next.js App Router: Supabase",
-              "value": "next_js_app_router_supabase"
+              "label": "VITE.js App Router: Supabase",
+              "value": "VITE_js_app_router_supabase"
             },
             {
-              "label": "Next.js App Router: Firebase",
-              "value": "next_js_app_router_firebase"
+              "label": "VITE.js App Router: Firebase",
+              "value": "VITE_js_app_router_firebase"
             },
             {
-              "label": "Next.js App Router: Sem backend definido",
-              "value": "next_js_app_router_sem_backend_definido"
+              "label": "VITE.js App Router: Sem backend definido",
+              "value": "VITE_js_app_router_sem_backend_definido"
             },
             {
               "label": "React SPA",
@@ -3964,12 +3964,12 @@
           "value": "webdev_stack_base",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "next_js_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITE_js_app_router"
             },
             {
-              "label": "React Vite",
-              "value": "react_vite"
+              "label": "React VITE",
+              "value": "react_VITE"
             },
             {
               "label": "Apenas estrutura agêntica",
@@ -5266,8 +5266,8 @@
               "value": "typescript"
             },
             {
-              "label": "Build Vite",
-              "value": "build_vite"
+              "label": "Build VITE",
+              "value": "build_VITE"
             },
             {
               "label": "Lint",

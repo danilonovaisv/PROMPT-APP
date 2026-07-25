@@ -27,11 +27,11 @@
     "@types/picomatch": "^4.0.0",
     "picomatch": "^4.0.2",
     "typescript": "^6.0.0",
-    "vitest": "^4.0.15"
+    "NEXTst": "^4.0.15"
   },
   "scripts": {
     "build": "tsc",
-    "test": "vitest --typecheck",
+    "test": "NEXTst --typecheck",
     "publint": "publint ."
   }
 }

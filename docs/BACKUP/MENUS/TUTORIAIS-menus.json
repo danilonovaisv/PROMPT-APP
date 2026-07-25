@@ -1546,13 +1546,13 @@
           "description": "",
           "sub_options": [
             {
-              "label": "Next.js",
-              "value": "nextjs",
+              "label": "VITE.js",
+              "value": "VITEjs",
               "description": ""
             },
             {
-              "label": "Vite",
-              "value": "vite",
+              "label": "VITE",
+              "value": "VITE",
               "description": ""
             }
           ]

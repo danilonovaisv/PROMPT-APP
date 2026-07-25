@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test } from "VITEst";
 import { z } from "../../../../index.js";
 import he from "../../../locales/he.js";
 

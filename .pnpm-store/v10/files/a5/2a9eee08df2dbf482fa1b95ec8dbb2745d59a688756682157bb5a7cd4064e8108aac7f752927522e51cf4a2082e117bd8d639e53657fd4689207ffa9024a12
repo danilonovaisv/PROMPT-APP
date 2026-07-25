@@ -38,17 +38,17 @@
   ],
   "scripts": {
     "build": "unbuild --minify",
-    "dev": "vitest dev --coverage",
+    "dev": "VITEst dev --coverage",
     "lint": "eslint . && prettier -c .",
     "lint:fix": "automd && eslint . --fix && prettier -w .",
     "prepack": "pnpm build",
     "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "test": "pnpm lint && pnpm test:types && VITEst run --coverage",
     "test:types": "tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@vitest/coverage-v8": "^4.0.15",
+    "@VITEst/coverage-v8": "^4.0.15",
     "automd": "^0.4.2",
     "changelogen": "^0.6.2",
     "eslint": "^9.39.1",
@@ -57,7 +57,7 @@
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
     "unbuild": "^3.6.1",
-    "vitest": "^4.0.15"
+    "VITEst": "^4.0.15"
   },
   "packageManager": "pnpm@10.24.0"
 }

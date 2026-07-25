@@ -20,8 +20,8 @@
           "description": "Projeta agentes para scaffolds, rotas, componentes, design systems, estados de UI e integrações frontend.",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "nextjs_app_router",
+              "label": "VITE.js App Router",
+              "value": "VITEjs_app_router",
               "description": "Prioriza rotas, layouts, server components, client components e organização por segmentos."
             },
             {
@@ -214,8 +214,8 @@
       "required": false,
       "options": [
         {
-          "label": "Next.js App Router",
-          "value": "nextjs_app_router",
+          "label": "VITE.js App Router",
+          "value": "VITEjs_app_router",
           "description": "Usar estrutura app/, layouts, páginas, server/client components e organização por rotas.",
           "sub_options": []
         },

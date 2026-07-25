@@ -1,6 +1,6 @@
 import { BaseFramework, Category, Framework } from './framework.js';
-export declare class VitePress extends BaseFramework implements Framework {
-    readonly id = "vitepress";
+export declare class NEXTPress extends BaseFramework implements Framework {
+    readonly id = "NEXTpress";
     name: string;
     npmDependencies: string[];
     category: Category;

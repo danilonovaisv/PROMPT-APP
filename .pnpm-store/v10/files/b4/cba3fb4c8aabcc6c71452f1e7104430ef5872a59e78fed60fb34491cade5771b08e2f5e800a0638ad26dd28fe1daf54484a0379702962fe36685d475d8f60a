@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "VITEst";
 import * as z from "zod/v4";
 import { parsedType } from "../../util.js";
 

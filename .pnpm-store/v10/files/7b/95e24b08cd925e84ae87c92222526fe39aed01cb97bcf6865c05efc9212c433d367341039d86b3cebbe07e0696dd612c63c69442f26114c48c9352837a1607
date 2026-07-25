@@ -1,6 +1,6 @@
 import { BaseFramework, Category, Framework } from './framework.js';
-export declare class Vite extends BaseFramework implements Framework {
-    readonly id = "vite";
+export declare class NEXT extends BaseFramework implements Framework {
+    readonly id = "NEXT";
     name: string;
     npmDependencies: string[];
     excludedNpmDependencies: string[];

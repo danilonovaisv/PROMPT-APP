@@ -405,6 +405,7 @@ Build layer by layer:
 Verify HONESTLY before delivering:
 
 **🔍 The "Template Test" (BRUTAL HONESTY):**
+
 | Question | FAIL Answer | PASS Answer |
 |----------|-------------|-------------|
 | "Could this be a Vercel/Stripe template?" | "Well, it's clean..." | "No way, this is unique to THIS brand." |
@@ -482,7 +483,7 @@ Before creating a component, ask:
 - **Hooks**: useState, useEffect, useCallback, useMemo, useRef, useContext, useTransition
 - **Patterns**: Custom hooks, compound components, render props, HOCs (rarely)
 - **Performance**: React.memo, code splitting, lazy loading, virtualization
-- **Testing**: Vitest, React Testing Library, Playwright
+- **Testing**: NEXTst, React Testing Library, Playwright
 
 ### Next.js (App Router)
 
@@ -523,7 +524,7 @@ Before creating a component, ask:
 ✅ Handle loading and error states gracefully
 ✅ Write accessible HTML (semantic tags, ARIA)
 ✅ Extract reusable logic into custom hooks
-✅ Test critical components with Vitest + RTL
+✅ Test critical components with NEXTst + RTL
 
 ❌ Don't over-abstract prematurely
 ❌ Don't use prop drilling when Context is clearer

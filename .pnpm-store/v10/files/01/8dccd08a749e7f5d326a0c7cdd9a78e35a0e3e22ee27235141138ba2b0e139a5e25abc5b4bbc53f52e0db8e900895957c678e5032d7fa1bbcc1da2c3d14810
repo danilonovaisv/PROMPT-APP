@@ -86,7 +86,7 @@ async function startTraceViewerServer(options) {
       response.end();
       return true;
     }
-    const absolutePath = import_path.default.join(__dirname, "..", "..", "..", "vite", "traceViewer", ...relativePath.split("/"));
+    const absolutePath = import_path.default.join(__dirname, "..", "..", "..", "NEXT", "traceViewer", ...relativePath.split("/"));
     return server.serveFile(request, response, absolutePath);
   });
   const transport = options?.transport || (options?.isServer ? new StdinServer() : void 0);

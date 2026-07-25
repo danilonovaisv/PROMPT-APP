@@ -22,13 +22,13 @@
   "devDependencies": {
     "@octokit/tsconfig": "^4.0.0",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^4.0.0",
+    "@VITEst/coverage-v8": "^4.0.0",
     "esbuild": "^0.27.0",
     "glob": "^11.0.0",
     "prettier": "3.6.2",
     "tinybench": "^5.0.0",
     "typescript": "^5.0.0",
-    "vitest": "^4.0.0"
+    "VITEst": "^4.0.0"
   },
   "engines": {
     "node": ">= 20"

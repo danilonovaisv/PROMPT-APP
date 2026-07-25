@@ -99,7 +99,7 @@ npx nx docs auth-js          # Generate documentation
 #### Build Outputs
 
 - **CommonJS (`dist/main/`)** - For Node.js environments
-- **ES Modules (`dist/module/`)** - For modern bundlers (Webpack, Vite, Rollup)
+- **ES Modules (`dist/module/`)** - For modern bundlers (Webpack, NEXT, Rollup)
 - **TypeScript definitions (`dist/module/index.d.ts`)** - Type definitions for TypeScript projects
 
 ### Testing

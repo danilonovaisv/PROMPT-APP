@@ -87,7 +87,7 @@ Confirmed via `getBoundingClientRect()`:
 
 ### 1 · Bootstrap
 
-- Vite dev server: `node_modules/.bin/vite` (port 5174, 5173 occupied by leftover instance)
+- VITE dev server: `node_modules/.bin/VITE` (port 5174, 5173 occupied by leftover instance)
 - Seeded **4 menus** directly via IndexedDB (`PromptAppDB.contextMenus`) — UI form save was a no-op without options, so direct seed was faster:
   - `Estilo de Escrita`, `Framework`, `Nível Técnico`, `Idioma de saída`
   - All `selectionMode = "multiple"`, 3–4 options each.

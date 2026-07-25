@@ -3,6 +3,8 @@ import {
   compilePromptPayload,
   createEmptyTemplatePayload,
   createTemplatePayloadFromLegacyRecord,
+  getMissingRequiredMemoryKeys,
+  listMemoryPlaceholderKeys,
   MenuDefinitionSchema,
   parsePromptPayload,
   sanitizeUserSelection,
@@ -223,6 +225,66 @@ describe("parsePromptPayload", () => {
     expect(payload.output_contract.format).toBe("json");
     expect(payload.output_contract.response_rules).toEqual(["items[]"]);
   });
+
+  it("normalizes context_menus and prompt_memory_context aliases", () => {
+    const payload = parsePromptPayload({
+      meta: {
+        template_id: "memory_alias_template",
+        template_name: "Memory Alias Template",
+        template_type: "generic_prompt",
+        schema_version: "1.1.0",
+        language: "pt-BR",
+        status: "active",
+      },
+      prompt_definition: {
+        system_role: "Você é um consultor",
+        task: "Analise {{memory.nome_empresa}}.",
+        context: "",
+        user_scene_description: "",
+        constraints: [],
+        negative_prompt: [],
+        few_shot_examples: [],
+      },
+      context_menus: [
+        {
+          menu_id: "idioma_saida",
+          menu_name: "Idioma de Saída",
+          description: "",
+          selection_mode: "single",
+          required: false,
+          options: [{ label: "Português", value: "pt-BR", sub_options: [] }],
+        },
+      ],
+      menuIds: ["idioma_saida"],
+      memory_context: {
+        enabled: true,
+        mergeStrategy: "preserve_existing",
+        entries: [
+          {
+            key: "Nome Empresa",
+            label: "Nome da empresa",
+            value: "Acme",
+            type: "text",
+            scope: "user",
+            required: true,
+            editable: true,
+            description: "",
+          },
+        ],
+      },
+      output_contract: {
+        format: "markdown",
+        language: "pt-BR",
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
+    });
+
+    expect(payload.menu_definitions[0].menu_id).toBe("idioma_saida");
+    expect(payload.menu_ids).toEqual(["idioma_saida"]);
+    expect(payload.prompt_memory_context?.entries[0].key).toBe("nome_empresa");
+  });
 });
 
 describe("compilePromptPayload", () => {
@@ -370,6 +432,67 @@ describe("compilePromptPayload", () => {
         response_rules: ["Return only one final JSON object"],
       },
     });
+  });
+
+  it("rejects missing required memory keys", () => {
+    const template = TemplatePayloadSchema.parse({
+      meta: {
+        template_id: "memory_required",
+        template_name: "Memory Required",
+        template_type: "generic_prompt",
+        schema_version: "1.1.0",
+        language: "pt-BR",
+        status: "active",
+      },
+      prompt_definition: {
+        system_role: "Você é um consultor",
+        task: "Analise {{memory.nome_empresa}}.",
+        context: "",
+        user_scene_description: "",
+        constraints: [],
+        negative_prompt: [],
+        few_shot_examples: [],
+      },
+      menu_definitions: [],
+      menu_ids: [],
+      prompt_memory_context: {
+        enabled: true,
+        merge_strategy: "preserve_existing",
+        entries: [
+          {
+            key: "nome_empresa",
+            label: "Nome da empresa",
+            value: "",
+            type: "text",
+            scope: "user",
+            required: true,
+            editable: true,
+            description: "",
+          },
+        ],
+      },
+      output_contract: {
+        format: "markdown",
+        language: "pt-BR",
+        strict_mode: true,
+        required_fields: [],
+        response_rules: [],
+      },
+    });
+
+    expect(listMemoryPlaceholderKeys(template)).toEqual(["nome_empresa"]);
+    expect(getMissingRequiredMemoryKeys(template, {})).toEqual(["nome_empresa"]);
+    expect(() =>
+      compilePromptPayload(
+        template,
+        UserSelectionSchema.parse({
+          template_id: "memory_required",
+          selected_menus: [],
+          free_inputs: {},
+          fixed_variables: {},
+        }),
+      ),
+    ).toThrow("Memória obrigatória ausente");
   });
 });
 

@@ -24,7 +24,7 @@ export const reactRefresh: {
   };
   configs: {
     recommended: ConfigFn;
-    vite: ConfigFn;
+    VITE: ConfigFn;
     next: ConfigFn;
   };
 };
@@ -33,7 +33,7 @@ declare const _default: {
   rules: Rules;
   configs: {
     recommended: Config;
-    vite: Config;
+    VITE: Config;
     next: Config;
   };
 };

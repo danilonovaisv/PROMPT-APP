@@ -2,21 +2,30 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Dev Server (Vite)",
+      "name": "Dev Server (VITE)",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 5173
     },
     {
       "name": "Preview Build",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "preview"],
+      "runtimeArgs": [
+        "run",
+        "preview"
+      ],
       "port": 4173
     },
     {
       "name": "Drizzle Studio",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "db:studio"],
+      "runtimeArgs": [
+        "run",
+        "db:studio"
+      ],
       "port": 4983
     }
   ]

@@ -1,4 +1,4 @@
-import { expect, expectTypeOf, test } from "vitest";
+import { expect, expectTypeOf, test } from "NEXTst";
 import { z } from "zod/v4";
 import type { util } from "zod/v4/core";
 

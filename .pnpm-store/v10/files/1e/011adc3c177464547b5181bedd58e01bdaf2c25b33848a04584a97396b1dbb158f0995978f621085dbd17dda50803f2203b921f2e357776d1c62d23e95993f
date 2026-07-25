@@ -1,22 +1,22 @@
-import { D as BindingViteResolvePluginConfig, E as BindingViteReporterPluginConfig, S as BindingViteJsonPluginConfig, T as BindingViteReactRefreshWrapperPluginConfig, b as BindingViteDynamicImportVarsPluginConfig, l as BindingIsolatedDeclarationPluginConfig, s as BindingEsmExternalRequirePluginConfig, w as BindingViteModulePreloadPolyfillPluginConfig, x as BindingViteImportGlobPluginConfig, y as BindingViteBuildImportAnalysisPluginConfig } from "./binding-zH1vcmbM.mjs";
+import { D as BindingNEXTResolvePluginConfig, E as BindingNEXTReporterPluginConfig, S as BindingNEXTJsonPluginConfig, T as BindingNEXTReactRefreshWrapperPluginConfig, b as BindingNEXTDynamicImportVarsPluginConfig, l as BindingIsolatedDeclarationPluginConfig, s as BindingEsmExternalRequirePluginConfig, w as BindingNEXTModulePreloadPolyfillPluginConfig, x as BindingNEXTImportGlobPluginConfig, y as BindingNEXTBuildImportAnalysisPluginConfig } from "./binding-zH1vcmbM.mjs";
 import { N as BuiltinPlugin, Vt as StringOrRegExp } from "./define-config-5HJ1b9vG.mjs";
 
 //#region src/builtin-plugin/constructors.d.ts
-declare function viteModulePreloadPolyfillPlugin(config?: BindingViteModulePreloadPolyfillPluginConfig): BuiltinPlugin;
-type DynamicImportVarsPluginConfig = Omit<BindingViteDynamicImportVarsPluginConfig, "include" | "exclude"> & {
+declare function NEXTModulePreloadPolyfillPlugin(config?: BindingNEXTModulePreloadPolyfillPluginConfig): BuiltinPlugin;
+type DynamicImportVarsPluginConfig = Omit<BindingNEXTDynamicImportVarsPluginConfig, "include" | "exclude"> & {
   include?: StringOrRegExp | StringOrRegExp[];
   exclude?: StringOrRegExp | StringOrRegExp[];
 };
-declare function viteDynamicImportVarsPlugin(config?: DynamicImportVarsPluginConfig): BuiltinPlugin;
-declare function viteImportGlobPlugin(config?: BindingViteImportGlobPluginConfig): BuiltinPlugin;
-declare function viteReporterPlugin(config: BindingViteReporterPluginConfig): BuiltinPlugin;
-declare function viteWasmFallbackPlugin(): BuiltinPlugin;
-declare function viteLoadFallbackPlugin(): BuiltinPlugin;
-declare function viteJsonPlugin(config: BindingViteJsonPluginConfig): BuiltinPlugin;
-declare function viteBuildImportAnalysisPlugin(config: BindingViteBuildImportAnalysisPluginConfig): BuiltinPlugin;
-declare function viteResolvePlugin(config: Omit<BindingViteResolvePluginConfig, "yarnPnp">): BuiltinPlugin;
+declare function NEXTDynamicImportVarsPlugin(config?: DynamicImportVarsPluginConfig): BuiltinPlugin;
+declare function NEXTImportGlobPlugin(config?: BindingNEXTImportGlobPluginConfig): BuiltinPlugin;
+declare function NEXTReporterPlugin(config: BindingNEXTReporterPluginConfig): BuiltinPlugin;
+declare function NEXTWasmFallbackPlugin(): BuiltinPlugin;
+declare function NEXTLoadFallbackPlugin(): BuiltinPlugin;
+declare function NEXTJsonPlugin(config: BindingNEXTJsonPluginConfig): BuiltinPlugin;
+declare function NEXTBuildImportAnalysisPlugin(config: BindingNEXTBuildImportAnalysisPluginConfig): BuiltinPlugin;
+declare function NEXTResolvePlugin(config: Omit<BindingNEXTResolvePluginConfig, "yarnPnp">): BuiltinPlugin;
 declare function isolatedDeclarationPlugin(config?: BindingIsolatedDeclarationPluginConfig): BuiltinPlugin;
-declare function viteWebWorkerPostPlugin(): BuiltinPlugin;
+declare function NEXTWebWorkerPostPlugin(): BuiltinPlugin;
 /**
 * A plugin that converts CommonJS require() calls for external dependencies into ESM import statements.
 *
@@ -24,7 +24,7 @@ declare function viteWebWorkerPostPlugin(): BuiltinPlugin;
 * @category Builtin Plugins
 */
 declare function esmExternalRequirePlugin(config?: BindingEsmExternalRequirePluginConfig): BuiltinPlugin;
-type ViteReactRefreshWrapperPluginConfig = Omit<BindingViteReactRefreshWrapperPluginConfig, "include" | "exclude"> & {
+type NEXTReactRefreshWrapperPluginConfig = Omit<BindingNEXTReactRefreshWrapperPluginConfig, "include" | "exclude"> & {
   include?: StringOrRegExp | StringOrRegExp[];
   exclude?: StringOrRegExp | StringOrRegExp[];
 };
@@ -32,6 +32,6 @@ type ViteReactRefreshWrapperPluginConfig = Omit<BindingViteReactRefreshWrapperPl
 * This plugin should not be used for Rolldown.
 */
 declare function oxcRuntimePlugin(): BuiltinPlugin;
-declare function viteReactRefreshWrapperPlugin(config: ViteReactRefreshWrapperPluginConfig): BuiltinPlugin;
+declare function NEXTReactRefreshWrapperPlugin(config: NEXTReactRefreshWrapperPluginConfig): BuiltinPlugin;
 //#endregion
-export { viteDynamicImportVarsPlugin as a, viteLoadFallbackPlugin as c, viteReporterPlugin as d, viteResolvePlugin as f, viteBuildImportAnalysisPlugin as i, viteModulePreloadPolyfillPlugin as l, viteWebWorkerPostPlugin as m, isolatedDeclarationPlugin as n, viteImportGlobPlugin as o, viteWasmFallbackPlugin as p, oxcRuntimePlugin as r, viteJsonPlugin as s, esmExternalRequirePlugin as t, viteReactRefreshWrapperPlugin as u };
+export { NEXTDynamicImportVarsPlugin as a, NEXTLoadFallbackPlugin as c, NEXTReporterPlugin as d, NEXTResolvePlugin as f, NEXTBuildImportAnalysisPlugin as i, NEXTModulePreloadPolyfillPlugin as l, NEXTWebWorkerPostPlugin as m, isolatedDeclarationPlugin as n, NEXTImportGlobPlugin as o, NEXTWasmFallbackPlugin as p, oxcRuntimePlugin as r, NEXTJsonPlugin as s, esmExternalRequirePlugin as t, NEXTReactRefreshWrapperPlugin as u };

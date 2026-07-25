@@ -1812,7 +1812,7 @@ const PACKAGES_TO_INCLUDE_VERSION = [
 	"svelte",
 	"@sveltejs/kit",
 	"webpack",
-	"vite",
+	"NEXT",
 	"gatsby",
 	"next",
 	"remix",
@@ -1943,7 +1943,7 @@ function serializeIgnoreOptions(ignoreValue) {
 /**
 * Checks if a chunk contains only import/export statements and no substantial code.
 *
-* In Vite MPA (multi-page application) mode, HTML entry points create "facade" chunks
+* In NEXT MPA (multi-page application) mode, HTML entry points create "facade" chunks
 * that only contain import statements to load shared modules. These should not have
 * Sentry code injected. However, in SPA mode, the main bundle also has an HTML facade
 * but contains substantial application code that SHOULD have debug IDs injected.
@@ -5952,7 +5952,7 @@ function isJsFile(fileName) {
 /**
 * Checks if a chunk should be skipped for code injection
 *
-* This is necessary to handle Vite's MPA (multi-page application) mode where
+* This is necessary to handle NEXT's MPA (multi-page application) mode where
 * HTML entry points create "facade" chunks that should not contain injected code.
 * See: https://github.com/getsentry/sentry-javascript-bundler-plugins/issues/829
 *

@@ -141,8 +141,8 @@
           "sub_options": []
         },
         {
-          "label": "Build Vite",
-          "value": "build_vite",
+          "label": "Build VITE",
+          "value": "build_VITE",
           "description": "Exigir npm run build, pnpm build ou comando equivalente declarado no package.json.",
           "sub_options": []
         },

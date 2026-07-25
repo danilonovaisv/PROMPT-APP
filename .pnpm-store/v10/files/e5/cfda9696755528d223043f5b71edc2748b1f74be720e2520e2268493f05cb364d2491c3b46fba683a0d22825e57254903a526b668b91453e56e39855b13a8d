@@ -1,4 +1,4 @@
-import { test } from "vitest";
+import { test } from "VITEst";
 // import path from "path";
 // import { Node, Project, SyntaxKind } from "ts-morph";
 

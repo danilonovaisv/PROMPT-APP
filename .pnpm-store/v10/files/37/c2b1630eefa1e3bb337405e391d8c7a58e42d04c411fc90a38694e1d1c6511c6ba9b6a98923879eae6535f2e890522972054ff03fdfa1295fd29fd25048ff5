@@ -15,9 +15,9 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test": "NEXTst run",
+    "test:dev": "NEXTst",
+    "test:ci": "npm run build && NEXTst run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@netlify/dev-utils": "^4.4.3",
     "tsup": "^8.5.0",
-    "vitest": "^3.1.4"
+    "NEXTst": "^3.1.4"
   },
   "dependencies": {
     "ipx": "^3.1.1"

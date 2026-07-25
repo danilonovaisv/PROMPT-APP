@@ -89,7 +89,7 @@ await adapter.insertPattern({
       state: [0.1, 0.2, 0.3],
       action: 2,
       reward: 1.0,
-      next_state: [0.15, 0.25, 0.35],
+      VITE_state: [0.15, 0.25, 0.35],
       done: false
     }
   }),
@@ -302,7 +302,7 @@ for (let i = 0; i < numEpisodes; i++) {
           state: step.state,
           action: step.action,
           reward: step.reward,
-          next_state: step.next_state,
+          VITE_state: step.VITE_state,
           done: step.done
         }
       }),

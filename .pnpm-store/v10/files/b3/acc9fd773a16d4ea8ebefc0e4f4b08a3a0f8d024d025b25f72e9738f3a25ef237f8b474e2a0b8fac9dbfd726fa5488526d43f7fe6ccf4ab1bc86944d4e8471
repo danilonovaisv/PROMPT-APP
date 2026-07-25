@@ -20,8 +20,8 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
+    "test": "VITEst run",
+    "test:dev": "VITEst",
     "dev": "tsup-node --watch"
   },
   "keywords": [
@@ -49,6 +49,6 @@
   "devDependencies": {
     "execa": "^8.0.1",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   }
 }

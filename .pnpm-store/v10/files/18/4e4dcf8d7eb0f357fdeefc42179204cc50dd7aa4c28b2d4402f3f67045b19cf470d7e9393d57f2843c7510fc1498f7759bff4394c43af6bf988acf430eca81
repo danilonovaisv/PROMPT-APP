@@ -15,9 +15,9 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:ci": "npm run build && vitest run",
+    "test": "VITEst run",
+    "test:dev": "VITEst",
+    "test:ci": "npm run build && VITEst run",
     "dev": "tsup-node --watch",
     "publint": "npx -y publint --strict"
   },
@@ -42,6 +42,6 @@
     "@netlify/dev-utils": "^4.4.3",
     "@types/node": "^20.17.57",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   }
 }

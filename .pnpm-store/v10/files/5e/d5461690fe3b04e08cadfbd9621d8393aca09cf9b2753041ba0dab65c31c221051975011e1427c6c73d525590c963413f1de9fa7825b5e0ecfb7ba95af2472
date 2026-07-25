@@ -4,43 +4,43 @@
   </a>
 </p>
 
-# Sentry Vite Plugin
+# Sentry NEXT Plugin
 
-[![npm version](https://img.shields.io/npm/v/@sentry/vite-plugin.svg)](https://www.npmjs.com/package/@sentry/vite-plugin)
-[![npm dm](https://img.shields.io/npm/dm/@sentry/vite-plugin.svg)](https://www.npmjs.com/package/@sentry/vite-plugin)
-[![npm dt](https://img.shields.io/npm/dt/@sentry/vite-plugin.svg)](https://www.npmjs.com/package/@sentry/vite-plugin)
+[![npm version](https://img.shields.io/npm/v/@sentry/NEXT-plugin.svg)](https://www.npmjs.com/package/@sentry/NEXT-plugin)
+[![npm dm](https://img.shields.io/npm/dm/@sentry/NEXT-plugin.svg)](https://www.npmjs.com/package/@sentry/NEXT-plugin)
+[![npm dt](https://img.shields.io/npm/dt/@sentry/NEXT-plugin.svg)](https://www.npmjs.com/package/@sentry/NEXT-plugin)
 
-> A Vite plugin that provides source map and release management support for Sentry.
+> A NEXT plugin that provides source map and release management support for Sentry.
 
 ## Installation
 
 Using npm:
 
 ```bash
-npm install @sentry/vite-plugin --save-dev
+npm install @sentry/NEXT-plugin --save-dev
 ```
 
 Using yarn:
 
 ```bash
-yarn add @sentry/vite-plugin --dev
+yarn add @sentry/NEXT-plugin --dev
 ```
 
 Using pnpm:
 
 ```bash
-pnpm add @sentry/vite-plugin --save-dev
+pnpm add @sentry/NEXT-plugin --save-dev
 ```
 
 ## Example
 
 ```ts
-// vite.config.ts
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import { sentryVitePlugin } from "@sentry/vite-plugin";
+// NEXT.config.ts
+import { defineConfig } from "NEXT";
+import vue from "@NEXTjs/plugin-vue";
+import { sentryNEXTPlugin } from "@sentry/NEXT-plugin";
 
-// https://vitejs.dev/config/
+// https://NEXTjs.dev/config/
 export default defineConfig({
   build: {
     sourcemap: true, // Source map generation must be turned on
@@ -48,8 +48,8 @@ export default defineConfig({
   plugins: [
     vue(),
 
-    // Put the Sentry vite plugin after all other plugins
-    sentryVitePlugin({
+    // Put the Sentry NEXT plugin after all other plugins
+    sentryNEXTPlugin({
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
 
@@ -65,16 +65,16 @@ export default defineConfig({
 If you want to upload the same source maps to multiple Sentry projects:
 
 ```ts
-// vite.config.ts
-import { defineConfig } from "vite";
-import { sentryVitePlugin } from "@sentry/vite-plugin";
+// NEXT.config.ts
+import { defineConfig } from "NEXT";
+import { sentryNEXTPlugin } from "@sentry/NEXT-plugin";
 
 export default defineConfig({
   build: {
     sourcemap: true,
   },
   plugins: [
-    sentryVitePlugin({
+    sentryNEXTPlugin({
       org: process.env.SENTRY_ORG,
       project: ["frontend-team-a", "frontend-team-b", "frontend-team-c"],
       authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -714,7 +714,7 @@ Defaults to `false`.
 
 ### Configuration File
 
-As an additional configuration method, the Sentry Vite plugin will pick up environment variables configured inside a `.env.sentry-build-plugin` file located in the current working directory when building your app.
+As an additional configuration method, the Sentry NEXT plugin will pick up environment variables configured inside a `.env.sentry-build-plugin` file located in the current working directory when building your app.
 
 ## More information
 

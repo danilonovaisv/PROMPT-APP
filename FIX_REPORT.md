@@ -3,7 +3,7 @@
 ## 1. Auditoria de Configuração (Ambiente & Supabase)
 **Problema:** Erro "Configuração do Supabase ausente. Defina VITE_SUPABASE_URL" em tempo de execução/sincronização.
 **Diagnóstico:** 
-A aplicação React faz uso do `import.meta.env` gerado pelo Vite para compilar o valor das variáveis de ambiente na build (e expô-las no frontend). Quando a build e deploy são feitas em plataformas de hospedagem como a Netlify, as variáveis listadas no `.env.example` (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`) precisam ser explicitamente introduzidas na configuração de variáveis de ambiente do projeto da plataforma. O `.env.example` reflete sim, de forma precisa, as necessidades do frontend. A falha existe ou porque não foi replicado para um `.env` localmente durante o desenvolvimento, ou porque não foram adicionadas no dashboard do Netlify (`Site configuration > Environment variables`).
+A aplicação React faz uso do `import.meta.env` gerado pelo VITE para compilar o valor das variáveis de ambiente na build (e expô-las no frontend). Quando a build e deploy são feitas em plataformas de hospedagem como a Netlify, as variáveis listadas no `.env.example` (`VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`) precisam ser explicitamente introduzidas na configuração de variáveis de ambiente do projeto da plataforma. O `.env.example` reflete sim, de forma precisa, as necessidades do frontend. A falha existe ou porque não foi replicado para um `.env` localmente durante o desenvolvimento, ou porque não foram adicionadas no dashboard do Netlify (`Site configuration > Environment variables`).
 
 **Ação / Correção Recomendada:**
 1. Em Desenvolvimento: Duplicar `.env.example` para `.env` (ou `.env.local`) e preencher o `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.

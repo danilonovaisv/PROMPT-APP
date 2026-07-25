@@ -1,5 +1,6 @@
 import type {
   CompiledPromptPayload,
+  ImportEnvelope,
   MenuDefinition,
   MenuSelectionMode,
   TemplatePayload,
@@ -121,6 +122,8 @@ export interface BulkExport {
     prompt: TemplatePayload;
   }>;
 }
+
+export type CanonicalImportExport = ImportEnvelope;
 
 export type PromptMenuSelection = UserSelection;
 export type SyncStatus = 'pending' | 'synced' | 'error';

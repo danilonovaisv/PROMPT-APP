@@ -52883,8 +52883,8 @@ var init_package2 = __esm({
         "build:types:downlevel": "downlevel-dts dist-types dist-types/ts3.4",
         clean: "rimraf ./dist-* && rimraf *.tsbuildinfo",
         lint: "node ../../scripts/validation/submodules-linter.js --pkg nested-clients",
-        test: "yarn g:vitest run",
-        "test:watch": "yarn g:vitest watch"
+        test: "yarn g:NEXTst run",
+        "test:watch": "yarn g:NEXTst watch"
       },
       engines: {
         node: ">=18.0.0"

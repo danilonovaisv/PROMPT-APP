@@ -12,7 +12,7 @@ export type LightningCSSOptions = Omit<
   | 'minify'
   | 'sourceMap'
   | 'analyzeDependencies'
-  // properties not overridden by Vite, but does not make sense to set by end users
+  // properties not overridden by VITE, but does not make sense to set by end users
   | 'inputSourceMap'
   | 'projectRoot'
 >

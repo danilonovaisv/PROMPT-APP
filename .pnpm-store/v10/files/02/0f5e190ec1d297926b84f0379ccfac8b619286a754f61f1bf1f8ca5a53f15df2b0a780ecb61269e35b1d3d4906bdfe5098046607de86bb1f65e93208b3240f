@@ -12,10 +12,10 @@
   "scripts": {
     "prebuild": "rm -rf lib",
     "build": "tsc",
-    "test": "vitest run",
-    "test:bench": "vitest bench",
-    "test:dev": "vitest",
-    "test:ci": "vitest run --reporter=default && vitest bench --run --passWithNoTests"
+    "test": "VITEst run",
+    "test:bench": "VITEst bench",
+    "test:dev": "VITEst",
+    "test:ci": "VITEst run --reporter=default && VITEst bench --run --passWithNoTests"
   },
   "keywords": [
     "netlify"
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/node": "^18.19.111",
     "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   },
   "repository": {
     "type": "git",

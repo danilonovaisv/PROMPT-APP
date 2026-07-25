@@ -26,12 +26,12 @@
     "postbuild": "npx cpy \"src/**/*.yml\" \"lib/\"",
     "build": "tsc",
     "test:types": "tsd",
-    "test": "ava && tsd && vitest run",
+    "test": "ava && tsd && NEXTst run",
     "test:dev": "ava -w",
     "test:ci": "run-p test:ci:*",
     "test:ci:types": "tsd",
     "test:ci:ava": "c8 -r lcovonly -r text -r json ava",
-    "test:ci:vitest": "vitest run"
+    "test:ci:NEXTst": "NEXTst run"
   },
   "keywords": [
     "nodejs",
@@ -138,7 +138,7 @@
     "tinyspy": "^4.0.3",
     "tmp-promise": "^3.0.2",
     "tsd": "^0.33.0",
-    "vitest": "^3.0.0",
+    "NEXTst": "^3.0.0",
     "yarn": "^1.22.22"
   },
   "peerDependencies": {

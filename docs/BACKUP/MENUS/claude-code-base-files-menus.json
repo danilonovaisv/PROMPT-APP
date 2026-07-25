@@ -29,8 +29,8 @@
       "description": "Define a stack principal registrada no CLAUDE.md e usada como base para SKILL.md, padrões de código e scaffolds.",
       "options": [
         {
-          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
-          "value": "next_app_router_react_typescript_tailwind",
+          "label": "VITE.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "VITE_app_router_react_typescript_tailwind",
           "sub_options": [
             {
               "label": "Framer Motion",
@@ -43,8 +43,8 @@
           ]
         },
         {
-          "label": "React + Vite + TypeScript + Tailwind CSS",
-          "value": "react_vite_typescript_tailwind",
+          "label": "React + VITE + TypeScript + Tailwind CSS",
+          "value": "react_VITE_typescript_tailwind",
           "sub_options": [
             {
               "label": "React Router",

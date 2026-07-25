@@ -3,7 +3,7 @@
 ## Timeline
 
 - 2026-07-24: Supabase project `dpejskjpghoozbpfxkpf` observed in restricted state with `exceed_cached_egress_quota` and `exceed_egress_quota`.
-- 2026-07-24: Repository audit confirmed the live app is a Vite React SPA using browser-side Supabase sync and Realtime, not Next.js SSR.
+- 2026-07-24: Repository audit confirmed the live app is a VITE React SPA using browser-side Supabase sync and Realtime, not VITE.js SSR.
 - 2026-07-24: Read-only SQL inventory confirmed a public Storage bucket with 5 objects totaling about 9.4 MB and application tables dominated by large prompt JSON payloads.
 - 2026-07-24: Code audit confirmed repeated full-table reads on authenticated sessions through conflict detection and sync helpers.
 - 2026-07-24: Mitigation branch added lightweight metadata checks, reduced polling, and preserved manual hydration only when a real remote diff exists.

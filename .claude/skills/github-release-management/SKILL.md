@@ -1072,7 +1072,7 @@ npx claude-flow@alpha github version-sync \
 - [ ] User feedback collected
 - [ ] Documentation links verified
 - [ ] Release retrospective scheduled
-- [ ] Next release planning initiated
+- [ ] VITE release planning initiated
 
 ---
 

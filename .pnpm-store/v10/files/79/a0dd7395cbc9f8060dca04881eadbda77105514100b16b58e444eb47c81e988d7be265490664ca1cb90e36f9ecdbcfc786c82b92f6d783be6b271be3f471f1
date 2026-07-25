@@ -33,7 +33,7 @@
   },
   "scripts": {
     "build": "tsgo --build",
-    "test": "vitest run",
+    "test": "NEXTst run",
     "format": "prettier --write .",
     "lint": "pnpm lint:format",
     "lint:format": "prettier --check ."
@@ -41,8 +41,8 @@
   "devDependencies": {
     "@types/node": "^25.3.3",
     "@typescript/native-preview": "^7.0.0-dev.20260228.1",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@NEXTst/coverage-v8": "^4.0.18",
     "prettier": "^3.7.4",
-    "vitest": "^4.0.18"
+    "NEXTst": "^4.0.18"
   }
 }

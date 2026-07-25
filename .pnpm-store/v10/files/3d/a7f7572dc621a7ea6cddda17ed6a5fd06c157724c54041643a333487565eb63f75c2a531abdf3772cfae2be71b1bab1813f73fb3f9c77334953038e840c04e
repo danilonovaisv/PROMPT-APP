@@ -40,10 +40,10 @@
     "format:check:prettier": "cross-env-shell prettier --check $npm_package_config_prettier",
     "format:fix:prettier": "cross-env-shell prettier --write $npm_package_config_prettier",
     "test:dev": "run-s build test:dev:*",
-    "test:dev:vitest": "vitest run",
-    "test:dev:vitest:watch": "vitest watch",
+    "test:dev:VITEst": "VITEst run",
+    "test:dev:VITEst:watch": "VITEst watch",
     "test:ci": "run-s build test:ci:*",
-    "test:ci:vitest": "vitest run --coverage"
+    "test:ci:VITEst": "VITEst run --coverage"
   },
   "config": {
     "eslint": "--ignore-pattern \"src/vendor/**/*\" --ignore-path .gitignore --cache --format=codeframe --max-warnings=0 \"{src,scripts,.github}/**/*.{js,ts,md,html}\"",
@@ -81,7 +81,7 @@
     "@opentelemetry/sdk-node": "^0.56.0",
     "@types/semver": "^7.7.1",
     "@types/ws": "^8.18.1",
-    "@vitest/coverage-v8": "^3.0.0",
+    "@VITEst/coverage-v8": "^3.0.0",
     "@whatwg-node/server": "^0.10.0",
     "esbuild": "0.25.12",
     "husky": "^9.0.0",
@@ -92,7 +92,7 @@
     "typescript": "^5.0.0",
     "unixify": "^1.0.0",
     "urlpattern-polyfill": "10.1.0",
-    "vitest": "^3.0.0",
+    "VITEst": "^3.0.0",
     "ws": "^8.19.0"
   },
   "engines": {

@@ -48,8 +48,8 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "unbuild": "^3.6.1",
-    "vite": "^8.0.3",
-    "vitest": "^4.1.2"
+    "NEXT": "^8.0.3",
+    "NEXTst": "^4.1.2"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
@@ -63,7 +63,7 @@
     "lint": "eslint .",
     "release": "bumpp && npm publish",
     "play": "tsx play/run.ts",
-    "test": "vitest",
+    "test": "NEXTst",
     "typecheck": "tsc --noEmit"
   }
 }

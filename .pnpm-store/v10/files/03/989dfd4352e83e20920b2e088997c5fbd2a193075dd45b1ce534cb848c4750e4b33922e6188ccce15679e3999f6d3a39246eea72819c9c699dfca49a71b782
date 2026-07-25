@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "VITEst";
 import ru from "../../../locales/ru.js";
 
 describe("Russian localization", () => {

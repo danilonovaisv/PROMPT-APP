@@ -73,7 +73,7 @@ function ArrayChipInput({
   return (
     <div className="form-group array-chip-input">
       <label className="form-label" htmlFor={id}>{label}</label>
-      
+
       {values.length > 0 && (
         <div className="chip-container" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginBottom: 'var(--space-2)', padding: 'var(--space-2)', backgroundColor: 'var(--color-surface-2)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
           {values.map((val, idx) => (
@@ -143,9 +143,9 @@ type EditorDefinitionFormProps = {
 
 const PROMPT_OUTPUT_FORMATS = ['text', 'json', 'xml', 'yaml', 'html', 'code'] as const;
 
-export function EditorDefinitionForm({ 
-  template, 
-  updatePromptDefinitionField, 
+export function EditorDefinitionForm({
+  template,
+  updatePromptDefinitionField,
   updateOutputContractField,
   selectedMenuIds = [],
   onMenuSelectionChange,
@@ -159,7 +159,7 @@ export function EditorDefinitionForm({
       // description shown as slug badge inside MultiSelect option row
       description: menu.menuId,
     }));
-  
+
   const lastItemRef = useRef<HTMLTextAreaElement>(null);
   const prevExamplesLength = useRef(template.prompt_definition.few_shot_examples.length);
   const formId = useId();
@@ -345,10 +345,10 @@ export function EditorDefinitionForm({
                           value={String(option.id)}
                           onClick={() => {
                             const id = option.id;
-                            const next = selectedMenuIds.includes(id)
+                            const VITE = selectedMenuIds.includes(id)
                               ? selectedMenuIds.filter(v => v !== id)
                               : [...selectedMenuIds, id];
-                            onMenuSelectionChange?.(next);
+                            onMenuSelectionChange?.(VITE);
                           }}
                           icons={
                             <div>
@@ -357,10 +357,10 @@ export function EditorDefinitionForm({
                                 checked={selectedMenuIds.includes(option.id)}
                                 onChange={() => {
                                   const id = option.id;
-                                  const next = selectedMenuIds.includes(id)
+                                  const VITE = selectedMenuIds.includes(id)
                                     ? selectedMenuIds.filter(v => v !== id)
                                     : [...selectedMenuIds, id];
-                                  onMenuSelectionChange?.(next);
+                                  onMenuSelectionChange?.(VITE);
                                 }}
                               />
                             </div>
@@ -416,8 +416,8 @@ export function EditorDefinitionForm({
                       type="button"
                       className="btn btn--ghost btn--icon btn--sm"
                       onClick={() => {
-                        const next = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
-                        updatePromptDefinitionField('few_shot_examples', next);
+                        const VITE = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
+                        updatePromptDefinitionField('few_shot_examples', VITE);
                       }}
                       title="Remover exemplo"
                       aria-label={`Remover exemplo ${index + 1}`}
@@ -436,9 +436,9 @@ export function EditorDefinitionForm({
                       ref={index === template.prompt_definition.few_shot_examples.length - 1 ? lastItemRef : null}
                       value={example.input}
                       onChange={(e) => {
-                        const next = [...template.prompt_definition.few_shot_examples];
-                        next[index] = { ...next[index], input: e.target.value };
-                        updatePromptDefinitionField('few_shot_examples', next);
+                        const VITE = [...template.prompt_definition.few_shot_examples];
+                        VITE[index] = { ...VITE[index], input: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', VITE);
                       }}
                       rows={2}
                       placeholder="Ex: Como faço para..."
@@ -453,7 +453,7 @@ export function EditorDefinitionForm({
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label--sub" htmlFor={`${formId}-few-shot-output-${index}`}>
                       Resposta esperada <span className="required-badge" aria-hidden="true">*</span>
@@ -462,9 +462,9 @@ export function EditorDefinitionForm({
                       id={`${formId}-few-shot-output-${index}`}
                       value={example.output}
                       onChange={(e) => {
-                        const next = [...template.prompt_definition.few_shot_examples];
-                        next[index] = { ...next[index], output: e.target.value };
-                        updatePromptDefinitionField('few_shot_examples', next);
+                        const VITE = [...template.prompt_definition.few_shot_examples];
+                        VITE[index] = { ...VITE[index], output: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', VITE);
                       }}
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
@@ -505,7 +505,7 @@ export function EditorDefinitionForm({
 
         <div className="form-section--grouped">
           <h3 className="form-label--sub">Configurações de Saída</h3>
-          
+
           <div className="form-group">
             <label className="form-label" htmlFor={`${formId}-output-format`}>Format</label>
             <select

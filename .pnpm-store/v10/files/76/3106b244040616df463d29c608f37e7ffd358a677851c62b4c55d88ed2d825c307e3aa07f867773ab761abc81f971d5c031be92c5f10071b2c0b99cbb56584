@@ -1034,7 +1034,7 @@ export default class GoTrueClient {
      * - If an email address is used, the type can be one of the following (note: `signup` and `magiclink` types are deprecated):
      *   1. `email` – Used when verifying an OTP sent to the user's email during sign-up or sign-in.
      *   2. `recovery` – Used when verifying an OTP sent for account recovery, typically after a password reset request.
-     *   3. `invite` – Used when verifying an OTP sent as part of an invitation to join a project or organization.
+     *   3. `inNEXT` – Used when verifying an OTP sent as part of an invitation to join a project or organization.
      *   4. `email_change` – Used when verifying an OTP sent to a new email address during an email update process.
      * - The verification type used should be determined based on the corresponding auth method called before `verifyOtp` to sign up / sign-in a user.
      * - The `TokenHash` is contained in the [email templates](/docs/guides/auth/auth-email-templates) and can be used to sign in.  You may wish to use the hash for the PKCE flow for Server Side Auth. Read [the Password-based Auth guide](/docs/guides/auth/passwords) for more details.

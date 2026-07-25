@@ -98,24 +98,24 @@ export function CloudSyncProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, nextSession) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, VITESession) => {
       setSession((currentSession: Session | null) => {
-        if (!nextSession && currentSession && !manualLogoutRef.current && event !== 'INITIAL_SESSION') {
+        if (!VITESession && currentSession && !manualLogoutRef.current && event !== 'INITIAL_SESSION') {
           setSessionNotice('Sua sessão expirou. Faça login novamente para continuar sincronizando.');
         }
 
-        if (nextSession) {
+        if (VITESession) {
           setSessionNotice(null);
         }
 
-        if (!nextSession && manualLogoutRef.current) {
+        if (!VITESession && manualLogoutRef.current) {
           manualLogoutRef.current = false;
         }
 
-        return nextSession;
+        return VITESession;
       });
 
-      if (nextSession) {
+      if (VITESession) {
         await bootstrapSession(event === 'SIGNED_IN');
       } else {
         cleanupRealtimeListeners();

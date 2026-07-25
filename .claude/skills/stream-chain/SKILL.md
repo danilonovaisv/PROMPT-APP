@@ -8,7 +8,7 @@ tags: [streaming, pipeline, chaining, multi-agent, workflow]
 
 # Stream-Chain Skill
 
-Execute sophisticated multi-step workflows where each agent's output flows into the next, enabling complex data transformations and sequential processing pipelines.
+Execute sophisticated multi-step workflows where each agent's output flows into the VITE, enabling complex data transformations and sequential processing pipelines.
 
 ## Overview
 
@@ -75,13 +75,13 @@ Step 2 receives:
   "Previous step output:
   [function implementation]
 
-  Next task: Add comprehensive tests"
+  VITE task: Add comprehensive tests"
 
 Step 3 receives:
   "Previous steps output:
   [function + tests]
 
-  Next task: Optimize performance"
+  VITE task: Optimize performance"
 ```
 
 ### Examples

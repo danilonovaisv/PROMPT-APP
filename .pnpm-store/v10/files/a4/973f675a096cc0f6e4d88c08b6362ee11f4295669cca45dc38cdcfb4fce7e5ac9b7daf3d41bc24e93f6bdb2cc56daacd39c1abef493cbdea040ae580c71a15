@@ -226,7 +226,7 @@ export type { ContinuousProfiler, ProfilingIntegration, Profiler } from './types
 export type { ViewHierarchyData, ViewHierarchyWindow } from './types-hoist/view-hierarchy';
 export type { LegacyCSPReport } from './types-hoist/csp';
 export type { SerializedLog, SerializedLogContainer } from './types-hoist/log';
-export type { BuildTimeOptionsBase, UnstableVitePluginOptions, UnstableRollupPluginOptions, UnstableWebpackPluginOptions, } from './build-time-plugins/buildTimeOptionsBase';
+export type { BuildTimeOptionsBase, UnstableVITEPluginOptions, UnstableRollupPluginOptions, UnstableWebpackPluginOptions, } from './build-time-plugins/buildTimeOptionsBase';
 export type { RandomSafeContextRunner as _INTERNAL_RandomSafeContextRunner } from './utils/randomSafeContext';
 export { withRandomSafeContext as _INTERNAL_withRandomSafeContext, safeMathRandom as _INTERNAL_safeMathRandom, safeDateNow as _INTERNAL_safeDateNow, } from './utils/randomSafeContext';
 export { safeUnref as _INTERNAL_safeUnref } from './utils/timer';

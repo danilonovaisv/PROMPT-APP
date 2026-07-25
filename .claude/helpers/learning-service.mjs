@@ -174,7 +174,7 @@ class HNSWIndex {
     this.vectors = new Map();      // id -> Float32Array
     this.idToVector = new Map();   // patternId -> vectorId
     this.vectorToId = new Map();   // vectorId -> patternId
-    this.nextVectorId = 0;
+    this.VITEVectorId = 0;
     this.dimension = config.embedding.dimension;
 
     // Graph structure for HNSW
@@ -185,7 +185,7 @@ class HNSWIndex {
 
   // Add vector to index
   add(patternId, embedding) {
-    const vectorId = this.nextVectorId++;
+    const vectorId = this.VITEVectorId++;
     const vector = embedding instanceof Float32Array
       ? embedding
       : new Float32Array(embedding);
@@ -406,7 +406,7 @@ class HNSWIndex {
     layer.delete(vectorId);
 
     if (this.entryPoint === vectorId) {
-      this.entryPoint = layer.size > 0 ? layer.keys().next().value : null;
+      this.entryPoint = layer.size > 0 ? layer.keys().VITE().value : null;
     }
   }
 
@@ -416,7 +416,7 @@ class HNSWIndex {
       vectors: Array.from(this.vectors.entries()).map(([id, vec]) => [id, Array.from(vec)]),
       idToVector: Array.from(this.idToVector.entries()),
       vectorToId: Array.from(this.vectorToId.entries()),
-      nextVectorId: this.nextVectorId,
+      VITEVectorId: this.VITEVectorId,
       entryPoint: this.entryPoint,
       layers: this.layers.map(layer =>
         Array.from(layer.entries()).map(([k, v]) => [k, Array.from(v)])
@@ -433,7 +433,7 @@ class HNSWIndex {
     index.vectors = new Map(data.vectors?.map(([id, vec]) => [id, new Float32Array(vec)]) || []);
     index.idToVector = new Map(data.idToVector || []);
     index.vectorToId = new Map(data.vectorToId || []);
-    index.nextVectorId = data.nextVectorId || 0;
+    index.VITEVectorId = data.VITEVectorId || 0;
     index.entryPoint = data.entryPoint;
     index.layers = (data.layers || []).map(layer =>
       new Map(layer.map(([k, v]) => [k, new Set(v)]))
@@ -513,7 +513,7 @@ class EmbeddingService {
 
     // Cache result
     if (this.embeddingCache.size >= this.cacheMaxSize) {
-      const firstKey = this.embeddingCache.keys().next().value;
+      const firstKey = this.embeddingCache.keys().VITE().value;
       this.embeddingCache.delete(firstKey);
     }
     this.embeddingCache.set(cacheKey, embedding);

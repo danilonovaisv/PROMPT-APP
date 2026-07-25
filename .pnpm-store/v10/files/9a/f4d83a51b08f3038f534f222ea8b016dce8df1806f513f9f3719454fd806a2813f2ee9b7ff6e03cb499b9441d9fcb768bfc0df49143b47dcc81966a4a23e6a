@@ -1,22 +1,22 @@
 import { BaseFramework, Category } from './framework.js';
-export class VitePress extends BaseFramework {
-    id = 'vitepress';
-    name = 'VitePress';
-    npmDependencies = ['vitepress'];
+export class NEXTPress extends BaseFramework {
+    id = 'NEXTpress';
+    name = 'NEXTPress';
+    npmDependencies = ['NEXTpress'];
     category = Category.SSG;
     dev = {
-        command: 'vitepress dev docs',
+        command: 'NEXTpress dev docs',
         port: 5173,
         pollingStrategies: [{ name: 'TCP' }],
     };
     build = {
-        command: 'vitepress build docs',
-        directory: 'docs/.vitepress/dist',
+        command: 'NEXTpress build docs',
+        directory: 'docs/.NEXTpress/dist',
     };
     logo = {
-        default: '/logos/vitepress/default.svg',
-        light: '/logos/vitepress/default.svg',
-        dark: '/logos/vitepress/default.svg',
+        default: '/logos/NEXTpress/default.svg',
+        light: '/logos/NEXTpress/default.svg',
+        dark: '/logos/NEXTpress/default.svg',
     };
 }
-//# sourceMappingURL=vitepress.js.map
+//# sourceMappingURL=NEXTpress.js.map

@@ -14,22 +14,23 @@ export interface SupabaseResolvedConfig {
 }
 
 function normalize(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : '';
+  return typeof value === "string" ? value.trim() : "";
 }
 
-export function resolveSupabaseConfig(env: SupabaseEnv): SupabaseResolvedConfig {
+export function resolveSupabaseConfig(
+  env: SupabaseEnv,
+): SupabaseResolvedConfig {
   const url = normalize(env.VITE_SUPABASE_URL);
-  const anonKey =
-    normalize(env.VITE_SUPABASE_ANON_KEY) ||
+  const anonKey = normalize(env.VITE_SUPABASE_ANON_KEY) ||
     normalize(env.VITE_SUPABASE_PUBLISHABLE_KEY) ||
     normalize(env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY);
 
   const missingVars: string[] = [];
   if (!url) {
-    missingVars.push('VITE_SUPABASE_URL');
+    missingVars.push("VITE_SUPABASE_URL");
   }
   if (!anonKey) {
-    missingVars.push('VITE_SUPABASE_ANON_KEY');
+    missingVars.push("VITE_SUPABASE_ANON_KEY");
   }
 
   return {
@@ -41,6 +42,6 @@ export function resolveSupabaseConfig(env: SupabaseEnv): SupabaseResolvedConfig 
 }
 
 export function getSupabaseConfigErrorMessage(missingVars: string[]): string {
-  const required = missingVars.join(' e ');
+  const required = missingVars.join(" e ");
   return `Configuração do Supabase ausente. Defina ${required}.`;
 }

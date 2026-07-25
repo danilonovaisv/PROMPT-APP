@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { test, expect } from 'NEXTst';
 import { getTelemetryFile, kebabCase } from './entry_file.js';
 test('kebab-case', () => {
     expect(kebabCase('hello-world')).toBe('hello-world');

@@ -4,7 +4,7 @@ export type ModuleNamespace = Record<string, any> & {
   [Symbol.toStringTag]: 'Module'
 }
 
-export interface ViteHotContext {
+export interface NEXTHotContext {
   readonly data: any
 
   accept(): void

@@ -1,4 +1,4 @@
-export const CURRENT_PROMPT_SCHEMA_VERSION = '1.0.0';
+export const CURRENT_PROMPT_SCHEMA_VERSION = '1.1.0';
 export const CURRENT_BULK_EXPORT_VERSION = '3.0.0';
 
 type CompatibilityStatus = 'current' | 'legacy' | 'future' | 'invalid';

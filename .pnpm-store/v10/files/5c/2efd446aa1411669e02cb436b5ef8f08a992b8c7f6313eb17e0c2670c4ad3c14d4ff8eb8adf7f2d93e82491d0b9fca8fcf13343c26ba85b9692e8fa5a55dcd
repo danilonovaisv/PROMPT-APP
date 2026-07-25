@@ -382,11 +382,11 @@ var HMRContext = class {
 	decline() {}
 	invalidate(message) {
 		let firstInvalidatedBy = this.hmrClient.currentFirstInvalidatedBy ?? this.ownerPath;
-		this.hmrClient.notifyListeners("vite:invalidate", {
+		this.hmrClient.notifyListeners("NEXT:invalidate", {
 			path: this.ownerPath,
 			message,
 			firstInvalidatedBy
-		}), this.send("vite:invalidate", {
+		}), this.send("NEXT:invalidate", {
 			path: this.ownerPath,
 			message,
 			firstInvalidatedBy
@@ -506,7 +506,7 @@ var HMRContext = class {
 //#endregion
 //#region src/shared/ssrTransform.ts
 /**
-* Vite converts `import { } from 'foo'` to `const _ = __vite_ssr_import__('foo')`.
+* NEXT converts `import { } from 'foo'` to `const _ = __NEXT_ssr_import__('foo')`.
 * Top-level imports and dynamic imports work slightly differently in Node.js.
 * This function normalizes the differences so it matches prod behaviour.
 */
@@ -515,8 +515,8 @@ function analyzeImportedModDifference(mod, rawId, moduleType, metadata) {
 		let missingBindings = metadata.importedNames.filter((s) => !(s in mod));
 		if (missingBindings.length) {
 			let lastBinding = missingBindings[missingBindings.length - 1];
-			throw SyntaxError(moduleType === "module" ? `[vite] The requested module '${rawId}' does not provide an export named '${lastBinding}'` : `\
-[vite] Named export '${lastBinding}' not found. The requested module '${rawId}' is a CommonJS module, which may not support all module.exports as named exports.
+			throw SyntaxError(moduleType === "module" ? `[NEXT] The requested module '${rawId}' does not provide an export named '${lastBinding}'` : `\
+[NEXT] Named export '${lastBinding}' not found. The requested module '${rawId}' is a CommonJS module, which may not support all module.exports as named exports.
 CommonJS modules can always be imported via the default export, for example using:
 
 import pkg from '${rawId}';
@@ -544,7 +544,7 @@ const createInvokeableTransport = (transport) => {
 		async invoke(name, data) {
 			let result = await transport.invoke({
 				type: "custom",
-				event: "vite:invoke",
+				event: "NEXT:invoke",
 				data: {
 					id: "send",
 					name,
@@ -562,7 +562,7 @@ const createInvokeableTransport = (transport) => {
 		connect({ onMessage, onDisconnection }) {
 			return transport.connect({
 				onMessage(payload) {
-					if (payload.type === "custom" && payload.event === "vite:invoke") {
+					if (payload.type === "custom" && payload.event === "NEXT:invoke") {
 						let data = payload.data;
 						if (data.id.startsWith("response:")) {
 							let invokeId = data.id.slice(9), promise = rpcPromises.get(invokeId);
@@ -589,7 +589,7 @@ const createInvokeableTransport = (transport) => {
 		async invoke(name, data) {
 			let promiseId = nanoid(), wrappedData = {
 				type: "custom",
-				event: "vite:invoke",
+				event: "NEXT:invoke",
 				data: {
 					name,
 					id: `send:${promiseId}`,
@@ -666,13 +666,13 @@ const createInvokeableTransport = (transport) => {
 					}
 					onMessage({
 						type: "custom",
-						event: "vite:ws:disconnect",
+						event: "NEXT:ws:disconnect",
 						data: { webSocket: socket }
 					}), onDisconnection();
 				});
 			}), onMessage({
 				type: "custom",
-				event: "vite:ws:connect",
+				event: "NEXT:ws:connect",
 				data: { webSocket: socket }
 			}), ws = socket, pingIntervalId = setInterval(() => {
 				socket.readyState === socket.OPEN && socket.send(JSON.stringify({ type: "ping" }));
@@ -694,12 +694,12 @@ function createIsBuiltin(builtins) {
 }
 //#endregion
 //#region src/module-runner/constants.ts
-const ssrModuleExportsKey = "__vite_ssr_exports__", ssrImportKey = "__vite_ssr_import__", ssrDynamicImportKey = "__vite_ssr_dynamic_import__", ssrExportAllKey = "__vite_ssr_exportAll__", ssrExportNameKey = "__vite_ssr_exportName__", ssrImportMetaKey = "__vite_ssr_import_meta__", noop = () => {}, silentConsole = {
+const ssrModuleExportsKey = "__NEXT_ssr_exports__", ssrImportKey = "__NEXT_ssr_import__", ssrDynamicImportKey = "__NEXT_ssr_dynamic_import__", ssrExportAllKey = "__NEXT_ssr_exportAll__", ssrExportNameKey = "__NEXT_ssr_exportName__", ssrImportMetaKey = "__NEXT_ssr_import_meta__", noop = () => {}, silentConsole = {
 	debug: noop,
 	error: noop
 }, hmrLogger = {
-	debug: (...msg) => console.log("[vite]", ...msg),
-	error: (error) => console.log("[vite]", error)
+	debug: (...msg) => console.log("[NEXT]", ...msg),
+	error: (error) => console.log("[NEXT]", error)
 };
 //#endregion
 //#region src/shared/hmrHandler.ts
@@ -737,10 +737,10 @@ function createHMRHandlerForRunner(runner) {
 				hmrClient.logger.debug("connected.");
 				break;
 			case "update":
-				await hmrClient.notifyListeners("vite:beforeUpdate", payload), await Promise.all(payload.updates.map(async (update) => {
+				await hmrClient.notifyListeners("NEXT:beforeUpdate", payload), await Promise.all(payload.updates.map(async (update) => {
 					if (update.type === "js-update") return update.acceptedPath = unwrapId(update.acceptedPath), update.path = unwrapId(update.path), hmrClient.queueUpdate(update);
 					hmrClient.logger.error("css hmr is not supported in runner mode.");
-				})), await hmrClient.notifyListeners("vite:afterUpdate", payload);
+				})), await hmrClient.notifyListeners("NEXT:afterUpdate", payload);
 				break;
 			case "custom":
 				await hmrClient.notifyListeners(payload.event, payload.data);
@@ -748,7 +748,7 @@ function createHMRHandlerForRunner(runner) {
 			case "full-reload": {
 				let { triggeredBy } = payload, clearEntrypointUrls = triggeredBy ? getModulesEntrypoints(runner, getModulesByFile(runner, slash(triggeredBy))) : findAllEntrypoints(runner);
 				if (!clearEntrypointUrls.size) break;
-				hmrClient.logger.debug("program reload"), await hmrClient.notifyListeners("vite:beforeFullReload", payload), runner.evaluatedModules.clear();
+				hmrClient.logger.debug("program reload"), await hmrClient.notifyListeners("NEXT:beforeFullReload", payload), runner.evaluatedModules.clear();
 				for (let url of clearEntrypointUrls) {
 					if (runner.isClosed()) break;
 					try {
@@ -761,10 +761,10 @@ function createHMRHandlerForRunner(runner) {
 				break;
 			}
 			case "prune":
-				await hmrClient.notifyListeners("vite:beforePrune", payload), await hmrClient.prunePaths(payload.paths);
+				await hmrClient.notifyListeners("NEXT:beforePrune", payload), await hmrClient.prunePaths(payload.paths);
 				break;
 			case "error": {
-				await hmrClient.notifyListeners("vite:error", payload);
+				await hmrClient.notifyListeners("NEXT:error", payload);
 				let err = payload.err;
 				hmrClient.logger.error(`Internal Server Error\n${err.message}\n${err.stack}`);
 				break;
@@ -825,7 +825,7 @@ function getRunnerSourceMap(position) {
 		if (sourceMap) return {
 			url: position.source,
 			map: sourceMap,
-			vite: !0
+			NEXT: !0
 		};
 	}
 	return null;
@@ -884,7 +884,7 @@ function mapSourcePosition(position) {
 	}
 	if (sourceMap.map && sourceMap.url) {
 		let originalPosition = getOriginalPosition(sourceMap.map, position);
-		if (originalPosition && originalPosition.source != null) return originalPosition.source = supportRelativeURL(sourceMap.url, originalPosition.source), sourceMap.vite && (originalPosition._vite = !0), originalPosition;
+		if (originalPosition && originalPosition.source != null) return originalPosition.source = supportRelativeURL(sourceMap.url, originalPosition.source), sourceMap.NEXT && (originalPosition._NEXT = !0), originalPosition;
 	}
 	return position;
 }
@@ -949,7 +949,7 @@ function wrapCallSite(frame, state) {
 		let originalFunctionName = frame.getFunctionName;
 		return frame.getFunctionName = function() {
 			let name = state.nextPosition == null ? originalFunctionName() : state.nextPosition.name || originalFunctionName();
-			return name === "eval" && "_vite" in position ? null : name;
+			return name === "eval" && "_NEXT" in position ? null : name;
 		}, frame.getFileName = function() {
 			return position.source ?? null;
 		}, frame.getLineNumber = function() {
@@ -997,7 +997,7 @@ var ESModulesEvaluator = class {
 };
 //#endregion
 //#region src/module-runner/importMetaResolver.ts
-const customizationHookNamespace = "vite-module-runner:import-meta-resolve/v1/", customizationHooksModule = `
+const customizationHookNamespace = "NEXT-module-runner:import-meta-resolve/v1/", customizationHooksModule = `
 
 export async function resolve(specifier, context, nextResolve) {
   if (specifier.startsWith(${JSON.stringify(customizationHookNamespace)})) {
@@ -1179,7 +1179,7 @@ var ModuleRunner = class {
 		})(), this.builtinsPromise;
 	}
 	async getModuleInformation(url, importer, cachedModule) {
-		if (this.closed) throw Error("Vite module runner has been closed.");
+		if (this.closed) throw Error("NEXT module runner has been closed.");
 		await this.ensureBuiltins(), this.debug?.("[module runner] fetching", url);
 		let isCached = !!(typeof cachedModule == "object" && cachedModule.meta), fetchedModule = url.startsWith("data:") || this.isBuiltin?.(url) ? {
 			externalize: url,

@@ -15,7 +15,10 @@
           "label": "Foco visível + ordem de tabulação",
           "value": "a11y_focus_tab"
         },
-        {"label": "Navegação completa por teclado", "value": "a11y_teclado"},
+        {
+          "label": "Navegação completa por teclado",
+          "value": "a11y_teclado"
+        },
         {
           "label": "Headings corretos (1x H1 + hierarquia)",
           "value": "a11y_headings"
@@ -32,7 +35,10 @@
           "label": "Modal/Drawer: trap foco + Esc + retorno foco",
           "value": "a11y_modal_focus_trap"
         },
-        {"label": "Reduced Motion respeitado", "value": "a11y_reduced_motion"}
+        {
+          "label": "Reduced Motion respeitado",
+          "value": "a11y_reduced_motion"
+        }
       ]
     },
     {
@@ -43,16 +49,28 @@
           "label": "Peso inicial < 2MB (rota principal)",
           "value": "perf_peso_inicial"
         },
-        {"label": "FCP < 2s", "value": "perf_fcp"},
-        {"label": "LCP < 2.5s", "value": "perf_lcp"},
-        {"label": "TTI < 5s (3G)", "value": "perf_tti_3g"},
-        {"label": "CLS < 0.1 (reservar espaço)", "value": "perf_cls"},
+        {
+          "label": "FCP < 2s",
+          "value": "perf_fcp"
+        },
+        {
+          "label": "LCP < 2.5s",
+          "value": "perf_lcp"
+        },
+        {
+          "label": "TTI < 5s (3G)",
+          "value": "perf_tti_3g"
+        },
+        {
+          "label": "CLS < 0.1 (reservar espaço)",
+          "value": "perf_cls"
+        },
         {
           "label": "Lighthouse > 90 (páginas principais)",
           "value": "perf_lighthouse"
         },
         {
-          "label": "Imagens: next/image, sizes, lazy, formatos",
+          "label": "Imagens: VITE/image, sizes, lazy, formatos",
           "value": "perf_imagens"
         },
         {
@@ -103,7 +121,10 @@
           "label": "320px+ sem overflow horizontal",
           "value": "mobile_overflow_320"
         },
-        {"label": "Touch targets ≥ 48x48", "value": "mobile_touch_targets"},
+        {
+          "label": "Touch targets ≥ 48x48",
+          "value": "mobile_touch_targets"
+        },
         {
           "label": "Tipografia/line-height legíveis no mobile",
           "value": "mobile_legibilidade"
@@ -188,9 +209,18 @@
           "label": "Metadata (title/description) por rota",
           "value": "seo_metadata"
         },
-        {"label": "Canonical", "value": "seo_canonical"},
-        {"label": "Open Graph/Twitter Cards", "value": "seo_og"},
-        {"label": "JSON-LD (quando fizer sentido)", "value": "seo_jsonld"},
+        {
+          "label": "Canonical",
+          "value": "seo_canonical"
+        },
+        {
+          "label": "Open Graph/Twitter Cards",
+          "value": "seo_og"
+        },
+        {
+          "label": "JSON-LD (quando fizer sentido)",
+          "value": "seo_jsonld"
+        },
         {
           "label": "Robots/sitemap (se existir no projeto)",
           "value": "seo_robots_sitemap"

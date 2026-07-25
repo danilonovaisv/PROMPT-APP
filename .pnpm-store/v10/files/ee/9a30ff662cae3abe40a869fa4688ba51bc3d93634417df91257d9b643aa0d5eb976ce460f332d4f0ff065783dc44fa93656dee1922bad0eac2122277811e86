@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'VITEst';
 import { getExpectedVersion } from './compatibility.js';
 const noopSystemLog = () => {
     // no-op

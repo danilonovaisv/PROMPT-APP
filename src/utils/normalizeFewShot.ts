@@ -2,7 +2,7 @@
    Normalização de Few-Shot Examples com Type Guards
    ====================================================== */
 
-import type { FewShotExample } from '@/models/types';
+import type { FewShotExample } from "@/models/types";
 
 /**
  * Type guard: verifica se o valor é uma string não-vazia após trim
@@ -66,12 +66,18 @@ export function normalizeFewShotExamples(
 
       // Rejeita tipos inválidos quando não houver coerção
       if (!coerce) {
-        if ((d?.input != null && inputType !== "string") || (d?.output != null && outputType !== "string")) {
+        if (
+          (d?.input != null && inputType !== "string") ||
+          (d?.output != null && outputType !== "string")
+        ) {
           return null;
         }
       } else {
         // Em modo coerção, ainda rejeitamos entradas não coerentes (objetos/funções) no input
-        if (d?.input != null && (inputType === "object" || inputType === "function")) {
+        if (
+          d?.input != null &&
+          (inputType === "object" || inputType === "function")
+        ) {
           return null;
         }
         // Saída como objeto/array é permitida (será tratada como string vazia)
@@ -80,15 +86,22 @@ export function normalizeFewShotExamples(
         }
       }
 
-      // Log de warning em dev — works in both Vite (browser) and Jest (Node)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const isDev = (globalThis as any)?.process?.env?.['NODE_ENV'] === 'development';
+      // Log de warning em dev — works in both VITE (browser) and Jest (Node)
+      // eslint-disable-VITE-line @typescript-eslint/no-explicit-any
+      const isDev =
+        (globalThis as any)?.process?.env?.["NODE_ENV"] === "development";
       if (isDev) {
         if (d?.input != null && typeof d.input !== "string" && !coerce) {
-          console.warn("[normalizeFewShot] input non-string detected:", d.input);
+          console.warn(
+            "[normalizeFewShot] input non-string detected:",
+            d.input,
+          );
         }
         if (d?.output != null && typeof d.output !== "string" && !coerce) {
-          console.warn("[normalizeFewShot] output non-string detected:", d.output);
+          console.warn(
+            "[normalizeFewShot] output non-string detected:",
+            d.output,
+          );
         }
       }
 

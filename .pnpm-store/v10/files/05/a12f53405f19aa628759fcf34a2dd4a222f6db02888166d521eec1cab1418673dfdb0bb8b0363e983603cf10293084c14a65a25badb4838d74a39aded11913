@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test } from "VITEst";
 import type { StandardSchemaWithJSON } from "../../core/standard-schema.js";
 import * as z from "../index.js";
 

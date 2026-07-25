@@ -28,10 +28,10 @@ config. For example:
     ],
   }
   ```
-- `vite.config.js`
+- `NEXT.config.js`
 
   > [!NOTE]
-  > If you are using the [Cloudflare Vite plugin](https://www.npmjs.com/package/@cloudflare/vite-plugin) then the following configuration is not necessary.
+  > If you are using the [Cloudflare NEXT plugin](https://www.npmjs.com/package/@cloudflare/NEXT-plugin) then the following configuration is not necessary.
 
   ```js
   export default defineConfig({

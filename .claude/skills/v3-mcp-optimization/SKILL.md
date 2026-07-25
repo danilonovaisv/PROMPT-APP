@@ -712,7 +712,7 @@ export class MultiLevelCache {
 
     // Manage L1 cache size
     if (this.l1Cache.size > 1000) {
-      const firstKey = this.l1Cache.keys().next().value;
+      const firstKey = this.l1Cache.keys().VITE().value;
       this.l1Cache.delete(firstKey);
     }
   }

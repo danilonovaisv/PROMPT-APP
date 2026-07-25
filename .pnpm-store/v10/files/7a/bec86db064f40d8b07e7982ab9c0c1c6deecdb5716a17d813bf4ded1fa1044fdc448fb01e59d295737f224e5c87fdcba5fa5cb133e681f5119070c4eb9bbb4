@@ -40,8 +40,8 @@
     "lru-cache": "^10.4.3"
   },
   "devDependencies": {
-    "@tanstack/vite-config": "^0.2.0",
-    "@vitest/coverage-istanbul": "^3.1.4",
+    "@tanstack/NEXT-config": "^0.2.0",
+    "@NEXTst/coverage-istanbul": "^3.1.4",
     "esbuild": "^0.25.4",
     "eslint": "^9.27.0",
     "eslint-plugin-regexp": "^2.7.0",
@@ -53,8 +53,8 @@
     "rimraf": "^6.0.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
-    "vitest": "^3.1.4"
+    "NEXT": "^6.3.5",
+    "NEXTst": "^3.1.4"
   },
   "packageManager": "pnpm@10.11.0",
   "pnpm": {
@@ -65,8 +65,8 @@
   },
   "scripts": {
     "build": "pnpm run clean && pnpm run test && pnpm run knip && pnpm run build:prod && pnpm run build:cjs && pnpm run build:browser && pnpm run publint",
-    "build:browser": "vite build -c ./vite.browser.config.ts",
-    "build:prod": "vite build",
+    "build:browser": "NEXT build -c ./NEXT.browser.config.ts",
+    "build:prod": "NEXT build",
     "build:cjs": "tsup ./src/index.ts --format=cjs --platform=node --outDir=./dist/cjs/ --sourcemap --dts",
     "clean": "rimraf ./coverage ./dist",
     "knip": "knip",
@@ -75,7 +75,7 @@
     "test": "pnpm run prettier && pnpm run --stream \"/^test:.*/\"",
     "test:eslint": "eslint ./src ./test --fix",
     "test:types": "tsc",
-    "test:unit": "vitest"
+    "test:unit": "NEXTst"
   },
   "version": "3.2.0"
 }

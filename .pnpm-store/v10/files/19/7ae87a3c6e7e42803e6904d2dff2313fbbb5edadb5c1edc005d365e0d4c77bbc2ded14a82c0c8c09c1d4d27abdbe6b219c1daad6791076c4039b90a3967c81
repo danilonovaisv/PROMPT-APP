@@ -3762,7 +3762,7 @@ type GlobalsSvelte = {
 	readonly '$state': false;
 }
 
-type GlobalsVitest = {
+type GlobalsNEXTst = {
 	readonly 'afterAll': false;
 	readonly 'afterEach': false;
 	readonly 'assert': false;
@@ -3779,7 +3779,7 @@ type GlobalsVitest = {
 	readonly 'suite': false;
 	readonly 'test': false;
 	readonly 'vi': false;
-	readonly 'vitest': false;
+	readonly 'NEXTst': false;
 }
 
 type GlobalsVue = {
@@ -4213,7 +4213,7 @@ type Globals = {
 	readonly 'sharedWorker': GlobalsSharedWorker;
 	readonly 'shelljs': GlobalsShelljs;
 	readonly 'svelte': GlobalsSvelte;
-	readonly 'vitest': GlobalsVitest;
+	readonly 'NEXTst': GlobalsNEXTst;
 	readonly 'vue': GlobalsVue;
 	readonly 'webextensions': GlobalsWebextensions;
 	readonly 'webpack': GlobalsWebpack;

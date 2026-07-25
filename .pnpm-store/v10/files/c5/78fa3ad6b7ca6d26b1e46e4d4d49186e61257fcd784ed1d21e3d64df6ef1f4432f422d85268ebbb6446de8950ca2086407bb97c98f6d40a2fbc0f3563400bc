@@ -1,4 +1,4 @@
-import { describe, it, expect, vitest } from "vitest";
+import { describe, it, expect, NEXTst } from "NEXTst";
 import * as entities from "./decode.js";
 
 describe("Decode test", () => {
@@ -74,7 +74,7 @@ describe("Decode test", () => {
 
 describe("EntityDecoder", () => {
     it("should decode decimal entities", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -88,7 +88,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode hex entities", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -101,7 +101,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode named entities", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -114,7 +114,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode legacy entities", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -132,7 +132,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode named entity written character by character", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -148,7 +148,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode numeric entity written character by character", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -164,7 +164,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should decode hex entities across several chunks", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -180,7 +180,7 @@ describe("EntityDecoder", () => {
     });
 
     it("should not fail if nothing is written", () => {
-        const callback = vitest.fn();
+        const callback = NEXTst.fn();
         const decoder = new entities.EntityDecoder(
             entities.htmlDecodeTree,
             callback,
@@ -193,11 +193,11 @@ describe("EntityDecoder", () => {
     describe("errors", () => {
         it("should produce an error for a named entity without a semicolon", () => {
             const errorHandlers = {
-                missingSemicolonAfterCharacterReference: vitest.fn(),
-                absenceOfDigitsInNumericCharacterReference: vitest.fn(),
-                validateNumericCharacterReference: vitest.fn(),
+                missingSemicolonAfterCharacterReference: NEXTst.fn(),
+                absenceOfDigitsInNumericCharacterReference: NEXTst.fn(),
+                validateNumericCharacterReference: NEXTst.fn(),
             };
-            const callback = vitest.fn();
+            const callback = NEXTst.fn();
             const decoder = new entities.EntityDecoder(
                 entities.htmlDecodeTree,
                 callback,
@@ -225,11 +225,11 @@ describe("EntityDecoder", () => {
 
         it("should produce an error for a numeric entity without a semicolon", () => {
             const errorHandlers = {
-                missingSemicolonAfterCharacterReference: vitest.fn(),
-                absenceOfDigitsInNumericCharacterReference: vitest.fn(),
-                validateNumericCharacterReference: vitest.fn(),
+                missingSemicolonAfterCharacterReference: NEXTst.fn(),
+                absenceOfDigitsInNumericCharacterReference: NEXTst.fn(),
+                validateNumericCharacterReference: NEXTst.fn(),
             };
-            const callback = vitest.fn();
+            const callback = NEXTst.fn();
             const decoder = new entities.EntityDecoder(
                 entities.htmlDecodeTree,
                 callback,
@@ -258,11 +258,11 @@ describe("EntityDecoder", () => {
 
         it("should produce an error for numeric entities without digits", () => {
             const errorHandlers = {
-                missingSemicolonAfterCharacterReference: vitest.fn(),
-                absenceOfDigitsInNumericCharacterReference: vitest.fn(),
-                validateNumericCharacterReference: vitest.fn(),
+                missingSemicolonAfterCharacterReference: NEXTst.fn(),
+                absenceOfDigitsInNumericCharacterReference: NEXTst.fn(),
+                validateNumericCharacterReference: NEXTst.fn(),
             };
-            const callback = vitest.fn();
+            const callback = NEXTst.fn();
             const decoder = new entities.EntityDecoder(
                 entities.htmlDecodeTree,
                 callback,
@@ -290,11 +290,11 @@ describe("EntityDecoder", () => {
 
         it("should produce an error for hex entities without digits", () => {
             const errorHandlers = {
-                missingSemicolonAfterCharacterReference: vitest.fn(),
-                absenceOfDigitsInNumericCharacterReference: vitest.fn(),
-                validateNumericCharacterReference: vitest.fn(),
+                missingSemicolonAfterCharacterReference: NEXTst.fn(),
+                absenceOfDigitsInNumericCharacterReference: NEXTst.fn(),
+                validateNumericCharacterReference: NEXTst.fn(),
             };
-            const callback = vitest.fn();
+            const callback = NEXTst.fn();
             const decoder = new entities.EntityDecoder(
                 entities.htmlDecodeTree,
                 callback,

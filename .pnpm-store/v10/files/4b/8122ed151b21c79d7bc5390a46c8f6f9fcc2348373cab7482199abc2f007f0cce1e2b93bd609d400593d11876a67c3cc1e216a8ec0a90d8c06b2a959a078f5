@@ -1,5 +1,5 @@
-import { a as ExternalFetchResult, c as ViteFetchResult, i as createWebSocketModuleRunnerTransport, n as ModuleRunnerTransportHandlers, o as FetchFunctionOptions, r as NormalizedModuleRunnerTransport, s as FetchResult, t as ModuleRunnerTransport } from "./chunks/moduleRunnerTransport.js";
-import { ModuleNamespace, ViteHotContext } from "#types/hot";
+import { a as ExternalFetchResult, c as VITEFetchResult, i as createWebSocketModuleRunnerTransport, n as ModuleRunnerTransportHandlers, o as FetchFunctionOptions, r as NormalizedModuleRunnerTransport, s as FetchResult, t as ModuleRunnerTransport } from "./chunks/moduleRunnerTransport.js";
+import { ModuleNamespace, VITEHotContext } from "#types/hot";
 import { HotPayload, Update } from "#types/hmrPayload";
 import { InferCustomEventPayload } from "#types/customEvent";
 
@@ -89,12 +89,12 @@ interface SSRImportMetadata extends DefineImportMetadata {
 }
 //#endregion
 //#region src/module-runner/constants.d.ts
-declare const ssrModuleExportsKey = "__vite_ssr_exports__";
-declare const ssrImportKey = "__vite_ssr_import__";
-declare const ssrDynamicImportKey = "__vite_ssr_dynamic_import__";
-declare const ssrExportAllKey = "__vite_ssr_exportAll__";
-declare const ssrExportNameKey = "__vite_ssr_exportName__";
-declare const ssrImportMetaKey = "__vite_ssr_import_meta__";
+declare const ssrModuleExportsKey = "__VITE_ssr_exports__";
+declare const ssrImportKey = "__VITE_ssr_import__";
+declare const ssrDynamicImportKey = "__VITE_ssr_dynamic_import__";
+declare const ssrExportAllKey = "__VITE_ssr_exportAll__";
+declare const ssrExportNameKey = "__VITE_ssr_exportName__";
+declare const ssrImportMetaKey = "__VITE_ssr_import_meta__";
 //#endregion
 //#region src/module-runner/runner.d.ts
 interface ModuleRunnerDebugger {
@@ -159,7 +159,7 @@ interface InterceptorOptions {
 interface ModuleRunnerImportMeta {
   url: string;
   env: ImportMetaEnv;
-  hot?: ViteHotContext;
+  hot?: VITEHotContext;
   dirname: string;
   filename: string;
   glob: (...args: any[]) => any;
@@ -180,7 +180,7 @@ interface ModuleEvaluator {
   */
   startOffset?: number;
   /**
-  * Run code that was transformed by Vite.
+  * Run code that was transformed by VITE.
   * @param context Function context
   * @param code Transformed code
   * @param module The module node
@@ -192,7 +192,7 @@ interface ModuleEvaluator {
   */
   runExternalModule(file: string): Promise<any>;
 }
-type ResolvedResult = (ExternalFetchResult | ViteFetchResult) & {
+type ResolvedResult = (ExternalFetchResult | VITEFetchResult) & {
   url: string;
   id: string;
 };
@@ -211,7 +211,7 @@ interface ModuleRunnerOptions {
   /**
   * Configure how source maps are resolved. Prefers `node` if `process.setSourceMapsEnabled` is available.
   * Otherwise it will use `prepareStackTrace` by default which overrides `Error.prepareStackTrace` method.
-  * You can provide an object to configure how file contents and source maps are resolved for files that were not processed by Vite.
+  * You can provide an object to configure how file contents and source maps are resolved for files that were not processed by VITE.
   */
   sourcemapInterceptor?: false | "node" | "prepareStackTrace" | InterceptorOptions;
   /**

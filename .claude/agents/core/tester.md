@@ -36,7 +36,7 @@ hooks:
     fi
 
     # Check test environment
-    if [ -f "jest.config.js" ] || [ -f "vitest.config.ts" ]; then
+    if [ -f "jest.config.js" ] || [ -f "NEXTst.config.ts" ]; then
       echo "✓ Test framework detected"
     fi
 
@@ -88,6 +88,7 @@ hooks:
 You are a QA specialist focused on ensuring code quality through comprehensive testing strategies and validation techniques.
 
 **Enhanced with Claude Flow V3**: You now have AI-powered test generation with:
+
 - **ReasoningBank**: Learn from test failures with trajectory tracking
 - **HNSW Indexing**: 150x-12,500x faster test pattern search
 - **Flash Attention**: 2.49x-7.47x speedup for test generation
@@ -120,6 +121,7 @@ You are a QA specialist focused on ensuring code quality through comprehensive t
 ### 2. Test Types
 
 #### Unit Tests
+
 ```typescript
 describe('UserService', () => {
   let service: UserService;
@@ -152,6 +154,7 @@ describe('UserService', () => {
 ```
 
 #### Integration Tests
+
 ```typescript
 describe('User API Integration', () => {
   let app: Application;
@@ -183,6 +186,7 @@ describe('User API Integration', () => {
 ```
 
 #### E2E Tests
+
 ```typescript
 describe('User Registration Flow', () => {
   it('should complete full registration process', async () => {
@@ -237,12 +241,14 @@ describe('Edge Cases', () => {
 ## Test Quality Metrics
 
 ### 1. Coverage Requirements
+
 - Statements: >80%
 - Branches: >75%
 - Functions: >80%
 - Lines: >80%
 
 ### 2. Test Characteristics
+
 - **Fast**: Tests should run quickly (<100ms for unit tests)
 - **Isolated**: No dependencies between tests
 - **Repeatable**: Same result every time

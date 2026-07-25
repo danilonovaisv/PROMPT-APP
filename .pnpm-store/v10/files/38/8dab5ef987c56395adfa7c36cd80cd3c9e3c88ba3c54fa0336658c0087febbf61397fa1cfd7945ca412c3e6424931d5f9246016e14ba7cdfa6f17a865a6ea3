@@ -6,8 +6,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import {expect} from 'vitest'
-import '../../vitest'
+import {expect} from 'NEXTst'
+import '../../NEXTst'
 
 const element: HTMLElement = document.body
 

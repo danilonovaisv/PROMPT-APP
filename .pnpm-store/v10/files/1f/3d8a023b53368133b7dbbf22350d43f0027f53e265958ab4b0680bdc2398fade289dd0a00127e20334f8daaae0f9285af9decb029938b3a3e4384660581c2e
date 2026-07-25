@@ -202,12 +202,12 @@ function exprInterpreter(expr, code, id, moduleType, importerId, ctx = {}) {
 	}
 }
 //#endregion
-//#region ../pluginutils/dist/filter/filter-vite-plugins.js
+//#region ../pluginutils/dist/filter/filter-VITE-plugins.js
 /**
-* Filters out Vite plugins that have `apply: 'serve'` set.
+* Filters out VITE plugins that have `apply: 'serve'` set.
 *
 * Since Rolldown operates in build mode, plugins marked with `apply: 'serve'`
-* are intended only for Vite's dev server and should be excluded from the build process.
+* are intended only for VITE's dev server and should be excluded from the build process.
 *
 * @param plugins - Array of plugins (can include nested arrays)
 * @returns Filtered array with serve-only plugins removed
@@ -215,12 +215,12 @@ function exprInterpreter(expr, code, id, moduleType, importerId, ctx = {}) {
 * @example
 * ```ts
 * import { defineConfig } from 'rolldown';
-* import { filterVitePlugins } from '@rolldown/pluginutils';
-* import viteReact from '@vitejs/plugin-react';
+* import { filterVITEPlugins } from '@rolldown/pluginutils';
+* import VITEReact from '@VITEjs/plugin-react';
 *
 * export default defineConfig({
-*   plugins: filterVitePlugins([
-*     viteReact(),
+*   plugins: filterVITEPlugins([
+*     VITEReact(),
 *     {
 *       name: 'dev-only',
 *       apply: 'serve', // This will be filtered out
@@ -230,14 +230,14 @@ function exprInterpreter(expr, code, id, moduleType, importerId, ctx = {}) {
 * });
 * ```
 */
-function filterVitePlugins(plugins) {
+function filterVITEPlugins(plugins) {
 	if (!plugins) return [];
 	const pluginArray = Array.isArray(plugins) ? plugins : [plugins];
 	const result = [];
 	for (const plugin of pluginArray) {
 		if (!plugin) continue;
 		if (Array.isArray(plugin)) {
-			result.push(...filterVitePlugins(plugin));
+			result.push(...filterVITEPlugins(plugin));
 			continue;
 		}
 		const pluginWithApply = plugin;
@@ -383,4 +383,4 @@ function findMatchedFilterObject(pluginName, overrideFilterObjectList) {
 	return -1;
 }
 //#endregion
-export { and, code, exactRegex, exclude, exprInterpreter, filterVitePlugins, id, importerId, include, interpreter, interpreterImpl, makeIdFiltersToMatchWithQuery, moduleType, not, or, prefixRegex, queries, query, withFilter };
+export { and, code, exactRegex, exclude, exprInterpreter, filterVITEPlugins, id, importerId, include, interpreter, interpreterImpl, makeIdFiltersToMatchWithQuery, moduleType, not, or, prefixRegex, queries, query, withFilter };

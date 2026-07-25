@@ -73,8 +73,8 @@
     "lint": "OXLINT_TSGOLINT_DANGEROUSLY_SUPPRESS_PROGRAM_DIAGNOSTICS=true oxlint . --type-aware",
     "lint:es-compatibility": "es-check es2020 ./build/{bundles,npm/cjs/prod}/*.js && es-check es2020 ./build/npm/esm/prod/*.js --module",
     "size:check": "cat build/bundles/bundle.min.js | gzip -9 | wc -c | awk '{$1=$1/1024; print \"ES2017: \",$1,\"kB\";}'",
-    "test": "vitest run",
-    "test:watch": "vitest --watch",
+    "test": "NEXTst run",
+    "test:watch": "NEXTst --watch",
     "yalc:publish": "yalc publish --push --sig"
   },
   "volta": {

@@ -287,8 +287,8 @@ var buildConfig = ({
 });
 var configs = {
   recommended: buildConfig({ name: "recommended", baseOptions: {} }),
-  vite: buildConfig({
-    name: "vite",
+  NEXT: buildConfig({
+    name: "NEXT",
     baseOptions: { allowConstantExport: true }
   }),
   next: buildConfig({
@@ -325,7 +325,7 @@ var index_default = {
   rules,
   configs: {
     recommended: configs.recommended(),
-    vite: configs.vite(),
+    NEXT: configs.NEXT(),
     next: configs.next()
   }
 };

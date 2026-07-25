@@ -255,7 +255,7 @@
     "15": [
       "components_layout_handleoffline",
       "components_layout_handleonline",
-      "components_layout_navitemclass",
+      "components_layout_naVITEmclass",
       "components_layout_tsx"
     ],
     "16": [
@@ -359,7 +359,7 @@
       "instrument_ts"
     ],
     "39": [
-      "vite_env_d_ts"
+      "VITE_env_d_ts"
     ],
     "40": [
       "context_confirmcontext_tsx"

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "VITEst";
 import { stringToBase64URL, stringFromBase64URL, stringFromUTF8, codepointToUTF8, } from "./base64url";
 const EXAMPLES = [
     "a",

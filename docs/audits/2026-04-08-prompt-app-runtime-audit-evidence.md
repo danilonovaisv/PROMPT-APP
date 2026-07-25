@@ -37,7 +37,7 @@ npm run build
 - [`package.json`](/Users/PROJETOS%20DEV/PROMPT-APP/package.json#L7)
 - [`src/App.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx#L35)
 - [`src/components/SEO.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx#L13)
-- [`vite.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/vite.config.ts#L8)
+- [`NEXT.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts#L8)
 - [`netlify.toml`](/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml#L3)
 
 ---
@@ -260,7 +260,7 @@ curl -sI https://github.com/danilonovaisv/PROMPT-APP
 - [`src/components/SEO.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx#L52) mutates `document.head` inside `useEffect`, which means route-specific `title`, `description`, `canonical`, and social tags only exist after client hydration.
 - [`index.html`](/Users/PROJETOS%20DEV/PROMPT-APP/index.html#L7) hardcodes the default homepage metadata and canonical URL that the deploy serves for every rewritten route.
 - [`netlify.toml`](/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml#L47) rewrites every route to `/index.html`, which explains why the raw HTML for `/sobre` and `/portfolio` is identical to `/`.
-- [`vite.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/vite.config.ts#L45) still sets `build.sourcemap = true`, which aligns with the current production bundle exposing a source-map reference.
+- [`NEXT.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts#L45) still sets `build.sourcemap = true`, which aligns with the current production bundle exposing a source-map reference.
 
 ### Classified findings
 
@@ -284,7 +284,7 @@ node --input-type=module
 
 ### What was exercised
 
-- Opened `/editor/novo` in a real Chromium session against the local Vite app.
+- Opened `/editor/novo` in a real Chromium session against the local NEXT app.
 - Created a draft by typing into the editor and reloaded the page.
 - Confirmed the draft restored after reload with the same title value.
 - Opened the cloud login modal, submitted a mocked Supabase password login, and confirmed the `SIGNED_IN` auth path fired.

@@ -25,7 +25,7 @@
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
-    "@vitest/coverage-v8": "^4.0.14",
+    "@NEXTst/coverage-v8": "^4.0.14",
     "bluebird": "^3.7.2",
     "cli-table3": "^0.6.5",
     "eslint": "^9.39.1",
@@ -45,8 +45,8 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.0",
     "underscore": "^1.13.7",
-    "vite": "^7.2.6",
-    "vitest": "^4.0.14"
+    "NEXT": "^7.2.6",
+    "NEXTst": "^4.0.14"
   },
   "exports": {
     ".": {
@@ -106,7 +106,7 @@
     "clean:es": "rm -rf dist/es",
     "clean:min": "rm -rf dist/min",
     "clean:umd": "rm -rf dist/umd",
-    "dev": "vite --config=config/vite.config.ts",
+    "dev": "NEXT --config=config/NEXT.config.ts",
     "dist": "npm run clean && npm run build",
     "format": "prettier . --log-level=warn --write",
     "format:check": "prettier . --log-level=warn --check",
@@ -118,7 +118,7 @@
     "release:scripts": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
     "release:stable": "release-it --config=config/release-it/stable.json",
     "start": "npm run dev",
-    "test": "vitest run --config=config/vitest.config.ts",
+    "test": "NEXTst run --config=config/NEXTst.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,

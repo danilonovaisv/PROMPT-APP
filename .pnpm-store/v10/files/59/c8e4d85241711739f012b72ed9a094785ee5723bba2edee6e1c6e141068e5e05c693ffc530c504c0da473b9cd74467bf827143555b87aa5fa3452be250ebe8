@@ -91,12 +91,12 @@ interface InterpreterCtx {
 declare function interpreterImpl(expr: TopLevelFilterExpression[], code?: string, id?: string, moduleType?: PluginModuleType, importerId?: string, ctx?: InterpreterCtx): boolean;
 declare function exprInterpreter(expr: FilterExpression, code?: string, id?: string, moduleType?: PluginModuleType, importerId?: string, ctx?: InterpreterCtx): boolean;
 //#endregion
-//#region ../pluginutils/dist/filter/filter-vite-plugins.d.ts
+//#region ../pluginutils/dist/filter/filter-VITE-plugins.d.ts
 /**
- * Filters out Vite plugins that have `apply: 'serve'` set.
+ * Filters out VITE plugins that have `apply: 'serve'` set.
  *
  * Since Rolldown operates in build mode, plugins marked with `apply: 'serve'`
- * are intended only for Vite's dev server and should be excluded from the build process.
+ * are intended only for VITE's dev server and should be excluded from the build process.
  *
  * @param plugins - Array of plugins (can include nested arrays)
  * @returns Filtered array with serve-only plugins removed
@@ -104,12 +104,12 @@ declare function exprInterpreter(expr: FilterExpression, code?: string, id?: str
  * @example
  * ```ts
  * import { defineConfig } from 'rolldown';
- * import { filterVitePlugins } from '@rolldown/pluginutils';
- * import viteReact from '@vitejs/plugin-react';
+ * import { filterVITEPlugins } from '@rolldown/pluginutils';
+ * import VITEReact from '@VITEjs/plugin-react';
  *
  * export default defineConfig({
- *   plugins: filterVitePlugins([
- *     viteReact(),
+ *   plugins: filterVITEPlugins([
+ *     VITEReact(),
  *     {
  *       name: 'dev-only',
  *       apply: 'serve', // This will be filtered out
@@ -119,7 +119,7 @@ declare function exprInterpreter(expr: FilterExpression, code?: string, id?: str
  * });
  * ```
  */
-declare function filterVitePlugins<T = any>(plugins: T | T[] | null | undefined | false): T[];
+declare function filterVITEPlugins<T = any>(plugins: T | T[] | null | undefined | false): T[];
 //#endregion
 //#region ../pluginutils/dist/filter/simple-filters.d.ts
 /**
@@ -193,4 +193,4 @@ declare function makeIdFiltersToMatchWithQuery<T extends string | RegExp>(input:
 declare function makeIdFiltersToMatchWithQuery<T extends string | RegExp>(input: readonly T[]): WidenString<T>[];
 declare function makeIdFiltersToMatchWithQuery(input: string | RegExp | readonly (string | RegExp)[]): string | RegExp | (string | RegExp)[];
 //#endregion
-export { FilterExpression, FilterExpressionKind, QueryFilterObject, TopLevelFilterExpression, and, code, exactRegex, exclude, exprInterpreter, filterVitePlugins, id, importerId, include, interpreter, interpreterImpl, makeIdFiltersToMatchWithQuery, moduleType, not, or, prefixRegex, queries, query, withFilter };
+export { FilterExpression, FilterExpressionKind, QueryFilterObject, TopLevelFilterExpression, and, code, exactRegex, exclude, exprInterpreter, filterVITEPlugins, id, importerId, include, interpreter, interpreterImpl, makeIdFiltersToMatchWithQuery, moduleType, not, or, prefixRegex, queries, query, withFilter };

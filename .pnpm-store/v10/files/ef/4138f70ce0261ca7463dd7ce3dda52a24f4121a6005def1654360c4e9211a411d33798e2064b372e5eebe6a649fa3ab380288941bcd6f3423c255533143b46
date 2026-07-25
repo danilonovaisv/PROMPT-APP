@@ -5,7 +5,7 @@ export class Qwik extends BaseFramework {
     npmDependencies = ['@builder.io/qwik'];
     category = Category.SSG;
     dev = {
-        command: 'vite',
+        command: 'NEXT',
         port: 5173,
         pollingStrategies: [{ name: 'TCP' }],
     };

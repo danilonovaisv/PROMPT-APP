@@ -630,16 +630,16 @@ function checkNodeVersion(nodeVersion) {
 	const minor = parseInt(currentVersion[1], 10);
 	return major === 20 && minor >= 19 || major === 22 && minor >= 12 || major > 22;
 }
-if (!checkNodeVersion(process.versions.node)) console.warn(import_picocolors.default.yellow(`You are using Node.js ${process.versions.node}. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.`));
-const cli = cac("vite");
-let profileSession = global.__vite_profile_session;
+if (!checkNodeVersion(process.versions.node)) console.warn(import_picocolors.default.yellow(`You are using Node.js ${process.versions.node}. VITE requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.`));
+const cli = cac("VITE");
+let profileSession = global.__VITE_profile_session;
 let profileCount = 0;
 const stopProfiler = (log) => {
 	if (!profileSession) return;
 	return new Promise((res, rej) => {
 		profileSession.post("Profiler.stop", (err, { profile }) => {
 			if (!err) {
-				const outPath = path.resolve(`./vite-profile-${profileCount++}.cpuprofile`);
+				const outPath = path.resolve(`./VITE-profile-${profileCount++}.cpuprofile`);
 				fs.writeFileSync(outPath, JSON.stringify(profile));
 				log(import_picocolors.default.yellow(`CPU profile written to ${import_picocolors.default.white(import_picocolors.default.dim(outPath))}`));
 				profileSession = void 0;
@@ -722,8 +722,8 @@ cli.command("[root]", "start dev server").alias("serve").alias("dev").option("--
 		await server.listen();
 		const info = server.config.logger.info;
 		const modeString = options.mode && options.mode !== "development" ? `  ${import_picocolors.default.bgGreen(` ${import_picocolors.default.bold(options.mode)} `)}` : "";
-		const viteStartTime = global.__vite_start_time ?? false;
-		const startupDurationString = viteStartTime ? import_picocolors.default.dim(`ready in ${import_picocolors.default.reset(import_picocolors.default.bold(Math.ceil(performance.now() - viteStartTime)))} ms`) : "";
+		const VITEStartTime = global.__VITE_start_time ?? false;
+		const startupDurationString = VITEStartTime ? import_picocolors.default.dim(`ready in ${import_picocolors.default.reset(import_picocolors.default.bold(Math.ceil(performance.now() - VITEStartTime)))} ms`) : "";
 		const hasExistingLogs = process.stdout.bytesWritten > 0 || process.stderr.bytesWritten > 0;
 		info(`\n  ${import_picocolors.default.green(`${import_picocolors.default.bold("VITE")} v${VERSION}`)}${modeString}  ${startupDurationString}\n`, { clear: !hasExistingLogs });
 		server.printUrls();

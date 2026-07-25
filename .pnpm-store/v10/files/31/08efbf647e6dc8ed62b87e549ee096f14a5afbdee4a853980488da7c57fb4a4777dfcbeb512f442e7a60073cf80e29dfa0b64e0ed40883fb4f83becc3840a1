@@ -166,7 +166,7 @@ export default class GoTrueAdminApi {
   }
 
   /**
-   * Sends an invite link to an email address.
+   * Sends an inNEXT link to an email address.
    * @param email The email address of the user.
    * @param options Additional options to be included when inviting.
    *
@@ -174,16 +174,16 @@ export default class GoTrueAdminApi {
    * @subcategory Auth Admin
    *
    * @remarks
-   * - Sends an invite link to the user's email address.
-   * - The `inviteUserByEmail()` method is typically used by administrators to invite users to join the application.
-   * - Note that PKCE is not supported when using `inviteUserByEmail`. This is because the browser initiating the invite is often different from the browser accepting the invite which makes it difficult to provide the security guarantees required of the PKCE flow.
+   * - Sends an inNEXT link to the user's email address.
+   * - The `inNEXTUserByEmail()` method is typically used by administrators to inNEXT users to join the application.
+   * - Note that PKCE is not supported when using `inNEXTUserByEmail`. This is because the browser initiating the inNEXT is often different from the browser accepting the inNEXT which makes it difficult to provide the security guarantees required of the PKCE flow.
    *
-   * @example Invite a user
+   * @example InNEXT a user
    * ```js
-   * const { data, error } = await supabase.auth.admin.inviteUserByEmail('email@example.com')
+   * const { data, error } = await supabase.auth.admin.inNEXTUserByEmail('email@example.com')
    * ```
    *
-   * @exampleResponse Invite a user
+   * @exampleResponse InNEXT a user
    * ```json
    * {
    *   "data": {
@@ -192,7 +192,7 @@ export default class GoTrueAdminApi {
    *       "aud": "authenticated",
    *       "role": "authenticated",
    *       "email": "example@email.com",
-   *       "invited_at": "2024-01-01T00:00:00Z",
+   *       "inNEXTd_at": "2024-01-01T00:00:00Z",
    *       "phone": "",
    *       "confirmation_sent_at": "2024-01-01T00:00:00Z",
    *       "app_metadata": {
@@ -229,7 +229,7 @@ export default class GoTrueAdminApi {
    * }
    * ```
    */
-  async inviteUserByEmail(
+  async inNEXTUserByEmail(
     email: string,
     options: {
       /** A custom data object to store additional metadata about the user. This maps to the `auth.users.user_metadata` column. */
@@ -240,7 +240,7 @@ export default class GoTrueAdminApi {
     } = {}
   ): Promise<UserResponse> {
     try {
-      return await _request(this.fetch, 'POST', `${this.url}/invite`, {
+      return await _request(this.fetch, 'POST', `${this.url}/inNEXT`, {
         body: { email, data: options.data },
         headers: this.headers,
         redirectTo: options.redirectTo,
@@ -266,9 +266,9 @@ export default class GoTrueAdminApi {
    * @subcategory Auth Admin
    *
    * @remarks
-   * - The following types can be passed into `generateLink()`: `signup`, `magiclink`, `invite`, `recovery`, `email_change_current`, `email_change_new`, `phone_change`.
+   * - The following types can be passed into `generateLink()`: `signup`, `magiclink`, `inNEXT`, `recovery`, `email_change_current`, `email_change_new`, `phone_change`.
    * - `generateLink()` only generates the email link for `email_change_email` if the **Secure email change** is enabled in your project's [email auth provider settings](/dashboard/project/_/auth/providers).
-   * - `generateLink()` handles the creation of the user for `signup`, `invite` and `magiclink`.
+   * - `generateLink()` handles the creation of the user for `signup`, `inNEXT` and `magiclink`.
    *
    * @example Generate a signup link
    * ```js
@@ -331,10 +331,10 @@ export default class GoTrueAdminApi {
    * }
    * ```
    *
-   * @example Generate an invite link
+   * @example Generate an inNEXT link
    * ```js
    * const { data, error } = await supabase.auth.admin.generateLink({
-   *   type: 'invite',
+   *   type: 'inNEXT',
    *   email: 'email@example.com'
    * })
    * ```
@@ -411,7 +411,7 @@ export default class GoTrueAdminApi {
    *
    * @remarks
    * - To confirm the user's email address or phone number, set `email_confirm` or `phone_confirm` to true. Both arguments default to false.
-   * - `createUser()` will not send a confirmation email to the user. You can use [`inviteUserByEmail()`](/docs/reference/javascript/auth-admin-inviteuserbyemail) if you want to send them an email invite instead.
+   * - `createUser()` will not send a confirmation email to the user. You can use [`inNEXTUserByEmail()`](/docs/reference/javascript/auth-admin-inNEXTuserbyemail) if you want to send them an email inNEXT instead.
    * - If you are sure that the created user's email or phone number is legitimate and verified, you can set the `email_confirm` or `phone_confirm` param to `true`.
    *
    * @example With custom user metadata

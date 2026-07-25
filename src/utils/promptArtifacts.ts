@@ -1,6 +1,7 @@
 import type { ContextMenu, Prompt } from '@/models/types';
 import {
   type CompiledPromptPayload,
+  getMissingRequiredMemoryKeys,
   type MenuDefinition,
   type TemplatePayload,
   compilePromptPayload,
@@ -97,10 +98,11 @@ function buildListBlock(title: string, items: string[]): string[] {
 function applyReplacements(text: string, variables: Record<string, string>): string {
   let result = text || "";
   Object.entries(variables).forEach(([key, value]) => {
-    // Escapa a chave para uso em regex (embora chaves geralmente sejam seguras A-Z0-9_)
     const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`{{${escapedKey}}}`, 'g');
-    result = result.replace(regex, value);
+    const directRegex = new RegExp(`{{\\s*${escapedKey}\\s*}}`, 'g');
+    const memoryRegex = new RegExp(`{{\\s*memory\\.${escapedKey}\\s*}}`, 'g');
+    result = result.replace(memoryRegex, value);
+    result = result.replace(directRegex, value);
   });
   return result;
 }
@@ -209,6 +211,17 @@ export function renderFinalPromptText(
 export function getCompiledPayloadForPrompt(prompt: Prompt): CompiledPromptPayload {
   if (prompt.compiledPayload) {
     return prompt.compiledPayload;
+  }
+
+  const fixedVariables = prompt.selectionPayload?.fixed_variables || {};
+  const missingMemoryKeys = getMissingRequiredMemoryKeys(
+    prompt.promptPayload,
+    fixedVariables,
+  );
+  if (missingMemoryKeys.length > 0) {
+    throw new Error(
+      `Memória obrigatória ausente: ${missingMemoryKeys.join(', ')}`,
+    );
   }
 
   return compilePromptPayload(

@@ -38,8 +38,8 @@
           "value": "codebase_biblioteca_react",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "nextjs_app_router"
+              "label": "VITE.js App Router",
+              "value": "VITEjs_app_router"
             },
             {
               "label": "React component library",
@@ -144,8 +144,8 @@
           "sub_options": []
         },
         {
-          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
-          "value": "nextjs_app_router",
+          "label": "VITE.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "VITEjs_app_router",
           "sub_options": [
             {
               "label": "Server Components first",
@@ -158,18 +158,18 @@
           ]
         },
         {
-          "label": "React + Vite + TypeScript + Tailwind CSS",
-          "value": "react_vite",
+          "label": "React + VITE + TypeScript + Tailwind CSS",
+          "value": "react_VITE",
           "sub_options": []
         },
         {
-          "label": "Next.js + Supabase",
-          "value": "nextjs_supabase",
+          "label": "VITE.js + Supabase",
+          "value": "VITEjs_supabase",
           "sub_options": []
         },
         {
-          "label": "Next.js + Firebase",
-          "value": "nextjs_firebase",
+          "label": "VITE.js + Firebase",
+          "value": "VITEjs_firebase",
           "sub_options": []
         }
       ]

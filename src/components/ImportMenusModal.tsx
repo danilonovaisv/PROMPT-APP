@@ -154,10 +154,10 @@ export default function ImportMenusModal({ isOpen, onClose }: ImportMenusModalPr
 
     const togglePreviewMenu = (idx: number) => {
         setExpandedPreview((prev) => {
-            const next = new Set(prev);
-            if (next.has(idx)) next.delete(idx);
-            else next.add(idx);
-            return next;
+            const VITE = new Set(prev);
+            if (VITE.has(idx)) VITE.delete(idx);
+            else VITE.add(idx);
+            return VITE;
         });
     };
 

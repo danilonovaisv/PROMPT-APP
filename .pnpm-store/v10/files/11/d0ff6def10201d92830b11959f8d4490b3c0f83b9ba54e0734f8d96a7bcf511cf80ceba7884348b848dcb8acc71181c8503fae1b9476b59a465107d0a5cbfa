@@ -14,8 +14,8 @@
   "scripts": {
     "build": "tsup-node",
     "prepack": "npm run build",
-    "test": "npm run types && vitest run",
-    "test:dev": "vitest",
+    "test": "npm run types && VITEst run",
+    "test:dev": "VITEst",
     "test:ci": "npm run build && npm run test",
     "dev": "tsup-node --watch",
     "types": "tsc --noEmit",
@@ -36,6 +36,6 @@
     "@types/node": "^18.19.110",
     "tsup": "^8.0.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   }
 }

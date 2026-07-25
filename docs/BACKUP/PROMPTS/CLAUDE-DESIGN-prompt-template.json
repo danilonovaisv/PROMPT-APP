@@ -23,9 +23,9 @@
       "Incluir estados de UI obrigatórios quando aplicáveis: loading, empty, error, success, disabled, hover, active, focus-visible, selected, expanded, collapsed e reduced-motion.",
       "Incluir acessibilidade desde o início: contraste, foco visível, navegação por teclado, landmarks semânticos, nomes acessíveis, aria-labels quando necessários e suporte a prefers-reduced-motion.",
       "Incluir responsividade para mobile, tablet e desktop, com regras de adaptação de grid, navegação, densidade, spacing, tipografia e componentes.",
-      "Quando a stack envolver Next.js, React, TypeScript ou Tailwind CSS, orientar mapeamento do design system para componentes reutilizáveis, tokens consumíveis e estrutura escalável de pastas, sem transformar a saída principal em código de produção.",
+      "Quando a stack envolver VITE.js, React, TypeScript ou Tailwind CSS, orientar mapeamento do design system para componentes reutilizáveis, tokens consumíveis e estrutura escalável de pastas, sem transformar a saída principal em código de produção.",
       "Quando Supabase ou Firebase forem selecionados, limitar a integração a arquitetura, estados de dados e pontos de handoff; não inventar credenciais, schemas, endpoints ou regras de segurança não fornecidas.",
-      "Para motion, definir duração, easing, stagger, gatilhos de viewport, limites de intensidade e fallback para reduced motion; usar Framer Motion apenas quando a stack selecionada indicar React ou Next.js.",
+      "Para motion, definir duração, easing, stagger, gatilhos de viewport, limites de intensidade e fallback para reduced motion; usar Framer Motion apenas quando a stack selecionada indicar React ou VITE.js.",
       "Incluir um bloco de validação para revisar se o design system gerado pelo Claude Design cobre tokens, componentes, layout patterns, acessibilidade, responsividade, governança e consistência de marca.",
       "Orientar iteração incremental: começar pelo core system, validar com um projeto teste e depois refiná-lo com comentários específicos ou Remix quando houver evolução de marca.",
       "Preservar a identidade da marca e usar referências externas apenas para estrutura, comportamento e inspiração; nunca copiar marca, textos, assets ou elementos proprietários de terceiros."
@@ -44,8 +44,8 @@
     ],
     "few_shot_examples": [
       {
-        "input": "Marca: SaaS B2B de segurança. Fontes: codebase Next.js com componentes Button, Card, Table e Sidebar; brand guide em PDF com azul #0057FF, cinza #0F172A, fonte Inter; screenshots de dashboard. Objetivo: criar design system organizacional no Claude Design para dashboards e landing pages.",
-        "output": "Gerar um prompt XML para Claude Design com <source_materials> priorizando codebase, brand guide e screenshots; <tokens> com cores semânticas, tipografia, spacing, radius e motion; <components> cobrindo Button, Card, Table, Sidebar, formulários e estados; <layout_patterns> para dashboards e landing pages; <accessibility>, <responsive_behavior>, <handoff_requirements> para Next.js e <validation_checklist> antes de publicar o sistema para a equipe."
+        "input": "Marca: SaaS B2B de segurança. Fontes: codebase VITE.js com componentes Button, Card, Table e Sidebar; brand guide em PDF com azul #0057FF, cinza #0F172A, fonte Inter; screenshots de dashboard. Objetivo: criar design system organizacional no Claude Design para dashboards e landing pages.",
+        "output": "Gerar um prompt XML para Claude Design com <source_materials> priorizando codebase, brand guide e screenshots; <tokens> com cores semânticas, tipografia, spacing, radius e motion; <components> cobrindo Button, Card, Table, Sidebar, formulários e estados; <layout_patterns> para dashboards e landing pages; <accessibility>, <responsive_behavior>, <handoff_requirements> para VITE.js e <validation_checklist> antes de publicar o sistema para a equipe."
       },
       {
         "input": "Marca: edtech. Fontes: deck institucional e site público. Não há codebase. Objetivo: criar primeira versão do design system no Claude Design, com foco em componentes para landing pages, apresentações e páginas de produto.",
@@ -100,8 +100,8 @@
           "description": "Repositório com componentes, estilos, tokens e padrões reais de produto.",
           "sub_options": [
             {
-              "label": "Next.js App Router",
-              "value": "nextjs_app_router",
+              "label": "VITE.js App Router",
+              "value": "VITEjs_app_router",
               "description": "Projeto com rotas, layouts e componentes em App Router."
             },
             {
@@ -229,8 +229,8 @@
           "sub_options": []
         },
         {
-          "label": "Next.js App Router + React + TypeScript + Tailwind CSS",
-          "value": "nextjs_app_router",
+          "label": "VITE.js App Router + React + TypeScript + Tailwind CSS",
+          "value": "VITEjs_app_router",
           "description": "Handoff para app moderno com componentes reutilizáveis e tokens mapeáveis.",
           "sub_options": [
             {
@@ -246,20 +246,20 @@
           ]
         },
         {
-          "label": "React + Vite + TypeScript + Tailwind CSS",
-          "value": "react_vite",
+          "label": "React + VITE + TypeScript + Tailwind CSS",
+          "value": "react_VITE",
           "description": "Handoff para protótipos e bibliotecas front-end leves.",
           "sub_options": []
         },
         {
-          "label": "Next.js + Supabase",
-          "value": "nextjs_supabase",
+          "label": "VITE.js + Supabase",
+          "value": "VITEjs_supabase",
           "description": "Inclui orientação de arquitetura para Auth, Database, Storage ou Realtime sem inventar credenciais.",
           "sub_options": []
         },
         {
-          "label": "Next.js + Firebase",
-          "value": "nextjs_firebase",
+          "label": "VITE.js + Firebase",
+          "value": "VITEjs_firebase",
           "description": "Inclui orientação de arquitetura para Auth, Firestore, Storage ou Functions sem inventar credenciais.",
           "sub_options": []
         }
@@ -458,10 +458,10 @@
       ],
       "stack_destino": [
         "claude_design_native",
-        "nextjs_app_router",
-        "react_vite",
-        "nextjs_supabase",
-        "nextjs_firebase"
+        "VITEjs_app_router",
+        "react_VITE",
+        "VITEjs_supabase",
+        "VITEjs_firebase"
       ]
     }
   }

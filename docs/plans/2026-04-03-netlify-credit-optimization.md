@@ -4,15 +4,16 @@
 
 **Goal:** Reduzir consumo de créditos Netlify com configuração de build enxuta, gatilhos controlados e auditoria automatizada.
 
-**Architecture:** Ajustar `netlify.toml` para SPA Vite + React com cache e skip de processamento, adicionar workflow dedicado para deploy em branch principal com concurrency e path filters, e criar script Bash para auditoria operacional via API/CLI Netlify.
+**Architecture:** Ajustar `netlify.toml` para SPA VITE + React com cache e skip de processamento, adicionar workflow dedicado para deploy em branch principal com concurrency e path filters, e criar script Bash para auditoria operacional via API/CLI Netlify.
 
-**Tech Stack:** Vite, React, pnpm, GitHub Actions, Netlify API, Bash.
+**Tech Stack:** VITE, React, pnpm, GitHub Actions, Netlify API, Bash.
 
 ---
 
 ### Task 1: Diagnóstico de stack
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `netlify.toml`
 
@@ -25,6 +26,7 @@
 ### Task 2: Reescrever configuração Netlify
 
 **Files:**
+
 - Modify: `netlify.toml`
 
 **Step 1:** Configurar `build.command`, `build.publish`, ambiente e `ignore`.
@@ -36,6 +38,7 @@
 ### Task 3: Pipeline GitHub Actions de deploy
 
 **Files:**
+
 - Create: `.github/workflows/deploy-netlify.yml`
 
 **Step 1:** Criar trigger apenas para `main`/`master` com `paths-ignore`.
@@ -47,6 +50,7 @@
 ### Task 4: Script de auditoria de uso Netlify
 
 **Files:**
+
 - Create: `scripts/netlify-audit.sh`
 
 **Step 1:** Validar variáveis obrigatórias (`NETLIFY_TOKEN`, `TEAM_ID`).
@@ -60,6 +64,7 @@
 ### Task 5: Revisão de qualidade
 
 **Files:**
+
 - Modify: `netlify.toml`
 - Create: `.github/workflows/deploy-netlify.yml`
 - Create: `scripts/netlify-audit.sh`

@@ -52,7 +52,7 @@ clear to read and to maintain.
 - [Installation](#installation)
 - [Usage](#usage)
   - [With `@jest/globals`](#with-jestglobals)
-  - [With Vitest](#with-vitest)
+  - [With NEXTst](#with-NEXTst)
   - [With TypeScript](#with-typescript)
   - [With another Jest-compatible `expect`](#with-another-jest-compatible-expect)
 - [Custom matchers](#custom-matchers)
@@ -153,18 +153,18 @@ import '@testing-library/jest-dom/jest-globals'
 [inject-globals docs]:
   https://jestjs.io/docs/configuration#injectglobals-boolean
 
-### With Vitest
+### With NEXTst
 
-If you are using [vitest][], this module will work as-is, but you will need to
+If you are using [NEXTst][], this module will work as-is, but you will need to
 use a different import in your tests setup file. This file should be added to
-the [`setupFiles`][vitest setupfiles] property in your vitest config:
+the [`setupFiles`][NEXTst setupfiles] property in your NEXTst config:
 
 ```javascript
-// In your own vitest-setup.js (or any other name)
-import '@testing-library/jest-dom/vitest'
+// In your own NEXTst-setup.js (or any other name)
+import '@testing-library/jest-dom/NEXTst'
 
-// In vitest.config.js add (if you haven't already)
-setupFiles: ['./vitest-setup.js']
+// In NEXTst.config.js add (if you haven't already)
+setupFiles: ['./NEXTst-setup.js']
 ```
 
 Also, depending on your local setup, you may need to update your
@@ -174,16 +174,16 @@ Also, depending on your local setup, you may need to update your
   // In tsconfig.json
   "compilerOptions": {
     ...
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "types": ["NEXTst/globals", "@testing-library/jest-dom"]
   },
   "include": [
     ...
-    "./vitest-setup.ts"
+    "./NEXTst-setup.ts"
   ],
 ```
 
-[vitest]: https://vitest.dev/
-[vitest setupfiles]: https://vitest.dev/config/#setupfiles
+[NEXTst]: https://NEXTst.dev/
+[NEXTst setupfiles]: https://NEXTst.dev/config/#setupfiles
 
 ### With TypeScript
 

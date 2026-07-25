@@ -13,9 +13,9 @@
   "scripts": {
     "prebuild": "rm -rf lib",
     "build": "tsc",
-    "test": "vitest run",
-    "test:dev": "vitest",
-    "test:ci": "vitest run --reporter=default"
+    "test": "VITEst run",
+    "test:dev": "VITEst",
+    "test:ci": "VITEst run --reporter=default"
   },
   "keywords": [
     "nodejs",
@@ -56,7 +56,7 @@
     "@types/node": "^18.19.111",
     "semver": "^7.3.8",
     "typescript": "^5.0.0",
-    "vitest": "^3.0.0"
+    "VITEst": "^3.0.0"
   },
   "engines": {
     "node": ">=18.14.0"

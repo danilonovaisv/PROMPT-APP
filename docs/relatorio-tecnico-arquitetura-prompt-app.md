@@ -4,7 +4,7 @@
 
 Este relatório consolida a auditoria técnica do repositório local `PROMPT-APP` para apoiar a redação futura do Project Spec oficial. A análise foi feita em modo de documentação, sem alteração de código de aplicação.
 
-A fonte operacional usada foi o código local em `/workspace/PROMPT-APP`. A verificação do repositório GitHub obrigatório `https://github.com/danilonovaisv/DATABASE_AGENT_NEXT` foi tentada com `git ls-remote`, mas falhou porque o repositório exige credenciais no ambiente atual. A consulta ao vector store `vs_69520b1fb834819197e445db9aab8d69` também ficou bloqueada, pois não havia recursos ou templates MCP disponíveis na sessão.
+A fonte operacional usada foi o código local em `/workspace/PROMPT-APP`. A verificação do repositório GitHub obrigatório `https://github.com/danilonovaisv/DATABASE_AGENT_VITE` foi tentada com `git ls-remote`, mas falhou porque o repositório exige credenciais no ambiente atual. A consulta ao vector store `vs_69520b1fb834819197e445db9aab8d69` também ficou bloqueada, pois não havia recursos ou templates MCP disponíveis na sessão.
 
 Conclusão de fonte: o relatório abaixo deve ser tratado como fiel ao estado local auditado, com bloqueio parcial explícito para GitHub remoto e vector store.
 
@@ -16,8 +16,8 @@ O projeto está identificado como `prompt-app`, privado, versão `2.0.0`, com `p
 
 | Script | Comando | Função |
 | --- | --- | --- |
-| `dev` | `vite` | servidor local de desenvolvimento |
-| `build` | `tsc -p tsconfig.app.json && vite build` | typecheck de aplicação e build Vite |
+| `dev` | `VITE` | servidor local de desenvolvimento |
+| `build` | `tsc -p tsconfig.app.json && VITE build` | typecheck de aplicação e build VITE |
 | `test` | `jest` | suíte unitária |
 | `test:e2e` | `playwright test` | testes end to end |
 | `lint` | `eslint .` | lint do repositório |
@@ -28,15 +28,15 @@ O projeto está identificado como `prompt-app`, privado, versão `2.0.0`, com `p
 
 As dependências core reais no `package.json` são React `^19.2.6`, React DOM `^19.2.6`, React Router DOM `^7.16.0`, Dexie `^4.4.3`, Dexie React Hooks `^4.4.0`, Zod `^4.4.3`, Supabase JS `^2.106.2`, Supabase SSR `^0.10.3`, Sentry `^10.55.0`, Drizzle ORM `^0.45.2`, Netlify Neon `^0.1.2` e Lucide React `^1.17.0`.
 
-Há uma divergência importante em relação ao contexto informado antes da auditoria: o stack declarado mencionava TypeScript 5.9 e Vite 7.3, mas o código local usa TypeScript `~6.0.3` e Vite `^8.0.14`. O Project Spec oficial deve seguir o `package.json` atual ou registrar explicitamente a versão pretendida como meta futura.
+Há uma divergência importante em relação ao contexto informado antes da auditoria: o stack declarado mencionava TypeScript 5.9 e VITE 7.3, mas o código local usa TypeScript `~6.0.3` e VITE `^8.0.14`. O Project Spec oficial deve seguir o `package.json` atual ou registrar explicitamente a versão pretendida como meta futura.
 
-### TypeScript e Vite
+### TypeScript e VITE
 
 O `tsconfig.json` raiz ativa `strict` e `forceConsistentCasingInFileNames`, e referencia `tsconfig.app.json`, `tsconfig.node.json` e `tsconfig.jest.json`.
 
-O `tsconfig.app.json` define `target: ES2020`, libs `ES2020`, `DOM` e `DOM.Iterable`, `module: ESNext`, `moduleResolution: bundler`, `allowImportingTsExtensions`, `isolatedModules`, `jsx: react-jsx`, `strict`, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, e paths `@/*` para `./src/*`.
+O `tsconfig.app.json` define `target: ES2020`, libs `ES2020`, `DOM` e `DOM.Iterable`, `module: ESVITE`, `moduleResolution: bundler`, `allowImportingTsExtensions`, `isolatedModules`, `jsx: react-jsx`, `strict`, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports`, e paths `@/*` para `./src/*`.
 
-O `vite.config.ts` usa `@vitejs/plugin-react`, Sentry Vite Plugin com ativação condicional por `CI=true` ou `SENTRY_BUILD_PLUGIN=true`, bundle analysis opcional por `ANALYZE=true`, alias `@` para `/src`, chunks manuais para React, Dexie, Supabase e Lucide, `chunkSizeWarningLimit: 500` e `sourcemap: hidden`.
+O `VITE.config.ts` usa `@VITEjs/plugin-react`, Sentry VITE Plugin com ativação condicional por `CI=true` ou `SENTRY_BUILD_PLUGIN=true`, bundle analysis opcional por `ANALYZE=true`, alias `@` para `/src`, chunks manuais para React, Dexie, Supabase e Lucide, `chunkSizeWarningLimit: 500` e `sourcemap: hidden`.
 
 ### Inicialização e roteamento
 
@@ -539,7 +539,7 @@ O editor persiste localmente `promptPayload`, `selectionPayload`, `compiledPaylo
 
 ### Stack documentado divergente
 
-O contexto externo citava TypeScript 5.9 e Vite 7.3, mas o código local usa TypeScript 6.0.3 e Vite 8.0.14. O Project Spec deve corrigir isso.
+O contexto externo citava TypeScript 5.9 e VITE 7.3, mas o código local usa TypeScript 6.0.3 e VITE 8.0.14. O Project Spec deve corrigir isso.
 
 ### Local first, não offline only
 

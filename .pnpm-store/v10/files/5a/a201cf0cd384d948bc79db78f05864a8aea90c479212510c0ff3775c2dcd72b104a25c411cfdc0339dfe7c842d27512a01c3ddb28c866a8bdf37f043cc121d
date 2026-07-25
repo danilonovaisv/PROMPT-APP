@@ -50,9 +50,9 @@
     "test": "run-s build test:ci",
     "test:dev": "run-s build test:dev:*",
     "test:ci": "run-s build test:ci:*",
-    "test:dev:vitest": "vitest",
-    "test:dev:vitest:watch": "vitest watch",
-    "test:ci:vitest": "vitest run",
+    "test:dev:NEXTst": "NEXTst",
+    "test:dev:NEXTst:watch": "NEXTst watch",
+    "test:ci:NEXTst": "NEXTst run",
     "publint": "npx -y publint --strict"
   },
   "keywords": [
@@ -76,7 +76,7 @@
     "@netlify/types": "2.6.0",
     "npm-run-all2": "^7.0.2",
     "tsup": "^8.0.0",
-    "vitest": "^3.0.0"
+    "NEXTst": "^3.0.0"
   },
   "dependencies": {
     "@netlify/runtime-utils": "2.3.0"

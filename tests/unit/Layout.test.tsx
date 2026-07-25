@@ -23,7 +23,7 @@ jest.mock('@/db/database', () => ({
 jest.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: false,
   supabaseConfigErrorMessage:
-    'Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.',
+    'Configuração do Supabase ausente. Defina NEXT_SUPABASE_URL e NEXT_SUPABASE_ANON_KEY.',
 }));
 
 describe('Layout', () => {

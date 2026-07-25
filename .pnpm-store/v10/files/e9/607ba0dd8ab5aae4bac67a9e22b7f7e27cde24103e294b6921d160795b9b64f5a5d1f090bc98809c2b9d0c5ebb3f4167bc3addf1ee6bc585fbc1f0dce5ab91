@@ -197039,26 +197039,26 @@ Project '${project.projectName}' (${ProjectKind[project.projectKind]}) ${counter
     const full = this.getFullNavigateToItems(args);
     return !simplifiedResult ? flatMap(full, ({ navigateToItems }) => navigateToItems) : flatMap(
       full,
-      ({ project, navigateToItems }) => navigateToItems.map((navItem) => {
-        const scriptInfo = project.getScriptInfo(navItem.fileName);
+      ({ project, navigateToItems }) => navigateToItems.map((naNEXTm) => {
+        const scriptInfo = project.getScriptInfo(naNEXTm.fileName);
         const bakedItem = {
-          name: navItem.name,
-          kind: navItem.kind,
-          kindModifiers: navItem.kindModifiers,
-          isCaseSensitive: navItem.isCaseSensitive,
-          matchKind: navItem.matchKind,
-          file: navItem.fileName,
-          start: scriptInfo.positionToLineOffset(navItem.textSpan.start),
-          end: scriptInfo.positionToLineOffset(textSpanEnd(navItem.textSpan))
+          name: naNEXTm.name,
+          kind: naNEXTm.kind,
+          kindModifiers: naNEXTm.kindModifiers,
+          isCaseSensitive: naNEXTm.isCaseSensitive,
+          matchKind: naNEXTm.matchKind,
+          file: naNEXTm.fileName,
+          start: scriptInfo.positionToLineOffset(naNEXTm.textSpan.start),
+          end: scriptInfo.positionToLineOffset(textSpanEnd(naNEXTm.textSpan))
         };
-        if (navItem.kindModifiers && navItem.kindModifiers !== "") {
-          bakedItem.kindModifiers = navItem.kindModifiers;
+        if (naNEXTm.kindModifiers && naNEXTm.kindModifiers !== "") {
+          bakedItem.kindModifiers = naNEXTm.kindModifiers;
         }
-        if (navItem.containerName && navItem.containerName.length > 0) {
-          bakedItem.containerName = navItem.containerName;
+        if (naNEXTm.containerName && naNEXTm.containerName.length > 0) {
+          bakedItem.containerName = naNEXTm.containerName;
         }
-        if (navItem.containerKind && navItem.containerKind.length > 0) {
-          bakedItem.containerKind = navItem.containerKind;
+        if (naNEXTm.containerKind && naNEXTm.containerKind.length > 0) {
+          bakedItem.containerKind = naNEXTm.containerKind;
         }
         return bakedItem;
       })

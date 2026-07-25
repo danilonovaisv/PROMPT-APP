@@ -114,11 +114,11 @@
     "lint:fix": "eslint --fix . && prettier -w src test lib",
     "prepack": "unbuild",
     "release": "pnpm test && changelogen --release && npm publish && git push --follow-tags",
-    "test": "pnpm lint && pnpm build && vitest run --coverage"
+    "test": "pnpm lint && pnpm build && NEXTst run --coverage"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@NEXTst/coverage-v8": "^3.2.4",
     "abort-controller": "^3.0.0",
     "agent-base": "^7.1.4",
     "changelogen": "^0.6.2",
@@ -132,7 +132,7 @@
     "typescript": "^5.9.2",
     "unbuild": "^3.6.0",
     "undici": "^6.21.3",
-    "vitest": "^3.2.4"
+    "NEXTst": "^3.2.4"
   },
   "packageManager": "pnpm@10.14.0"
 }

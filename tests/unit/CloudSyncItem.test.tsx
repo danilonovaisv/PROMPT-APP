@@ -6,7 +6,7 @@ const showToast = jest.fn();
 const mockUseCloudSync = jest.fn();
 const mockSupabaseState = {
   isConfigured: false,
-  errorMessage: 'Configuração do Supabase ausente. Defina VITE_SUPABASE_URL.',
+  errorMessage: 'Configuração do Supabase ausente. Defina NEXT_SUPABASE_URL.',
 };
 
 jest.mock('@/context/ToastContext', () => ({
@@ -53,7 +53,7 @@ describe('CloudSyncItem', () => {
   beforeEach(() => {
     showToast.mockClear();
     mockSupabaseState.isConfigured = false;
-    mockSupabaseState.errorMessage = 'Configuração do Supabase ausente. Defina VITE_SUPABASE_URL.';
+    mockSupabaseState.errorMessage = 'Configuração do Supabase ausente. Defina NEXT_SUPABASE_URL.';
     mockUseCloudSync.mockReturnValue({
       session: null,
       hasUpdates: false,
@@ -73,7 +73,7 @@ describe('CloudSyncItem', () => {
 
     expect(unavailableButton).toBeDisabled();
     expect(
-      screen.getByText('Configuração do Supabase ausente. Defina VITE_SUPABASE_URL.')
+      screen.getByText('Configuração do Supabase ausente. Defina NEXT_SUPABASE_URL.')
     ).toBeInTheDocument();
   });
 

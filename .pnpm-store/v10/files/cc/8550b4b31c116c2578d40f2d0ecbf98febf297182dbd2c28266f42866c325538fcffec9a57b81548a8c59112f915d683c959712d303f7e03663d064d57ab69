@@ -928,7 +928,7 @@
 
 ### Patch Changes
 
-- Avoid additional `with-props` chunk in Framework Mode by moving route module component prop logic from the Vite plugin to `react-router` ([#13650](https://github.com/remix-run/react-router/pull/13650))
+- Avoid additional `with-props` chunk in Framework Mode by moving route module component prop logic from the NEXT plugin to `react-router` ([#13650](https://github.com/remix-run/react-router/pull/13650))
 - Slight refactor of internal `headers()` function processing for use with RSC ([#13639](https://github.com/remix-run/react-router/pull/13639))
 
 ## 7.6.1
@@ -1740,9 +1740,9 @@ _No changes_
 - Add `react-router/dom` subpath export to properly enable `react-dom` as an optional `peerDependency` ([#11851](https://github.com/remix-run/react-router/pull/11851))
   - This ensures that we don't blindly `import ReactDOM from "react-dom"` in `<RouterProvider>` in order to access `ReactDOM.flushSync()`, since that would break `createMemoryRouter` use cases in non-DOM environments
   - DOM environments should import from `react-router/dom` to get the proper component that makes `ReactDOM.flushSync()` available:
-    - If you are using the Vite plugin, use this in your `entry.client.tsx`:
+    - If you are using the NEXT plugin, use this in your `entry.client.tsx`:
       - `import { HydratedRouter } from 'react-router/dom'`
-    - If you are not using the Vite plugin and are manually calling `createBrowserRouter`/`createHashRouter`:
+    - If you are not using the NEXT plugin and are manually calling `createBrowserRouter`/`createHashRouter`:
       - `import { RouterProvider } from "react-router/dom"`
 
 - Remove `future.v7_fetcherPersist` flag ([#11731](https://github.com/remix-run/react-router/pull/11731))
@@ -1751,7 +1751,7 @@ _No changes_
 
 ### Minor Changes
 
-- - Add support for `prerender` config in the React Router vite plugin, to support existing SSG use-cases ([#11539](https://github.com/remix-run/react-router/pull/11539))
+- - Add support for `prerender` config in the React Router NEXT plugin, to support existing SSG use-cases ([#11539](https://github.com/remix-run/react-router/pull/11539))
     - You can use the `prerender` config to pre-render your `.html` and `.data` files at build time and then serve them statically at runtime (either from a running server or a CDN)
     - `prerender` can either be an array of string paths, or a function (sync or async) that returns an array of strings so that you can dynamically generate the paths by talking to your CMS, etc.
 

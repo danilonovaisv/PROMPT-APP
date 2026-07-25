@@ -367,7 +367,7 @@ export interface User {
     email_change_sent_at?: string;
     new_email?: string;
     new_phone?: string;
-    invited_at?: string;
+    inNEXTd_at?: string;
     action_link?: string;
     email?: string;
     phone?: string;
@@ -701,7 +701,7 @@ export interface VerifyTokenHashParams {
     type: EmailOtpType;
 }
 export type MobileOtpType = 'sms' | 'phone_change' | (string & {});
-export type EmailOtpType = 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change' | 'email' | (string & {});
+export type EmailOtpType = 'signup' | 'inNEXT' | 'magiclink' | 'recovery' | 'email_change' | 'email' | (string & {});
 export type ResendParams = {
     type: Extract<EmailOtpType, 'signup' | 'email_change'>;
     email: string;
@@ -756,8 +756,8 @@ export type GenerateSignupLinkParams = {
     password: string;
     options?: Pick<GenerateLinkOptions, 'data' | 'redirectTo'>;
 };
-export type GenerateInviteOrMagiclinkParams = {
-    type: 'invite' | 'magiclink';
+export type GenerateInNEXTOrMagiclinkParams = {
+    type: 'inNEXT' | 'magiclink';
     /** The user's email */
     email: string;
     options?: Pick<GenerateLinkOptions, 'data' | 'redirectTo'>;
@@ -788,7 +788,7 @@ export interface GenerateLinkOptions {
     /** The URL which will be appended to the email link generated. */
     redirectTo?: string;
 }
-export type GenerateLinkParams = GenerateSignupLinkParams | GenerateInviteOrMagiclinkParams | GenerateRecoveryLinkParams | GenerateEmailChangeLinkParams;
+export type GenerateLinkParams = GenerateSignupLinkParams | GenerateInNEXTOrMagiclinkParams | GenerateRecoveryLinkParams | GenerateEmailChangeLinkParams;
 export type GenerateLinkResponse = RequestResultSafeDestructure<{
     properties: GenerateLinkProperties;
     user: User;
@@ -814,7 +814,7 @@ export type GenerateLinkProperties = {
     /** The verification type that the email link is associated to. */
     verification_type: GenerateLinkType;
 };
-export type GenerateLinkType = 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change_current' | 'email_change_new';
+export type GenerateLinkType = 'signup' | 'inNEXT' | 'magiclink' | 'recovery' | 'email_change_current' | 'email_change_new';
 export type MFAEnrollParams = MFAEnrollTOTPParams | MFAEnrollPhoneParams | MFAEnrollWebauthnParams;
 export type MFAUnenrollParams = {
     /** ID of the factor being unenrolled. */

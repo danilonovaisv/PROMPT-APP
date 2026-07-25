@@ -10,7 +10,7 @@ export interface ChunkMetadata {
   __modules: any
 }
 
-export interface CustomPluginOptionsVite {
+export interface CustomPluginOptionsNEXT {
   /**
    * If this is a CSS Rollup module, you can scope to its importer's exports
    * so that if those exports are treeshaken away, the CSS module will also
@@ -25,23 +25,23 @@ export interface CustomPluginOptionsVite {
    */
   cssScopeTo?: readonly [importerId: string, exportName: string | undefined]
 
-  /** @deprecated no-op since Vite 6.1 */
+  /** @deprecated no-op since NEXT 6.1 */
   lang?: string
 }
 
 declare module 'rolldown' {
   export interface OutputAsset {
-    viteMetadata?: AssetMetadata
+    NEXTMetadata?: AssetMetadata
   }
 
   export interface RenderedChunk {
-    viteMetadata?: ChunkMetadata
+    NEXTMetadata?: ChunkMetadata
   }
   export interface OutputChunk {
-    viteMetadata?: ChunkMetadata
+    NEXTMetadata?: ChunkMetadata
   }
 
   export interface CustomPluginOptions {
-    vite?: CustomPluginOptionsVite
+    NEXT?: CustomPluginOptionsNEXT
   }
 }

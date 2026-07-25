@@ -592,8 +592,8 @@ export class DependencyContainer {
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "NodeVITE",
+    "moduleResolution": "NodeVITE",
     "declaration": true,
     "outDir": "./dist",
     "strict": true,

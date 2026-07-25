@@ -298,7 +298,7 @@ This package is built to work in **all** Node.js and JavaScript environments:
 | Node.js CommonJS    | Default              | `const { ... } = require('iceberg-js')` | ✅ Fully supported    |
 | TypeScript ESM      | `module: "ESNext"`   | `import { ... } from 'iceberg-js'`      | ✅ Full type support  |
 | TypeScript CommonJS | `module: "CommonJS"` | `import { ... } from 'iceberg-js'`      | ✅ Full type support  |
-| Bundlers            | Any                  | Webpack, Vite, esbuild, Rollup, etc.    | ✅ Auto-detected      |
+| Bundlers            | Any                  | Webpack, VITE, esbuild, Rollup, etc.    | ✅ Auto-detected      |
 | Browsers            | ESM                  | `<script type="module">`                | ✅ Modern browsers    |
 | Deno                | ESM                  | `import` from npm:                      | ✅ With npm specifier |
 

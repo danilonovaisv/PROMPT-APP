@@ -2,7 +2,7 @@
 
 > **Manual de Instruções Mandatório** — Para uso por qualquer agente de IA encarregue de criar ou editar templates para o PROMPT-APP web application.
 >
-> Stack: Vite + React 19 + TypeScript · Validação: Zod `.strict()` · DB: Dexie (IndexedDB) + Supabase · Deploy: Netlify
+> Stack: VITE + React 19 + TypeScript · Validação: Zod `.strict()` · DB: Dexie (IndexedDB) + Supabase · Deploy: Netlify
 
 ---
 
@@ -11,6 +11,7 @@
 O agente deve gerar ficheiros JSON **100% compatíveis** com o schema `TemplatePayloadSchema` do PROMPT-APP. Cada campo tem tipo, forma e restrições definidas pelo Zod — qualquer desvio causa falha de importação **sem mensagem de erro descritiva**.
 
 **Compromissos obrigatórios:**
+
 - Nunca inventar campos fora do schema (`.strict()` rejeita propriedades extras)
 - Nunca deixar `user_scene_description` vazio — é o prompt que guia o utilizador
 - Nunca misturar campos de `prompt_definition` com `output_contract`
@@ -26,6 +27,7 @@ O agente deve gerar ficheiros JSON **100% compatíveis** com o schema `TemplateP
 Todos os objectos do schema usam `.strict()` no Zod. Se incluíres um campo não previsto (ex: `"author"`, `"tags"`, `"icon"`, `"version"`), a importação falhará silenciosamente ou lançará um erro de parse.
 
 **PROIBIDO:**
+
 ```json
 {
   "meta": {
@@ -37,6 +39,7 @@ Todos os objectos do schema usam `.strict()` no Zod. Se incluíres um campo não
 ```
 
 **CORRECTO:**
+
 ```json
 {
   "meta": {
@@ -55,11 +58,13 @@ Todos os objectos do schema usam `.strict()` no Zod. Se incluíres um campo não
 Este campo é a instrução de input para o utilizador. Substitui o `user_input` de versões anteriores. Descreve **o que o utilizador deve fornecer** como entrada para o prompt. Um valor vazio faz o prompt funcionar sem contexto do utilizador — comportamento indesejado.
 
 **PROIBIDO:**
+
 ```json
 "user_scene_description": ""
 ```
 
 **CORRECTO:**
+
 ```json
 "user_scene_description": "Descreve o produto ou serviço que queres promover, incluindo o público-alvo e o canal de distribuição."
 ```
@@ -69,12 +74,14 @@ Este campo é a instrução de input para o utilizador. Substitui o `user_input`
 Cada item do array deve ser uma string não vazia. O Zod valida `.min(1)` em cada elemento.
 
 **PROIBIDO:**
+
 ```json
 "constraints": "Escreve sempre em português. Sê conciso.",
 "negative_prompt": "Não uses jargão técnico"
 ```
 
 **CORRECTO:**
+
 ```json
 "constraints": [
   "Escreve sempre em português europeu (pt-PT) ou brasileiro (pt-BR) conforme o contexto.",
@@ -108,6 +115,7 @@ Os IDs em `menu_ids` devem referenciar exactamente os `menu_id` presentes em `me
 O campo chama-se `few_shot_examples` (NÃO `few_shots_exemples`, NÃO `fewShotExamples`). Cada item tem obrigatoriamente `input` e `output`.
 
 **CORRECTO:**
+
 ```json
 "few_shot_examples": [
   {
@@ -305,6 +313,7 @@ Os menus permitem ao utilizador parametrizar o prompt antes de executar. Cada me
 ### 5.1 Quando criar menus
 
 Criar menus sempre que o template beneficiar de:
+
 - **Tom** — Formal, Casual, Técnico, Motivacional
 - **Público-alvo** — B2B, B2C, Millennials, Executivos, Profissionais de saúde
 - **Canal/Plataforma** — Instagram, LinkedIn, Email, WhatsApp, Blog
@@ -468,4 +477,4 @@ selection_mode:
 
 ---
 
-*Schema source: `src/models/promptSchema.ts` · Validado com Zod v3 · Stack: Vite + React 19 + TypeScript*
+*Schema source: `src/models/promptSchema.ts` · Validado com Zod v3 · Stack: VITE + React 19 + TypeScript*

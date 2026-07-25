@@ -4852,7 +4852,7 @@
     "source": "iana",
     "compressible": true
   },
-  "application/vnd.oma.cab-subs-invite+xml": {
+  "application/vnd.oma.cab-subs-inNEXT+xml": {
     "source": "iana",
     "compressible": true
   },

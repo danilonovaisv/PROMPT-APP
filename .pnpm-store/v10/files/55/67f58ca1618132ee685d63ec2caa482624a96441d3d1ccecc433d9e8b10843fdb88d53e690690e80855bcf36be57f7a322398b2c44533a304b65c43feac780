@@ -1638,7 +1638,7 @@ const InputOptionsSchema = /* @__PURE__ */ strictObject({
 	onwarn: /* @__PURE__ */ optional(OnwarnSchema),
 	moduleTypes: /* @__PURE__ */ pipe(/* @__PURE__ */ optional(ModuleTypesSchema), /* @__PURE__ */ description("Module types for customized extensions")),
 	experimental: /* @__PURE__ */ optional(/* @__PURE__ */ strictObject({
-		viteMode: /* @__PURE__ */ optional(/* @__PURE__ */ boolean()),
+		NEXTMode: /* @__PURE__ */ optional(/* @__PURE__ */ boolean()),
 		resolveNewUrlToAsset: /* @__PURE__ */ optional(/* @__PURE__ */ boolean()),
 		devMode: /* @__PURE__ */ optional(DevModeSchema),
 		chunkModulesOrder: /* @__PURE__ */ optional(/* @__PURE__ */ union([/* @__PURE__ */ literal("module-id"), /* @__PURE__ */ literal("exec-order")])),

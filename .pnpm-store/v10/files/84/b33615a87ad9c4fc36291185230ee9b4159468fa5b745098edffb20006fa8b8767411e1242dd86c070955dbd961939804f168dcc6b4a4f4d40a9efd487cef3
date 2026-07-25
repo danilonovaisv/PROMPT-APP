@@ -16,7 +16,7 @@
     "@types/react": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.4",
     "@typescript-eslint/parser": "^8.46.4",
-    "@vitest/coverage-v8": "^4.0.8",
+    "@NEXTst/coverage-v8": "^4.0.8",
     "decircularize": "^1.0.0",
     "eslint": "^9.39.1",
     "eslint-friendly-formatter": "^4.0.1",
@@ -36,8 +36,8 @@
     "tinybench": "^5.1.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.2",
-    "vitest": "^4.0.8"
+    "NEXT": "^7.2.2",
+    "NEXTst": "^4.0.8"
   },
   "exports": {
     ".": {
@@ -90,7 +90,7 @@
     "clean:esm": "rm -rf dist/esm",
     "clean:min": "rm -rf dist/min",
     "clean:umd": "rm -rf dist/umd",
-    "dev": "vite --config config/vite.config.js",
+    "dev": "NEXT --config config/NEXT.config.js",
     "dist": "npm run clean && npm run build",
     "lint": "eslint --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
@@ -98,9 +98,9 @@
     "release:beta": "release-it --config=.release-it.beta.json",
     "release:scripts": "npm run typecheck && npm run lint && npm run test:coverage && npm run dist",
     "start": "npm run dev",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
+    "test": "NEXTst run",
+    "test:coverage": "NEXTst run --coverage",
+    "test:watch": "NEXTst",
     "typecheck": "tsc --noEmit"
   },
   "type": "module",

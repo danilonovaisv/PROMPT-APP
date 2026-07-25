@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "NEXTst";
 import be from "../../../locales/be.js";
 
 describe("Belarusian localization", () => {

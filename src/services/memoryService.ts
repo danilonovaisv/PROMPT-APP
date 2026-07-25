@@ -1,6 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import { db } from '@/db/database';
 import type { MemoryMap } from '@/models/memory';
+import type {
+  MemoryMergeStrategy,
+  PromptMemoryEntry,
+} from '@/models/promptSchema';
 import { 
     getDexieMemory, 
     setDexieMemory, 
@@ -8,6 +12,101 @@ import {
     saveDexieMemoryMap, 
     migrateLegacyMemory 
 } from './storage/dexieMemory';
+
+export interface MemoryPlanItem {
+  key: string;
+  templateId: string;
+  action: 'create' | 'update' | 'preserve' | 'ignore';
+  value: string;
+  reason?: string;
+}
+
+function isEmptyMemoryValue(value: string | null | undefined): boolean {
+  return value === undefined || value === null || value.trim() === '';
+}
+
+export async function planMemoryUpserts(
+  templateId: string,
+  entries: PromptMemoryEntry[],
+  mergeStrategy: MemoryMergeStrategy,
+): Promise<MemoryPlanItem[]> {
+  const keys = entries.map((entry) => entry.key);
+  const existingRecords = keys.length > 0
+    ? await db.promptMemory.where('[templateId+key]').anyOf(
+      keys.map((key) => [templateId, key] as [string, string]),
+    ).toArray()
+    : [];
+  const existingMap = new Map(existingRecords.map((record) => [record.key, record]));
+
+  return entries.map((entry) => {
+    const existing = existingMap.get(entry.key);
+    if (mergeStrategy === 'skip') {
+      return {
+        key: entry.key,
+        templateId,
+        action: 'ignore',
+        value: entry.value,
+        reason: 'merge_strategy=skip',
+      };
+    }
+
+    if (!existing || existing.isDeleted) {
+      return {
+        key: entry.key,
+        templateId,
+        action: 'create',
+        value: entry.value,
+      };
+    }
+
+    if (mergeStrategy === 'preserve_existing') {
+      return {
+        key: entry.key,
+        templateId,
+        action: 'preserve',
+        value: existing.value,
+        reason: 'existing value preserved',
+      };
+    }
+
+    if (mergeStrategy === 'fill_empty') {
+      if (isEmptyMemoryValue(existing.value) && !isEmptyMemoryValue(entry.value)) {
+        return {
+          key: entry.key,
+          templateId,
+          action: 'update',
+          value: entry.value,
+          reason: 'existing value was empty',
+        };
+      }
+
+      return {
+        key: entry.key,
+        templateId,
+        action: 'preserve',
+        value: existing.value,
+        reason: 'existing value was not empty',
+      };
+    }
+
+    return {
+      key: entry.key,
+      templateId,
+      action: 'update',
+      value: entry.value,
+    };
+  });
+}
+
+export async function applyMemoryPlan(plan: MemoryPlanItem[]): Promise<void> {
+  for (const item of plan) {
+    if (item.action === 'ignore' || item.action === 'preserve') {
+      continue;
+    }
+
+    await setDexieMemory(item.templateId, item.key, item.value, 'pending');
+  }
+}
 
 /**
  * Busca todas as entradas de memória do usuário atual para um template específico,

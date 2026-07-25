@@ -6,7 +6,7 @@
 
 **Architecture:** O trabalho é dividido em quatro trilhas: baseline do app local e do deploy, auditoria de estado entre React/Dexie/Supabase, investigação de retenção de memória em timers/listeners/subscriptions e revisão de tipagem nos limites de dados. Cada hipótese precisa virar evidência concreta antes de qualquer correção: comando, trace, heap snapshot, ou teste que falha.
 
-**Tech Stack:** React 19, Vite 8, TypeScript 6, React Router 7, Dexie, Supabase, Zod, Jest 30, Playwright, Sentry, Netlify, squirrelscan.
+**Tech Stack:** React 19, VITE 8, TypeScript 6, React Router 7, Dexie, Supabase, Zod, Jest 30, Playwright, Sentry, Netlify, squirrelscan.
 
 ---
 
@@ -35,16 +35,18 @@
 ### Task 1: Freeze the Baseline
 
 **Files:**
+
 - Inspect: [`package.json`](/Users/PROJETOS%20DEV/PROMPT-APP/package.json)
 - Inspect: [`src/App.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx)
 - Inspect: [`src/main.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/main.tsx)
-- Inspect: [`vite.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/vite.config.ts)
+- Inspect: [`VITE.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/VITE.config.ts)
 - Inspect: [`netlify.toml`](/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml)
 - Update later: `docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md`
 
 **Step 1: Capture local verification**
 
 Run:
+
 ```bash
 npm run lint
 npm run type-check
@@ -53,24 +55,28 @@ npm run build
 ```
 
 Expected:
+
 - `type-check`, `test`, and `build` succeed
 - `lint` warnings are recorded with exact file and line numbers
 
 **Step 2: Capture live deployment verification**
 
 Run:
+
 ```bash
 curl -I -L --max-redirs 3 https://prompt-app-dan.netlify.app
 squirrel audit https://prompt-app-dan.netlify.app --coverage surface --max-pages 20 --format llm
 ```
 
 Expected:
+
 - Response headers, CSP, and cache behavior are documented
 - Surface audit score and issue categories are copied into the evidence appendix
 
 **Step 3: Snapshot current known issues**
 
 Record:
+
 - Duplicate titles and descriptions from [`src/components/SEO.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx) and route pages
 - `no-explicit-any` warnings from [`src/services/assetManager.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts) and [`src/services/importService.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts)
 - Realtime, auto-sync, and auth lifecycle entry points in [`src/App.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx)
@@ -78,6 +84,7 @@ Record:
 **Step 4: Define audit matrix**
 
 The matrix must include these flows:
+
 - App boot in `StrictMode`
 - Login and logout transitions
 - Editor create, edit, save, reload
@@ -88,6 +95,7 @@ The matrix must include these flows:
 ### Task 2: Audit State Consistency Across Local and Cloud Data
 
 **Files:**
+
 - Inspect: [`src/App.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx)
 - Inspect: [`src/db/database.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/db/database.ts)
 - Inspect: [`src/pages/EditorPage.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/EditorPage.tsx)
@@ -104,6 +112,7 @@ The matrix must include these flows:
 **Step 1: Map every writer and subscriber**
 
 Build a table with:
+
 - Which code writes Dexie
 - Which code writes Supabase
 - Which code listens to Supabase realtime
@@ -111,6 +120,7 @@ Build a table with:
 - Which code reacts to auth changes
 
 Minimum functions to map:
+
 - `setupAutoSync`
 - `syncToCloud`
 - `setupRealtimeListeners`
@@ -121,6 +131,7 @@ Minimum functions to map:
 **Step 2: Turn current suspicions into reproducible tests**
 
 Add or extend tests for:
+
 - `StrictMode` double-mount does not duplicate realtime subscriptions
 - auth state change does not install duplicate listeners
 - auto-sync timer debounces correctly and does not push after teardown
@@ -128,6 +139,7 @@ Add or extend tests for:
 - remote record newer than local does not get clobbered by stale local sync
 
 Representative test targets:
+
 ```ts
 expect(setupRealtimeListeners).toHaveBeenCalledTimes(1);
 expect(activeChannelCount()).toBe(1);
@@ -137,6 +149,7 @@ expect(savedPrompt.updatedAt).toEqual(expectedLatestDate);
 **Step 3: Reproduce real flows manually or via browser automation**
 
 Exercise:
+
 1. Open `/editor/novo`
 2. Create a draft
 3. Reload
@@ -145,6 +158,7 @@ Exercise:
 6. Modify the same entity from another tab or simulated realtime payload
 
 Expected:
+
 - No duplicate records
 - No stale overwrite
 - No loss of `selectedMenuIds`, `selectionPayload`, or `compiledPayload`
@@ -152,6 +166,7 @@ Expected:
 **Step 4: Record each confirmed inconsistency**
 
 For each confirmed issue, capture:
+
 - exact steps
 - observed behavior
 - expected behavior
@@ -160,6 +175,7 @@ For each confirmed issue, capture:
 ### Task 3: Audit Memory Retention and Cleanup Behavior
 
 **Files:**
+
 - Inspect: [`src/App.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx)
 - Inspect: [`src/services/autoSync.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/services/autoSync.ts)
 - Inspect: [`src/services/realtimeService.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts)
@@ -173,6 +189,7 @@ For each confirmed issue, capture:
 **Step 1: Inventory long-lived resources**
 
 Capture every:
+
 - `setTimeout`
 - event listener
 - Supabase channel
@@ -181,6 +198,7 @@ Capture every:
 - closure retaining large payloads
 
 Immediate audit suspects:
+
 - `setTimeout` in app bootstrap backup
 - global timer and one-time install flags in `autoSync.ts`
 - debounced backup timeout in `realtimeService.ts`
@@ -190,12 +208,14 @@ Immediate audit suspects:
 **Step 2: Add cleanup-focused tests**
 
 Test cases:
+
 - unmount restores body overflow and removes keydown listener
 - toast auto-dismiss timer does not call `setState` after provider unmount
 - realtime cleanup removes all active channels
 - boot/login/logout cycles do not increase active listener counts
 
 Representative expectations:
+
 ```ts
 expect(document.body.style.overflow).toBe('');
 expect(removeEventListenerSpy).toHaveBeenCalled();
@@ -205,6 +225,7 @@ expect(channelUnsubscribeSpy).toHaveBeenCalledTimes(expectedCount);
 **Step 3: Run a runtime memory session**
 
 Use browser tooling against the live app or a local production build:
+
 1. Heap snapshot before interaction
 2. Repeatedly open and close modal flows
 3. Navigate between `/`, `/categorias`, `/menus`, `/editor/novo`
@@ -212,12 +233,14 @@ Use browser tooling against the live app or a local production build:
 5. Take a second heap snapshot
 
 Expected:
+
 - No monotonic growth in retained DOM nodes or timer callbacks
 - No additional active realtime subscriptions after repeated route changes
 
 **Step 4: Classify findings**
 
 Label each item as:
+
 - confirmed leak
 - benign retention
 - missing cleanup with no current user impact
@@ -225,6 +248,7 @@ Label each item as:
 ### Task 4: Audit Type Boundaries and Unsafe Type Narrowing
 
 **Files:**
+
 - Inspect: [`src/models/types.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/models/types.ts)
 - Inspect: [`src/models/promptSchema.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/models/promptSchema.ts)
 - Inspect: [`src/services/syncService.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts)
@@ -239,17 +263,20 @@ Label each item as:
 **Step 1: Inventory type debt**
 
 Run:
+
 ```bash
 rg -n "\\bany\\b|unknown as|as unknown as|Record<string, unknown>" src tests
 ```
 
 Expected:
+
 - A list of files where runtime payloads are trusted too early
 - A list of unsafe casts that need parser or guard coverage
 
 **Step 2: Focus on data boundaries**
 
 Audit these boundaries first:
+
 - Supabase `select/insert/upsert` results
 - realtime payload coercion
 - import payload normalization
@@ -259,12 +286,14 @@ Audit these boundaries first:
 **Step 3: Convert risky casts into testable contracts**
 
 For each boundary, define:
+
 - source shape
 - parser or guard
 - failure mode
 - current trust gap
 
 Examples:
+
 - `assetManager` currently uses explicit `any` for remote collections
 - `realtimeService` coerces `payload.new` and `payload.old` into local shapes
 - `importService` accepts wide `unknown` payloads and normalizes them progressively
@@ -272,6 +301,7 @@ Examples:
 **Step 4: Define remediation criteria**
 
 A boundary is only considered fixed when:
+
 - type-check still passes
 - the relevant unit test covers invalid payloads
 - the boundary no longer relies on `any` or double-cast coercion without a parser
@@ -279,17 +309,19 @@ A boundary is only considered fixed when:
 ### Task 5: Audit Route Metadata and Deploy Hygiene as Secondary Findings
 
 **Files:**
+
 - Inspect: [`src/components/SEO.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx)
 - Inspect: [`src/pages/HomePage.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/HomePage.tsx)
 - Inspect: [`src/pages/AboutPage.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/AboutPage.tsx)
 - Inspect: [`src/pages/ContactPage.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/ContactPage.tsx)
 - Inspect: [`src/pages/PrivacyPage.tsx`](/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/PrivacyPage.tsx)
-- Inspect: [`vite.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/vite.config.ts)
+- Inspect: [`VITE.config.ts`](/Users/PROJETOS%20DEV/PROMPT-APP/VITE.config.ts)
 - Inspect: [`netlify.toml`](/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml)
 
 **Step 1: Verify duplicate metadata finding**
 
 Compare route-level `SEO` props and rendered output for:
+
 - title uniqueness
 - description uniqueness
 - canonical correctness
@@ -297,6 +329,7 @@ Compare route-level `SEO` props and rendered output for:
 **Step 2: Verify production artifact hygiene**
 
 Check:
+
 - source maps intentionally published or not
 - CSP policy tradeoff around `unsafe-inline`
 - sitemap endpoints actually served by the deploy
@@ -304,6 +337,7 @@ Check:
 **Step 3: Keep these findings secondary**
 
 These items belong in the final audit as:
+
 - deployment hygiene
 - metadata hygiene
 
@@ -312,12 +346,14 @@ They should not displace the main scope unless they materially affect state, mem
 ### Task 6: Produce the Final Audit Report
 
 **Files:**
+
 - Create: `docs/audits/2026-04-08-prompt-app-runtime-audit.md`
 - Create: `docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md`
 
 **Step 1: Summarize confirmed findings only**
 
 The main report must contain:
+
 - executive summary
 - system map
 - confirmed issues
@@ -328,6 +364,7 @@ The main report must contain:
 **Step 2: Attach evidence**
 
 The evidence appendix must include:
+
 - command outputs
 - screenshots or heap notes when available
 - links to exact source files
@@ -336,6 +373,7 @@ The evidence appendix must include:
 **Step 3: Rank findings**
 
 Use this rubric:
+
 - `P0`: data loss, duplicated subscriptions, stale overwrite, auth/sync corruption
 - `P1`: retained listeners/timers, unsafe runtime casts on network boundaries
 - `P2`: metadata duplication, source map exposure, non-blocking typing cleanup
@@ -343,9 +381,10 @@ Use this rubric:
 **Step 4: Define stop conditions**
 
 The audit is complete only when:
+
 - every primary scope area was exercised
 - every suspected issue is either confirmed or explicitly disproven
-- next actions are actionable without re-reading the whole codebase
+- VITE actions are actionable without re-reading the whole codebase
 
 ## Commands Checklist
 

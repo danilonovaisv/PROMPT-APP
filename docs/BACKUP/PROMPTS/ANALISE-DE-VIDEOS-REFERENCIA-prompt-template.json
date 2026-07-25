@@ -21,7 +21,7 @@
       "Descreva padrões repetitivos, motivos visuais, enquadramentos recorrentes, estratégias de transição, repetições sonoras e consistências de direção identificáveis ao longo do vídeo.",
       "Considere o contexto de uso do novo vídeo informado pelo usuário para adaptar as diretrizes de recriação sem descaracterizar os atributos centrais da referência.",
       "Se a URL não permitir acesso efetivo ao conteúdo audiovisual, solicite implicitamente na resposta os elementos mínimos observáveis e descreva que a análise completa depende da visualização do vídeo.",
-      "Evite depender de adjetivos abstratos; privilegie parâmetros reproduzíveis por equipe criativa, produtora, editor ou modelo gerador de vídeo.",
+      "EVITE depender de adjetivos abstratos; privilegie parâmetros reproduzíveis por equipe criativa, produtora, editor ou modelo gerador de vídeo.",
       "A saída deve ser acionável o suficiente para orientar storyboard, decupagem, direção de fotografia, edição e desenho sonoro de uma nova peça."
     ],
     "negative_prompt": [
@@ -230,7 +230,7 @@
       "Cada campo deve conter observações técnicas completas, objetivas e acionáveis.",
       "Quando houver limitação de visibilidade, explicite a limitação dentro do campo correspondente sem quebrar a estrutura.",
       "Em recreation_guidelines, traduza a análise em instruções práticas para recriação adaptada ao objetivo informado pelo usuário.",
-      "Evite linguagem subjetiva e priorize termos observáveis, reproduzíveis e úteis para produção audiovisual."
+      "EVITE linguagem subjetiva e priorize termos observáveis, reproduzíveis e úteis para produção audiovisual."
     ],
     "optional_enums": {
       "nivel_detalhamento": [

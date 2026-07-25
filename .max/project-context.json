@@ -24,9 +24,9 @@
       "version": "1.0.0",
       "description": "",
       "scripts": {
-        "dev": "vite",
-        "build": "tsc -p tsconfig.app.json && vite build",
-        "preview": "vite preview",
+        "dev": "VITE",
+        "build": "tsc -p tsconfig.app.json && VITE build",
+        "preview": "VITE preview",
         "test": "jest",
         "test:coverage": "jest --coverage",
         "test:watch": "jest --watch",
@@ -41,23 +41,23 @@
         "setup:cloud-env": "bash scripts/setup-cloud-env.sh",
         "clean": "pnpm clean:build && pnpm clean:cache && pnpm clean:reports",
         "clean:build": "rm -rf dist",
-        "clean:cache": "rm -rf node_modules/.cache node_modules/.vite .eslintcache pnpm-lock.yaml",
+        "clean:cache": "rm -rf node_modules/.cache node_modules/.VITE .eslintcache pnpm-lock.yaml",
         "clean:reports": "rm -rf coverage playwright-report test-results",
         "clean:modules": "rm -rf node_modules",
         "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install"
       }
     },
-    "README.md": "# 🧠 Prompt App\n\n> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.\n\n![Version](https://img.shields.io/badge/version-2.0.0-blueviolet)\n![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)\n![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)\n![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite)\n[![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)\n\n---\n\n## 📋 Índice\n\n- [Visão Geral](#-visão-geral)\n- [Tech Stack](#-tech-stack)\n- [Funcionalidades](#-funcionalidades)\n- [Início Rápido](#-início-rápido)\n- [Arquit"
+    "README.md": "# 🧠 Prompt App\n\n> **Engenharia de Prompts Profissional** — Crie, organize e exporte prompts estruturados para LLMs com menus de contexto hierárquicos e exportação em formato JSON cognitivo.\n\n![Version](https://img.shields.io/badge/version-2.0.0-blueviolet)\n![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)\n![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript)\n![VITE](https://img.shields.io/badge/VITE-7.3-646CFF?logo=VITE)\n[![Netlify Status](https://api.netlify.com/api/v1/badges/2628e92e-47d5-40bb-abaa-be25612b2d56/deploy-status)](https://app.netlify.com/projects/prompt-app-dan/deploys)\n\n---\n\n## 📋 Índice\n\n- [Visão Geral](#-visão-geral)\n- [Tech Stack](#-tech-stack)\n- [Funcionalidades](#-funcionalidades)\n- [Início Rápido](#-início-rápido)\n- [Arquit"
   },
   "source_structure": [
     "src"
   ],
   "dependencies": [
     "@netlify/neon",
-    "@netlify/vite-plugin",
+    "@netlify/VITE-plugin",
     "@sentry/browser",
     "@sentry/react",
-    "@sentry/vite-plugin",
+    "@sentry/VITE-plugin",
     "@supabase/ssr",
     "@supabase/supabase-js",
     "agentic-flow",
@@ -80,7 +80,7 @@
     "@types/node",
     "@types/react",
     "@types/react-dom",
-    "@vitejs/plugin-react",
+    "@VITEjs/plugin-react",
     "drizzle-kit",
     "eslint"
   ],

@@ -259,7 +259,7 @@ VALUES
                 {"label": "Sacola", "value": "sacola"},
                 {"label": "Lamina/Tag de Produto", "value": "tag_produto"},
                 {"label": "Cardápio (Impresso)", "value": "cardapio_impresso"},
-                {"label": "Convite", "value": "convite"},
+                {"label": "ConVITE", "value": "conVITE"},
                 {"label": "Ingresso", "value": "ingresso"}
               ]
             },

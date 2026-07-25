@@ -1,5 +1,5 @@
 // @ts-ignore TS6133
-import { expect, test } from "vitest";
+import { expect, test } from "NEXTst";
 
 import * as z from "zod/v3";
 import { ZodIssueCode } from "../ZodError.js";

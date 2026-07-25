@@ -572,7 +572,7 @@ export function registerExportsForReactRefresh(filename, moduleExports) {
     const exportValue = moduleExports[key]
     if (isLikelyComponentType(exportValue)) {
       // 'export' is required to avoid key collision when renamed exports that
-      // shadow a local component name: https://github.com/vitejs/vite-plugin-react/issues/116
+      // shadow a local component name: https://github.com/VITEjs/VITE-plugin-react/issues/116
       // The register function has an identity check to not register twice the same component,
       // so this is safe to not used the same key here.
       register(exportValue, filename + ' export ' + key)
@@ -655,9 +655,9 @@ function predicateOnExport(ignoredExports, moduleExports, predicate) {
   return true
 }
 
-// Hides vite-ignored dynamic import so that Vite can skip analysis if no other
-// dynamic import is present (https://github.com/vitejs/vite/pull/12732)
-export const __hmr_import = (module) => import(/* @vite-ignore */ module)
+// Hides VITE-ignored dynamic import so that VITE can skip analysis if no other
+// dynamic import is present (https://github.com/VITEjs/VITE/pull/12732)
+export const __hmr_import = (module) => import(/* @VITE-ignore */ module)
 
-// For backwards compatibility with @vitejs/plugin-react.
+// For backwards compatibility with @VITEjs/plugin-react.
 export default { injectIntoGlobalHook }

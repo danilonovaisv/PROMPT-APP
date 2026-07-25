@@ -1,18 +1,19 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { sentryVITEPlugin } from "@sentry/VITE-plugin";
+import { defineConfig } from "VITE";
+import react from "@VITEjs/plugin-react";
 
 // Audit Fix #13: Bundle analysis
 // Ativa com: ANALYZE=true pnpm build
 // Requer: pnpm add -D rollup-plugin-visualizer
-const shouldAnalyze = process.env.ANALYZE === 'true';
-const shouldEnableSentryBuild = process.env.CI === 'true' || process.env.SENTRY_BUILD_PLUGIN === 'true';
+const shouldAnalyze = process.env.ANALYZE === "true";
+const shouldEnableSentryBuild = process.env.CI === "true" ||
+  process.env.SENTRY_BUILD_PLUGIN === "true";
 
 // Lazy-load do visualizer para não quebrar builds sem o pacote instalado
 async function getPlugins() {
   const base = [
     react(),
-    sentryVitePlugin({
+    sentryVITEPlugin({
       org: "dannovaisv",
       project: "javascript-react",
       disable: !shouldEnableSentryBuild,
@@ -22,15 +23,17 @@ async function getPlugins() {
 
   if (shouldAnalyze) {
     try {
-      const { visualizer } = await import('rollup-plugin-visualizer' as never);
+      const { visualizer } = await import("rollup-plugin-visualizer" as never);
       base.push((visualizer as CallableFunction)({
         open: true,
-        filename: 'stats.html',
+        filename: "stats.html",
         gzipSize: true,
         brotliSize: true,
       }));
     } catch {
-      console.warn('[vite] rollup-plugin-visualizer não instalado. Execute: pnpm add -D rollup-plugin-visualizer');
+      console.warn(
+        "[VITE] rollup-plugin-visualizer não instalado. Execute: pnpm add -D rollup-plugin-visualizer",
+      );
     }
   }
 
@@ -47,7 +50,10 @@ export default defineConfig(async () => ({
       output: {
         manualChunks(id: string) {
           if (!id.includes("node_modules")) return undefined;
-          if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) return "vendor-react";
+          if (
+            id.includes("react") || id.includes("react-dom") ||
+            id.includes("react-router-dom")
+          ) return "vendor-react";
           if (id.includes("dexie")) return "vendor-db";
           if (id.includes("@supabase")) return "vendor-supabase";
           if (id.includes("lucide-react")) return "vendor-icons";
@@ -56,6 +62,6 @@ export default defineConfig(async () => ({
       },
     },
     chunkSizeWarningLimit: 500,
-    sourcemap: 'hidden',
+    sourcemap: "hidden",
   },
 }));

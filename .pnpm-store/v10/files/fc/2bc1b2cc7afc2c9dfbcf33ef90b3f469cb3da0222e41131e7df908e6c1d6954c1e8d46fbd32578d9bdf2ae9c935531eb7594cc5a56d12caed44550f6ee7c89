@@ -926,8 +926,8 @@ var PluginContextImpl = class extends MinimalPluginContextImpl {
 	async resolve(source, importer, options) {
 		let receipt = void 0;
 		if (options != null) receipt = this.data.saveResolveOptions(options);
-		const vitePluginCustom = Object.entries(options?.custom ?? {}).reduce((acc, [key, value]) => {
-			if (key.startsWith("vite:")) (acc ??= {})[key] = value;
+		const VITEPluginCustom = Object.entries(options?.custom ?? {}).reduce((acc, [key, value]) => {
+			if (key.startsWith("VITE:")) (acc ??= {})[key] = value;
 			return acc;
 		}, void 0);
 		const res = await this.context.resolve(source, importer, {
@@ -935,7 +935,7 @@ var PluginContextImpl = class extends MinimalPluginContextImpl {
 			custom: receipt,
 			isEntry: options?.isEntry,
 			skipSelf: options?.skipSelf,
-			vitePluginCustom
+			VITEPluginCustom
 		});
 		if (receipt != null) this.data.removeSavedResolveOptions(receipt);
 		if (res == null) return null;
@@ -1973,7 +1973,7 @@ function bindingifyInputOptions(rawPlugins, inputOptions, outputOptions, normali
 	const plugins = rawPlugins.map((plugin) => {
 		if ("_parallel" in plugin) return;
 		if (plugin instanceof BuiltinPlugin) switch (plugin.name) {
-			case "builtin:vite-manifest": return bindingifyManifestPlugin(plugin, pluginContextData);
+			case "builtin:VITE-manifest": return bindingifyManifestPlugin(plugin, pluginContextData);
 			default: return bindingifyBuiltInPlugin(plugin);
 		}
 		return bindingifyPlugin(plugin, inputOptions, outputOptions, pluginContextData, normalizedOutputPlugins, onLog, logLevel, watchMode);
@@ -2054,7 +2054,7 @@ function bindingifyExperimental(experimental) {
 		default: throw new Error(`Unexpected chunkModulesOrder: ${experimental.chunkModulesOrder}`);
 	}
 	return {
-		viteMode: experimental?.viteMode,
+		VITEMode: experimental?.VITEMode,
 		resolveNewUrlToAsset: experimental?.resolveNewUrlToAsset,
 		devMode: bindingifyDevMode(experimental?.devMode),
 		attachDebugInfo: bindingifyAttachDebugInfo(experimental?.attachDebugInfo),

@@ -1,149 +1,37 @@
 {
-  "_comment": "MENU-TEMPLATE.json — Template oficial para importação de menus contextuais no Prompt App",
-  "_docs": "Este arquivo pode ser importado de forma independente para adicionar/atualizar menus. Remova os campos '_comment' e '_docs' antes de importar. O campo 'menuDefinitions' é a lista principal.",
-
   "app": "Prompt App",
-  "version": "1.0.0",
-  "format": "menu-import",
-  "exportedAt": "2026-01-01T00:00:00.000Z",
-
-  "menuDefinitions": [
+  "version": "3.0.0",
+  "format": "prompt-app-import",
+  "schemaVersion": "1.1.0",
+  "exportedAt": "2026-07-25T00:00:00.000Z",
+  "context_menus": [
     {
-      "_comment_menu_1": "Exemplo de menu com seleção única e sub-opções",
-      "menu_id": "estilo_escrita",
-      "menu_name": "Estilo de Escrita",
-      "description": "Define o estilo literário e de formatação da resposta",
+      "menu_id": "tom_comunicacao",
+      "menu_name": "Tom de Comunicação",
+      "description": "Define o registro e estilo da resposta.",
       "selection_mode": "single",
-      "required": true,
-      "options": [
-        {
-          "label": "Narrativo",
-          "value": "narrativo",
-          "description": "Texto em forma de narrativa fluida",
-          "sub_options": [
-            {
-              "label": "Primeira pessoa",
-              "value": "narrativo_1p",
-              "description": "Narrador em primeira pessoa (eu/nós)"
-            },
-            {
-              "label": "Terceira pessoa",
-              "value": "narrativo_3p",
-              "description": "Narrador em terceira pessoa (ele/eles)"
-            }
-          ]
-        },
-        {
-          "label": "Analítico",
-          "value": "analitico",
-          "description": "Texto com análise estruturada de dados e argumentos",
-          "sub_options": []
-        },
-        {
-          "label": "Instrutivo",
-          "value": "instrutivo",
-          "description": "Texto com passos sequenciais e orientações práticas",
-          "sub_options": []
-        },
-        {
-          "label": "Persuasivo",
-          "value": "persuasivo",
-          "description": "Texto construído para convencer e engajar o leitor",
-          "sub_options": []
-        }
-      ]
-    },
-
-    {
-      "_comment_menu_2": "Exemplo de menu com seleção múltipla",
-      "menu_id": "elementos_incluir",
-      "menu_name": "Elementos a Incluir",
-      "description": "Selecione quais elementos estruturais devem aparecer na resposta",
-      "selection_mode": "multiple",
       "required": false,
       "options": [
         {
-          "label": "Resumo Executivo",
-          "value": "resumo_executivo",
-          "description": "Síntese de 2-3 linhas do conteúdo principal",
+          "label": "Formal",
+          "value": "formal",
+          "description": "Linguagem profissional e objetiva.",
           "sub_options": []
         },
         {
-          "label": "Exemplos Práticos",
-          "value": "exemplos_praticos",
-          "description": "Casos de uso reais ou hipotéticos ilustrativos",
-          "sub_options": []
-        },
-        {
-          "label": "Referências",
-          "value": "referencias",
-          "description": "Fontes, links ou bibliografias relacionadas",
-          "sub_options": []
-        },
-        {
-          "label": "Código de Exemplo",
-          "value": "codigo_exemplo",
-          "description": "Trecho de código demonstrativo quando aplicável",
+          "label": "Técnico",
+          "value": "tecnico",
+          "description": "Vocabulário especializado para audiências técnicas.",
           "sub_options": [
             {
-              "label": "TypeScript",
-              "value": "codigo_typescript",
-              "description": ""
-            },
-            {
-              "label": "Python",
-              "value": "codigo_python",
-              "description": ""
-            },
-            {
-              "label": "Shell/Bash",
-              "value": "codigo_bash",
+              "label": "Arquitetura",
+              "value": "tecnico_arquitetura",
               "description": ""
             }
           ]
-        },
-        {
-          "label": "Diagrama/Fluxograma",
-          "value": "diagrama",
-          "description": "Representação visual em Mermaid ou ASCII art",
-          "sub_options": []
-        }
-      ]
-    },
-
-    {
-      "_comment_menu_3": "Exemplo de menu simples sem sub-opções",
-      "menu_id": "profundidade_analise",
-      "menu_name": "Profundidade da Análise",
-      "description": "Nível de detalhamento e profundidade da resposta gerada",
-      "selection_mode": "single",
-      "required": true,
-      "options": [
-        {
-          "label": "Visão Geral",
-          "value": "visao_geral",
-          "description": "Cobertura superficial dos pontos principais (resposta curta)",
-          "sub_options": []
-        },
-        {
-          "label": "Padrão",
-          "value": "padrao",
-          "description": "Cobertura equilibrada com profundidade moderada",
-          "sub_options": []
-        },
-        {
-          "label": "Aprofundado",
-          "value": "aprofundado",
-          "description": "Análise detalhada cobrindo edge cases e nuances",
-          "sub_options": []
-        },
-        {
-          "label": "Exaustivo",
-          "value": "exaustivo",
-          "description": "Cobertura completa para uso acadêmico ou técnico avançado",
-          "sub_options": []
         }
       ]
     }
-  ]
+  ],
+  "prompts": []
 }

@@ -100,7 +100,7 @@ export interface SFCScriptCompileOptions {
     inlineTemplate?: boolean;
     /**
      * Generate the final component as a variable instead of default export.
-     * This is useful in e.g. @vitejs/plugin-vue where the script needs to be
+     * This is useful in e.g. @NEXTjs/plugin-vue where the script needs to be
      * placed inside the main module.
      */
     genDefaultAs?: string;
@@ -184,7 +184,7 @@ export interface SFCScriptBlock extends SFCBlock {
     warnings?: string[];
     /**
      * Fully resolved dependency file paths (unix slashes) with imported types
-     * used in macros, used for HMR cache busting in @vitejs/plugin-vue and
+     * used in macros, used for HMR cache busting in @NEXTjs/plugin-vue and
      * vue-loader.
      */
     deps?: string[];
@@ -478,7 +478,7 @@ export declare const errorMessages: Record<number, string>;
 export declare const walk: any;
 
 /**
- * @deprecated this is preserved to avoid breaking vite-plugin-vue < 5.0
+ * @deprecated this is preserved to avoid breaking NEXT-plugin-vue < 5.0
  * with reactivityTransform: true. The desired behavior should be silently
  * ignoring the option instead of breaking.
  */

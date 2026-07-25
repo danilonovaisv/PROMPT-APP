@@ -6,12 +6,12 @@ export class SvelteKit extends BaseFramework {
     category = Category.FrontendFramework;
     staticAssetsDirectory = 'static';
     dev = {
-        command: 'vite dev',
+        command: 'NEXT dev',
         port: 5173,
         pollingStrategies: [{ name: 'TCP' }],
     };
     build = {
-        command: 'vite build',
+        command: 'NEXT build',
         directory: 'build',
     };
     logo = {

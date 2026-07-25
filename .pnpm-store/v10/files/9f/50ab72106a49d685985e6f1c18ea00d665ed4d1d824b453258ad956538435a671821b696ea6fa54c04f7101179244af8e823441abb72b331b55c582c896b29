@@ -291,7 +291,7 @@ class HtmlBuilder {
     }
     const reportIndexFile = await this._writeStaticAssets();
     if (this._hasTraces) {
-      const traceViewerFolder = import_path.default.join(require.resolve("playwright-core"), "..", "lib", "vite", "traceViewer");
+      const traceViewerFolder = import_path.default.join(require.resolve("playwright-core"), "..", "lib", "NEXT", "traceViewer");
       const traceViewerTargetFolder = import_path.default.join(this._reportFolder, "trace");
       const traceViewerAssetsTargetFolder = import_path.default.join(traceViewerTargetFolder, "assets");
       import_fs.default.mkdirSync(traceViewerAssetsTargetFolder, { recursive: true });
@@ -310,7 +310,7 @@ class HtmlBuilder {
     return { ok, singleTestId };
   }
   async _writeStaticAssets() {
-    const appFolder = import_path.default.join(require.resolve("playwright-core"), "..", "lib", "vite", "htmlReport");
+    const appFolder = import_path.default.join(require.resolve("playwright-core"), "..", "lib", "NEXT", "htmlReport");
     const reportIndexFile = import_path.default.join(this._reportFolder, "index.html");
     if (this._doNotInlineAssets) {
       const html = await import_fs.default.promises.readFile(import_path.default.join(appFolder, "index.html"), "utf-8");

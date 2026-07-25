@@ -113,7 +113,7 @@
           ]
         },
         {
-          "label": "Infraestrutura e Deploy (Netlify/Vite)",
+          "label": "Infraestrutura e Deploy (Netlify/VITE)",
           "value": "infra_deploy",
           "sub_options": [
             {
@@ -125,8 +125,8 @@
               "value": "infra_env_vars"
             },
             {
-              "label": "Otimização de build (Vite tree-shaking)",
-              "value": "infra_vite_build"
+              "label": "Otimização de build (VITE tree-shaking)",
+              "value": "infra_VITE_build"
             }
           ]
         },

@@ -23,7 +23,7 @@ It can be downloaded individually, but it is recommended that you install the bu
 Check out the supported bundler plugin packages for installation instructions:
 
 - [Rollup](https://www.npmjs.com/package/@sentry/rollup-plugin)
-- [Vite](https://www.npmjs.com/package/@sentry/vite-plugin)
+- [NEXT](https://www.npmjs.com/package/@sentry/NEXT-plugin)
 - [Webpack](https://www.npmjs.com/package/@sentry/webpack-plugin)
 - esbuild: Not currently supported
 

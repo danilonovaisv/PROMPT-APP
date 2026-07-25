@@ -3,7 +3,7 @@ interface Options {
      * Keys that have been provided in the Sentry bundler plugin via the the `applicationKey` option, identifying your bundles.
      *
      * - Webpack plugin: https://www.npmjs.com/package/@sentry/webpack-plugin#applicationkey
-     * - Vite plugin: https://www.npmjs.com/package/@sentry/vite-plugin#applicationkey
+     * - VITE plugin: https://www.npmjs.com/package/@sentry/VITE-plugin#applicationkey
      * - Esbuild plugin: https://www.npmjs.com/package/@sentry/esbuild-plugin#applicationkey
      * - Rollup plugin: https://www.npmjs.com/package/@sentry/rollup-plugin#applicationkey
      */

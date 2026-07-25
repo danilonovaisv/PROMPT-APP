@@ -1,1 +1,157 @@
-{"nodes": [{"id": "users_projetos_dev_prompt_app_src_components_layout_tsx", "label": "Layout.tsx", "file_type": "code", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L1"}, {"id": "components_layout_handleonline", "label": "handleOnline()", "file_type": "code", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L34"}, {"id": "components_layout_handleoffline", "label": "handleOffline()", "file_type": "code", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L35"}, {"id": "components_layout_navitemclass", "label": "navItemClass()", "file_type": "code", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L46"}], "edges": [{"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "react", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L5", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "react_router_dom", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L6", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "dexie_react_hooks", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L7", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "database", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L8", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "lucide_react", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L9", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "exportjson", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L20", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "users_projetos_dev_prompt_app_src_components_cloudsyncitem", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L21", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "supabase", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L22", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "components_layout_handleonline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L34", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "components_layout_handleoffline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L35", "weight": 1.0}, {"source": "users_projetos_dev_prompt_app_src_components_layout_tsx", "target": "components_layout_navitemclass", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L46", "weight": 1.0}], "raw_calls": [{"caller_nid": "components_layout_handleonline", "callee": "setIsOffline", "is_member_call": false, "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L34"}, {"caller_nid": "components_layout_handleoffline", "callee": "setIsOffline", "is_member_call": false, "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx", "source_location": "L35"}]}
+{
+    "nodes": [
+        {
+            "id": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "label": "Layout.tsx",
+            "file_type": "code",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L1"
+        },
+        {
+            "id": "components_layout_handleonline",
+            "label": "handleOnline()",
+            "file_type": "code",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L34"
+        },
+        {
+            "id": "components_layout_handleoffline",
+            "label": "handleOffline()",
+            "file_type": "code",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L35"
+        },
+        {
+            "id": "components_layout_naVITEmclass",
+            "label": "naVITEmClass()",
+            "file_type": "code",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L46"
+        }
+    ],
+    "edges": [
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "react",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L5",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "react_router_dom",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L6",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "dexie_react_hooks",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L7",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "database",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L8",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "lucide_react",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L9",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "exportjson",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L20",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "users_projetos_dev_prompt_app_src_components_cloudsyncitem",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L21",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "supabase",
+            "relation": "imports_from",
+            "context": "import",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L22",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "components_layout_handleonline",
+            "relation": "contains",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L34",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "components_layout_handleoffline",
+            "relation": "contains",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L35",
+            "weight": 1.0
+        },
+        {
+            "source": "users_projetos_dev_prompt_app_src_components_layout_tsx",
+            "target": "components_layout_naVITEmclass",
+            "relation": "contains",
+            "confidence": "EXTRACTED",
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L46",
+            "weight": 1.0
+        }
+    ],
+    "raw_calls": [
+        {
+            "caller_nid": "components_layout_handleonline",
+            "callee": "setIsOffline",
+            "is_member_call": false,
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L34"
+        },
+        {
+            "caller_nid": "components_layout_handleoffline",
+            "callee": "setIsOffline",
+            "is_member_call": false,
+            "source_file": "/Users/PROJETOS DEV/PROMPT-APP/src/components/Layout.tsx",
+            "source_location": "L35"
+        }
+    ]
+}

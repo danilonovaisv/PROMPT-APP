@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "VITEst";
 import * as entities from "./index.js";
 import legacy from "../maps/legacy.json" with { type: "json" };
 

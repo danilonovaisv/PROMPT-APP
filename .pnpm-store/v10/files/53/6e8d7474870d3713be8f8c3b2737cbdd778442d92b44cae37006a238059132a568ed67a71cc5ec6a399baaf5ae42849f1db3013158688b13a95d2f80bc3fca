@@ -1,5 +1,5 @@
 import { a as __toCommonJS, i as __require, n as __esmMin, o as __toESM, r as __exportAll, t as __commonJSMin } from "./chunk.js";
-import { A as OPTIMIZABLE_ENTRY_RE, C as ERR_FILE_NOT_FOUND_IN_OPTIMIZED_DEP_DIR, D as JS_TYPES_RE, E as FS_PREFIX, F as defaultAllowedOrigins, I as loopbackHosts, L as wildcardHosts, M as SPECIAL_QUERY_RE, N as VERSION, O as KNOWN_ASSET_TYPES, P as VITE_PACKAGE_DIR, R as require_picocolors, S as ENV_PUBLIC_PATH, T as ESBUILD_BASELINE_WIDELY_AVAILABLE_TARGET, _ as DEFAULT_SERVER_CONDITIONS, a as CLIENT_ENTRY, b as DEV_PROD_CONDITION, c as DEFAULT_ASSETS_INLINE_LIMIT, d as DEFAULT_CLIENT_MAIN_FIELDS, f as DEFAULT_CONFIG_FILES, g as DEFAULT_PREVIEW_PORT, h as DEFAULT_EXTERNAL_CONDITIONS, i as CLIENT_DIR, j as ROLLUP_HOOKS, k as METADATA_FILENAME, l as DEFAULT_ASSETS_RE, m as DEFAULT_EXTENSIONS, n as createLogger, o as CLIENT_PUBLIC_PATH, p as DEFAULT_DEV_PORT, r as printServerUrls, s as CSS_LANGS_RE, t as LogLevels, u as DEFAULT_CLIENT_CONDITIONS, v as DEFAULT_SERVER_MAIN_FIELDS, w as ERR_OPTIMIZE_DEPS_PROCESSING_ERROR, x as ENV_ENTRY, y as DEP_VERSION_RE } from "./logger.js";
+import { A as OPTIMIZABLE_ENTRY_RE, C as ERR_FILE_NOT_FOUND_IN_OPTIMIZED_DEP_DIR, D as JS_TYPES_RE, E as FS_PREFIX, F as defaultAllowedOrigins, I as loopbackHosts, L as wildcardHosts, M as SPECIAL_QUERY_RE, N as VERSION, O as KNOWN_ASSET_TYPES, P as NEXT_PACKAGE_DIR, R as require_picocolors, S as ENV_PUBLIC_PATH, T as ESBUILD_BASELINE_WIDELY_AVAILABLE_TARGET, _ as DEFAULT_SERVER_CONDITIONS, a as CLIENT_ENTRY, b as DEV_PROD_CONDITION, c as DEFAULT_ASSETS_INLINE_LIMIT, d as DEFAULT_CLIENT_MAIN_FIELDS, f as DEFAULT_CONFIG_FILES, g as DEFAULT_PREVIEW_PORT, h as DEFAULT_EXTERNAL_CONDITIONS, i as CLIENT_DIR, j as ROLLUP_HOOKS, k as METADATA_FILENAME, l as DEFAULT_ASSETS_RE, m as DEFAULT_EXTENSIONS, n as createLogger, o as CLIENT_PUBLIC_PATH, p as DEFAULT_DEV_PORT, r as printServerUrls, s as CSS_LANGS_RE, t as LogLevels, u as DEFAULT_CLIENT_CONDITIONS, v as DEFAULT_SERVER_MAIN_FIELDS, w as ERR_OPTIMIZE_DEPS_PROCESSING_ERROR, x as ENV_ENTRY, y as DEP_VERSION_RE } from "./logger.js";
 import { builtinModules, createRequire } from "node:module";
 import { parseAst, parseAstAsync } from "rolldown/parseAst";
 import { esmExternalRequirePlugin, esmExternalRequirePlugin as esmExternalRequirePlugin$1 } from "rolldown/plugins";
@@ -21,7 +21,7 @@ import { promises } from "node:dns";
 import { isatty } from "node:tty";
 import path$1, { isAbsolute as isAbsolute$1, join as join$1, posix as posix$1, resolve as resolve$1, win32 } from "path";
 import { exactRegex, makeIdFiltersToMatchWithQuery, prefixRegex, withFilter } from "rolldown/filter";
-import { dev, oxcRuntimePlugin, resolveTsconfig, scan, viteAliasPlugin, viteBuildImportAnalysisPlugin, viteDynamicImportVarsPlugin, viteImportGlobPlugin, viteJsonPlugin, viteLoadFallbackPlugin, viteManifestPlugin, viteModulePreloadPolyfillPlugin, viteReporterPlugin, viteResolvePlugin, viteTransformPlugin, viteWasmFallbackPlugin, viteWebWorkerPostPlugin } from "rolldown/experimental";
+import { dev, oxcRuntimePlugin, resolveTsconfig, scan, NEXTAliasPlugin, NEXTBuildImportAnalysisPlugin, NEXTDynamicImportVarsPlugin, NEXTImportGlobPlugin, NEXTJsonPlugin, NEXTLoadFallbackPlugin, NEXTManifestPlugin, NEXTModulePreloadPolyfillPlugin, NEXTReporterPlugin, NEXTResolvePlugin, NEXTTransformPlugin, NEXTWasmFallbackPlugin, NEXTWebWorkerPostPlugin } from "rolldown/experimental";
 import readline from "node:readline";
 import { MessageChannel, Worker } from "node:worker_threads";
 import isModuleSyncConditionEnabled from "#module-sync-enabled";
@@ -33,7 +33,7 @@ import { EventEmitter } from "node:events";
 import { STATUS_CODES, createServer, get } from "node:http";
 import { createServer as createServer$1, get as get$1 } from "node:https";
 import { readdirSync, statSync } from "fs";
-import { ESModulesEvaluator, ModuleRunner, createNodeImportMeta } from "vite/module-runner";
+import { ESModulesEvaluator, ModuleRunner, createNodeImportMeta } from "NEXT/module-runner";
 import { Buffer as Buffer$1 } from "node:buffer";
 import zlib from "zlib";
 import { setTimeout as setTimeout$1 } from "node:timers/promises";
@@ -57,7 +57,7 @@ const VALID_ID_PREFIX = `/@id/`;
 const NULL_BYTE_PLACEHOLDER = `__x00__`;
 let SOURCEMAPPING_URL = "sourceMa";
 SOURCEMAPPING_URL += "ppingURL";
-const MODULE_RUNNER_SOURCEMAPPING_SOURCE = "//# sourceMappingSource=vite-generated";
+const MODULE_RUNNER_SOURCEMAPPING_SOURCE = "//# sourceMappingSource=NEXT-generated";
 const ERR_OUTDATED_OPTIMIZED_DEP = "ERR_OUTDATED_OPTIMIZED_DEP";
 //#endregion
 //#region src/shared/utils.ts
@@ -109,7 +109,7 @@ function promiseWithResolvers() {
 }
 //#endregion
 //#region src/module-runner/importMetaResolver.ts
-const customizationHookNamespace = "vite-module-runner:import-meta-resolve/v1/";
+const customizationHookNamespace = "NEXT-module-runner:import-meta-resolve/v1/";
 const customizationHooksModule = `
 
 export async function resolve(specifier, context, nextResolve) {
@@ -1478,7 +1478,7 @@ function watchPackageDataPlugin(packageCache) {
 		return setPackageData(id, pkg);
 	};
 	return {
-		name: "vite:watch-package-data",
+		name: "NEXT:watch-package-data",
 		buildStart() {
 			watchFile = this.addWatchFile.bind(this);
 			watchQueue.forEach(watchFile);
@@ -1613,7 +1613,7 @@ const _dirname = path.dirname(fileURLToPath(
 	import.meta.url
 ));
 const rollupVersion = "4.23.0";
-const filter = process.env.VITE_DEBUG_FILTER;
+const filter = process.env.NEXT_DEBUG_FILTER;
 const DEBUG = process.env.DEBUG;
 function createDebugger(namespace, options = {}) {
 	const log = node_default(namespace);
@@ -2148,7 +2148,7 @@ function extractHostnamesFromSubjectAltName(subjectAltName) {
 			remaining = remaining.slice(endIndex);
 		}
 		remaining = remaining.slice(1).trimStart();
-		if (name === "DNS" && value !== "[::1]" && !(value.startsWith("*.") && net.isIPv4(value.slice(2)))) hostnames.push(value.replace("*", "vite"));
+		if (name === "DNS" && value !== "[::1]" && !(value.startsWith("*.") && net.isIPv4(value.slice(2)))) hostnames.push(value.replace("*", "NEXT"));
 	}
 	return hostnames;
 }
@@ -2209,8 +2209,8 @@ function mergeWithDefaults(defaults, values) {
 }
 const runtimeDeprecatedPath = new Set(["optimizeDeps", "ssr.optimizeDeps"]);
 const rollupOptionsDeprecationCall = () => {
-	const method = process.env.VITE_DEPRECATION_TRACE ? "trace" : "warn";
-	console[method]("`optimizeDeps.rollupOptions` / `ssr.optimizeDeps.rollupOptions` is deprecated. Use `optimizeDeps.rolldownOptions` instead. Note that this option may be set by a plugin. " + (method === "trace" ? "Showing trace because VITE_DEPRECATION_TRACE is set." : "Set VITE_DEPRECATION_TRACE=1 to see where it is called."));
+	const method = process.env.NEXT_DEPRECATION_TRACE ? "trace" : "warn";
+	console[method]("`optimizeDeps.rollupOptions` / `ssr.optimizeDeps.rollupOptions` is deprecated. Use `optimizeDeps.rolldownOptions` instead. Note that this option may be set by a plugin. " + (method === "trace" ? "Showing trace because NEXT_DEPRECATION_TRACE is set." : "Set NEXT_DEPRECATION_TRACE=1 to see where it is called."));
 };
 function setupRollupOptionCompat(buildConfig, path) {
 	buildConfig.rolldownOptions ??= buildConfig.rollupOptions;
@@ -2506,7 +2506,7 @@ let lastDateNow = 0;
 * This function will never return the same value.
 * Thus, the value may differ from the actual time.
 *
-* related: https://github.com/vitejs/vite/issues/19804
+* related: https://github.com/NEXTjs/NEXT/issues/19804
 */
 function monotonicDateNow() {
 	const now = Date.now();
@@ -2573,7 +2573,7 @@ function buildReporterPlugin(config) {
 		const tty = process.stdout.isTTY && !process.env.CI;
 		const shouldLogInfo = LogLevels[config.logLevel || "info"] >= LogLevels.info;
 		const assetsDir = path.join(env.config.build.assetsDir, "/");
-		return viteReporterPlugin({
+		return NEXTReporterPlugin({
 			root: env.config.root,
 			isTty: !!tty,
 			isLib: !!env.config.build.lib,
@@ -2587,7 +2587,7 @@ function buildReporterPlugin(config) {
 }
 //#endregion
 //#region src/node/plugins/esbuild.ts
-const debug$14 = createDebugger("vite:esbuild");
+const debug$14 = createDebugger("NEXT:esbuild");
 const IIFE_BEGIN_RE$1 = /(?:const|var)\s+\S+\s*=\s*\(?function\([^()]*\)\s*\{\s*"use strict";/;
 const validExtensionRE$1 = /\.\w+$/;
 const defaultEsbuildSupported = {
@@ -2688,7 +2688,7 @@ async function transformWithEsbuild(code, filename, options, inMap, config, watc
 		if (e.errors) {
 			e.frame = "";
 			e.errors.forEach((m) => {
-				if (m.text === "Experimental decorators are not currently enabled" || m.text === "Parameter decorators only work when experimental decorators are enabled") m.text += ". Vite 5 now uses esbuild 0.18 and you need to enable them by adding \"experimentalDecorators\": true in your \"tsconfig.json\" file.";
+				if (m.text === "Experimental decorators are not currently enabled" || m.text === "Parameter decorators only work when experimental decorators are enabled") m.text += ". NEXT 5 now uses esbuild 0.18 and you need to enable them by adding \"experimentalDecorators\": true in your \"tsconfig.json\" file.";
 				e.frame += `\n` + prettifyMessage(m, code);
 			});
 			e.loc = e.errors[0].location;
@@ -2711,7 +2711,7 @@ const injectEsbuildHelpers = (esbuildCode, format) => {
 };
 const buildEsbuildPlugin = () => {
 	return {
-		name: "vite:esbuild-transpile",
+		name: "NEXT:esbuild-transpile",
 		applyToEnvironment(environment) {
 			return environment.config.esbuild !== false;
 		},
@@ -2817,7 +2817,7 @@ function reloadOnTsconfigChange(server, changedFile) {
 //#region ../../node_modules/.pnpm/artichokie@0.4.3/node_modules/artichokie/dist/index.js
 const AsyncFunction = async function() {}.constructor;
 const codeToDataUrl = (code) => `data:application/javascript,${encodeURIComponent(code + "\n//# sourceURL=[worker-eval(artichokie)]")}`;
-const viteSsrDynamicImport = "__vite_ssr_dynamic_import__";
+const NEXTSsrDynamicImport = "__NEXT_ssr_dynamic_import__";
 const stackBlitzImport = "𝐢𝐦𝐩𝐨𝐫𝐭";
 var Worker$1 = class {
 	/** @internal */
@@ -3053,7 +3053,7 @@ function genWorkerCode(fn, isModule, waitTimeout, parentFunctions) {
 		});
 		return { call };
 	};
-	const fnString = fn.toString().replaceAll(stackBlitzImport, "import").replaceAll(viteSsrDynamicImport, "import");
+	const fnString = fn.toString().replaceAll(stackBlitzImport, "import").replaceAll(NEXTSsrDynamicImport, "import");
 	return `
 ${isModule ? "import { parentPort, receiveMessageOnPort, workerData } from 'worker_threads'" : "const { parentPort, receiveMessageOnPort, workerData } = require('worker_threads')"}
 ${isModule ? "import { performance } from 'node:perf_hooks'" : "const { performance } = require('node:perf_hooks')"}
@@ -3112,7 +3112,7 @@ var FakeWorker = class {
 	stop() {}
 };
 function genFakeWorkerArgsAndCode(fn, declareRequire, parentFunctions) {
-	const fnString = fn.toString().replace(importRe, `${internalImportName}(`).replaceAll(stackBlitzImport, internalImportName).replaceAll(viteSsrDynamicImport, internalImportName);
+	const fnString = fn.toString().replace(importRe, `${internalImportName}(`).replaceAll(stackBlitzImport, internalImportName).replaceAll(NEXTSsrDynamicImport, internalImportName);
 	return [
 		...declareRequire ? ["require"] : [],
 		internalImportName,
@@ -3365,7 +3365,7 @@ function oxcPlugin(config) {
 		const { jsxInject, include = /\.(m?ts|[jt]sx)$/, exclude = /\.js$/, jsxRefreshInclude, jsxRefreshExclude, ..._transformOptions } = config.oxc;
 		const transformOptions = _transformOptions;
 		transformOptions.sourcemap = environment.config.mode !== "build" || !!environment.config.build.sourcemap;
-		return viteTransformPlugin({
+		return NEXTTransformPlugin({
 			root: environment.config.root,
 			include,
 			exclude,
@@ -3399,7 +3399,7 @@ function oxcPlugin(config) {
 	};
 	let server;
 	return {
-		name: "vite:oxc",
+		name: "NEXT:oxc",
 		configureServer(_server) {
 			server = _server;
 		},
@@ -4448,10 +4448,10 @@ function alias$1(options = {}) {
 }
 //#endregion
 //#region src/node/plugins/optimizedDeps.ts
-const debug$13 = createDebugger("vite:optimize-deps");
+const debug$13 = createDebugger("NEXT:optimize-deps");
 function optimizedDepsPlugin() {
 	return {
-		name: "vite:optimized-deps",
+		name: "NEXT:optimized-deps",
 		applyToEnvironment(environment) {
 			return !isDepOptimizationDisabled(environment.config.optimizeDeps);
 		},
@@ -4954,7 +4954,7 @@ var import_main = (/* @__PURE__ */ __commonJSMin(((exports, module) => {
 	}
 	module.exports.expand = expand;
 })))();
-const debug$12 = createDebugger("vite:env");
+const debug$12 = createDebugger("NEXT:env");
 function getEnvFilesForMode(mode, envDir) {
 	if (envDir !== false) return [
 		`.env`,
@@ -4964,7 +4964,7 @@ function getEnvFilesForMode(mode, envDir) {
 	].map((file) => normalizePath(path.join(envDir, file)));
 	return [];
 }
-function loadEnv(mode, envDir, prefixes = "VITE_") {
+function loadEnv(mode, envDir, prefixes = "NEXT_") {
 	const start = performance.now();
 	const getTime = () => `${(performance.now() - start).toFixed(2)}ms`;
 	if (mode === "local") throw new Error("\"local\" cannot be used as a mode name because it conflicts with the .local postfix for .env files.");
@@ -4979,7 +4979,7 @@ function loadEnv(mode, envDir, prefixes = "VITE_") {
 		return Object.entries(parsedEnv);
 	}));
 	debug$12?.(`env files loaded in ${getTime()}`);
-	if (parsed.NODE_ENV && process.env.VITE_USER_NODE_ENV === void 0) process.env.VITE_USER_NODE_ENV = parsed.NODE_ENV;
+	if (parsed.NODE_ENV && process.env.NEXT_USER_NODE_ENV === void 0) process.env.NEXT_USER_NODE_ENV = parsed.NODE_ENV;
 	if (parsed.BROWSER && process.env.BROWSER === void 0) process.env.BROWSER = parsed.BROWSER;
 	if (parsed.BROWSER_ARGS && process.env.BROWSER_ARGS === void 0) process.env.BROWSER_ARGS = parsed.BROWSER_ARGS;
 	(0, import_main.expand)({
@@ -4991,15 +4991,15 @@ function loadEnv(mode, envDir, prefixes = "VITE_") {
 	debug$12?.(`using resolved env: %O`, env);
 	return env;
 }
-function resolveEnvPrefix({ envPrefix = "VITE_" }) {
+function resolveEnvPrefix({ envPrefix = "NEXT_" }) {
 	envPrefix = arraify(envPrefix);
 	if (envPrefix.includes("")) throw new Error(`envPrefix option contains value '', which could lead unexpected exposure of sensitive information.`);
-	if (envPrefix.some((prefix) => /\s/.test(prefix))) console.warn(import_picocolors.default.yellow(`[vite] Warning: envPrefix option contains values with whitespace, which does not work in practice.`));
+	if (envPrefix.some((prefix) => /\s/.test(prefix))) console.warn(import_picocolors.default.yellow(`[NEXT] Warning: envPrefix option contains values with whitespace, which does not work in practice.`));
 	return envPrefix;
 }
 //#endregion
 //#region src/node/deprecations.ts
-const docsURL = "https://vite.dev";
+const docsURL = "https://NEXT.dev";
 const deprecationCode = {
 	removePluginHookSsrArgument: "this-environment-in-hooks",
 	removePluginHookHandleHotUpdate: "hotupdate-hook",
@@ -5031,7 +5031,7 @@ function isFutureDeprecationEnabled(config, type) {
 */
 function warnFutureDeprecation(config, type, extraMessage, stacktrace = true) {
 	if (_ignoreDeprecationWarnings || !config.future || config.future[type] !== "warn") return;
-	let msg = `[vite future] ${deprecationMessages[type]}`;
+	let msg = `[NEXT future] ${deprecationMessages[type]}`;
 	if (extraMessage) msg += ` ${extraMessage}`;
 	msg = import_picocolors.default.yellow(msg);
 	const docs = `${docsURL}/changes/${deprecationCode[type].toLowerCase()}`;
@@ -5039,7 +5039,7 @@ function warnFutureDeprecation(config, type, extraMessage, stacktrace = true) {
 	if (stacktrace) {
 		const stack = (/* @__PURE__ */ new Error()).stack;
 		if (stack) {
-			let stacks = stack.split("\n").slice(3).filter((i) => !i.includes("/node_modules/vite/dist/"));
+			let stacks = stack.split("\n").slice(3).filter((i) => !i.includes("/node_modules/NEXT/dist/"));
 			if (stacks.length === 0) stacks.push("No stack trace found.");
 			stacks = stacks.map((i, idx) => `  ${idx === stacks.length - 1 ? "└" : "│"} ${i.trim()}`);
 			msg += import_picocolors.default.dim(stacks.join("\n")) + "\n";
@@ -5091,7 +5091,7 @@ function logError(server, err) {
 	});
 }
 function errorMiddleware(server, allowNext = false) {
-	return function viteErrorMiddleware(err, _req, res, next) {
+	return function NEXTErrorMiddleware(err, _req, res, next) {
 		logError(server, err);
 		if (allowNext) next();
 		else {
@@ -10672,7 +10672,7 @@ function setClientErrorHandler(server, logger) {
 		let msg = "400 Bad Request";
 		if (err.code === "HPE_HEADER_OVERFLOW") {
 			msg = "431 Request Header Fields Too Large";
-			logger.warn(import_picocolors.default.yellow("Server responded with status code 431. See https://vite.dev/guide/troubleshooting.html#_431-request-header-fields-too-large."));
+			logger.warn(import_picocolors.default.yellow("Server responded with status code 431. See https://NEXT.dev/guide/troubleshooting.html#_431-request-header-fields-too-large."));
 		}
 		if (err.code === "ECONNRESET" || !socket.writable) return;
 		socket.end(`HTTP/1.1 ${msg}\r\n\r\n`);
@@ -10736,7 +10736,7 @@ function ssrFixStacktrace(e, moduleGraph) {
 	if (rewroteStacktraces.has(e)) return;
 	const { result: stacktrace, alreadyRewritten } = ssrRewriteStacktrace(e.stack, moduleGraph);
 	rebindErrorStacktrace(e, stacktrace);
-	if (alreadyRewritten) e.message += " (The stacktrace appears to be already rewritten by something else, but was passed to vite.ssrFixStacktrace. This may cause incorrect stacktraces.)";
+	if (alreadyRewritten) e.message += " (The stacktrace appears to be already rewritten by something else, but was passed to NEXT.ssrFixStacktrace. This may cause incorrect stacktraces.)";
 	rewroteStacktraces.add(e);
 }
 //#endregion
@@ -10773,13 +10773,13 @@ const createServerModuleRunnerTransport = (options) => {
 	return {
 		connect({ onMessage }) {
 			options.channel.api.outsideEmitter.on("send", onMessage);
-			options.channel.api.innerEmitter.emit("vite:client:connect", void 0, hmrClient);
+			options.channel.api.innerEmitter.emit("NEXT:client:connect", void 0, hmrClient);
 			onMessage({ type: "connected" });
 			handler = onMessage;
 		},
 		disconnect() {
 			if (handler) options.channel.api.outsideEmitter.off("send", handler);
-			options.channel.api.innerEmitter.emit("vite:client:disconnect", void 0, hmrClient);
+			options.channel.api.innerEmitter.emit("NEXT:client:disconnect", void 0, hmrClient);
 		},
 		send(payload) {
 			if (payload.type !== "custom") throw new Error("Cannot send non-custom events from the server to the client.");
@@ -10788,7 +10788,7 @@ const createServerModuleRunnerTransport = (options) => {
 	};
 };
 /**
-* Create an instance of the Vite SSR runtime that support HMR.
+* Create an instance of the NEXT SSR runtime that support HMR.
 * @experimental
 */
 function createServerModuleRunner(environment, options = {}) {
@@ -10838,14 +10838,14 @@ var SSRCompatModuleRunner = class extends ModuleRunner {
 	async directRequest(url, mod, callstack) {
 		const id = mod.meta && "id" in mod.meta && mod.meta.id;
 		if (!id) return super.directRequest(url, mod, callstack);
-		const viteMod = this.environment.moduleGraph.getModuleById(id);
-		if (!viteMod) return super.directRequest(id, mod, callstack);
+		const NEXTMod = this.environment.moduleGraph.getModuleById(id);
+		if (!NEXTMod) return super.directRequest(id, mod, callstack);
 		try {
 			const exports = await super.directRequest(id, mod, callstack);
-			viteMod.ssrModule = exports;
+			NEXTMod.ssrModule = exports;
 			return exports;
 		} catch (err) {
-			viteMod.ssrError = err;
+			NEXTMod.ssrError = err;
 			throw err;
 		}
 	}
@@ -11079,12 +11079,12 @@ const jsonLangRE = new RegExp(`\\.(?:json|json5)(?:$|\\?)`);
 const isJSONRequest = (request) => jsonLangRE.test(request);
 //#endregion
 //#region src/node/ssr/ssrTransform.ts
-const ssrModuleExportsKey = `__vite_ssr_exports__`;
-const ssrImportKey = `__vite_ssr_import__`;
-const ssrDynamicImportKey = `__vite_ssr_dynamic_import__`;
-const ssrExportAllKey = `__vite_ssr_exportAll__`;
-const ssrExportNameKey = `__vite_ssr_exportName__`;
-const ssrImportMetaKey = `__vite_ssr_import_meta__`;
+const ssrModuleExportsKey = `__NEXT_ssr_exports__`;
+const ssrImportKey = `__NEXT_ssr_import__`;
+const ssrDynamicImportKey = `__NEXT_ssr_dynamic_import__`;
+const ssrExportAllKey = `__NEXT_ssr_exportAll__`;
+const ssrExportNameKey = `__NEXT_ssr_exportName__`;
+const ssrImportMetaKey = `__NEXT_ssr_import_meta__`;
 async function ssrTransform(code, inMap, url, originalCode, options) {
 	if (options?.json?.stringify && isJSONRequest(url)) return ssrTransformJSON(code, inMap);
 	return ssrTransformScript(code, inMap, url, originalCode);
@@ -11127,7 +11127,7 @@ async function ssrTransformScript(code, inMap, url, originalCode) {
 		const source = importNode.source.value;
 		deps.add(source);
 		const metadataArg = (metadata?.importedNames?.length ?? 0) > 0 ? `, ${JSON.stringify(metadata)}` : "";
-		const importId = `__vite_ssr_import_${uid++}__`;
+		const importId = `__NEXT_ssr_import_${uid++}__`;
 		const transformedImport = `const ${importId} = await ${ssrImportKey}(${JSON.stringify(source)}${metadataArg});\n`;
 		s.update(importNode.start, importNode.end, transformedImport);
 		if (importNode.start === index) hoistIndex = importNode.end;
@@ -11201,7 +11201,7 @@ async function ssrTransformScript(code, inMap, url, originalCode) {
 			s.remove(node.start, node.start + 15);
 			defineExport("default", name);
 		} else {
-			const name = `__vite_ssr_export_default__`;
+			const name = `__NEXT_ssr_export_default__`;
 			s.update(node.start, node.start + 14, `const ${name} =`);
 			defineExport("default", name);
 		}
@@ -12276,7 +12276,7 @@ async function startBrowserProcess(browser, browserArgs, url, logger) {
 		const ps = await execAsync("ps cax");
 		const openedBrowser = preferredOSXBrowser && ps.includes(preferredOSXBrowser) ? preferredOSXBrowser : supportedChromiumBrowsers.find((b) => ps.includes(b));
 		if (openedBrowser) {
-			await execAsync(`osascript openChrome.js "${url}" "${openedBrowser}"`, { cwd: join(VITE_PACKAGE_DIR, "bin") });
+			await execAsync(`osascript openChrome.js "${url}" "${openedBrowser}"`, { cwd: join(NEXT_PACKAGE_DIR, "bin") });
 			return true;
 		}
 	} catch {}
@@ -16170,7 +16170,7 @@ function createWebSocketServer(server, config, httpsOptions) {
 	const host = hmr && hmr.host || void 0;
 	const allowedHosts = config.server.allowedHosts === true ? config.server.allowedHosts : Object.freeze([...config.server.allowedHosts]);
 	const shouldHandle = (req) => {
-		if (req.headers["sec-websocket-protocol"] === "vite-ping") return true;
+		if (req.headers["sec-websocket-protocol"] === "NEXT-ping") return true;
 		if (allowedHosts !== true && !isHostAllowed(req.headers.host, allowedHosts)) return false;
 		if (config.legacy?.skipWebSocketTokenCheck) return true;
 		if (req.headers.origin) return hasValidToken(config, new URL(`http://example.com${req.url}`));
@@ -16194,7 +16194,7 @@ function createWebSocketServer(server, config, httpsOptions) {
 		hmrServerWsListener = (req, socket, head) => {
 			const protocol = req.headers["sec-websocket-protocol"];
 			const parsedUrl = new URL(`http://example.com${req.url}`);
-			if (["vite-hmr", "vite-ping"].includes(protocol) && parsedUrl.pathname === hmrBase) handleUpgrade(req, socket, head, protocol === "vite-ping");
+			if (["NEXT-hmr", "NEXT-ping"].includes(protocol) && parsedUrl.pathname === hmrBase) handleUpgrade(req, socket, head, protocol === "NEXT-ping");
 		};
 		wsServer.on("upgrade", hmrServerWsListener);
 	} else {
@@ -16212,11 +16212,11 @@ function createWebSocketServer(server, config, httpsOptions) {
 		else wsHttpServer = createServer(route);
 		wsHttpServer.on("upgrade", (req, socket, head) => {
 			const protocol = req.headers["sec-websocket-protocol"];
-			if (protocol === "vite-ping" && server && !server.listening) {
+			if (protocol === "NEXT-ping" && server && !server.listening) {
 				req.destroy();
 				return;
 			}
-			handleUpgrade(req, socket, head, protocol === "vite-ping");
+			handleUpgrade(req, socket, head, protocol === "NEXT-ping");
 		});
 		wsHttpServer.on("error", (e) => {
 			if (e.code === "EADDRINUSE") config.logger.error(import_picocolors.default.red(`WebSocket server error: Port ${e.port} is already in use`), { error: e });
@@ -16246,9 +16246,9 @@ function createWebSocketServer(server, config, httpsOptions) {
 			});
 		});
 		socket.on("close", () => {
-			emitCustomEvent("vite:client:disconnect", void 0, socket);
+			emitCustomEvent("NEXT:client:disconnect", void 0, socket);
 		});
-		emitCustomEvent("vite:client:connect", void 0, socket);
+		emitCustomEvent("NEXT:client:connect", void 0, socket);
 		socket.send(JSON.stringify({ type: "connected" }));
 		if (bufferedMessage) {
 			socket.send(JSON.stringify(bufferedMessage));
@@ -16342,7 +16342,7 @@ function createWebSocketServer(server, config, httpsOptions) {
 //#endregion
 //#region src/node/server/middlewares/base.ts
 function baseMiddleware(rawBase, middlewareMode) {
-	return function viteBaseMiddleware(req, res, next) {
+	return function NEXTBaseMiddleware(req, res, next) {
 		const url = req.url;
 		const pathname = cleanUrl(url);
 		const base = rawBase;
@@ -17786,7 +17786,7 @@ var import_lib$1 = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commonJSMin(((expo
 		return new index_1.ProxyServer(options);
 	}
 })))(), 1);
-const debug$11 = createDebugger("vite:proxy");
+const debug$11 = createDebugger("NEXT:proxy");
 const rewriteOriginHeader = (proxyReq, options, config) => {
 	if (options.rewriteWsOrigin) {
 		const { target } = options;
@@ -17868,7 +17868,7 @@ function proxyMiddleware(httpServer, options, config) {
 			}
 		}
 	});
-	return async function viteProxyMiddleware(req, res, next) {
+	return async function NEXTProxyMiddleware(req, res, next) {
 		const url = req.url;
 		for (const context in proxies) if (doesProxyContextMatchUrl(context, url)) {
 			const [proxy, opts] = proxies[context];
@@ -18477,12 +18477,12 @@ function getNodeAssetAttributes(node) {
 	if (!matched) return [];
 	const attributes = {};
 	for (const attr of node.attrs) attributes[getAttrKey(attr)] = attr.value;
-	if ("vite-ignore" in attributes) return [{
+	if ("NEXT-ignore" in attributes) return [{
 		type: "remove",
-		key: "vite-ignore",
+		key: "NEXT-ignore",
 		value: "",
 		attributes,
-		location: node.sourceCodeLocation.attrs["vite-ignore"]
+		location: node.sourceCodeLocation.attrs["NEXT-ignore"]
 	}];
 	const actions = [];
 	function handleAttributeKey(key, type) {
@@ -18957,7 +18957,7 @@ function lookup(extn) {
 }
 //#endregion
 //#region src/node/plugins/asset.ts
-const assetUrlRE = /__VITE_ASSET__([\w$]+)__(?:\$_(.*?)__)?/g;
+const assetUrlRE = /__NEXT_ASSET__([\w$]+)__(?:\$_(.*?)__)?/g;
 const jsSourceMapRE = /\.[cm]?js\.map$/;
 const noInlineRE = /[?&]no-inline\b/;
 const inlineRE$3 = /[?&]inline\b/;
@@ -18980,7 +18980,7 @@ function renderAssetUrlInJS(pluginContext, chunk, opts, code) {
 		s ||= new MagicString(code);
 		const [full, referenceId, postfix = ""] = match;
 		const file = pluginContext.getFileName(referenceId);
-		chunk.viteMetadata.importedAssets.add(cleanUrl(file));
+		chunk.NEXTMetadata.importedAssets.add(cleanUrl(file));
 		const replacement = toOutputFilePathInJS(environment, file + postfix, "asset", chunk.fileName, "js", toRelativeRuntime);
 		const replacementString = typeof replacement === "string" ? JSON.stringify(encodeURIPath(replacement)).slice(1, -1) : `"+${replacement.runtime}+"`;
 		s.update(match.index, match.index + full.length, replacementString);
@@ -19002,7 +19002,7 @@ function renderAssetUrlInJS(pluginContext, chunk, opts, code) {
 function assetPlugin(config) {
 	registerCustomMime();
 	return {
-		name: "vite:asset",
+		name: "NEXT:asset",
 		perEnvironmentStartEndDuringDev: true,
 		buildStart() {
 			assetCache.set(this.environment, /* @__PURE__ */ new Map());
@@ -19049,7 +19049,7 @@ function assetPlugin(config) {
 				return {
 					code: `export default ${JSON.stringify(encodeURIPath(url))}`,
 					moduleSideEffects: config.command === "build" && this.getModuleInfo(id)?.isEntry ? "no-treeshake" : false,
-					meta: config.command === "build" ? { "vite:asset": true } : void 0,
+					meta: config.command === "build" ? { "NEXT:asset": true } : void 0,
 					moduleType: "js"
 				};
 			}
@@ -19066,7 +19066,7 @@ function assetPlugin(config) {
 			let importedFiles;
 			for (const file in bundle) {
 				const chunk = bundle[file];
-				if (chunk.type === "chunk" && chunk.isEntry && chunk.moduleIds.length === 1 && config.assetsInclude(chunk.moduleIds[0]) && this.getModuleInfo(chunk.moduleIds[0])?.meta["vite:asset"]) {
+				if (chunk.type === "chunk" && chunk.isEntry && chunk.moduleIds.length === 1 && config.assetsInclude(chunk.moduleIds[0]) && this.getModuleInfo(chunk.moduleIds[0])?.meta["NEXT:asset"]) {
 					if (!importedFiles) {
 						importedFiles = /* @__PURE__ */ new Set();
 						for (const file in bundle) {
@@ -19118,7 +19118,7 @@ function getPublicAssetFilename(hash, config) {
 	return publicAssetUrlCache.get(config)?.get(hash);
 }
 const publicAssetUrlCache = /* @__PURE__ */ new WeakMap();
-const publicAssetUrlRE = /__VITE_PUBLIC_ASSET__([a-z\d]{8})__/g;
+const publicAssetUrlRE = /__NEXT_PUBLIC_ASSET__([a-z\d]{8})__/g;
 function publicFileToBuiltUrl(url, config) {
 	if (config.command !== "build") return joinUrlSegments(config.decodedBase, url);
 	const hash = getHash(url);
@@ -19128,7 +19128,7 @@ function publicFileToBuiltUrl(url, config) {
 		publicAssetUrlCache.set(config, cache);
 	}
 	if (!cache.get(hash)) cache.set(hash, url);
-	return `__VITE_PUBLIC_ASSET__${hash}__`;
+	return `__NEXT_PUBLIC_ASSET__${hash}__`;
 }
 const GIT_LFS_PREFIX = Buffer$1.from("version https://git-lfs.github.com");
 function isGitLfsPlaceholder(content) {
@@ -19164,7 +19164,7 @@ async function fileToBuiltUrl(pluginContext, id, skipPublicCheck = false, forceI
 		});
 		if (environment.config.command === "build" && noInlineRE.test(postfix)) postfix = postfix.replace(noInlineRE, "").replace(/^&/, "?");
 		if (environment.config.command === "serve" && environment.config.experimental.bundledDev) url = toOutputFilePathInJSForBundledDev(environment, pluginContext.getFileName(referenceId));
-		else url = `__VITE_ASSET__${referenceId}__${postfix ? `$_${postfix}__` : ``}`;
+		else url = `__NEXT_ASSET__${referenceId}__${postfix ? `$_${postfix}__` : ``}`;
 	}
 	cache.set(id, url);
 	return url;
@@ -19970,7 +19970,7 @@ var import_convert_source_map = /* @__PURE__ */ __toESM((/* @__PURE__ */ __commo
 		return options && options.multiline ? "/*# " + data + " */" : "//# " + data;
 	};
 })))(), 1);
-const debug$10 = createDebugger("vite:sourcemap", { onlyWhenFocused: true });
+const debug$10 = createDebugger("NEXT:sourcemap", { onlyWhenFocused: true });
 /**
 * Given a file path inside node_modules, returns the package root directory.
 * For scoped packages like `node_modules/@scope/pkg/dist/foo.js`, returns `node_modules/@scope/pkg`.
@@ -20279,7 +20279,7 @@ function manifestPlugin() {
 	return perEnvironmentPlugin("native:manifest", (environment) => {
 		if (!environment.config.build.manifest) return false;
 		const root = environment.config.root;
-		const outPath = environment.config.build.manifest === true ? ".vite/manifest.json" : environment.config.build.manifest;
+		const outPath = environment.config.build.manifest === true ? ".NEXT/manifest.json" : environment.config.build.manifest;
 		const envs = {};
 		function getChunkName(chunk) {
 			return getChunkOriginalFileName(chunk, root, false) ?? `_${path.basename(chunk.fileName)}`;
@@ -20291,7 +20291,7 @@ function manifestPlugin() {
 					envs[environment.name] = this.environment;
 				}
 			},
-			viteManifestPlugin({
+			NEXTManifestPlugin({
 				root,
 				outPath,
 				isOutputOptionsForLegacyChunks: environment.config.isOutputOptionsForLegacyChunks,
@@ -20308,8 +20308,8 @@ function manifestPlugin() {
 					if (asset.type === "asset") {
 						let manifest;
 						for (const output of Object.values(bundle)) {
-							const importedCss = output.viteMetadata?.importedCss;
-							const importedAssets = output.viteMetadata?.importedAssets;
+							const importedCss = output.NEXTMetadata?.importedCss;
+							const importedAssets = output.NEXTMetadata?.importedAssets;
 							if (!importedCss?.size && !importedAssets?.size) continue;
 							manifest ??= JSON.parse(asset.source.toString());
 							if (output.type === "chunk") {
@@ -20401,7 +20401,7 @@ const postcssConfigCache = /* @__PURE__ */ new WeakMap();
 function encodePublicUrlsInCSS(config) {
 	return config.command === "build";
 }
-const cssUrlAssetRE = /__VITE_CSS_URL__([\da-f]+)__/g;
+const cssUrlAssetRE = /__NEXT_CSS_URL__([\da-f]+)__/g;
 /**
 * Plugin applied before user plugins
 */
@@ -20416,7 +20416,7 @@ function cssPlugin(config) {
 	let preprocessorWorkerController;
 	if (config.css.transformer !== "lightningcss") resolvePostcssConfig(config).catch(() => {});
 	return {
-		name: "vite:css",
+		name: "NEXT:css",
 		buildStart() {
 			moduleCache = /* @__PURE__ */ new Map();
 			cssModulesCache.set(config, moduleCache);
@@ -20434,7 +20434,7 @@ function cssPlugin(config) {
 					if (isModuleCSSRequest(id)) throw new Error(`?url is not supported with CSS modules. (tried to import ${JSON.stringify(id)})`);
 					if (isBuild) {
 						id = injectQuery(removeUrlQuery(id), "transform-only");
-						return `import ${JSON.stringify(id)};export default "__VITE_CSS_URL__${Buffer.from(id).toString("hex")}__"`;
+						return `import ${JSON.stringify(id)};export default "__NEXT_CSS_URL__${Buffer.from(id).toString("hex")}__"`;
 					}
 				}
 			}
@@ -20498,7 +20498,7 @@ function cssPostPlugin(config) {
 			type: "asset",
 			names: [cssAssetName],
 			originalFileNames: originalFileName ? [originalFileName] : [],
-			source: "/* vite internal call, ignore */"
+			source: "/* NEXT internal call, ignore */"
 		}));
 	};
 	function getCssBundleName() {
@@ -20509,7 +20509,7 @@ function cssPostPlugin(config) {
 		return cssBundleName;
 	}
 	return {
-		name: "vite:css-post",
+		name: "NEXT:css-post",
 		renderStart() {
 			pureCssChunks = /* @__PURE__ */ new Set();
 			hasEmitted = false;
@@ -20553,12 +20553,12 @@ function cssPostPlugin(config) {
 					const cssContent = await getContentWithSourcemap(css);
 					return {
 						code: [
-							config.isBundled ? `const { updateStyle: __vite__updateStyle, removeStyle: __vite__removeStyle } = import.meta.hot._internal` : `import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from ${JSON.stringify(path.posix.join(config.base, CLIENT_PUBLIC_PATH))}`,
-							`const __vite__id = ${JSON.stringify(id)}`,
-							`const __vite__css = ${JSON.stringify(cssContent)}`,
-							`__vite__updateStyle(__vite__id, __vite__css)`,
+							config.isBundled ? `const { updateStyle: __NEXT__updateStyle, removeStyle: __NEXT__removeStyle } = import.meta.hot._internal` : `import { updateStyle as __NEXT__updateStyle, removeStyle as __NEXT__removeStyle } from ${JSON.stringify(path.posix.join(config.base, CLIENT_PUBLIC_PATH))}`,
+							`const __NEXT__id = ${JSON.stringify(id)}`,
+							`const __NEXT__css = ${JSON.stringify(cssContent)}`,
+							`__NEXT__updateStyle(__NEXT__id, __NEXT__css)`,
 							`${modulesCode || "import.meta.hot.accept()"}`,
-							`import.meta.hot.prune(() => __vite__removeStyle(__vite__id))`
+							`import.meta.hot.prune(() => __NEXT__removeStyle(__NEXT__id))`
 						].join("\n"),
 						map: { mappings: "" },
 						moduleType: "js"
@@ -20594,7 +20594,7 @@ function cssPostPlugin(config) {
 				const ids = Object.keys(chunk.modules);
 				for (const id of ids) if (styles.has(id)) {
 					if (transformOnlyRE.test(id)) continue;
-					const cssScopeTo = this.getModuleInfo(id)?.meta?.vite?.cssScopeTo;
+					const cssScopeTo = this.getModuleInfo(id)?.meta?.NEXT?.cssScopeTo;
 					if (cssScopeTo && !isCssScopeToRendered(cssScopeTo, renderedModules)) continue;
 					if (cssModuleRE.test(id)) isPureCssChunk = false;
 					chunkCSS = (chunkCSS || "") + styles.get(id);
@@ -20609,7 +20609,7 @@ function cssPostPlugin(config) {
 					};
 					chunkCSS = chunkCSS.replace(assetUrlRE, (_, fileHash, postfix = "") => {
 						const filename = this.getFileName(fileHash) + postfix;
-						chunk.viteMetadata.importedAssets.add(cleanUrl(filename));
+						chunk.NEXTMetadata.importedAssets.add(cleanUrl(filename));
 						return encodeURIPath(toOutputFilePathInCss(filename, "asset", cssAssetName, "css", config, toRelative));
 					});
 					if (encodedPublicUrls) {
@@ -20630,7 +20630,7 @@ function cssPostPlugin(config) {
 				}
 				let s;
 				const urlEmitTasks = [];
-				if (code.includes("__VITE_CSS_URL__")) {
+				if (code.includes("__NEXT_CSS_URL__")) {
 					let match;
 					cssUrlAssetRE.lastIndex = 0;
 					while (match = cssUrlAssetRE.exec(code)) {
@@ -20664,7 +20664,7 @@ function cssPostPlugin(config) {
 							source: content
 						});
 						const filename = this.getFileName(referenceId);
-						chunk.viteMetadata.importedAssets.add(cleanUrl(filename));
+						chunk.NEXTMetadata.importedAssets.add(cleanUrl(filename));
 						const replacement = toOutputFilePathInJS(this.environment, filename, "asset", chunk.fileName, "js", toRelativeRuntime);
 						const replacementString = typeof replacement === "string" ? JSON.stringify(encodeURIPath(replacement)).slice(1, -1) : `"+${replacement.runtime}+"`;
 						s.update(start, end, replacementString);
@@ -20692,12 +20692,12 @@ function cssPostPlugin(config) {
 								referenceId,
 								name: chunk.name
 							});
-							chunk.viteMetadata.importedCss.add(this.getFileName(referenceId));
+							chunk.NEXTMetadata.importedCss.add(this.getFileName(referenceId));
 						} else if (this.environment.config.consumer === "client") {
 							chunkCSS = await finalizeCss(chunkCSS, config);
 							let cssString = JSON.stringify(chunkCSS);
 							cssString = renderAssetUrlInJS(this, chunk, opts, cssString)?.toString() || cssString;
-							const style = `__vite_style__`;
+							const style = `__NEXT_style__`;
 							const injectCode = `var ${style} = document.createElement('style');${style}.textContent = ${cssString};document.head.appendChild(${style});`;
 							s ||= new MagicString(code);
 							injectInlinedCSS(s, this, code, opts.format, injectCode);
@@ -20715,9 +20715,9 @@ function cssPostPlugin(config) {
 				return null;
 			},
 			augmentChunkHash(chunk) {
-				if (chunk.viteMetadata?.importedCss.size) {
+				if (chunk.NEXTMetadata?.importedCss.size) {
 					let hash = "";
-					for (const id of chunk.viteMetadata.importedCss) hash += id;
+					for (const id of chunk.NEXTMetadata.importedCss) hash += id;
 					return hash;
 				}
 			}
@@ -20758,9 +20758,9 @@ function cssPostPlugin(config) {
 						let chunkImportsPureCssChunk = false;
 						chunk.imports = chunk.imports.filter((file) => {
 							if (pureCssChunkNames.includes(file)) {
-								const { importedCss, importedAssets } = bundle[file].viteMetadata;
-								importedCss.forEach((file) => chunk.viteMetadata.importedCss.add(file));
-								importedAssets.forEach((file) => chunk.viteMetadata.importedAssets.add(file));
+								const { importedCss, importedAssets } = bundle[file].NEXTMetadata;
+								importedCss.forEach((file) => chunk.NEXTMetadata.importedCss.add(file));
+								importedAssets.forEach((file) => chunk.NEXTMetadata.importedAssets.add(file));
 								chunkImportsPureCssChunk = true;
 								return false;
 							}
@@ -20773,13 +20773,13 @@ function cssPostPlugin(config) {
 				pureCssChunkNames.forEach((fileName) => {
 					const emptyJsPlaceholder = bundle[fileName];
 					if (emptyJsPlaceholder.isEntry) {
-						const { importedAssets, importedCss } = emptyJsPlaceholder.viteMetadata;
+						const { importedAssets, importedCss } = emptyJsPlaceholder.NEXTMetadata;
 						const cssReferenceId = cssEntriesMap.get(this.environment).get(emptyJsPlaceholder.preliminaryFileName).referenceId;
 						const realCssEntryName = this.getFileName(cssReferenceId);
 						const realCssEntry = bundle[realCssEntryName];
 						importedCss.delete(realCssEntryName);
-						if (importedAssets.size) realCssEntry.viteMetadata.importedAssets = importedAssets;
-						if (importedCss.size) realCssEntry.viteMetadata.importedCss = importedCss;
+						if (importedAssets.size) realCssEntry.NEXTMetadata.importedAssets = importedAssets;
+						if (importedCss.size) realCssEntry.NEXTMetadata.importedCss = importedCss;
 					}
 					removedPureCssFiles.set(fileName, emptyJsPlaceholder);
 					delete bundle[fileName];
@@ -20787,7 +20787,7 @@ function cssPostPlugin(config) {
 				});
 			}
 			const cssAssets = Object.values(bundle).filter((asset) => asset.type === "asset" && asset.fileName.endsWith(".css"));
-			for (const cssAsset of cssAssets) if (typeof cssAsset.source === "string") cssAsset.source = cssAsset.source.replace(viteHashUpdateMarkerRE, "");
+			for (const cssAsset of cssAssets) if (typeof cssAsset.source === "string") cssAsset.source = cssAsset.source.replace(NEXTHashUpdateMarkerRE, "");
 		}
 	};
 }
@@ -20807,7 +20807,7 @@ function injectInlinedCSS(s, ctx, code, format, injectCode) {
 }
 function cssAnalysisPlugin(config) {
 	return {
-		name: "vite:css-analysis",
+		name: "NEXT:css-analysis",
 		transform: {
 			filter: { id: {
 				include: CSS_LANGS_RE,
@@ -20996,7 +20996,7 @@ async function compilePostCSS(environment, id, code, deps, lang, workerControlle
 			return code;
 		},
 		nameLayer(index) {
-			return `vite--anon-layer-${getHash(id)}-${index}`;
+			return `NEXT--anon-layer-${getHash(id)}-${index}`;
 		}
 	}));
 	if (urlResolver && (postcssPlugins.length > 0 || isModule || hasUrl)) postcssPlugins.push(UrlRewritePostcssPlugin({
@@ -21062,7 +21062,7 @@ async function runPostCSS(id, code, plugins, options, deps, logger, enableSource
 			for (let i = 0; i < files.length; i++) deps?.add(files[i]);
 		} else if (message.type === "warning") {
 			const warning = message;
-			let msg = `[vite:css][postcss] ${warning.text}`;
+			let msg = `[NEXT:css][postcss] ${warning.text}`;
 			msg += `\n${generateCodeFrame(code, {
 				line: warning.line,
 				column: warning.column - 1
@@ -21139,12 +21139,12 @@ function combineSourcemapsIfExists(filename, map1, map2) {
 	if (map1.mappings === "" || map2.mappings === "") return { mappings: "" };
 	return combineSourcemaps(filename, [map1, map2]);
 }
-const viteHashUpdateMarker = "/*$vite$:1*/";
-const viteHashUpdateMarkerRE = /\/\*\$vite\$:\d+\*\//;
+const NEXTHashUpdateMarker = "/*$NEXT$:1*/";
+const NEXTHashUpdateMarkerRE = /\/\*\$NEXT\$:\d+\*\//;
 async function finalizeCss(css, config) {
 	if (css.includes("@import") || css.includes("@charset")) css = hoistAtRules(css);
 	if (config.build.cssMinify) css = await minifyCSS(css, config, false);
-	css += viteHashUpdateMarker;
+	css += NEXTHashUpdateMarker;
 	return css;
 }
 async function resolvePostcssConfig(config) {
@@ -21184,7 +21184,7 @@ const cssImageSetRE = /(?<=image-set\()((?:[\w-]{1,256}\([^)]*\)|[^)])*)(?=\))/;
 const UrlRewritePostcssPlugin = (opts) => {
 	if (!opts) throw new Error("base or replace is required");
 	return {
-		postcssPlugin: "vite-url-rewrite",
+		postcssPlugin: "NEXT-url-rewrite",
 		Once(root) {
 			const promises = [];
 			root.walkDecls((declaration) => {
@@ -21241,7 +21241,7 @@ async function rewriteCssImageSet(css, replacer) {
 	});
 }
 function skipUrlReplacer(unquotedUrl) {
-	return isExternalUrl(unquotedUrl) || isDataUrl(unquotedUrl) || unquotedUrl[0] === "#" || functionCallRE.test(unquotedUrl) || unquotedUrl.startsWith("__VITE_ASSET__") || unquotedUrl.startsWith("__VITE_PUBLIC_ASSET__");
+	return isExternalUrl(unquotedUrl) || isDataUrl(unquotedUrl) || unquotedUrl[0] === "#" || functionCallRE.test(unquotedUrl) || unquotedUrl.startsWith("__NEXT_ASSET__") || unquotedUrl.startsWith("__NEXT_PUBLIC_ASSET__");
 }
 async function doUrlReplace(rawUrl, matched, replacer, funcName = "url") {
 	let wrap = "";
@@ -21374,7 +21374,7 @@ const loadedPreprocessorPath = {};
 function loadPreprocessorPath(lang, root) {
 	const cached = loadedPreprocessorPath[lang];
 	if (cached) return cached;
-	const resolved = nodeResolveWithVite(lang, void 0, { root }) ?? nodeResolveWithVite(lang, _dirname, { root });
+	const resolved = nodeResolveWithNEXT(lang, void 0, { root }) ?? nodeResolveWithNEXT(lang, _dirname, { root });
 	if (resolved) return loadedPreprocessorPath[lang] = resolved;
 	const installCommand = getPackageManagerCommand("install");
 	throw new Error(`Preprocessor dependency "${lang}" not found. Did you install it? Try \`${installCommand} -D ${lang}\`.`);
@@ -21554,7 +21554,7 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 	const skipRebaseUrls = (unquotedUrl, _rawUrl) => {
 		return unquotedUrl[0] === "@";
 	};
-	const viteLessResolve = async (filename, dir, rootFile, mime) => {
+	const NEXTLessResolve = async (filename, dir, rootFile, mime) => {
 		const resolved = await resolvers.less(environment, filename, path.join(dir, "*"));
 		if (!resolved) return void 0;
 		if (mime === "application/javascript") return { resolved: path.resolve(resolved) };
@@ -21566,10 +21566,10 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 	};
 	return new WorkerWithFallback(async () => {
 		const [fsp, path] = await Promise.all([import("node:fs/promises"), import("node:path")]);
-		let ViteLessManager;
-		const createViteLessPlugin = (less, rootFile) => {
+		let NEXTLessManager;
+		const createNEXTLessPlugin = (less, rootFile) => {
 			const { FileManager } = less;
-			ViteLessManager ??= class ViteManager extends FileManager {
+			NEXTLessManager ??= class NEXTManager extends FileManager {
 				rootFile;
 				constructor(rootFile) {
 					super();
@@ -21582,7 +21582,7 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 					return false;
 				}
 				async loadFile(filename, dir, opts, env) {
-					const result = await viteLessResolve(filename, dir, this.rootFile, opts.mime);
+					const result = await NEXTLessResolve(filename, dir, this.rootFile, opts.mime);
 					if (result) return {
 						filename: path.resolve(result.resolved),
 						contents: result.contents ?? await fsp.readFile(result.resolved, "utf-8")
@@ -21592,7 +21592,7 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 			};
 			return {
 				install(_, pluginManager) {
-					pluginManager.addFileManager(new ViteLessManager(rootFile));
+					pluginManager.addFileManager(new NEXTLessManager(rootFile));
 				},
 				minVersion: [
 					3,
@@ -21603,11 +21603,11 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 		};
 		return async (lessPath, content, options) => {
 			const nodeLess = (await import(lessPath)).default;
-			const viteResolverPlugin = createViteLessPlugin(nodeLess, options.filename);
+			const NEXTResolverPlugin = createNEXTLessPlugin(nodeLess, options.filename);
 			return await nodeLess.render(content, {
 				paths: ["node_modules"],
 				...options,
-				plugins: [viteResolverPlugin, ...options.plugins || []],
+				plugins: [NEXTResolverPlugin, ...options.plugins || []],
 				...options.enableSourcemap ? { sourceMap: {
 					outputSourceFiles: true,
 					disableSourcemapAnnotation: true,
@@ -21616,7 +21616,7 @@ const makeLessWorker = (environment, resolvers, maxWorkers) => {
 			});
 		};
 	}, {
-		parentFunctions: { viteLessResolve },
+		parentFunctions: { NEXTLessResolve },
 		shouldUseFake(_lessPath, _content, options) {
 			return !!options.plugins && options.plugins.length > 0;
 		},
@@ -21874,7 +21874,7 @@ async function compileLightningCSS(environment, id, src, deps, workerController,
 		throw e;
 	}
 	for (const warning of res.warnings) {
-		let msg = `[vite:css][lightningcss] ${warning.message}`;
+		let msg = `[NEXT:css][lightningcss] ${warning.message}`;
 		msg += `\n${generateCodeFrame(src, {
 			line: warning.loc.line,
 			column: warning.loc.column - 1
@@ -22063,14 +22063,14 @@ function resolveLibCssFilename(libOptions, root, packageCache) {
 }
 //#endregion
 //#region src/node/plugins/modulePreloadPolyfill.ts
-const modulePreloadPolyfillId = "vite/modulepreload-polyfill";
+const modulePreloadPolyfillId = "NEXT/modulepreload-polyfill";
 const resolvedModulePreloadPolyfillId = "\0" + modulePreloadPolyfillId + ".js";
 function modulePreloadPolyfillPlugin(config) {
 	if (config.isBundled) return perEnvironmentPlugin("native:modulepreload-polyfill", (environment) => {
-		return viteModulePreloadPolyfillPlugin({ isServer: environment.config.consumer !== "client" });
+		return NEXTModulePreloadPolyfillPlugin({ isServer: environment.config.consumer !== "client" });
 	});
 	return {
-		name: "vite:modulepreload-polyfill",
+		name: "NEXT:modulepreload-polyfill",
 		resolveId: {
 			filter: { id: exactRegex(modulePreloadPolyfillId) },
 			handler(_id) {
@@ -22090,7 +22090,7 @@ function modulePreloadPolyfillPlugin(config) {
 var import_escape_html = /* @__PURE__ */ __toESM(require_escape_html(), 1);
 const htmlProxyRE = /[?&]html-proxy=?(?:&inline-css)?(?:&style-attr)?&index=(\d+)\.(?:js|css)$/;
 const isHtmlProxyRE = /[?&]html-proxy\b/;
-const inlineCSSRE = /__VITE_INLINE_CSS__([a-z\d]{8}_\d+)__/g;
+const inlineCSSRE = /__NEXT_INLINE_CSS__([a-z\d]{8}_\d+)__/g;
 const inlineImportRE = /(?<!(?<!\.\.)\.)\bimport\s*\(("(?:[^"]|(?<=\\)")*"|'(?:[^']|(?<=\\)')*')\)/dg;
 const htmlLangRE = /\.(?:html|htm)$/;
 const spaceRe = /[\t\n\f\r ]/;
@@ -22103,7 +22103,7 @@ const htmlProxyResult = /* @__PURE__ */ new Map();
 function htmlInlineProxyPlugin(config) {
 	htmlProxyMap.set(config, /* @__PURE__ */ new Map());
 	return {
-		name: "vite:html-inline-proxy",
+		name: "NEXT:html-inline-proxy",
 		resolveId: {
 			filter: { id: isHtmlProxyRE },
 			handler(id) {
@@ -22178,7 +22178,7 @@ function getScriptInfo(node) {
 			}
 		} else if (p.name === "type" && p.value === "module") isModule = true;
 		else if (p.name === "async") isAsync = true;
-		else if (p.name === "vite-ignore") isIgnored = true;
+		else if (p.name === "NEXT-ignore") isIgnored = true;
 	}
 	return {
 		src,
@@ -22192,14 +22192,14 @@ const attrValueStartRE = /=\s*(.)/;
 function overwriteAttrValue(s, sourceCodeLocation, newValue) {
 	const srcString = s.slice(sourceCodeLocation.startOffset, sourceCodeLocation.endOffset);
 	const valueStart = attrValueStartRE.exec(srcString);
-	if (!valueStart) throw new Error(`[vite:html] internal error, failed to overwrite attribute value`);
+	if (!valueStart) throw new Error(`[NEXT:html] internal error, failed to overwrite attribute value`);
 	const wrapOffset = valueStart[1] === "\"" || valueStart[1] === "'" ? 1 : 0;
 	const valueOffset = valueStart.index + valueStart[0].length - 1;
 	s.update(sourceCodeLocation.startOffset + valueOffset + wrapOffset, sourceCodeLocation.endOffset - wrapOffset, newValue);
 	return s;
 }
-function removeViteIgnoreAttr(s, sourceCodeLocation) {
-	const loc = sourceCodeLocation.attrs?.["vite-ignore"];
+function removeNEXTIgnoreAttr(s, sourceCodeLocation) {
+	const loc = sourceCodeLocation.attrs?.["NEXT-ignore"];
 	if (loc) s.remove(loc.startOffset, loc.endOffset);
 	return s;
 }
@@ -22253,7 +22253,7 @@ function getCssFilesForChunk(chunk, bundle, analyzedImportedCssFiles, seenChunks
 			else allFiles.push(...importeeCss);
 		}
 	});
-	chunk.viteMetadata.importedCss.forEach((file) => {
+	chunk.NEXTMetadata.importedCss.forEach((file) => {
 		allFiles.push(file);
 		if (!seenCss.has(file)) {
 			seenCss.add(file);
@@ -22277,7 +22277,7 @@ function buildHtmlPlugin(config) {
 	const isExcludedUrl = (url) => url[0] === "#" || isExternalUrl(url) || isDataUrl(url);
 	isAsyncScriptMap.set(config, /* @__PURE__ */ new Map());
 	return {
-		name: "vite:build-html",
+		name: "NEXT:build-html",
 		transform: {
 			filter: { id: /\.html$/ },
 			async handler(html, id) {
@@ -22325,7 +22325,7 @@ function buildHtmlPlugin(config) {
 					let shouldRemove = false;
 					if (node.nodeName === "script") {
 						const { src, srcSourceCodeLocation, isModule, isAsync, isIgnored } = getScriptInfo(node);
-						if (isIgnored) removeViteIgnoreAttr(s, node.sourceCodeLocation);
+						if (isIgnored) removeNEXTIgnoreAttr(s, node.sourceCodeLocation);
 						else {
 							const url = src && src.value;
 							const isPublicFile = !!(url && checkPublicFile(url, config));
@@ -22402,7 +22402,7 @@ function buildHtmlPlugin(config) {
 						addToHTMLProxyCache(config, id.replace(normalizePath(config.root), ""), inlineModuleIndex, { code });
 						js += `\nimport "${id}?html-proxy&inline-css&style-attr&index=${inlineModuleIndex}.css"`;
 						const hash = getHash(cleanUrl(id));
-						overwriteAttrValue(s, inlineStyle.location, `__VITE_INLINE_CSS__${hash}_${inlineModuleIndex}__`);
+						overwriteAttrValue(s, inlineStyle.location, `__NEXT_INLINE_CSS__${hash}_${inlineModuleIndex}__`);
 					}
 					if (node.nodeName === "style" && node.childNodes.length) {
 						const styleNode = node.childNodes.pop();
@@ -22411,7 +22411,7 @@ function buildHtmlPlugin(config) {
 						addToHTMLProxyCache(config, filePath, inlineModuleIndex, { code: styleNode.value });
 						js += `\nimport "${id}?html-proxy&inline-css&index=${inlineModuleIndex}.css"`;
 						const hash = getHash(cleanUrl(id));
-						s.update(styleNode.sourceCodeLocation.startOffset, styleNode.sourceCodeLocation.endOffset, `__VITE_INLINE_CSS__${hash}_${inlineModuleIndex}__`);
+						s.update(styleNode.sourceCodeLocation.startOffset, styleNode.sourceCodeLocation.endOffset, `__NEXT_INLINE_CSS__${hash}_${inlineModuleIndex}__`);
 					}
 					if (shouldRemove) s.remove(nodeStartWithLeadingWhitespace(node), node.sourceCodeLocation.endOffset);
 				});
@@ -22546,7 +22546,7 @@ function buildHtmlPlugin(config) {
 				});
 				result = result.replace(assetUrlRE, (_, fileHash, postfix = "") => {
 					const file = this.getFileName(fileHash);
-					if (chunk) chunk.viteMetadata.importedAssets.add(cleanUrl(file));
+					if (chunk) chunk.NEXTMetadata.importedAssets.add(cleanUrl(file));
 					return encodeURIPath(toOutputAssetFilePath(file)) + postfix;
 				});
 				result = result.replace(publicAssetUrlRE, (_, fileHash) => {
@@ -22903,7 +22903,7 @@ function definePlugin(config) {
 		return pattern;
 	}
 	if (isBundled) return {
-		name: "vite:define",
+		name: "NEXT:define",
 		options(option) {
 			const [define, _pattern, importMetaEnvVal] = getPattern(this.environment);
 			define["import.meta.env"] = importMetaEnvVal;
@@ -22916,7 +22916,7 @@ function definePlugin(config) {
 		}
 	};
 	return {
-		name: "vite:define",
+		name: "NEXT:define",
 		transform: { handler(code, id) {
 			if (this.environment.config.consumer === "client") return;
 			if (isHTMLRequest(id) || isCSSRequest(id) || isNonJsRequest(id) || config.assetsInclude(id)) return;
@@ -22981,7 +22981,7 @@ function clientInjectionsPlugin(config) {
 		return (code) => code.replace(`__DEFINES__`, definesReplacement);
 	});
 	return {
-		name: "vite:client-inject",
+		name: "NEXT:client-inject",
 		async buildStart() {
 			injectConfigValues = await createClientConfigValueReplacer(config);
 		},
@@ -23016,7 +23016,7 @@ async function createClientConfigValueReplacer(config) {
 	const timeout = hmrConfig?.timeout || 3e4;
 	const overlay = hmrConfig?.overlay !== false;
 	const isHmrServerSpecified = !!hmrConfig?.server;
-	const hmrConfigName = path.basename(config.configFile || "vite.config.js");
+	const hmrConfigName = path.basename(config.configFile || "NEXT.config.js");
 	let port = hmrConfig?.clientPort || hmrConfig?.port || null;
 	if (config.server.middlewareMode && !isHmrServerSpecified) port ||= 24678;
 	let directTarget = hmrConfig?.host || resolvedServerHostname;
@@ -23042,12 +23042,12 @@ async function createClientConfigValueReplacer(config) {
 }
 async function getHmrImplementation(config) {
 	const content = fs.readFileSync(normalizedClientEntry$1, "utf-8");
-	return (await createClientConfigValueReplacer(config))(content).replace(/import\s*['"]@vite\/env['"]/, "");
+	return (await createClientConfigValueReplacer(config))(content).replace(/import\s*['"]@NEXT\/env['"]/, "");
 }
 //#endregion
 //#region src/node/ssr/fetchModule.ts
 /**
-* Fetch module information for Vite module runner.
+* Fetch module information for NEXT module runner.
 * @experimental
 */
 async function fetchModule(environment, url, importer, options = {}) {
@@ -23098,7 +23098,7 @@ async function fetchModule(environment, url, importer, options = {}) {
 	const cached = !!mod.transformResult;
 	if (options.cached && cached) return { cache: true };
 	let result = await environment.transformRequest(url);
-	if (!result) throw new Error(`[vite] transform failed for module '${url}'${importer ? ` imported from '${importer}'` : ""}.`);
+	if (!result) throw new Error(`[NEXT] transform failed for module '${url}'${importer ? ` imported from '${importer}'` : ""}.`);
 	if (options.inlineSourceMap !== false) result = inlineSourceMap(mod, result, options.startOffset);
 	if (result.code[0] === "#") result.code = result.code.replace(/^#!.*/, (s) => " ".repeat(s.length));
 	return {
@@ -23113,7 +23113,7 @@ const OTHER_SOURCE_MAP_REGEXP = new RegExp(`//# ${SOURCEMAPPING_URL}=data:applic
 function inlineSourceMap(mod, result, startOffset) {
 	const map = result.map;
 	let code = result.code;
-	if (!map || !("version" in map) || code.includes("//# sourceMappingSource=vite-generated")) return result;
+	if (!map || !("version" in map) || code.includes("//# sourceMappingSource=NEXT-generated")) return result;
 	OTHER_SOURCE_MAP_REGEXP.lastIndex = 0;
 	if (OTHER_SOURCE_MAP_REGEXP.test(code)) code = code.replace(OTHER_SOURCE_MAP_REGEXP, "");
 	const sourceMap = startOffset ? Object.assign({}, map, { mappings: ";".repeat(startOffset) + map.mappings }) : map;
@@ -23122,7 +23122,7 @@ function inlineSourceMap(mod, result, startOffset) {
 }
 //#endregion
 //#region src/node/optimizer/optimizer.ts
-const debug$9 = createDebugger("vite:deps");
+const debug$9 = createDebugger("NEXT:deps");
 /**
 * The amount to wait for requests to register newly found dependencies before triggering
 * a re-bundle + page reload
@@ -23463,7 +23463,7 @@ function createExplicitDepsOptimizer(environment) {
 		isOptimizedDepUrl: createIsOptimizedDepUrl(environment),
 		getOptimizedDepId: (depInfo) => `${depInfo.file}?v=${depInfo.browserHash}`,
 		registerMissingImport: () => {
-			throw new Error(`Vite Internal Error: registerMissingImport is not supported in dev ${environment.name}`);
+			throw new Error(`NEXT Internal Error: registerMissingImport is not supported in dev ${environment.name}`);
 		},
 		init,
 		run: () => {},
@@ -24026,7 +24026,7 @@ function servePublicMiddleware(server, publicFiles) {
 		} catch {}
 		return normalizePath(filePath);
 	};
-	return function viteServePublicMiddleware(req, res, next) {
+	return function NEXTServePublicMiddleware(req, res, next) {
 		if (publicFiles && !publicFiles.has(toFilePath(req.url)) || isImportRequest(req.url) || isInternalRequest(req.url) || urlRE$1.test(req.url)) return next();
 		serve(req, res, next);
 	};
@@ -24037,7 +24037,7 @@ function serveStaticMiddleware(server) {
 		config: server.config,
 		getHeaders: () => server.config.server.headers
 	}));
-	return function viteServeStaticMiddleware(req, res, next) {
+	return function NEXTServeStaticMiddleware(req, res, next) {
 		const cleanedUrl = cleanUrl(req.url);
 		if (cleanedUrl.endsWith("/") || path.extname(cleanedUrl) === ".html" || isInternalRequest(req.url) || req.url?.startsWith("//")) return next();
 		const url = new URL(req.url, "http://example.com");
@@ -24074,7 +24074,7 @@ function serveRawFsMiddleware(server) {
 		config: server.config,
 		getHeaders: () => server.config.server.headers
 	}));
-	return function viteServeRawFsMiddleware(req, res, next) {
+	return function NEXTServeRawFsMiddleware(req, res, next) {
 		if (req.url.startsWith(FS_PREFIX)) {
 			const url = new URL(req.url, "http://example.com");
 			const pathname = decodeURIIfPossible(url.pathname);
@@ -24128,11 +24128,11 @@ function checkLoadingAccess(config, path) {
 	return "fallback";
 }
 function respondWithAccessDenied(id, server, res) {
-	const urlMessage = `The request id "${id}" is outside of Vite serving allow list.`;
+	const urlMessage = `The request id "${id}" is outside of NEXT serving allow list.`;
 	const hintMessage = `
 ${server.config.server.fs.allow.map((i) => `- ${i}`).join("\n")}
 
-Refer to docs https://vite.dev/config/server-options.html#server-fs-allow for configurations and more details.`;
+Refer to docs https://NEXT.dev/config/server-options.html#server-fs-allow for configurations and more details.`;
 	server.config.logger.error(urlMessage);
 	server.config.logger.warnOnce(hintMessage + "\n");
 	res.statusCode = 403;
@@ -24155,7 +24155,7 @@ function renderRestrictedErrorHTML(msg) {
 //#endregion
 //#region src/node/server/send.ts
 var import_etag = /* @__PURE__ */ __toESM(require_etag(), 1);
-const debug$8 = createDebugger("vite:send", { onlyWhenFocused: true });
+const debug$8 = createDebugger("NEXT:send", { onlyWhenFocused: true });
 const alias = {
 	js: "text/javascript",
 	css: "text/css",
@@ -24194,7 +24194,7 @@ function send(req, res, content, type, options) {
 }
 //#endregion
 //#region src/node/server/middlewares/transform.ts
-const debugCache$1 = createDebugger("vite:cache");
+const debugCache$1 = createDebugger("NEXT:cache");
 const knownIgnoreList = new Set(["/", "/favicon.ico"]);
 const documentFetchDests = new Set([
 	"document",
@@ -24218,7 +24218,7 @@ function isServerAccessDeniedForTransform(config, id) {
 * A middleware that short-circuits the middleware chain to serve cached transformed modules
 */
 function cachedTransformMiddleware(server) {
-	return function viteCachedTransformMiddleware(req, res, next) {
+	return function NEXTCachedTransformMiddleware(req, res, next) {
 		const environment = server.environments.client;
 		if (isDocumentFetchDest(req)) {
 			res.appendHeader("Vary", "Sec-Fetch-Dest");
@@ -24242,7 +24242,7 @@ function transformMiddleware(server) {
 	const { root, publicDir } = server.config;
 	const publicDirInRoot = publicDir.startsWith(withTrailingSlash(root));
 	const publicPath = `${publicDir.slice(root.length)}/`;
-	return async function viteTransformMiddleware(req, res, next) {
+	return async function NEXTTransformMiddleware(req, res, next) {
 		const environment = server.environments.client;
 		if (req.method !== "GET" && req.method !== "HEAD" || knownIgnoreList.has(req.url) || isDocumentFetchDest(req)) return next();
 		let url;
@@ -24382,9 +24382,9 @@ If you intend to import that asset, put the file in the src directory, and use $
 const ERR_LOAD_URL = "ERR_LOAD_URL";
 const ERR_LOAD_PUBLIC_URL = "ERR_LOAD_PUBLIC_URL";
 const ERR_DENIED_ID = "ERR_DENIED_ID";
-const debugLoad = createDebugger("vite:load");
-const debugTransform = createDebugger("vite:transform");
-const debugCache = createDebugger("vite:cache");
+const debugLoad = createDebugger("NEXT:load");
+const debugTransform = createDebugger("NEXT:transform");
+const debugCache = createDebugger("NEXT:cache");
 function transformRequest(environment, url, options) {
 	if (environment._closing && environment.config.dev.recoverable) throwClosedServerError();
 	const timestamp = monotonicDateNow();
@@ -24735,7 +24735,7 @@ var DevEnvironment = class extends BaseEnvironment {
 				});
 			}
 		});
-		this.hot.on("vite:invalidate", ({ path, message, firstInvalidatedBy }, client) => {
+		this.hot.on("NEXT:invalidate", ({ path, message, firstInvalidatedBy }, client) => {
 			this.invalidateModule({
 				path,
 				message,
@@ -24878,7 +24878,7 @@ function setupOnCrawlEnd() {
 }
 //#endregion
 //#region src/node/server/environments/fullBundleEnvironment.ts
-const debug$7 = createDebugger("vite:full-bundle-mode");
+const debug$7 = createDebugger("NEXT:full-bundle-mode");
 var MemoryFiles = class {
 	files = /* @__PURE__ */ new Map();
 	get size() {
@@ -24929,11 +24929,11 @@ var FullBundleDevEnvironment = class extends DevEnvironment {
 		const rollupOptions = await this.getRolldownOptions();
 		if (Array.isArray(rollupOptions.output) && rollupOptions.output.length > 1) throw new Error("multiple output options are not supported in dev mode");
 		const outputOptions = Array.isArray(rollupOptions.output) ? rollupOptions.output[0] : rollupOptions.output;
-		this.hot.on("vite:module-loaded", (payload, client) => {
+		this.hot.on("NEXT:module-loaded", (payload, client) => {
 			const clientId = this.clients.setupIfNeeded(client);
 			this.devEngine.registerModules(clientId, payload.modules);
 		});
-		this.hot.on("vite:client:disconnect", (_payload, client) => {
+		this.hot.on("NEXT:client:disconnect", (_payload, client) => {
 			const clientId = this.clients.delete(client);
 			if (clientId) this.devEngine.removeClient(clientId);
 		});
@@ -25146,13 +25146,13 @@ function debounce(time, cb) {
 }
 //#endregion
 //#region src/node/server/middlewares/htmlFallback.ts
-const debug$6 = createDebugger("vite:html-fallback");
+const debug$6 = createDebugger("NEXT:html-fallback");
 function htmlFallbackMiddleware(root, spaFallback, clientEnvironment) {
 	const memoryFiles = clientEnvironment instanceof FullBundleDevEnvironment ? clientEnvironment.memoryFiles : void 0;
 	function checkFileExists(relativePath) {
 		return memoryFiles?.has(relativePath.slice(1)) ?? fs.existsSync(path.join(root, relativePath));
 	}
-	return function viteHtmlFallbackMiddleware(req, _res, next) {
+	return function NEXTHtmlFallbackMiddleware(req, _res, next) {
 		if (req.method !== "GET" && req.method !== "HEAD" || req.url === "/favicon.ico" || !(req.headers.accept === void 0 || req.headers.accept === "" || req.headers.accept.includes("text/html") || req.headers.accept.includes("*/*"))) return next();
 		const url = cleanUrl(req.url);
 		let pathname;
@@ -25294,7 +25294,7 @@ const devHtmlHook = async (html, { path: htmlPath, filename, server, originalUrl
 		if (!nodeIsElement(node)) return;
 		if (node.nodeName === "script") {
 			const { src, srcSourceCodeLocation, isModule, isIgnored } = getScriptInfo(node);
-			if (isIgnored) removeViteIgnoreAttr(s, node.sourceCodeLocation);
+			if (isIgnored) removeNEXTIgnoreAttr(s, node.sourceCodeLocation);
 			else if (src) {
 				const processedUrl = processNodeUrl(src.value, false, config, htmlPath, originalUrl, server, !isModule);
 				if (processedUrl !== src.value) overwriteAttrValue(s, srcSourceCodeLocation, processedUrl);
@@ -25371,7 +25371,7 @@ const devHtmlHook = async (html, { path: htmlPath, filename, server, originalUrl
 function indexHtmlMiddleware(root, server) {
 	const isDev = isDevServer(server);
 	const fullBundleEnv = isDev && server.environments.client instanceof FullBundleDevEnvironment ? server.environments.client : void 0;
-	return async function viteIndexHtmlMiddleware(req, res, next) {
+	return async function NEXTIndexHtmlMiddleware(req, res, next) {
 		if (res.writableEnded) return next();
 		const url = req.url && cleanUrl(req.url);
 		if (url?.endsWith(".html") && req.headers["sec-fetch-dest"] !== "script") {
@@ -25483,9 +25483,9 @@ async function generateFallbackHtml(server) {
 }
 //#endregion
 //#region src/node/server/middlewares/time.ts
-const logTime = createDebugger("vite:time");
+const logTime = createDebugger("NEXT:time");
 function timeMiddleware(root) {
-	return function viteTimeMiddleware(req, res, next) {
+	return function NEXTTimeMiddleware(req, res, next) {
 		const start = performance$1.now();
 		const end = res.end;
 		res.end = (...args) => {
@@ -25912,7 +25912,7 @@ function createBackwardCompatibleFileToModulesMap(moduleGraph) {
 //#endregion
 //#region src/node/server/middlewares/notFound.ts
 function notFoundMiddleware() {
-	return function vite404Middleware(_, res) {
+	return function NEXT404Middleware(_, res) {
 		res.statusCode = 404;
 		res.end();
 	};
@@ -25935,7 +25935,7 @@ function hostValidationMiddleware(allowedHosts, isPreview) {
 		allowedHosts: Object.freeze([...allowedHosts]),
 		generateErrorMessage(hostname) {
 			const hostnameWithQuotes = JSON.stringify(hostname);
-			return `Blocked request. This host (${hostnameWithQuotes}) is not allowed.\nTo allow this host, add ${hostnameWithQuotes} to \`${`${isPreview ? "preview" : "server"}.allowedHosts`}\` in vite.config.js.`;
+			return `Blocked request. This host (${hostnameWithQuotes}) is not allowed.\nTo allow this host, add ${hostnameWithQuotes} to \`${`${isPreview ? "preview" : "server"}.allowedHosts`}\` in NEXT.config.js.`;
 		}
 	});
 }
@@ -25945,7 +25945,7 @@ function hostValidationMiddleware(allowedHosts, isPreview) {
 * disallows request that contains `#` in the URL
 */
 function rejectInvalidRequestMiddleware() {
-	return function viteRejectInvalidRequestMiddleware(req, res, next) {
+	return function NEXTRejectInvalidRequestMiddleware(req, res, next) {
 		if (req.url?.includes("#")) {
 			res.writeHead(400);
 			res.end();
@@ -25960,7 +25960,7 @@ function memoryFilesMiddleware(server) {
 	const memoryFiles = server.environments.client instanceof FullBundleDevEnvironment ? server.environments.client.memoryFiles : void 0;
 	if (!memoryFiles) throw new Error("memoryFilesMiddleware can only be used for fullBundleMode");
 	const headers = server.config.server.headers;
-	return function viteMemoryFilesMiddleware(req, res, next) {
+	return function NEXTMemoryFilesMiddleware(req, res, next) {
 		const cleanedUrl = cleanUrl(req.url);
 		if (cleanedUrl.endsWith(".html")) return next();
 		const filePath = decodeURIComponent(cleanedUrl).slice(1);
@@ -26275,8 +26275,8 @@ async function _createServer(inlineConfig = {}, options) {
 	}
 	if (config.base !== "/") middlewares.use(baseMiddleware(config.rawBase, !!middlewareMode));
 	middlewares.use("/__open-in-editor", (0, import_launch_editor_middleware.default)());
-	middlewares.use(function viteHMRPingMiddleware(req, res, next) {
-		if (req.headers.accept === "text/x-vite-ping") res.writeHead(204).end();
+	middlewares.use(function NEXTHMRPingMiddleware(req, res, next) {
+		if (req.headers.accept === "text/x-NEXT-ping") res.writeHead(204).end();
 		else next();
 	});
 	if (publicDir) middlewares.use(servePublicMiddleware(server, publicFiles));
@@ -26422,14 +26422,14 @@ async function resolveServerOptions(root, raw, logger) {
 		server.origin = server.origin.slice(0, -1);
 		logger.warn(import_picocolors.default.yellow(`${import_picocolors.default.bold("(!)")} server.origin should not end with "/". Using "${server.origin}" instead.`));
 	}
-	if (process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS && Array.isArray(server.allowedHosts)) {
-		const additionalHost = process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS;
+	if (process.env.__NEXT_ADDITIONAL_SERVER_ALLOWED_HOSTS && Array.isArray(server.allowedHosts)) {
+		const additionalHost = process.env.__NEXT_ADDITIONAL_SERVER_ALLOWED_HOSTS;
 		server.allowedHosts = [...server.allowedHosts, additionalHost];
 	}
 	return server;
 }
 async function restartServer(server) {
-	global.__vite_start_time = performance$1.now();
+	global.__NEXT_start_time = performance$1.now();
 	let inlineConfig = server.config.inlineConfig;
 	if (server._forceOptimizeOnRestart) inlineConfig = mergeConfig(inlineConfig, { forceOptimizeDeps: true });
 	{
@@ -26464,7 +26464,7 @@ async function restartServer(server) {
 	if (server._shortcutsState?.options) bindCLIShortcuts(server, { print: false }, true);
 }
 /**
-* Internal function to restart the Vite server and print URLs if changed
+* Internal function to restart the NEXT server and print URLs if changed
 */
 async function restartServerWithUrls(server) {
 	if (server.config.server.middlewareMode) {
@@ -26482,7 +26482,7 @@ async function restartServerWithUrls(server) {
 }
 //#endregion
 //#region src/node/server/hmr.ts
-const debugHmr = createDebugger("vite:hmr");
+const debugHmr = createDebugger("NEXT:hmr");
 const whitespaceRE = /\s/;
 const normalizedClientDir = normalizePath(CLIENT_DIR);
 function getShortName(file, root) {
@@ -26546,26 +26546,26 @@ const normalizeHotChannel = (channel, enableHmr, normalizeClient = true) => {
 		setInvokeHandler(_invokeHandlers) {
 			invokeHandlers = _invokeHandlers;
 			if (!_invokeHandlers) {
-				if (listenerForInvokeHandler) channel.off?.("vite:invoke", listenerForInvokeHandler);
+				if (listenerForInvokeHandler) channel.off?.("NEXT:invoke", listenerForInvokeHandler);
 				return;
 			}
 			listenerForInvokeHandler = async (payload, client) => {
 				const responseInvoke = payload.id.replace("send", "response");
 				client.send({
 					type: "custom",
-					event: "vite:invoke",
+					event: "NEXT:invoke",
 					data: {
 						name: payload.name,
 						id: responseInvoke,
 						data: await handleInvoke({
 							type: "custom",
-							event: "vite:invoke",
+							event: "NEXT:invoke",
 							data: payload
 						})
 					}
 				});
 			};
-			channel.on?.("vite:invoke", listenerForInvokeHandler);
+			channel.on?.("NEXT:invoke", listenerForInvokeHandler);
 		},
 		handleInvoke,
 		send: (...args) => {
@@ -27018,7 +27018,7 @@ function createServerHotChannel() {
 }
 //#endregion
 //#region src/node/external.ts
-const debug$5 = createDebugger("vite:external");
+const debug$5 = createDebugger("NEXT:external");
 const isExternalCache = /* @__PURE__ */ new WeakMap();
 function shouldExternalize(environment, id, importer) {
 	let isExternal = isExternalCache.get(environment);
@@ -27139,7 +27139,7 @@ var WorkerOutputCache = class {
 	generateEntryUrlPlaceholder(entryFilename) {
 		const hash = getHash(entryFilename);
 		if (!this.fileNameHash.has(hash)) this.fileNameHash.set(hash, entryFilename);
-		return `__VITE_WORKER_ASSET__${hash}__`;
+		return `__NEXT_WORKER_ASSET__${hash}__`;
 	}
 };
 const workerOrSharedWorkerRE = /(?:\?|&)(worker|sharedworker)(?:&|$)/;
@@ -27154,7 +27154,7 @@ async function bundleWorkerEntry(config, id) {
 	const bundleInfo = workerOutput.getWorkerBundle(input);
 	if (bundleInfo) return bundleInfo;
 	const newBundleChain = [...config.bundleChain, input];
-	if (config.bundleChain.includes(input)) throw new Error(`Circular worker imports detected. Vite does not support it. Import chain: ${newBundleChain.map((id) => prettifyUrl(id, config.root)).join(" -> ")}`);
+	if (config.bundleChain.includes(input)) throw new Error(`Circular worker imports detected. NEXT does not support it. Import chain: ${newBundleChain.map((id) => prettifyUrl(id, config.root)).join(" -> ")}`);
 	const { rolldown } = await import("rolldown");
 	const { plugins, rollupOptions, format } = config.worker;
 	const workerEnvironment = new BuildEnvironment("client", await plugins(newBundleChain));
@@ -27174,7 +27174,7 @@ async function bundleWorkerEntry(config, id) {
 		preserveEntrySignatures: false,
 		experimental: {
 			...rollupOptions.experimental,
-			viteMode: true
+			NEXTMode: true
 		}
 	});
 	let result;
@@ -27213,7 +27213,7 @@ async function bundleWorkerEntry(config, id) {
 	});
 	return workerOutputCaches.get(config.mainConfig || config).saveWorkerBundle(input, watchedFiles, outputChunk.fileName, outputChunk.code, assets, config.logger);
 }
-const workerAssetUrlRE = /__VITE_WORKER_ASSET__([a-z\d]{8})__/g;
+const workerAssetUrlRE = /__NEXT_WORKER_ASSET__([a-z\d]{8})__/g;
 async function workerFileToUrl(config, id) {
 	const workerOutput = workerOutputCaches.get(config.mainConfig || config);
 	const bundle = await bundleWorkerEntry(config, id);
@@ -27227,10 +27227,10 @@ async function workerFileToUrl(config, id) {
 }
 function webWorkerPostPlugin(config) {
 	if (config.isBundled) return perEnvironmentPlugin("native:web-worker-post-plugin", (environment) => {
-		if (environment.config.worker.format === "iife") return viteWebWorkerPostPlugin();
+		if (environment.config.worker.format === "iife") return NEXTWebWorkerPostPlugin();
 	});
 	return {
-		name: "vite:worker-post",
+		name: "NEXT:worker-post",
 		transform: {
 			filter: { code: "import.meta" },
 			order: "post",
@@ -27251,10 +27251,10 @@ function webWorkerPostPlugin(config) {
 					} else {
 						s ||= new MagicString(code);
 						if (!injectedImportMeta) {
-							s.prepend("const _vite_importMeta = { url: self.location.href };\n");
+							s.prepend("const _NEXT_importMeta = { url: self.location.href };\n");
 							injectedImportMeta = true;
 						}
-						s.overwrite(start, end, "_vite_importMeta");
+						s.overwrite(start, end, "_NEXT_importMeta");
 					}
 					if (!s) return;
 					return {
@@ -27275,7 +27275,7 @@ function webWorkerPlugin(config) {
 	workerOutputCaches.set(config, new WorkerOutputCache());
 	const emittedAssets = /* @__PURE__ */ new Set();
 	return {
-		name: "vite:worker",
+		name: "NEXT:worker",
 		buildStart() {
 			if (isWorker) return;
 			emittedAssets.clear();
@@ -27446,7 +27446,7 @@ function isSameContent(a, b) {
 function preAliasPlugin(config) {
 	const findPatterns = getAliasPatterns(config.resolve.alias);
 	return {
-		name: "vite:pre-alias",
+		name: "NEXT:pre-alias",
 		applyToEnvironment(environment) {
 			return !isDepOptimizationDisabled(environment.config.optimizeDeps);
 		},
@@ -27454,7 +27454,7 @@ function preAliasPlugin(config) {
 			const environment = this.environment;
 			const ssr = environment.config.consumer === "server";
 			const depsOptimizer = environment.depsOptimizer;
-			if (importer && depsOptimizer && bareImportRE.test(id) && !options.scan && id !== "@vite/client" && id !== "@vite/env") {
+			if (importer && depsOptimizer && bareImportRE.test(id) && !options.scan && id !== "@NEXT/client" && id !== "@NEXT/env") {
 				if (findPatterns.find((pattern) => matches(pattern, id))) {
 					const optimizedId = await tryOptimizedResolve(depsOptimizer, id, importer, config.resolve.preserveSymlinks, config.packageCache);
 					if (optimizedId) return optimizedId;
@@ -27494,12 +27494,12 @@ function getAliasPatternMatcher(entries) {
 }
 //#endregion
 //#region src/node/plugins/importAnalysis.ts
-const debug$4 = createDebugger("vite:import-analysis");
+const debug$4 = createDebugger("NEXT:import-analysis");
 const clientDir = normalizePath(CLIENT_DIR);
 const skipRE = /\.(?:map|json)(?:$|\?)/;
 const canSkipImportAnalysis = (id) => skipRE.test(id) || isDirectCSSRequest(id);
 const optimizedDepChunkRE = /\/chunk-[A-Z\d]{8}\.js/;
-const hasViteIgnoreRE = /\/\*\s*@vite-ignore\s*\*\//;
+const hasNEXTIgnoreRE = /\/\*\s*@NEXT-ignore\s*\*\//;
 const urlIsStringRE = /^(?:'.*'|".*"|`.*`)$/;
 const templateLiteralRE = /^\s*`(.*)`\s*$/;
 function isExplicitImportRequired(url) {
@@ -27584,16 +27584,16 @@ function importAnalysisPlugin(config) {
 			for (const key in config.define) if (key.startsWith("import.meta.env.")) userDefineEnv[key.slice(16)] = config.define[key];
 			const env = `import.meta.env = ${serializeDefine({
 				...importMetaEnvKeys,
-				SSR: "__vite_ssr__",
+				SSR: "__NEXT_ssr__",
 				...userDefineEnv
 			})};`;
-			_ssrEnv = env.replace("__vite_ssr__", "true");
-			_env = env.replace("__vite_ssr__", "false");
+			_ssrEnv = env.replace("__NEXT_ssr__", "true");
+			_env = env.replace("__NEXT_ssr__", "false");
 		}
 		return ssr ? _ssrEnv : _env;
 	}
 	return {
-		name: "vite:import-analysis",
+		name: "NEXT:import-analysis",
 		async transform(source, importer) {
 			const environment = this.environment;
 			const ssr = environment.config.consumer === "server";
@@ -27644,7 +27644,7 @@ function importAnalysisPlugin(config) {
 					if (e instanceof Error) e.pos ??= pos;
 					throw e;
 				});
-				if (!resolved || resolved.meta?.["vite:alias"]?.noResolved) {
+				if (!resolved || resolved.meta?.["NEXT:alias"]?.noResolved) {
 					if (ssr) return [url, null];
 					importerModule.isSelfAccepting = false;
 					moduleGraph._hasResolveFailedErrorModules.add(importerModule);
@@ -27721,13 +27721,13 @@ function importAnalysisPlugin(config) {
 							const depInfo = optimizedDepInfoFromFile(depsOptimizer.metadata, file);
 							const needsInterop = await optimizedDepNeedsInterop(environment, depsOptimizer.metadata, file);
 							if (needsInterop === void 0) {
-								if (depInfo?.isDynamicEntry) config.logger.error(import_picocolors.default.red(`Vite Error, ${url} optimized info should be defined`));
+								if (depInfo?.isDynamicEntry) config.logger.error(import_picocolors.default.red(`NEXT Error, ${url} optimized info should be defined`));
 							} else if (needsInterop) {
 								debug$4?.(`${url} needs interop`);
 								interopNamedImports(str(), importSpecifier, url, index, importer, isNodeMode(), config);
 								rewriteDone = true;
 							}
-						} else if (url.startsWith(wrapId("__vite-browser-external")) && source.slice(expStart, start).includes("{")) {
+						} else if (url.startsWith(wrapId("__NEXT-browser-external")) && source.slice(expStart, start).includes("{")) {
 							interopNamedImports(str(), importSpecifier, url, index, importer, isNodeMode(), config);
 							rewriteDone = true;
 						}
@@ -27748,12 +27748,12 @@ function importAnalysisPlugin(config) {
 					}
 				} else if (!importer.startsWith(withTrailingSlash(clientDir))) {
 					if (!isInNodeModules(importer)) {
-						if (!hasViteIgnoreRE.test(source.slice(dynamicIndex + 1, end))) this.warn(`\n` + import_picocolors.default.cyan(importerModule.file) + `\n` + import_picocolors.default.reset(generateCodeFrame(source, start, end)) + import_picocolors.default.yellow(`\nThe above dynamic import cannot be analyzed by Vite.\nSee ${import_picocolors.default.blue(`https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations`)} for supported dynamic import formats. If this is intended to be left as-is, you can use the /* @vite-ignore */ comment inside the import() call to suppress this warning.\n`));
+						if (!hasNEXTIgnoreRE.test(source.slice(dynamicIndex + 1, end))) this.warn(`\n` + import_picocolors.default.cyan(importerModule.file) + `\n` + import_picocolors.default.reset(generateCodeFrame(source, start, end)) + import_picocolors.default.yellow(`\nThe above dynamic import cannot be analyzed by NEXT.\nSee ${import_picocolors.default.blue(`https://github.com/rollup/plugins/tree/master/packages/dynamic-import-vars#limitations`)} for supported dynamic import formats. If this is intended to be left as-is, you can use the /* @NEXT-ignore */ comment inside the import() call to suppress this warning.\n`));
 					}
 					if (!ssr) {
 						if (!urlIsStringRE.test(rawUrl) || isExplicitImportRequired(rawUrl.slice(1, -1))) {
 							needQueryInjectHelper = true;
-							str().overwrite(start, end, `__vite__injectQuery(${rawUrl}, 'import')`, { contentOnly: true });
+							str().overwrite(start, end, `__NEXT__injectQuery(${rawUrl}, 'import')`, { contentOnly: true });
 						}
 					}
 				}
@@ -27767,10 +27767,10 @@ function importAnalysisPlugin(config) {
 			if (hasEnv && !isClassicWorker) str().prepend(getEnv(ssr));
 			if (hasHMR && !ssr && !isClassicWorker) {
 				debugHmr?.(`${isSelfAccepting ? `[self-accepts]` : isPartiallySelfAccepting ? `[accepts-exports]` : acceptedUrls.size ? `[accepts-deps]` : `[detected api usage]`} ${prettifyUrl(importer, root)}`);
-				str().prepend(`import { createHotContext as __vite__createHotContext } from "${clientPublicPath}";import.meta.hot = __vite__createHotContext(${JSON.stringify(normalizeHmrUrl(importerModule.url))});`);
+				str().prepend(`import { createHotContext as __NEXT__createHotContext } from "${clientPublicPath}";import.meta.hot = __NEXT__createHotContext(${JSON.stringify(normalizeHmrUrl(importerModule.url))});`);
 			}
-			if (needQueryInjectHelper) if (isClassicWorker) str().append("\n" + __vite__injectQuery.toString());
-			else str().prepend(`import { injectQuery as __vite__injectQuery } from "${clientPublicPath}";`);
+			if (needQueryInjectHelper) if (isClassicWorker) str().append("\n" + __NEXT__injectQuery.toString());
+			else str().prepend(`import { injectQuery as __NEXT__injectQuery } from "${clientPublicPath}";`);
 			const normalizedAcceptedUrls = /* @__PURE__ */ new Set();
 			for (const { url, start, end } of acceptedUrls) {
 				let [normalized, resolvedId] = await normalizeUrl(url, start).catch(() => []);
@@ -27817,7 +27817,7 @@ function createParseErrorInfo(importer, source) {
 	const maybeJSX = !isVue && isJSRequest(importer);
 	const probablyBinary = source.includes("�");
 	return {
-		message: "Failed to parse source for import analysis because the content contains invalid JS syntax. " + (isVue ? `Install @vitejs/plugin-vue to handle .vue files.` : maybeJSX ? isJsx ? `If you use tsconfig.json, make sure to not set jsx to preserve.` : `If you are using JSX, make sure to name the file with the .jsx or .tsx extension.` : `You may need to install appropriate plugins to handle the ${path.extname(importer)} file format, or if it's an asset, add "**/*${path.extname(importer)}" to \`assetsInclude\` in your configuration.`),
+		message: "Failed to parse source for import analysis because the content contains invalid JS syntax. " + (isVue ? `Install @NEXTjs/plugin-vue to handle .vue files.` : maybeJSX ? isJsx ? `If you use tsconfig.json, make sure to not set jsx to preserve.` : `If you are using JSX, make sure to name the file with the .jsx or .tsx extension.` : `You may need to install appropriate plugins to handle the ${path.extname(importer)} file format, or if it's an asset, add "**/*${path.extname(importer)}" to \`assetsInclude\` in your configuration.`),
 		showCodeFrame: !probablyBinary
 	};
 }
@@ -27881,13 +27881,13 @@ function transformCjsImport(importExp, url, rawUrl, importIndex, importer, isNod
 			const importedName = getIdentifierNameOrLiteralValue(spec.local);
 			const exportedName = getIdentifierNameOrLiteralValue(spec.exported);
 			if (exportedName === "default") {
-				defaultExports = makeLegalIdentifier(`__vite__cjsExportDefault_${importIndex}`);
+				defaultExports = makeLegalIdentifier(`__NEXT__cjsExportDefault_${importIndex}`);
 				importNames.push({
 					importedName,
 					localName: defaultExports
 				});
 			} else {
-				const localName = `__vite__cjsExport${spec.exported.type === "Literal" ? `L_${getHash(spec.exported.value)}` : "I_" + spec.exported.name}`;
+				const localName = `__NEXT__cjsExport${spec.exported.type === "Literal" ? `L_${getHash(spec.exported.value)}` : "I_" + spec.exported.name}`;
 				importNames.push({
 					importedName,
 					localName
@@ -27895,7 +27895,7 @@ function transformCjsImport(importExp, url, rawUrl, importIndex, importer, isNod
 				exportNames.push(`${localName} as ${spec.exported.type === "Literal" ? JSON.stringify(exportedName) : exportedName}`);
 			}
 		}
-		const cjsModuleName = makeLegalIdentifier(`__vite__cjsImport${importIndex}_${rawUrl}`);
+		const cjsModuleName = makeLegalIdentifier(`__NEXT__cjsImport${importIndex}_${rawUrl}`);
 		const importLine = `import ${cjsModuleName} from "${url}"`;
 		const lines = [];
 		importNames.forEach(({ importedName, localName }) => {
@@ -27915,17 +27915,17 @@ function transformCjsImport(importExp, url, rawUrl, importIndex, importer, isNod
 function getIdentifierNameOrLiteralValue(node) {
 	return node.type === "Identifier" ? node.name : node.value;
 }
-function __vite__injectQuery(url, queryToInject) {
+function __NEXT__injectQuery(url, queryToInject) {
 	if (url[0] !== "." && url[0] !== "/") return url;
 	const pathname = url.replace(/[?#].*$/, "");
-	const { search, hash } = new URL(url, "http://vite.dev");
+	const { search, hash } = new URL(url, "http://NEXT.dev");
 	return `${pathname}?${queryToInject}${search ? `&` + search.slice(1) : ""}${hash || ""}`;
 }
 //#endregion
 //#region src/node/plugins/wasm.ts
-const wasmHelperId = "\0vite/wasm-helper.js";
+const wasmHelperId = "\0NEXT/wasm-helper.js";
 const wasmInitRE = /(?<![?#].*)\.wasm\?init/;
-const wasmInitUrlRE = /__VITE_WASM_INIT__([\w$]+)__/g;
+const wasmInitUrlRE = /__NEXT_WASM_INIT__([\w$]+)__/g;
 const wasmHelper = async (opts = {}, url) => {
 	let result;
 	if (url.startsWith("data:")) {
@@ -27963,9 +27963,9 @@ const instantiateFromFile = async (fileUrlString, opts) => {
 };
 const instantiateFromFileCode = instantiateFromFile.toString();
 const wasmHelperPlugin = () => {
-	return perEnvironmentPlugin("vite:wasm-helper", (env) => {
+	return perEnvironmentPlugin("NEXT:wasm-helper", (env) => {
 		return {
-			name: "vite:wasm-helper",
+			name: "NEXT:wasm-helper",
 			resolveId: {
 				filter: { id: exactRegex(wasmHelperId) },
 				handler(id) {
@@ -27983,7 +27983,7 @@ export default ${wasmHelperCode}
 					id = id.split("?")[0];
 					let url = await fileToUrl$1(this, id, ssr);
 					assetUrlRE.lastIndex = 0;
-					if (ssr && assetUrlRE.test(url)) url = url.replace("__VITE_ASSET__", "__VITE_WASM_INIT__");
+					if (ssr && assetUrlRE.test(url)) url = url.replace("__NEXT_ASSET__", "__NEXT_WASM_INIT__");
 					return `
   import initWasm from "${wasmHelperId}"
   export default opts => initWasm(opts, ${JSON.stringify(url)})
@@ -28000,7 +28000,7 @@ export default ${wasmHelperCode}
 					while (match = wasmInitUrlRE.exec(code)) {
 						const [full, referenceId] = match;
 						const file = this.getFileName(referenceId);
-						chunk.viteMetadata.importedAssets.add(cleanUrl(file));
+						chunk.NEXTMetadata.importedAssets.add(cleanUrl(file));
 						const { runtime } = toRelativeRuntime(file, chunk.fileName);
 						s ??= meta.magicString ?? new MagicString(code);
 						s.update(match.index, match.index + full.length, `"+${runtime}+"`);
@@ -28048,7 +28048,7 @@ function extractWorkerTypeFromAst(expression, optsStartIndex) {
 		}
 	}
 	if (typePropertyIndex === -1 && lastSpreadElementIndex === -1) return "classic";
-	if (typePropertyIndex < lastSpreadElementIndex) throw err$1("Expected object spread to be used before the definition of the type property. Vite needs a static value for the type property to correctly infer it.", optsStartIndex);
+	if (typePropertyIndex < lastSpreadElementIndex) throw err$1("Expected object spread to be used before the definition of the type property. NEXT needs a static value for the type property to correctly infer it.", optsStartIndex);
 	if (typeProperty?.value.type !== "Literal") throw err$1("Expected worker options type property to be a literal value.", optsStartIndex);
 	return typeProperty?.value.value === "module" ? "module" : "classic";
 }
@@ -28060,7 +28060,7 @@ async function parseWorkerOptions(rawOpts, optsStartIndex) {
 		const optsNode = (await parseAstAsync(`(${rawOpts})`)).body[0].expression;
 		const type = extractWorkerTypeFromAst(optsNode, optsStartIndex);
 		if (type) return { type };
-		throw err$1("Vite is unable to parse the worker options as the value is not static. To ignore this error, please use /* @vite-ignore */ in the worker options.", optsStartIndex);
+		throw err$1("NEXT is unable to parse the worker options as the value is not static. To ignore this error, please use /* @NEXT-ignore */ in the worker options.", optsStartIndex);
 	}
 	if (opts == null) return {};
 	if (typeof opts !== "object") throw err$1(`Expected worker options to be an object, got ${typeof opts}`, optsStartIndex);
@@ -28072,7 +28072,7 @@ async function getWorkerType(raw, clean, i) {
 	const endIndex = findClosingParen(clean, i);
 	if (commaIndex > endIndex) return "classic";
 	let workerOptString = raw.substring(commaIndex + 1, endIndex);
-	if (hasViteIgnoreRE.test(workerOptString)) return "ignore";
+	if (hasNEXTIgnoreRE.test(workerOptString)) return "ignore";
 	const cleanWorkerOptString = clean.substring(commaIndex + 1, endIndex);
 	const trimmedCleanWorkerOptString = cleanWorkerOptString.trim();
 	if (!trimmedCleanWorkerOptString.length) return "classic";
@@ -28094,7 +28094,7 @@ function workerImportMetaUrlPlugin(config) {
 		asSrc: true
 	};
 	return {
-		name: "vite:worker-import-meta-url",
+		name: "NEXT:worker-import-meta-url",
 		applyToEnvironment(environment) {
 			return environment.config.consumer === "client";
 		},
@@ -28137,7 +28137,7 @@ function workerImportMetaUrlPlugin(config) {
 							builtUrl = await fileToUrl$1(this, cleanUrl(file));
 							builtUrl = injectQuery(builtUrl, `${WORKER_FILE_ID}&type=${workerType}`);
 						}
-						s.update(expStart, expEnd, `new URL(/* @vite-ignore */ ${JSON.stringify(builtUrl)}, '' + import.meta.url)`);
+						s.update(expStart, expEnd, `new URL(/* @NEXT-ignore */ ${JSON.stringify(builtUrl)}, '' + import.meta.url)`);
 					}
 				}
 				if (s) return transformStableResult(s, id, config);
@@ -28153,10 +28153,10 @@ function workerImportMetaUrlPlugin(config) {
 * target is not native es - so that injected helper logic can be conditionally
 * dropped.
 */
-const isModernFlag = `__VITE_IS_MODERN__`;
-const preloadMethod = `__vitePreload`;
-const preloadMarker = `__VITE_PRELOAD__`;
-const preloadHelperId = "\0vite/preload-helper.js";
+const isModernFlag = `__NEXT_IS_MODERN__`;
+const preloadMethod = `__NEXTPreload`;
+const preloadMarker = `__NEXT_PRELOAD__`;
+const preloadHelperId = "\0NEXT/preload-helper.js";
 const preloadMarkerRE = new RegExp(preloadMarker, "g");
 function toRelativePath(filename, importer) {
 	const relPath = path.posix.relative(path.posix.dirname(importer), filename);
@@ -28176,7 +28176,7 @@ function detectScriptRel() {
 }
 function preload(baseModule, deps, importerUrl) {
 	let promise = Promise.resolve();
-	if (__VITE_IS_MODERN__ && deps && deps.length > 0) {
+	if (__NEXT_IS_MODERN__ && deps && deps.length > 0) {
 		const links = document.getElementsByTagName("link");
 		const cspNonceMeta = document.querySelector("meta[property=csp-nonce]");
 		const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
@@ -28214,7 +28214,7 @@ function preload(baseModule, deps, importerUrl) {
 		}));
 	}
 	function handlePreloadError(err) {
-		const e = new Event("vite:preloadError", { cancelable: true });
+		const e = new Event("NEXT:preloadError", { cancelable: true });
 		e.payload = err;
 		window.dispatchEvent(e);
 		if (!e.defaultPrevented) throw err;
@@ -28239,7 +28239,7 @@ function buildImportAnalysisPlugin(config) {
 	const renderBuiltUrl = config.experimental.renderBuiltUrl;
 	const isRelativeBase = config.base === "./" || config.base === "";
 	return [{
-		name: "vite:build-import-analysis",
+		name: "NEXT:build-import-analysis",
 		renderChunk(code, _, { format }) {
 			if (code.includes(isModernFlag)) {
 				const re = new RegExp(isModernFlag, "g");
@@ -28352,15 +28352,15 @@ function buildImportAnalysisPlugin(config) {
 									deps.add(chunk.fileName);
 									if (chunk.type === "chunk") {
 										chunk.imports.forEach(addDeps);
-										chunk.viteMetadata.importedCss.forEach((file) => {
+										chunk.NEXTMetadata.importedCss.forEach((file) => {
 											deps.add(file);
 										});
 									}
 								} else {
 									const chunk = removedPureCssFilesCache.get(config).get(filename);
 									if (chunk) {
-										if (chunk.viteMetadata.importedCss.size) {
-											chunk.viteMetadata.importedCss.forEach((file) => {
+										if (chunk.NEXTMetadata.importedCss.size) {
+											chunk.NEXTMetadata.importedCss.forEach((file) => {
 												deps.add(file);
 											});
 											hasRemovedPureCssChunk = true;
@@ -28392,12 +28392,12 @@ function buildImportAnalysisPlugin(config) {
 								return addFileDep(replacement.runtime, true);
 							});
 							else renderedDeps = depsArray.map((d) => isRelativeBase ? addFileDep(toRelativePath(d, file)) : addFileDep(d));
-							s.update(markerStartPos, markerStartPos + preloadMarker.length, renderedDeps.length > 0 ? `__vite__mapDeps([${renderedDeps.join(",")}])` : `[]`);
+							s.update(markerStartPos, markerStartPos + preloadMarker.length, renderedDeps.length > 0 ? `__NEXT__mapDeps([${renderedDeps.join(",")}])` : `[]`);
 							rewroteMarkerStartPos.add(markerStartPos);
 						}
 					}
 					if (fileDeps.length > 0) {
-						const mapDepsCode = `const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=${`[${fileDeps.map((fileDep) => fileDep.runtime ? fileDep.url : JSON.stringify(fileDep.url)).join(",")}]`})))=>i.map(i=>d[i]);\n`;
+						const mapDepsCode = `const __NEXT__mapDeps=(i,m=__NEXT__mapDeps,d=(m.f||(m.f=${`[${fileDeps.map((fileDep) => fileDep.runtime ? fileDep.url : JSON.stringify(fileDep.url)).join(",")}]`})))=>i.map(i=>d[i]);\n`;
 						if (code.startsWith("#!")) s.prependLeft(code.indexOf("\n") + 1, mapDepsCode);
 						else s.prepend(mapDepsCode);
 					}
@@ -28433,7 +28433,7 @@ function buildImportAnalysisPlugin(config) {
 			}
 		}
 	}, perEnvironmentPlugin("native:import-analysis-build", (environment) => {
-		return viteBuildImportAnalysisPlugin({
+		return NEXTBuildImportAnalysisPlugin({
 			preloadCode: getPreloadCode(environment, !!renderBuiltUrl, isRelativeBase),
 			insertPreload: getInsertPreload(environment),
 			optimizeModulePreloadRelativePaths: false,
@@ -28467,7 +28467,7 @@ function assetImportMetaUrlPlugin(config) {
 		asSrc: true
 	};
 	return {
-		name: "vite:asset-import-meta-url",
+		name: "NEXT:asset-import-meta-url",
 		applyToEnvironment(environment) {
 			return environment.config.consumer === "client";
 		},
@@ -28483,7 +28483,7 @@ function assetImportMetaUrlPlugin(config) {
 				let match;
 				while (match = re.exec(cleanString)) {
 					const [[startIndex, endIndex], [urlStart, urlEnd]] = match.indices;
-					if (hasViteIgnoreRE.test(code.slice(startIndex, urlStart))) continue;
+					if (hasNEXTIgnoreRE.test(code.slice(startIndex, urlStart))) continue;
 					const rawUrl = code.slice(urlStart, urlEnd);
 					if (!s) s = new MagicString(code);
 					if (rawUrl[0] === "`" && rawUrl.includes("${")) {
@@ -28532,7 +28532,7 @@ function assetImportMetaUrlPlugin(config) {
 					} catch {}
 					if (!builtUrl) {
 						const rawExp = code.slice(startIndex, endIndex);
-						config.logger.warnOnce(`\n${rawExp} doesn't exist at build time, it will remain unchanged to be resolved at runtime. If this is intended, you can use the /* @vite-ignore */ comment to suppress this warning.`);
+						config.logger.warnOnce(`\n${rawExp} doesn't exist at build time, it will remain unchanged to be resolved at runtime. If this is intended, you can use the /* @NEXT-ignore */ comment to suppress this warning.`);
 						builtUrl = url;
 					}
 					s.update(startIndex, endIndex, `new URL(${JSON.stringify(builtUrl)}, '' + import.meta.url)`);
@@ -28625,7 +28625,7 @@ function dynamicImportToGlob(node, sourceString) {
 }
 //#endregion
 //#region src/node/plugins/dynamicImportVars.ts
-const dynamicImportHelperId = "\0vite/dynamic-import-helper.js";
+const dynamicImportHelperId = "\0NEXT/dynamic-import-helper.js";
 const relativePathRE = /^\.{1,2}\//;
 const hasDynamicImportRE = /\bimport\s*[(/]/;
 const dynamicImportHelper = (glob, path, segs) => {
@@ -28687,7 +28687,7 @@ function dynamicImportVarsPlugin(config) {
 	});
 	if (config.isBundled) return perEnvironmentPlugin("native:dynamic-import-vars", (environment) => {
 		const { include, exclude } = environment.config.build.dynamicImportVarsOptions;
-		return viteDynamicImportVarsPlugin({
+		return NEXTDynamicImportVarsPlugin({
 			include,
 			exclude,
 			resolver(id, importer) {
@@ -28701,7 +28701,7 @@ function dynamicImportVarsPlugin(config) {
 		return createFilter$1(include, exclude);
 	});
 	return {
-		name: "vite:dynamic-import-vars",
+		name: "NEXT:dynamic-import-vars",
 		resolveId: {
 			filter: { id: exactRegex(dynamicImportHelperId) },
 			handler(id) {
@@ -28735,7 +28735,7 @@ function dynamicImportVarsPlugin(config) {
 				for (let index = 0; index < imports.length; index++) {
 					const { s: start, e: end, ss: expStart, se: expEnd, d: dynamicIndex } = imports[index];
 					if (dynamicIndex === -1 || source[start] !== "`") continue;
-					if (hasViteIgnoreRE.test(source.slice(expStart, expEnd))) continue;
+					if (hasNEXTIgnoreRE.test(source.slice(expStart, expEnd))) continue;
 					s ||= new MagicString(source);
 					let result;
 					try {
@@ -28759,14 +28759,14 @@ function dynamicImportVarsPlugin(config) {
 //#endregion
 //#region src/node/plugins/importMetaGlob.ts
 function importGlobPlugin(config) {
-	if (config.isBundled) return viteImportGlobPlugin({
+	if (config.isBundled) return NEXTImportGlobPlugin({
 		root: config.root,
 		sourcemap: !!config.build.sourcemap,
 		restoreQueryExtension: config.experimental.importGlobRestoreExtension
 	});
 	const importGlobMaps = /* @__PURE__ */ new Map();
 	return {
-		name: "vite:import-glob",
+		name: "NEXT:import-glob",
 		buildStart() {
 			importGlobMaps.clear();
 		},
@@ -28835,7 +28835,7 @@ function parseGlobOptions(rawOpts, optsStartIndex, logger) {
 	try {
 		opts = evalValue(rawOpts);
 	} catch {
-		throw err("Vite is unable to parse the glob options as the value is not static", optsStartIndex);
+		throw err("NEXT is unable to parse the glob options as the value is not static", optsStartIndex);
 	}
 	if (opts == null) return {};
 	for (const key in opts) {
@@ -28949,7 +28949,7 @@ function findCorrespondingCloseParenthesisPosition(cleanCode, openPos) {
 	}
 	return -1;
 }
-const importPrefix = "__vite_glob_";
+const importPrefix = "__NEXT_glob_";
 const { basename: basename$1, dirname: dirname$1, relative: relative$1 } = posix;
 /**
 * @param optimizeExport for dynamicImportVar plugin don't need to optimize export.
@@ -29076,7 +29076,7 @@ async function toAbsoluteGlob(glob, root, importer, resolveId, base) {
 	if (glob.startsWith("../")) return pre + posix.join(dir, glob);
 	if (glob.startsWith("**")) return pre + glob;
 	const isSubImportsPattern = glob[0] === "#" && glob.includes("*");
-	const resolved = normalizePath(await resolveId(glob, importer, { custom: { "vite:import-glob": { isSubImportsPattern } } }) || glob);
+	const resolved = normalizePath(await resolveId(glob, importer, { custom: { "NEXT:import-glob": { isSubImportsPattern } } }) || glob);
 	if (isAbsolute(resolved)) return pre + globSafeResolvedPath(resolved, glob);
 	throw new Error(`Invalid glob: "${glob}" (resolved: "${resolved}"). It must start with '/' or './'`);
 }
@@ -29176,7 +29176,7 @@ function createFilterForTransform(idFilter, codeFilter, moduleTypeFilter, cwd) {
 	};
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@vitest+utils@4.1.5/node_modules/@vitest/utils/dist/helpers.js
+//#region ../../node_modules/.pnpm/@NEXTst+utils@4.1.5/node_modules/@NEXTst/utils/dist/helpers.js
 function notNullish(v) {
 	return v != null;
 }
@@ -29184,7 +29184,7 @@ function isPrimitive(value) {
 	return value === null || typeof value !== "function" && typeof value !== "object";
 }
 //#endregion
-//#region ../../node_modules/.pnpm/@vitest+utils@4.1.5/node_modules/@vitest/utils/dist/chunk-pathe.M-eThtNZ.js
+//#region ../../node_modules/.pnpm/@NEXTst+utils@4.1.5/node_modules/@NEXTst/utils/dist/chunk-pathe.M-eThtNZ.js
 const _DRIVE_LETTER_START_RE = /^[A-Za-z]:\//;
 function normalizeWindowsPath(input = "") {
 	if (!input) return input;
@@ -29263,7 +29263,7 @@ const isAbsolute$2 = function(p) {
 	return _IS_ABSOLUTE_RE.test(p);
 };
 //#endregion
-//#region ../../node_modules/.pnpm/@vitest+utils@4.1.5/node_modules/@vitest/utils/dist/source-map.js
+//#region ../../node_modules/.pnpm/@NEXTst+utils@4.1.5/node_modules/@NEXTst/utils/dist/source-map.js
 var comma = ",".charCodeAt(0);
 var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var intToChar = new Uint8Array(64);
@@ -29453,28 +29453,28 @@ const SAFARI_NATIVE_CODE_REGEXP = /^(?:eval@)?(?:\[native code\])?$/;
 const stackIgnorePatterns = [
 	"node:internal",
 	/\/packages\/\w+\/dist\//,
-	/\/@vitest\/\w+\/dist\//,
-	"/vitest/dist/",
-	"/vitest/src/",
+	/\/@NEXTst\/\w+\/dist\//,
+	"/NEXTst/dist/",
+	"/NEXTst/src/",
 	"/node_modules/chai/",
 	"/node_modules/tinyspy/",
-	"/vite/dist/node/module-runner",
-	"/rolldown-vite/dist/node/module-runner",
+	"/NEXT/dist/node/module-runner",
+	"/rolldown-NEXT/dist/node/module-runner",
 	"/deps/chunk-",
-	"/deps/@vitest",
+	"/deps/@NEXTst",
 	"/deps/loupe",
 	"/deps/chai",
 	"/browser-playwright/dist/locators.js",
 	"/browser-webdriverio/dist/locators.js",
 	"/browser-preview/dist/locators.js",
 	/node:\w+/,
-	/__vitest_test__/,
-	/__vitest_browser__/,
-	"/@id/__x00__vitest/browser",
-	/\/deps\/vitest_/
+	/__NEXTst_test__/,
+	/__NEXTst_browser__/,
+	"/@id/__x00__NEXTst/browser",
+	/\/deps\/NEXTst_/
 ];
 const NOW_LENGTH = Date.now().toString().length;
-const REGEXP_VITEST = new RegExp(`vitest=\\d{${NOW_LENGTH}}`);
+const REGEXP_NEXTST = new RegExp(`NEXTst=\\d{${NOW_LENGTH}}`);
 function extractLocation(urlLike) {
 	if (!urlLike.includes(":")) return [urlLike];
 	const parts = /(.+?)(?::(\d+))?(?::(\d+))?$/.exec(urlLike.replace(/^\(|\)$/g, ""));
@@ -29491,7 +29491,7 @@ function extractLocation(urlLike) {
 		const isWindows = /^\/@fs\/[a-zA-Z]:\//.test(url);
 		url = url.slice(isWindows ? 5 : 4);
 	}
-	if (url.includes("vitest=")) url = url.replace(REGEXP_VITEST, "").replace(/[?&]$/, "");
+	if (url.includes("NEXTst=")) url = url.replace(REGEXP_NEXTST, "").replace(/[?&]$/, "");
 	return [
 		url,
 		parts[2] || void 0,
@@ -29539,7 +29539,7 @@ function parseSingleV8Stack(raw) {
 	if (method.startsWith("async ")) method = method.slice(6);
 	if (file.startsWith("file://")) file = file.slice(7);
 	file = file.startsWith("node:") || file.startsWith("internal:") ? file : resolve$2(file);
-	if (method) method = method.replace(/\(0\s?,\s?__vite_ssr_import_\d+__.(\w+)\)/g, "$1").replace(/__(vite_ssr_import|vi_import)_\d+__\./g, "").replace(/(Object\.)?__vite_ssr_export_default__\s?/g, "");
+	if (method) method = method.replace(/\(0\s?,\s?__NEXT_ssr_import_\d+__.(\w+)\)/g, "$1").replace(/__(NEXT_ssr_import|vi_import)_\d+__\./g, "").replace(/(Object\.)?__NEXT_ssr_export_default__\s?/g, "");
 	return {
 		method,
 		file,
@@ -29550,7 +29550,7 @@ function parseSingleV8Stack(raw) {
 function parseStacktrace(stack, options = {}) {
 	const { ignoreStackEntries = stackIgnorePatterns } = options;
 	let stacks = !CHROME_IE_STACK_REGEXP.test(stack) ? parseFFOrSafariStackTrace(stack) : parseV8Stacktrace(stack);
-	const helperIndex = stacks.findLastIndex((s) => s.method.includes("__VITEST_HELPER__"));
+	const helperIndex = stacks.findLastIndex((s) => s.method.includes("__NEXTST_HELPER__"));
 	if (helperIndex >= 0) stacks = stacks.slice(helperIndex + 1);
 	return stacks.map((stack) => {
 		if (options.getUrlId) stack.file = options.getUrlId(stack.file);
@@ -29630,12 +29630,12 @@ function getOriginalPosition(map, needle) {
 function forwardConsolePlugin(pluginOpts) {
 	const sourceMapCache = /* @__PURE__ */ new Map();
 	return {
-		name: "vite:forward-console",
+		name: "NEXT:forward-console",
 		apply: "serve",
 		configureServer(server) {
 			for (const name of pluginOpts.environments) {
 				const environment = server.environments[name];
-				environment.hot.on("vite:forward-console", (payload) => {
+				environment.hot.on("NEXT:forward-console", (payload) => {
 					if (payload.type === "error" || payload.type === "unhandled-rejection") {
 						const output = formatError(payload, environment, sourceMapCache);
 						environment.config.logger.error(output, { timestamp: true });
@@ -29699,9 +29699,9 @@ function formatError(payload, environment, sourceMapCache) {
 //#region src/node/plugins/esbuildBannerFooterCompatPlugin.ts
 /**
 * This plugin supports `esbuild.banner` and `esbuild.footer` options.
-* esbuild supported these options and Vite exposed them.
+* esbuild supported these options and NEXT exposed them.
 * But this should be done by plugin with transform hook.
-* This plugin makes these options work in rolldown-vite as a backward compat for now.
+* This plugin makes these options work in rolldown-NEXT as a backward compat for now.
 */
 function esbuildBannerFooterCompatPlugin(config) {
 	const options = config.esbuild;
@@ -29710,7 +29710,7 @@ function esbuildBannerFooterCompatPlugin(config) {
 	if (!banner && !footer) return;
 	const filter = createFilter$1(include || /\.(m?ts|[jt]sx)$/, exclude || /\.js$/);
 	return {
-		name: "vite:esbuild-banner-footer-compat",
+		name: "NEXT:esbuild-banner-footer-compat",
 		transform(code, id) {
 			if (filter(id) || filter(cleanUrl(id))) {
 				if (!(this.environment.mode === "dev" || this.environment.mode === "build" && this.environment.config.build.sourcemap)) {
@@ -29746,14 +29746,14 @@ async function resolvePlugins(config, prePlugins, normalPlugins, postPlugins) {
 		!isBundled ? optimizedDepsPlugin() : null,
 		!isWorker ? watchPackageDataPlugin(config.packageCache) : null,
 		!isBundled ? preAliasPlugin(config) : null,
-		isBundled && !config.resolve.alias.some((v) => v.customResolver) ? viteAliasPlugin({ entries: config.resolve.alias.map((item) => {
+		isBundled && !config.resolve.alias.some((v) => v.customResolver) ? NEXTAliasPlugin({ entries: config.resolve.alias.map((item) => {
 			return {
 				find: item.find,
 				replacement: item.replacement
 			};
 		}) }) : alias$1({
 			entries: config.resolve.alias,
-			customResolver: viteAliasCustomResolver
+			customResolver: NEXTAliasCustomResolver
 		}),
 		...prePlugins,
 		modulePreload !== false && modulePreload.polyfill ? modulePreloadPolyfillPlugin(config) : null,
@@ -29776,7 +29776,7 @@ async function resolvePlugins(config, prePlugins, normalPlugins, postPlugins) {
 		esbuildBannerFooterCompatPlugin(config),
 		config.oxc !== false && !isBundled ? oxcRuntimePlugin() : null,
 		config.oxc !== false ? oxcPlugin(config) : null,
-		viteJsonPlugin({
+		NEXTJsonPlugin({
 			...config.json,
 			minify: isBuild
 		}),
@@ -29785,7 +29785,7 @@ async function resolvePlugins(config, prePlugins, normalPlugins, postPlugins) {
 		assetPlugin(config),
 		config.server.forwardConsole.enabled && forwardConsolePlugin({ environments: ["client"] }),
 		...normalPlugins,
-		viteWasmFallbackPlugin(),
+		NEXTWasmFallbackPlugin(),
 		definePlugin(config),
 		cssPostPlugin(config),
 		isBundled && buildHtmlPlugin(config),
@@ -29806,10 +29806,10 @@ async function resolvePlugins(config, prePlugins, normalPlugins, postPlugins) {
 }
 async function loadDevToolsIntegrationPlugin(config) {
 	try {
-		const { DevToolsIntegration } = await import("@vitejs/devtools/integration");
+		const { DevToolsIntegration } = await import("@NEXTjs/devtools/integration");
 		return DevToolsIntegration({ config });
 	} catch (error) {
-		config.logger.error(import_picocolors.default.red(`Failed to load Vite DevTools integration: ${error?.message || error?.stack}`), { error });
+		config.logger.error(import_picocolors.default.red(`Failed to load NEXT DevTools integration: ${error?.message || error?.stack}`), { error });
 		return null;
 	}
 }
@@ -29887,10 +29887,10 @@ function getCachedFilterForPlugin(plugin, hookName) {
 function extractFilter(hook) {
 	return hook && "filter" in hook && hook.filter ? hook.filter : void 0;
 }
-const viteAliasCustomResolver = async function(id, importer, options) {
+const NEXTAliasCustomResolver = async function(id, importer, options) {
 	return await this.resolve(id, importer, options) || {
 		id,
-		meta: { "vite:alias": { noResolved: true } }
+		meta: { "NEXT:alias": { noResolved: true } }
 	};
 };
 //#endregion
@@ -29925,12 +29925,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 const EMPTY_OBJECT = Object.freeze({});
-const debugSourcemapCombineFilter = process.env.DEBUG_VITE_SOURCEMAP_COMBINE_FILTER;
-const debugSourcemapCombine = createDebugger("vite:sourcemap-combine", { onlyWhenFocused: true });
-const debugResolve = createDebugger("vite:resolve");
-const debugPluginResolve = createDebugger("vite:plugin-resolve", { onlyWhenFocused: "vite:plugin" });
-const debugPluginTransform = createDebugger("vite:plugin-transform", { onlyWhenFocused: "vite:plugin" });
-const debugPluginContainerContext = createDebugger("vite:plugin-container-context");
+const debugSourcemapCombineFilter = process.env.DEBUG_NEXT_SOURCEMAP_COMBINE_FILTER;
+const debugSourcemapCombine = createDebugger("NEXT:sourcemap-combine", { onlyWhenFocused: true });
+const debugResolve = createDebugger("NEXT:resolve");
+const debugPluginResolve = createDebugger("NEXT:plugin-resolve", { onlyWhenFocused: "NEXT:plugin" });
+const debugPluginTransform = createDebugger("NEXT:plugin-transform", { onlyWhenFocused: "NEXT:plugin" });
+const debugPluginContainerContext = createDebugger("NEXT:plugin-container-context");
 const ERR_CLOSED_SERVER = "ERR_CLOSED_SERVER";
 function throwClosedServerError() {
 	const err = /* @__PURE__ */ new Error("The server is being restarted or closed. Request is outdated");
@@ -29995,7 +29995,7 @@ var EnvironmentPluginContainer = class {
 		}, { get(info, key) {
 			if (key in info) return info[key];
 			if (key === "then") return;
-			throw Error(`[vite] The "${key}" property of ModuleInfo is not supported.`);
+			throw Error(`[NEXT] The "${key}" property of ModuleInfo is not supported.`);
 		} });
 		return module.info ?? null;
 	}
@@ -30214,7 +30214,7 @@ var EnvironmentPluginContainer = class {
 	}
 };
 const basePluginContextMeta = {
-	viteVersion: VERSION,
+	NEXTVersion: VERSION,
 	rollupVersion,
 	rolldownVersion
 };
@@ -30456,7 +30456,7 @@ var PluginContext = class extends MinimalPluginContext {
 		return err;
 	}
 	_warnIncompatibleMethod(method) {
-		this.environment.logger.warn(import_picocolors.default.cyan(`[plugin:${this._plugin.name}] `) + import_picocolors.default.yellow(`context method ${import_picocolors.default.bold(`${method}()`)} is not supported in serve mode. This plugin is likely not vite-compatible.`));
+		this.environment.logger.warn(import_picocolors.default.cyan(`[plugin:${this._plugin.name}] `) + import_picocolors.default.yellow(`context method ${import_picocolors.default.bold(`${method}()`)} is not supported in serve mode. This plugin is likely not NEXT-compatible.`));
 	}
 };
 var ResolveIdContext = class extends PluginContext {
@@ -30648,7 +30648,7 @@ function devToScanEnvironment(environment) {
 		}
 	};
 }
-const debug$3 = createDebugger("vite:deps");
+const debug$3 = createDebugger("NEXT:deps");
 const htmlTypesRE = /\.(?:html|vue|svelte|astro|imba)$/;
 const importsRE = /(?<!\/\/.*)(?<=^|;|\*\/)\s*import(?!\s+type)(?:[\w*{}\n\r\t, ]+from)?\s*("[^"]+"|'[^']+')\s*(?=$|;|\/\/|\/\*)/gm;
 function scanImports(environment) {
@@ -30786,8 +30786,8 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 	const include = optimizeDepsOptions.include;
 	const exclude = [
 		...optimizeDepsOptions.exclude ?? [],
-		"@vite/client",
-		"@vite/env"
+		"@NEXT/client",
+		"@NEXT/env"
 	];
 	const externalUnlessEntry = ({ path }) => ({
 		id: path,
@@ -30858,7 +30858,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 	const ASSET_TYPE_RE = new RegExp(`\\.(${KNOWN_ASSET_TYPES.join("|")})$`);
 	return [
 		{
-			name: "vite:dep-scan:resolve-external-url",
+			name: "NEXT:dep-scan:resolve-external-url",
 			resolveId: {
 				filter: { id: externalRE },
 				handler: (id) => ({
@@ -30868,7 +30868,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		},
 		{
-			name: "vite:dep-scan:resolve-data-url",
+			name: "NEXT:dep-scan:resolve-data-url",
 			resolveId: {
 				filter: { id: dataUrlRE },
 				handler: (id) => ({
@@ -30878,7 +30878,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		},
 		{
-			name: "vite:dep-scan:local-scripts",
+			name: "NEXT:dep-scan:local-scripts",
 			resolveId: {
 				filter: { id: virtualModuleRE },
 				handler: (id) => ({ id })
@@ -30895,7 +30895,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		},
 		{
-			name: "vite:dep-scan:resolve",
+			name: "NEXT:dep-scan:resolve",
 			async resolveId(id, importer) {
 				importer = importer && virtualModuleRE.test(importer) ? importer.replace(virtualModulePrefix, "") : importer;
 				if (htmlTypesRE.test(id)) {
@@ -30934,7 +30934,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		},
 		{
-			name: "vite:dep-scan:load:html",
+			name: "NEXT:dep-scan:load:html",
 			load: {
 				filter: { id: htmlTypesRE },
 				async handler(id) {
@@ -30946,7 +30946,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		},
 		...environment.config.esbuild && environment.config.esbuild.jsxInject ? [{
-			name: "vite:dep-scan:transform:jsx-inject",
+			name: "NEXT:dep-scan:transform:jsx-inject",
 			transform: {
 				filter: { id: /\.[jt]sx$/ },
 				handler(code) {
@@ -30957,7 +30957,7 @@ function rolldownScanPlugin(environment, depImports, missing, entries) {
 			}
 		}] : [],
 		{
-			name: "vite:dep-scan:transform:js-glob",
+			name: "NEXT:dep-scan:transform:js-glob",
 			transform: {
 				filter: { code: "import.meta.glob" },
 				async handler(code, id) {
@@ -31083,10 +31083,10 @@ function nestedResolveBasedir(id, basedir, preserveSymlinks = false) {
 }
 //#endregion
 //#region src/node/optimizer/rolldownDepPlugin.ts
-const externalWithConversionNamespace = "vite:dep-pre-bundle:external-conversion";
-const convertedExternalPrefix = "vite-dep-pre-bundle-external:";
-const cjsExternalFacadeNamespace = "vite:cjs-external-facade";
-const nonFacadePrefix = "vite-cjs-external-facade:";
+const externalWithConversionNamespace = "NEXT:dep-pre-bundle:external-conversion";
+const convertedExternalPrefix = "NEXT-dep-pre-bundle-external:";
+const cjsExternalFacadeNamespace = "NEXT:cjs-external-facade";
+const nonFacadePrefix = "NEXT-cjs-external-facade:";
 const externalTypes = [
 	"css",
 	"less",
@@ -31137,8 +31137,8 @@ function rolldownDepPlugin(environment, qualified, external) {
 		return (kind.startsWith("require") ? _resolveRequire : _resolve)(environment, id, _importer);
 	};
 	const resolveResult = (id, resolved, kind) => {
-		if (resolved.startsWith("__vite-browser-external")) return { id: browserExternalNamespace + id };
-		if (resolved.startsWith("__vite-optional-peer-dep")) return { id: optionalPeerDepNamespace + resolved };
+		if (resolved.startsWith("__NEXT-browser-external")) return { id: browserExternalNamespace + id };
+		if (resolved.startsWith("__NEXT-optional-peer-dep")) return { id: optionalPeerDepNamespace + resolved };
 		if (allExternalTypesReg.test(resolved)) return resolveAssets(resolved, kind);
 		if (isBuiltin(environment.config.resolve.builtins, resolved)) return;
 		if (isExternalUrl(resolved)) return {
@@ -31154,7 +31154,7 @@ function rolldownDepPlugin(environment, qualified, external) {
 	}
 	const bundleOutputDir = path.join(environment.config.cacheDir, "deps");
 	return [{
-		name: "vite:dep-pre-bundle-assets",
+		name: "NEXT:dep-pre-bundle-assets",
 		resolveId: {
 			filter: { id: allExternalTypesReg },
 			async handler(id, importer, options) {
@@ -31182,7 +31182,7 @@ function rolldownDepPlugin(environment, qualified, external) {
 			}
 		}
 	}, {
-		name: "vite:dep-pre-bundle",
+		name: "NEXT:dep-pre-bundle",
 		buildEnd() {
 			esmPackageCache.clear();
 			cjsPackageCache.clear();
@@ -31220,7 +31220,7 @@ function rolldownDepPlugin(environment, qualified, external) {
             key !== 'constructor' &&
             key !== 'splice'
         ) {
-            console.warn(\`Module "${path}" has been externalized for browser compatibility. Cannot access "${path}.\${key}" in client code. See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\`)
+            console.warn(\`Module "${path}" has been externalized for browser compatibility. Cannot access "${path}.\${key}" in client code. See https://NEXT.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.\`)
         }
         }
     }))` };
@@ -31240,7 +31240,7 @@ function rolldownDepPlugin(environment, qualified, external) {
 				let match;
 				while (match = re.exec(cleanString)) {
 					const [[startIndex, endIndex], [urlStart, urlEnd]] = match.indices;
-					if (hasViteIgnoreRE.test(code.slice(startIndex, urlStart))) continue;
+					if (hasNEXTIgnoreRE.test(code.slice(startIndex, urlStart))) continue;
 					const rawUrl = code.slice(urlStart, urlEnd);
 					if (rawUrl[0] === "`" && rawUrl.includes("${")) continue;
 					const url = rawUrl.slice(1, -1);
@@ -31316,14 +31316,14 @@ var optimizer_exports = /* @__PURE__ */ __exportAll({
 	runOptimizeDeps: () => runOptimizeDeps,
 	toDiscoveredDependencies: () => toDiscoveredDependencies
 });
-const debug$2 = createDebugger("vite:deps");
+const debug$2 = createDebugger("NEXT:deps");
 const jsExtensionRE = /\.js$/i;
 function isDepOptimizationDisabled(optimizeDeps) {
 	return optimizeDeps.disabled === true || optimizeDeps.disabled === "dev" || !!optimizeDeps.noDiscovery && !optimizeDeps.include?.length;
 }
 /**
 * Scan and optimize dependencies within a project.
-* Used by Vite CLI when running `vite optimize`.
+* Used by NEXT CLI when running `NEXT optimize`.
 *
 * @deprecated the optimization process runs automatically and does not need to be called
 */
@@ -31388,7 +31388,7 @@ async function loadCachedDepOptimizationMetadata(environment, force = environmen
 			cachedMetadata = parseDepsOptimizerMetadata(await fsp.readFile(cachedMetadataPath, "utf-8"), depsCacheDir);
 		} catch {}
 		if (cachedMetadata) if (cachedMetadata.lockfileHash !== getLockfileHash(environment)) environment.logger.info("Re-optimizing dependencies because lockfile has changed", { timestamp: true });
-		else if (cachedMetadata.configHash !== getConfigHash(environment)) environment.logger.info("Re-optimizing dependencies because vite config has changed", { timestamp: true });
+		else if (cachedMetadata.configHash !== getConfigHash(environment)) environment.logger.info("Re-optimizing dependencies because NEXT config has changed", { timestamp: true });
 		else {
 			log?.(`(${environment.name}) Hash is consistent. Skipping. Use --force to override.`);
 			return cachedMetadata;
@@ -31434,7 +31434,7 @@ function depsLogString(qualifiedIds) {
 	return import_picocolors.default.yellow(qualifiedIds.join(`, `));
 }
 /**
-* Internally, Vite uses this function to prepare a optimizeDeps run. When Vite starts, we can get
+* Internally, NEXT uses this function to prepare a optimizeDeps run. When NEXT starts, we can get
 * the metadata and start the server without waiting for the optimizeDeps processing to be completed
 */
 function runOptimizeDeps(environment, depsInfo) {
@@ -32010,12 +32010,12 @@ const safeRename = promisify(function gracefulRename(from, to, cb) {
 const normalizedClientEntry = normalizePath(CLIENT_ENTRY);
 const normalizedEnvEntry = normalizePath(ENV_ENTRY);
 const ERR_RESOLVE_PACKAGE_ENTRY_FAIL = "ERR_RESOLVE_PACKAGE_ENTRY_FAIL";
-const browserExternalId = "__vite-browser-external";
-const optionalPeerDepId = "__vite-optional-peer-dep";
+const browserExternalId = "__NEXT-browser-external";
+const optionalPeerDepId = "__NEXT-optional-peer-dep";
 const subpathImportsPrefix = "#";
 const relativePrefixRE = /^\.\.?(?:[/\\]|$)/;
 const startsWithWordCharRE = /^\w/;
-const debug$1 = createDebugger("vite:resolve-details", { onlyWhenFocused: true });
+const debug$1 = createDebugger("NEXT:resolve-details", { onlyWhenFocused: true });
 const perEnvironmentOrWorkerPlugin = (name, overrideEnvConfig, f) => {
 	const envs = {};
 	const getEnvironmentPlugin = {
@@ -32038,7 +32038,7 @@ const perEnvironmentOrWorkerPlugin = (name, overrideEnvConfig, f) => {
 	}];
 };
 function oxcResolvePlugin(resolveOptions, overrideEnvConfig) {
-	return [...resolveOptions.optimizeDeps && !resolveOptions.isBuild ? [optimizerResolvePlugin(resolveOptions)] : [], ...perEnvironmentOrWorkerPlugin("vite:resolve-builtin", overrideEnvConfig, (partialEnv, getEnv) => {
+	return [...resolveOptions.optimizeDeps && !resolveOptions.isBuild ? [optimizerResolvePlugin(resolveOptions)] : [], ...perEnvironmentOrWorkerPlugin("NEXT:resolve-builtin", overrideEnvConfig, (partialEnv, getEnv) => {
 		const depsOptimizerEnabled = resolveOptions.optimizeDeps && !resolveOptions.isBuild && !partialEnv.config.experimental.bundledDev && !isDepOptimizationDisabled(partialEnv.config.optimizeDeps);
 		const getDepsOptimizer = () => {
 			const env = getEnv();
@@ -32051,7 +32051,7 @@ function oxcResolvePlugin(resolveOptions, overrideEnvConfig) {
 			...resolveOptions
 		};
 		const noExternal = Array.isArray(options.noExternal) || options.noExternal === true ? options.noExternal : [options.noExternal];
-		const plugin = viteResolvePlugin({
+		const plugin = NEXTResolvePlugin({
 			resolveOptions: {
 				isBuild: options.isBuild,
 				isProduction: options.isProduction,
@@ -32122,7 +32122,7 @@ function oxcResolvePlugin(resolveOptions, overrideEnvConfig) {
 function optimizerResolvePlugin(resolveOptions) {
 	const { root, asSrc } = resolveOptions;
 	return {
-		name: "vite:resolve-dev",
+		name: "NEXT:resolve-dev",
 		applyToEnvironment(environment) {
 			return !environment.config.experimental.bundledDev && !isDepOptimizationDisabled(environment.config.optimizeDeps);
 		},
@@ -32131,7 +32131,7 @@ function optimizerResolvePlugin(resolveOptions) {
 				/^\0/,
 				/^virtual:/,
 				/^\/virtual:/,
-				/^__vite-/
+				/^__NEXT-/
 			] } },
 			async handler(id, importer, resolveOpts) {
 				const depsOptimizer = resolveOptions.optimizeDeps && this.environment.mode === "dev" ? this.environment.depsOptimizer : void 0;
@@ -32478,9 +32478,9 @@ function findNearestPackagePath(file, legacyInconsistentCjsInterop, packageCache
 //#endregion
 //#region src/node/nodeResolve.ts
 /**
-* Resolve like Node.js using Vite's resolution algorithm with preconfigured options.
+* Resolve like Node.js using NEXT's resolution algorithm with preconfigured options.
 */
-function nodeResolveWithVite(id, importer, options) {
+function nodeResolveWithNEXT(id, importer, options) {
 	return tryNodeResolve(id, importer, {
 		root: options.root,
 		isBuild: true,
@@ -32507,9 +32507,9 @@ function nodeResolveWithVite(id, importer, options) {
 let terserPath;
 function loadTerserPath(root) {
 	if (terserPath) return terserPath;
-	const resolved = nodeResolveWithVite("terser", void 0, { root }) ?? nodeResolveWithVite("terser", _dirname, { root });
+	const resolved = nodeResolveWithNEXT("terser", void 0, { root }) ?? nodeResolveWithNEXT("terser", _dirname, { root });
 	if (resolved) return terserPath = resolved;
-	throw new Error("terser not found. Since Vite v3, terser has become an optional dependency. You need to install it.");
+	throw new Error("terser not found. Since NEXT v3, terser has become an optional dependency. You need to install it.");
 }
 function terserPlugin(config) {
 	const { maxWorkers, ...terserOptions } = config.build.terserOptions;
@@ -32531,7 +32531,7 @@ function terserPlugin(config) {
 	});
 	let worker;
 	return {
-		name: "vite:terser",
+		name: "NEXT:terser",
 		applyToEnvironment(environment) {
 			return !!environment.config.build.minify;
 		},
@@ -32577,7 +32577,7 @@ function ssrManifestPlugin() {
 		return {};
 	});
 	return {
-		name: "vite:ssr-manifest",
+		name: "NEXT:ssr-manifest",
 		applyToEnvironment(environment) {
 			return !!environment.config.build.ssrManifest;
 		},
@@ -32593,11 +32593,11 @@ function ssrManifestPlugin() {
 						const mappedChunks = ssrManifest[normalizedId] ?? (ssrManifest[normalizedId] = []);
 						if (!chunk.isEntry) {
 							mappedChunks.push(joinUrlSegments(base, chunk.fileName));
-							chunk.viteMetadata.importedCss.forEach((file) => {
+							chunk.NEXTMetadata.importedCss.forEach((file) => {
 								mappedChunks.push(joinUrlSegments(base, file));
 							});
 						}
-						chunk.viteMetadata.importedAssets.forEach((file) => {
+						chunk.NEXTMetadata.importedAssets.forEach((file) => {
 							mappedChunks.push(joinUrlSegments(base, file));
 						});
 					}
@@ -32634,7 +32634,7 @@ function ssrManifestPlugin() {
 								analyzed.add(filename);
 								const chunk = bundle[filename];
 								if (chunk) {
-									chunk.viteMetadata.importedCss.forEach((file) => {
+									chunk.NEXTMetadata.importedCss.forEach((file) => {
 										deps.push(joinUrlSegments(base, file));
 									});
 									chunk.imports.forEach(addDeps);
@@ -32647,7 +32647,7 @@ function ssrManifestPlugin() {
 				}
 			}
 			this.emitFile({
-				fileName: typeof config.build.ssrManifest === "string" ? config.build.ssrManifest : ".vite/ssr-manifest.json",
+				fileName: typeof config.build.ssrManifest === "string" ? config.build.ssrManifest : ".NEXT/ssr-manifest.json",
 				type: "asset",
 				source: JSON.stringify(sortObjectKeys(ssrManifest), void 0, 2)
 			});
@@ -32656,7 +32656,7 @@ function ssrManifestPlugin() {
 }
 //#endregion
 //#region src/node/plugins/license.ts
-const licenseConfigDefaults = Object.freeze({ fileName: ".vite/license.md" });
+const licenseConfigDefaults = Object.freeze({ fileName: ".NEXT/license.md" });
 const licenseFiles = [
 	/^license/i,
 	/^licence/i,
@@ -32664,7 +32664,7 @@ const licenseFiles = [
 ];
 function licensePlugin() {
 	return {
-		name: "vite:license",
+		name: "NEXT:license",
 		generateBundle(_, bundle) {
 			const licenseOption = this.environment.config.build.license;
 			if (licenseOption === false) return;
@@ -32737,7 +32737,7 @@ function findLicenseFile(pkgDir) {
 function prepareOutDirPlugin() {
 	const rendered = /* @__PURE__ */ new Set();
 	return {
-		name: "vite:prepare-out-dir",
+		name: "NEXT:prepare-out-dir",
 		watchChange() {
 			rendered.delete(this.environment);
 		},
@@ -32872,7 +32872,7 @@ function resolveBuildPlugins(config) {
 	return {
 		pre: [
 			...isBuild && !config.isWorker ? [prepareOutDirPlugin()] : [],
-			perEnvironmentPlugin("vite:rollup-options-plugins", async (environment) => (await asyncFlatten(arraify(environment.config.build.rollupOptions.plugins))).filter(Boolean)),
+			perEnvironmentPlugin("NEXT:rollup-options-plugins", async (environment) => (await asyncFlatten(arraify(environment.config.build.rollupOptions.plugins))).filter(Boolean)),
 			...config.isWorker ? [webWorkerPostPlugin(config)] : []
 		],
 		post: [
@@ -32885,7 +32885,7 @@ function resolveBuildPlugins(config) {
 				ssrManifestPlugin(),
 				buildReporterPlugin(config)
 			] : [],
-			viteLoadFallbackPlugin()
+			NEXTLoadFallbackPlugin()
 		]
 	};
 }
@@ -32939,15 +32939,15 @@ function resolveRolldownOptions(environment, chunkMetadataMap) {
 		},
 		experimental: {
 			...options.rollupOptions.experimental,
-			viteMode: true
+			NEXTMode: true
 		}
 	};
 	const isSsrTargetWebworkerEnvironment = environment.name === "ssr" && environment.getTopLevelConfig().ssr?.target === "webworker";
 	if (isSsrTargetWebworkerEnvironment) plugins.push(esmExternalRequirePlugin());
 	const buildOutputOptions = (output = {}) => {
-		if (output.output) logger.warn("You've set \"rollupOptions.output.output\" in your config. This is deprecated and will override all Vite.js default output options. Please use \"rollupOptions.output\" instead.");
-		if (output.file) throw new Error("Vite does not support \"rollupOptions.output.file\". Please use \"rollupOptions.output.dir\" and \"rollupOptions.output.entryFileNames\" instead.");
-		if (output.sourcemap) logger.warnOnce(import_picocolors.default.yellow("Vite does not support \"rollupOptions.output.sourcemap\". Please use \"build.sourcemap\" instead."));
+		if (output.output) logger.warn("You've set \"rollupOptions.output.output\" in your config. This is deprecated and will override all NEXT.js default output options. Please use \"rollupOptions.output\" instead.");
+		if (output.file) throw new Error("NEXT does not support \"rollupOptions.output.file\". Please use \"rollupOptions.output.dir\" and \"rollupOptions.output.entryFileNames\" instead.");
+		if (output.sourcemap) logger.warnOnce(import_picocolors.default.yellow("NEXT does not support \"rollupOptions.output.sourcemap\". Please use \"build.sourcemap\" instead."));
 		const format = output.format || "es";
 		const jsExt = ssr && !isSsrTargetWebworkerEnvironment || libOptions ? resolveOutputJsExtension(format, findNearestPackageData(root, packageCache)?.data.type) : "js";
 		return {
@@ -32987,7 +32987,7 @@ function resolveRolldownOptions(environment, chunkMetadataMap) {
 async function buildEnvironment(environment) {
 	const { logger, config } = environment;
 	const { root, build: options } = config;
-	logger.info(import_picocolors.default.cyan(`vite v${VERSION} ${import_picocolors.default.green(`building ${environment.name} environment for ${environment.config.mode}...`)}`));
+	logger.info(import_picocolors.default.cyan(`NEXT v${VERSION} ${import_picocolors.default.green(`building ${environment.name} environment for ${environment.config.mode}...`)}`));
 	let bundle;
 	let startTime;
 	try {
@@ -33117,13 +33117,13 @@ function clearLine() {
 	}
 }
 function onRollupLog(level, log, environment) {
-	const debugLogger = createDebugger("vite:build");
-	const viteLog = (logLeveling, rawLogging) => {
+	const debugLogger = createDebugger("NEXT:build");
+	const NEXTLog = (logLeveling, rawLogging) => {
 		const logging = typeof rawLogging === "object" ? rawLogging : { message: rawLogging };
 		if (logging.code === "UNRESOLVED_IMPORT") {
 			const id = logging.id;
 			const exporter = logging.exporter;
-			if (!id || !id.endsWith("?commonjs-external")) throw new Error(`[vite]: Rolldown failed to resolve import "${exporter}" from "${id}".\nThis is most likely unintended because it can break your application at runtime.\nIf you do want to externalize this module explicitly add it to\n\`build.rollupOptions.external\``);
+			if (!id || !id.endsWith("?commonjs-external")) throw new Error(`[NEXT]: Rolldown failed to resolve import "${exporter}" from "${id}".\nThis is most likely unintended because it can break your application at runtime.\nIf you do want to externalize this module explicitly add it to\n\`build.rollupOptions.external\``);
 		}
 		if (logLeveling === "warn") {
 			if (logging.plugin === "rollup-plugin-dynamic-import-variables" && dynamicImportWarningIgnoreList.some((msg) => logging.message.includes(msg))) return;
@@ -33152,10 +33152,10 @@ function onRollupLog(level, log, environment) {
 	clearLine();
 	const userOnLog = environment.config.build.rollupOptions?.onLog;
 	const userOnWarn = environment.config.build.rollupOptions?.onwarn;
-	if (userOnLog) if (userOnWarn) userOnLog(level, log, normalizeUserOnWarn(userOnWarn, viteLog));
-	else userOnLog(level, log, viteLog);
-	else if (userOnWarn) normalizeUserOnWarn(userOnWarn, viteLog)(level, log);
-	else viteLog(level, log);
+	if (userOnLog) if (userOnWarn) userOnLog(level, log, normalizeUserOnWarn(userOnWarn, NEXTLog));
+	else userOnLog(level, log, NEXTLog);
+	else if (userOnWarn) normalizeUserOnWarn(userOnWarn, NEXTLog)(level, log);
+	else NEXTLog(level, log);
 }
 function normalizeUserOnWarn(userOnWarn, defaultHandler) {
 	return (logLevel, logging) => {
@@ -33297,19 +33297,19 @@ function wrapEnvironmentHook(environment, chunkMetadataMap, plugin, hookName) {
 }
 function injectChunkMetadata(chunkMetadataMap, chunk, resetChunkMetadata = false) {
 	if (resetChunkMetadata) chunkMetadataMap.reset(chunk);
-	Object.defineProperty(chunk, "viteMetadata", {
+	Object.defineProperty(chunk, "NEXTMetadata", {
 		value: chunkMetadataMap.get(chunk),
 		enumerable: true
 	});
 	if (chunk.type === "chunk") Object.defineProperty(chunk, "modules", {
 		get() {
-			return chunk.viteMetadata.__modules;
+			return chunk.NEXTMetadata.__modules;
 		},
 		enumerable: true
 	});
 }
 function injectEnvironmentInContext(context, environment) {
-	context.meta.viteVersion ??= VERSION;
+	context.meta.NEXTVersion ??= VERSION;
 	context.environment ??= environment;
 	return context;
 }
@@ -33419,7 +33419,7 @@ function resolveBuilderOptions(options) {
 	}, options);
 }
 /**
-* Creates a ViteBuilder to orchestrate building multiple environments.
+* Creates a NEXTBuilder to orchestrate building multiple environments.
 * @experimental
 */
 async function createBuilder(inlineConfig = {}, useLegacyBuilder = false) {
@@ -33458,10 +33458,10 @@ async function createBuilder(inlineConfig = {}, useLegacyBuilder = false) {
 		},
 		async runDevTools() {
 			if (config.devtools.enabled) try {
-				const { runDevTools } = await import("@vitejs/devtools/integration");
+				const { runDevTools } = await import("@NEXTjs/devtools/integration");
 				await runDevTools(builder);
 			} catch (e) {
-				config.logger.error(import_picocolors.default.red(`Failed to run Vite DevTools: ${e?.message || e?.stack}`), { error: e });
+				config.logger.error(import_picocolors.default.red(`Failed to run NEXT DevTools: ${e?.message || e?.stack}`), { error: e });
 			}
 		}
 	};
@@ -33633,13 +33633,13 @@ function resolvePreviewOptions(preview, server) {
 	};
 }
 /**
-* Starts the Vite server in preview mode, to simulate a production deployment
+* Starts the NEXT server in preview mode, to simulate a production deployment
 */
 async function preview(inlineConfig = {}) {
 	const config = await resolveConfig(inlineConfig, "serve", "production", "production", true);
 	const clientOutDir = config.environments.client.build.outDir;
 	const distDir = path.resolve(config.root, clientOutDir);
-	if (!fs.existsSync(distDir) && config.plugins.every((plugin) => !plugin.configurePreviewServer) && process.argv[1]?.endsWith(path.normalize("bin/vite.js")) && process.argv[2] === "preview") throw new Error(`The directory "${clientOutDir}" does not exist. Did you build your project?`);
+	if (!fs.existsSync(distDir) && config.plugins.every((plugin) => !plugin.configurePreviewServer) && process.argv[1]?.endsWith(path.normalize("bin/NEXT.js")) && process.argv[2] === "preview") throw new Error(`The directory "${clientOutDir}" does not exist. Did you build your project?`);
 	const httpsOptions = await resolveHttpsConfig(config.preview.https);
 	const app = (0, import_connect.default)();
 	const httpServer = await resolveHttpServer(app, httpsOptions);
@@ -33694,7 +33694,7 @@ async function preview(inlineConfig = {}) {
 	app.use(build_default());
 	if (config.base !== "/") app.use(baseMiddleware(config.rawBase, false));
 	const headers = config.preview.headers;
-	const viteAssetMiddleware = (...args) => build_default$1(distDir, {
+	const NEXTAssetMiddleware = (...args) => build_default$1(distDir, {
 		etag: true,
 		dev: true,
 		extensions: [],
@@ -33706,7 +33706,7 @@ async function preview(inlineConfig = {}) {
 			return shouldServeFile(filePath, distDir);
 		}
 	})(...args);
-	app.use(viteAssetMiddleware);
+	app.use(NEXTAssetMiddleware);
 	if (config.appType === "spa" || config.appType === "mpa") app.use(htmlFallbackMiddleware(distDir, config.appType === "spa"));
 	postHooks.forEach((fn) => fn && fn());
 	if (config.appType === "spa" || config.appType === "mpa") {
@@ -33741,7 +33741,7 @@ function resolveSSROptions(ssr, preserveSymlinks) {
 //#endregion
 //#region src/node/ssr/runnerImport.ts
 /**
-* Import any file using the default Vite environment.
+* Import any file using the default NEXT environment.
 * @experimental
 */
 async function runnerImport(moduleId, inlineConfig) {
@@ -33837,7 +33837,7 @@ function convertEsbuildPluginToRolldownPlugin(esbuildPlugin) {
 			await setup(inputOptions.plugins, inputOptions.platform ?? "node");
 		},
 		async buildStart(inputOptions) {
-			if (!isSetupDone) await setup([{ name: "vite:dep-scan" }], inputOptions.platform ?? "node");
+			if (!isSetupDone) await setup([{ name: "NEXT:dep-scan" }], inputOptions.platform ?? "node");
 			for (const cb of onStartCallbacks) cb();
 		},
 		generateBundle() {
@@ -33941,9 +33941,9 @@ var config_exports = /* @__PURE__ */ __exportAll({
 	resolveDevToolsConfig: () => resolveDevToolsConfig,
 	sortUserPlugins: () => sortUserPlugins
 });
-const debug = createDebugger("vite:config", { depth: 10 });
+const debug = createDebugger("NEXT:config", { depth: 10 });
 const promisifiedRealpath = promisify(fs.realpath);
-const SYMBOL_RESOLVED_CONFIG = Symbol("vite:resolved-config");
+const SYMBOL_RESOLVED_CONFIG = Symbol("NEXT:resolved-config");
 function defineConfig(config) {
 	return config;
 }
@@ -33970,10 +33970,10 @@ async function resolveDevToolsConfig(config, host, logger) {
 	};
 	if (!isEnabled) return fallbackConfig;
 	try {
-		const { normalizeDevToolsConfig } = await import("@vitejs/devtools/config");
+		const { normalizeDevToolsConfig } = await import("@NEXTjs/devtools/config");
 		return normalizeDevToolsConfig(config, fallbackHostname);
 	} catch (e) {
-		logger.error(import_picocolors.default.red(`Failed to load Vite DevTools config: ${e.message || e.stack}`), { error: e });
+		logger.error(import_picocolors.default.red(`Failed to load NEXT DevTools config: ${e.message || e.stack}`), { error: e });
 		return fallbackConfig;
 	}
 }
@@ -34032,7 +34032,7 @@ const configDefaults = Object.freeze({
 	customLogger: void 0,
 	clearScreen: true,
 	envDir: void 0,
-	envPrefix: "VITE_",
+	envPrefix: "NEXT_",
 	worker: {
 		format: "iife",
 		plugins: () => []
@@ -34107,7 +34107,7 @@ function getDefaultEnvironmentOptions(config) {
 	};
 }
 /**
-* Check and warn if `path` includes characters that don't work well in Vite,
+* Check and warn if `path` includes characters that don't work well in NEXT,
 * such as `#` and `?` and `*`.
 */
 function checkBadCharactersInPath(name, type, path, logger) {
@@ -34117,14 +34117,14 @@ function checkBadCharactersInPath(name, type, path, logger) {
 	if (path.includes("*")) badChars.push("*");
 	if (badChars.length > 0) {
 		const charString = badChars.map((c) => `"${c}"`).join(" and ");
-		logger.warn(import_picocolors.default.yellow(`${name} contains the ${charString} ${badChars.length > 1 ? "characters" : "character"} (${import_picocolors.default.cyan(path)}), which may not work when running Vite. Consider renaming the ${type} without the characters.`));
+		logger.warn(import_picocolors.default.yellow(`${name} contains the ${charString} ${badChars.length > 1 ? "characters" : "character"} (${import_picocolors.default.cyan(path)}), which may not work when running NEXT. Consider renaming the ${type} without the characters.`));
 	}
 }
 const clientAlias = [{
-	find: /^\/?@vite\/env/,
+	find: /^\/?@NEXT\/env/,
 	replacement: path.posix.join(FS_PREFIX, normalizePath(ENV_ENTRY))
 }, {
-	find: /^\/?@vite\/client/,
+	find: /^\/?@NEXT\/client/,
 	replacement: path.posix.join(FS_PREFIX, normalizePath(CLIENT_ENTRY))
 }];
 /**
@@ -34147,7 +34147,7 @@ function resolveResolveOptions(resolve, logger) {
 	const alias = normalizeAlias(mergeAlias(clientAlias, resolve?.alias || configDefaults.resolve.alias));
 	const preserveSymlinks = resolve?.preserveSymlinks ?? configDefaults.resolve.preserveSymlinks;
 	if (alias.some((a) => a.find === "/")) logger.warn(import_picocolors.default.yellow("`resolve.alias` contains an alias that maps `/`. This is not recommended as it can cause unexpected behavior when resolving paths."));
-	if (alias.some((a) => a.customResolver)) logger.warn(import_picocolors.default.yellow("`resolve.alias` contains an alias with `customResolver` option. This is deprecated and will be removed in Vite 9. Please use a custom plugin with a resolveId hook and `enforce: 'pre'` instead."));
+	if (alias.some((a) => a.customResolver)) logger.warn(import_picocolors.default.yellow("`resolve.alias` contains an alias with `customResolver` option. This is deprecated and will be removed in NEXT 9. Please use a custom plugin with a resolveId hook and `enforce: 'pre'` instead."));
 	return resolveEnvironmentResolveOptions(resolve, alias, preserveSymlinks, logger, void 0);
 }
 function resolveDepOptimizationOptions(optimizeDeps, preserveSymlinks, forceOptimizeDeps, consumer, logger) {
@@ -34161,7 +34161,7 @@ function resolveDepOptimizationOptions(optimizeDeps, preserveSymlinks, forceOpti
 	setupRollupOptionCompat(merged, "optimizeDeps");
 	const rolldownOptions = merged.rolldownOptions;
 	if (merged.esbuildOptions && Object.keys(merged.esbuildOptions).length > 0) {
-		logger.warn(import_picocolors.default.yellow("You or a plugin you are using have set `optimizeDeps.esbuildOptions` but this option is now deprecated. Vite now uses Rolldown to optimize the dependencies. Please use `optimizeDeps.rolldownOptions` instead."));
+		logger.warn(import_picocolors.default.yellow("You or a plugin you are using have set `optimizeDeps.esbuildOptions` but this option is now deprecated. NEXT now uses Rolldown to optimize the dependencies. Please use `optimizeDeps.rolldownOptions` instead."));
 		rolldownOptions.resolve ??= {};
 		rolldownOptions.output ??= {};
 		rolldownOptions.transform ??= {};
@@ -34273,8 +34273,8 @@ async function resolveConfig(inlineConfig, command, defaultMode = "development",
 		allowClearScreen: config.clearScreen,
 		customLogger: config.customLogger
 	});
-	const tsconfigPathsPlugin = userPlugins.find((p) => p.name === "vite-tsconfig-paths" || p.name === "vite-plugin-tsconfig-paths");
-	if (tsconfigPathsPlugin) logger.warnOnce(import_picocolors.default.yellow(`The plugin ${JSON.stringify(tsconfigPathsPlugin.name)} is detected. Vite now supports tsconfig paths resolution natively via the ${import_picocolors.default.bold("resolve.tsconfigPaths")} option. You can remove the plugin and set ${import_picocolors.default.bold("resolve.tsconfigPaths: true")} in your Vite config instead.`));
+	const tsconfigPathsPlugin = userPlugins.find((p) => p.name === "NEXT-tsconfig-paths" || p.name === "NEXT-plugin-tsconfig-paths");
+	if (tsconfigPathsPlugin) logger.warnOnce(import_picocolors.default.yellow(`The plugin ${JSON.stringify(tsconfigPathsPlugin.name)} is detected. NEXT now supports tsconfig paths resolution natively via the ${import_picocolors.default.bold("resolve.tsconfigPaths")} option. You can remove the plugin and set ${import_picocolors.default.bold("resolve.tsconfigPaths: true")} in your NEXT config instead.`));
 	const resolvedRoot = normalizePath(config.root ? path.resolve(config.root) : process.cwd());
 	checkBadCharactersInPath("The project root", "directory", resolvedRoot, logger);
 	const configEnvironmentsClient = config.environments.client;
@@ -34348,13 +34348,13 @@ async function resolveConfig(inlineConfig, command, defaultMode = "development",
 	let envDir = config.envFile === false ? false : config.envDir;
 	if (envDir !== false) envDir = config.envDir ? normalizePath(path.resolve(resolvedRoot, config.envDir)) : resolvedRoot;
 	const userEnv = loadEnv(mode, envDir, resolveEnvPrefix(config));
-	const userNodeEnv = process.env.VITE_USER_NODE_ENV;
+	const userNodeEnv = process.env.NEXT_USER_NODE_ENV;
 	if (!isNodeEnvSet && userNodeEnv) if (userNodeEnv === "development") process.env.NODE_ENV = "development";
-	else logger.warn(`NODE_ENV=${userNodeEnv} is not supported in the .env file. Only NODE_ENV=development is supported to create a development build of your project. If you need to set process.env.NODE_ENV, you can set it in the Vite config instead.`);
+	else logger.warn(`NODE_ENV=${userNodeEnv} is not supported in the .env file. Only NODE_ENV=development is supported to create a development build of your project. If you need to set process.env.NODE_ENV, you can set it in the NEXT config instead.`);
 	const isProduction = process.env.NODE_ENV === "production";
 	const resolvedBase = config.base === "" || config.base === "./" ? !isBuild || config.build?.ssr ? "/" : "./" : resolveBaseUrl(config.base, isBuild, logger);
 	const pkgDir = findNearestPackageData(resolvedRoot, packageCache)?.dir;
-	const cacheDir = normalizePath(config.cacheDir ? path.resolve(resolvedRoot, config.cacheDir) : pkgDir ? path.join(pkgDir, `node_modules/.vite`) : path.join(resolvedRoot, `.vite`));
+	const cacheDir = normalizePath(config.cacheDir ? path.resolve(resolvedRoot, config.cacheDir) : pkgDir ? path.join(pkgDir, `node_modules/.NEXT`) : path.join(resolvedRoot, `.NEXT`));
 	const assetsFilter = config.assetsInclude && (!Array.isArray(config.assetsInclude) || config.assetsInclude.length) ? createFilter$1(config.assetsInclude) : () => false;
 	const { publicDir } = config;
 	const resolvedPublicDir = publicDir !== false && publicDir !== "" ? normalizePath(path.resolve(resolvedRoot, typeof publicDir === "string" ? publicDir : configDefaults.publicDir)) : "";
@@ -34369,7 +34369,7 @@ async function resolveConfig(inlineConfig, command, defaultMode = "development",
 	let createUserWorkerPlugins = config.worker?.plugins;
 	if (Array.isArray(createUserWorkerPlugins)) {
 		createUserWorkerPlugins = () => config.worker?.plugins;
-		logger.warn(import_picocolors.default.yellow("worker.plugins is now a function that returns an array of plugins. Please update your Vite config accordingly.\n"));
+		logger.warn(import_picocolors.default.yellow("worker.plugins is now a function that returns an array of plugins. Please update your NEXT config accordingly.\n"));
 	}
 	const createWorkerPlugins = async function(bundleChain) {
 		const rawWorkerUserPlugins = (await asyncFlatten(createUserWorkerPlugins?.() || [])).filter(filterPlugin);
@@ -34539,22 +34539,22 @@ async function resolveConfig(inlineConfig, command, defaultMode = "development",
 		if (assetFileNamesList.length > 1) {
 			const firstAssetFileNames = assetFileNamesList[0];
 			if (assetFileNamesList.some((assetFileNames) => assetFileNames !== firstAssetFileNames)) resolved.logger.warn(import_picocolors.default.yellow(`
-assetFileNames isn't equal for every build.rollupOptions.output. A single pattern across all outputs is supported by Vite.
+assetFileNames isn't equal for every build.rollupOptions.output. A single pattern across all outputs is supported by NEXT.
 `));
 		}
 	}
 	if (config.legacy?.buildSsrCjsExternalHeuristics || config.ssr?.format === "cjs") resolved.logger.warn(import_picocolors.default.yellow(`
-(!) Experimental legacy.buildSsrCjsExternalHeuristics and ssr.format were be removed in Vite 5.
-    The only SSR Output format is ESM. Find more information at https://github.com/vitejs/vite/discussions/13816.
+(!) Experimental legacy.buildSsrCjsExternalHeuristics and ssr.format were be removed in NEXT 5.
+    The only SSR Output format is ESM. Find more information at https://github.com/NEXTjs/NEXT/discussions/13816.
 `));
 	const resolvedBuildOutDir = normalizePath(path.resolve(resolved.root, resolved.build.outDir));
 	if (isParentDirectory(resolvedBuildOutDir, resolved.root) || resolvedBuildOutDir === resolved.root) resolved.logger.warn(import_picocolors.default.yellow(`
-(!) build.outDir must not be the same directory of root or a parent directory of root as this could cause Vite to overwriting source files with build outputs.
+(!) build.outDir must not be the same directory of root or a parent directory of root as this could cause NEXT to overwriting source files with build outputs.
 `));
 	return resolved;
 }
 /**
-* Resolve base url. Note that some users use Vite to build for non-web targets like
+* Resolve base url. Note that some users use NEXT to build for non-web targets like
 * electron or expects to deploy
 */
 function resolveBaseUrl(base = configDefaults.base, isBuild, logger) {
@@ -34565,7 +34565,7 @@ function resolveBaseUrl(base = configDefaults.base, isBuild, logger) {
 	const isExternal = isExternalUrl(base);
 	if (!isExternal && base[0] !== "/") logger.warn(import_picocolors.default.yellow(import_picocolors.default.bold(`(!) "base" option should start with a slash.`)));
 	if (!isBuild || !isExternal) {
-		base = new URL(base, "http://vite.dev").pathname;
+		base = new URL(base, "http://NEXT.dev").pathname;
 		if (base[0] !== "/") base = "/" + base;
 	}
 	return base;
@@ -34649,10 +34649,10 @@ async function bundleAndLoadConfigFile(resolvedPath) {
 async function bundleConfigFile(fileName, isESM) {
 	let importMetaResolverRegistered = false;
 	const root = path.dirname(fileName);
-	const dirnameVarName = "__vite_injected_original_dirname";
-	const filenameVarName = "__vite_injected_original_filename";
-	const importMetaUrlVarName = "__vite_injected_original_import_meta_url";
-	const importMetaResolveVarName = "__vite_injected_original_import_meta_resolve";
+	const dirnameVarName = "__NEXT_injected_original_dirname";
+	const filenameVarName = "__NEXT_injected_original_filename";
+	const importMetaUrlVarName = "__NEXT_injected_original_import_meta_url";
+	const importMetaResolveVarName = "__NEXT_injected_original_import_meta_resolve";
 	const importMetaResolveRegex = /import\.meta\s*\.\s*resolve/;
 	const bundle = await rolldown({
 		input: fileName,
@@ -34682,7 +34682,7 @@ async function bundleConfigFile(fileName, isESM) {
 					const isImport = isESM || kind === "dynamic-import";
 					let idFsPath;
 					try {
-						idFsPath = nodeResolveWithVite(id, importer, {
+						idFsPath = nodeResolveWithNEXT(id, importer, {
 							root,
 							isRequire: !isImport
 						});
@@ -34690,9 +34690,9 @@ async function bundleConfigFile(fileName, isESM) {
 						if (!isImport) {
 							let canResolveWithImport = false;
 							try {
-								canResolveWithImport = !!nodeResolveWithVite(id, importer, { root });
+								canResolveWithImport = !!nodeResolveWithNEXT(id, importer, { root });
 							} catch {}
-							if (canResolveWithImport) throw new Error(`Failed to resolve ${JSON.stringify(id)}. This package is ESM only but it was tried to load by \`require\`. See https://vite.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`);
+							if (canResolveWithImport) throw new Error(`Failed to resolve ${JSON.stringify(id)}. This package is ESM only but it was tried to load by \`require\`. See https://NEXT.dev/guide/troubleshooting.html#this-package-is-esm-only for more details.`);
 						}
 						throw e;
 					}
@@ -34772,13 +34772,13 @@ async function loadConfigFromBundledFile(fileName, bundledCode, isESM) {
 	if (isESM) {
 		let nodeModulesDir = typeof process.versions.deno === "string" ? void 0 : findNearestNodeModules(path.dirname(fileName));
 		if (nodeModulesDir) try {
-			await fsp.mkdir(path.resolve(nodeModulesDir, ".vite-temp/"), { recursive: true });
+			await fsp.mkdir(path.resolve(nodeModulesDir, ".NEXT-temp/"), { recursive: true });
 		} catch (e) {
 			if (e.code === "EACCES") nodeModulesDir = void 0;
 			else throw e;
 		}
 		const hash = `timestamp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-		const tempFileName = nodeModulesDir ? path.resolve(nodeModulesDir, `.vite-temp/${path.basename(fileName)}.${hash}.mjs`) : `${fileName}.${hash}.mjs`;
+		const tempFileName = nodeModulesDir ? path.resolve(nodeModulesDir, `.NEXT-temp/${path.basename(fileName)}.${hash}.mjs`) : `${fileName}.${hash}.mjs`;
 		await fsp.writeFile(tempFileName, bundledCode);
 		try {
 			return (await import(pathToFileURL(tempFileName).href)).default;
@@ -34842,12 +34842,12 @@ function optimizeDepsDisabledBackwardCompatibility(resolved, optimizeDeps, optim
 			optimizeDeps.noDiscovery = true;
 			optimizeDeps.include = void 0;
 			if (commonjsPluginDisabled) resolved.build.commonjsOptions.include = void 0;
-			resolved.logger.warn(import_picocolors.default.yellow(`(!) Experimental ${optimizeDepsPath}optimizeDeps.disabled and deps pre-bundling during build were removed in Vite 5.1.
+			resolved.logger.warn(import_picocolors.default.yellow(`(!) Experimental ${optimizeDepsPath}optimizeDeps.disabled and deps pre-bundling during build were removed in NEXT 5.1.
     To disable the deps optimizer, set ${optimizeDepsPath}optimizeDeps.noDiscovery to true and ${optimizeDepsPath}optimizeDeps.include as undefined or empty.
     Please remove ${optimizeDepsPath}optimizeDeps.disabled from your config.
     ${commonjsPluginDisabled ? "Empty config.build.commonjsOptions.include will be ignored to support CJS during build. This config should also be removed." : ""}
   `));
-		} else if (optimizeDepsDisabled === false || optimizeDepsDisabled === "build") resolved.logger.warn(import_picocolors.default.yellow(`(!) Experimental ${optimizeDepsPath}optimizeDeps.disabled and deps pre-bundling during build were removed in Vite 5.1.
+		} else if (optimizeDepsDisabled === false || optimizeDepsDisabled === "build") resolved.logger.warn(import_picocolors.default.yellow(`(!) Experimental ${optimizeDepsPath}optimizeDeps.disabled and deps pre-bundling during build were removed in NEXT 5.1.
     Setting it to ${optimizeDepsDisabled} now has no effect.
     Please remove ${optimizeDepsPath}optimizeDeps.disabled from your config.
   `));

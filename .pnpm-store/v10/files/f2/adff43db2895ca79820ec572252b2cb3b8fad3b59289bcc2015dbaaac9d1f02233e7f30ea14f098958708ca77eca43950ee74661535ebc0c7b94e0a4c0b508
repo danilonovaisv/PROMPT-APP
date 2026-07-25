@@ -7686,7 +7686,7 @@ async function loadRouteModule(route, routeModulesCache) {
   }
   try {
     let routeModule = await Promise.resolve().then(() => _interopRequireWildcard(require(
-      /* @vite-ignore */
+      /* @NEXT-ignore */
       /* webpackIgnore: true */
       route.module
     )));
@@ -8068,7 +8068,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
     }
     function prefetchModule(modulePath) {
       Promise.resolve().then(() => _interopRequireWildcard(require(
-        /* @vite-ignore */
+        /* @NEXT-ignore */
         /* webpackIgnore: true */
         modulePath
       )));
@@ -8215,7 +8215,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
       dataRoute.lazy = {
         loader: route.hasClientLoader ? async () => {
           let { clientLoader } = route.clientLoaderModule ? await Promise.resolve().then(() => _interopRequireWildcard(require(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientLoaderModule
           ))) : await getLazyRoute();
@@ -8230,7 +8230,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
         } : void 0,
         action: route.hasClientAction ? async () => {
           let clientActionPromise = route.clientActionModule ? Promise.resolve().then(() => _interopRequireWildcard(require(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientActionModule
           ))) : getLazyRoute();
@@ -8247,7 +8247,7 @@ function createClientRoutes(manifest, routeModulesCache, initialState, ssr, isSp
         } : void 0,
         middleware: route.hasClientMiddleware ? async () => {
           let { clientMiddleware } = route.clientMiddlewareModule ? await Promise.resolve().then(() => _interopRequireWildcard(require(
-            /* @vite-ignore */
+            /* @NEXT-ignore */
             /* webpackIgnore: true */
             route.clientMiddlewareModule
           ))) : await getLazyRoute();
