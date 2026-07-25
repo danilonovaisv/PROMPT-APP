@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.app.json && vite build",
-    "update": "(pnpm outdated || [ $? -eq 1 ]) && pnpm dlx npm-check-updates -u && pnpm install",
+    "update": "(pnpm outdated || [ $? -eq 1 ]) && pnpm dlx npm-check-updates -u -x typescript && pnpm install",
     "preview": "vite preview",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -112,7 +112,7 @@
     "rollup-plugin-visualizer": "^7.0.1",
     "supabase": "^2.109.1",
     "ts-jest": "^29.4.12",
-    "typescript": "5.9.3",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.65.0",
     "vite": "^8.1.5"
   }
