@@ -50,8 +50,8 @@ raw JSON
 |---|---|---|
 | `prompt-app-import` | Sim | Sem mudança estrutural |
 | `prompt-app-bulk-export` | Sim | Envelope legado -> canônico |
-| `MENU-TEMPLATE.json` legado | Sim | `menuDefinitions -> context_menus` |
-| `PROMPT-TEMPLATE.json` legado | Sim | `menu_definitions -> context_menus` |
+| arquivo legado com `menuDefinitions` | Sim | `menuDefinitions -> context_menus` |
+| prompt legado com `menu_definitions` | Sim | `menu_definitions -> context_menus` |
 | prompt único na raiz | Sim | Vira `prompts[0]` |
 | array raiz de prompts | Sim | Vira `prompts[]` |
 
@@ -81,7 +81,7 @@ raw JSON
     "system_role": "Você é um consultor estratégico.",
     "task": "Analise {{memory.nome_empresa}}.",
     "context": "Considere o segmento {{memory.segmento_empresa}}.",
-    "user_scene_description": "",
+    "user_scene_description": "Informe os dados da empresa e o objetivo específico da análise.",
     "constraints": [],
     "negative_prompt": [],
     "few_shot_examples": []
@@ -125,7 +125,8 @@ raw JSON
   - `skip`
 - `preserve_existing` é o default mais seguro.
 - `skip` mantém a definição no template, mas não grava valor em `promptMemory`.
-- Placeholders canônicos usam `{{memory.key}}`.
+- Em templates executáveis, referências canônicas usam o namespace `memory` e uma `key` declarada.
+- Em documentação abstrata, represente a sintaxe como `memory.<key>` para não criar um placeholder executável acidental.
 - Placeholders legados `{{key}}` continuam aceitos em modo compatível.
 - Se uma memória obrigatória estiver ausente, a compilação do prompt falha.
 
@@ -147,3 +148,4 @@ O preview agora expõe:
 - O sync continua pendente para Supabase quando existir sessão.
 - Templates antigos continuam importáveis.
 - O export padrão agora usa `prompt-app-import`.
+- Em novos artefatos, `exportedAt` deve ser recalculado com a data real da geração em ISO 8601 e UTC.

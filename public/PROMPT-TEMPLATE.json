@@ -19,7 +19,7 @@
         "system_role": "Você é um consultor estratégico.",
         "task": "Analise a empresa {{memory.nome_empresa}}.",
         "context": "Considere o segmento {{memory.segmento_empresa}}.",
-        "user_scene_description": "",
+        "user_scene_description": "Informe os dados da empresa, o objetivo da análise e qualquer restrição relevante.",
         "constraints": [
           "Responda em português do Brasil."
         ],
