@@ -91,16 +91,32 @@ async function hydrateAssetUpdates(
 
   const [catRes, promptRes, menuRes, memoryRes] = await Promise.all([
     categoryIds.length > 0
-      ? supabase.from("categories").select("*").eq("user_id", userId).in("id", categoryIds)
+      ? supabase
+          .from("categories")
+          .select("id, name, color, icon, is_deleted, created_at, updated_at, user_id")
+          .eq("user_id", userId)
+          .in("id", categoryIds)
       : Promise.resolve({ data: [] as RemoteCategory[], error: null }),
     promptIds.length > 0
-      ? supabase.from("prompts").select("*").eq("user_id", userId).in("id", promptIds)
+      ? supabase
+          .from("prompts")
+          .select("id, title, category_id, schema_version, output_format, language, prompt_payload_jsonb, selection_payload_jsonb, compiled_payload_jsonb, few_shot_examples, selected_menu_ids, is_deleted, created_at, updated_at, user_id")
+          .eq("user_id", userId)
+          .in("id", promptIds)
       : Promise.resolve({ data: [] as RemotePrompt[], error: null }),
     menuIds.length > 0
-      ? supabase.from("context_menus").select("*").eq("user_id", userId).in("id", menuIds)
+      ? supabase
+          .from("context_menus")
+          .select("id, menu_id, menu_name, description, selection_mode, options, is_deleted, created_at, updated_at, user_id")
+          .eq("user_id", userId)
+          .in("id", menuIds)
       : Promise.resolve({ data: [] as RemoteContextMenu[], error: null }),
     memoryIds.length > 0
-      ? supabase.from("prompt_memory_context").select("*").eq("user_id", userId).in("id", memoryIds)
+      ? supabase
+          .from("prompt_memory_context")
+          .select("id, template_id, key, value, is_deleted, created_at, updated_at, user_id")
+          .eq("user_id", userId)
+          .in("id", memoryIds)
       : Promise.resolve({ data: [] as RemotePromptMemory[], error: null }),
   ]);
 
@@ -828,12 +844,58 @@ async function pushPendingChanges(): Promise<{ pushed: number }> {
   return { pushed: pushedCount };
 }
 
+async function getLastLocalWatermark(): Promise<string | null> {
+  try {
+    const [cat, prompt, menu, memory] = await Promise.all([
+      db.categories.orderBy("updatedAt").last(),
+      db.prompts.orderBy("updatedAt").last(),
+      db.contextMenus.orderBy("updatedAt").last(),
+      db.promptMemory.orderBy("updatedAt").last(),
+    ]);
+
+    const timestamps = [
+      cat?.updatedAt ? new Date(cat.updatedAt).getTime() : 0,
+      prompt?.updatedAt ? new Date(prompt.updatedAt).getTime() : 0,
+      menu?.updatedAt ? new Date(menu.updatedAt).getTime() : 0,
+      memory?.updatedAt ? new Date(memory.updatedAt).getTime() : 0,
+    ].filter((t) => t > 0 && !isNaN(t));
+
+    if (timestamps.length === 0) return null;
+    return new Date(Math.max(...timestamps)).toISOString();
+  } catch (error) {
+    console.warn("Aviso ao buscar watermark local:", error);
+    return null;
+  }
+}
+
 /**
- * Verifica se há atualizações disponíveis
+ * Verifica se há atualizações disponíveis na nuvem usando consulta incremental por watermark
  */
 export async function checkForUpdates(): Promise<boolean> {
-  const conflicts = await detectConflicts();
-  return conflicts.length > 0;
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return false;
+
+  const userId = session.user.id;
+  const watermark = await getLastLocalWatermark();
+
+  if (!watermark) {
+    const { data } = await supabase.from("prompts").select("id").eq("user_id", userId).limit(1);
+    return (data || []).length > 0;
+  }
+
+  const [catCheck, promptCheck, menuCheck, memoryCheck] = await Promise.all([
+    supabase.from("categories").select("id").eq("user_id", userId).gt("updated_at", watermark).limit(1),
+    supabase.from("prompts").select("id").eq("user_id", userId).gt("updated_at", watermark).limit(1),
+    supabase.from("context_menus").select("id").eq("user_id", userId).gt("updated_at", watermark).limit(1),
+    supabase.from("prompt_memory_context").select("id").eq("user_id", userId).gt("updated_at", watermark).limit(1),
+  ]);
+
+  return (
+    (catCheck.data?.length ?? 0) > 0 ||
+    (promptCheck.data?.length ?? 0) > 0 ||
+    (menuCheck.data?.length ?? 0) > 0 ||
+    (memoryCheck.data?.length ?? 0) > 0
+  );
 }
 
 /**

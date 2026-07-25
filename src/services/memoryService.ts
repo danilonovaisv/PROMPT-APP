@@ -145,8 +145,10 @@ export async function syncMemory(templateId: string, memory: MemoryMap): Promise
       .equals(templateId)
       .toArray();
 
-    if (allLocalRecords.length > 0) {
-      const upsertPayload = allLocalRecords.map(record => ({
+    const pendingRecords = allLocalRecords.filter(record => record.syncStatus !== 'synced');
+
+    if (pendingRecords.length > 0) {
+      const upsertPayload = pendingRecords.map(record => ({
         user_id: user.id,
         template_id: templateId,
         key: record.key,
@@ -161,9 +163,9 @@ export async function syncMemory(templateId: string, memory: MemoryMap): Promise
         .upsert(upsertPayload, { onConflict: 'user_id,template_id,key' });
 
       if (upsertError) throw upsertError;
-      
+
       // Atualiza local para 'synced'
-      const ids = allLocalRecords.map(r => r.id!).filter(id => id !== undefined);
+      const ids = pendingRecords.map(r => r.id!).filter(id => id !== undefined);
       await db.promptMemory.bulkUpdate(ids.map(id => ({
         key: id,
         changes: { syncStatus: 'synced' }

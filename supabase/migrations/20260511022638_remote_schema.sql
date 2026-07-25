@@ -10,11 +10,11 @@ drop policy "context_menus_select" on "public"."context_menus";
 
 drop policy "memory_select" on "public"."prompt_memory_context";
 
-drop type "public"."http_header";
+-- drop type if exists "public"."http_header" cascade;
 
-drop type "public"."http_request";
+-- drop type if exists "public"."http_request" cascade;
 
-drop type "public"."http_response";
+-- drop type if exists "public"."http_response" cascade;
 
 drop index if exists "public"."prompts_compiled_payload_gin_idx";
 

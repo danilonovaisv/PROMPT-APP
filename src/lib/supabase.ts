@@ -3,6 +3,7 @@ import {
   getSupabaseConfigErrorMessage,
   resolveSupabaseConfig,
 } from "@/lib/supabaseConfig";
+import type { Database } from "@/lib/supabase.types";
 
 // @ts-expect-error - import.meta.env is provided by Vite, but causes issues in Jest/ts-jest
 const env = (import.meta as unknown as { env: Record<string, string | undefined> }).env || process.env;
@@ -26,7 +27,7 @@ export function assertSupabaseConfigured() {
   }
 }
 
-export const supabase = createClient(
+export const supabase = createClient<Database>(
   resolvedSupabaseConfig.url || "https://placeholder.supabase.co",
   resolvedSupabaseConfig.anonKey || "placeholder",
 );

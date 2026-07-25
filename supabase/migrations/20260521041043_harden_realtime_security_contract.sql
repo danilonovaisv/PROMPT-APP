@@ -10,6 +10,11 @@ for select
 to authenticated
 using (((select auth.uid()) = user_id) and (is_deleted = false));
 
-revoke execute on function public.broadcast_user_table_changes() from anon;
-revoke execute on function public.broadcast_user_table_changes() from authenticated;
-revoke execute on function public.broadcast_user_table_changes() from public;
+do $$
+begin
+  revoke execute on function public.broadcast_user_table_changes() from anon;
+  revoke execute on function public.broadcast_user_table_changes() from authenticated;
+  revoke execute on function public.broadcast_user_table_changes() from public;
+exception
+  when undefined_function then null;
+end $$;
