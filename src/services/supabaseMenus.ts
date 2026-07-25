@@ -31,7 +31,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
             .update(payload)
             .eq('id', input.remoteId)
             .eq('user_id', user.id)
-            .select()
+            .select('id')
             .single();
 
         if (error) throw error;
@@ -44,7 +44,7 @@ export async function saveMenuToSupabase(input: Partial<ContextMenu>) {
         const { data, error } = await supabase
             .from('context_menus')
             .upsert(insertPayload, { onConflict: 'user_id,menu_id' })
-            .select()
+            .select('id')
             .single();
 
         if (error) throw error;
@@ -79,7 +79,7 @@ export async function saveMenusToSupabaseBulk(inputs: Partial<ContextMenu>[]) {
     const { data, error } = await supabase
         .from('context_menus')
         .upsert(payloads, { onConflict: 'user_id,menu_id' })
-        .select();
+        .select('id, menu_id');
 
     if (error) throw error;
     return data;

@@ -67,7 +67,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
             .update(payload)
             .eq('id', input.remoteId)
             .eq('user_id', user.id)
-            .select()
+            .select('id')
             .single();
 
         if (error) throw error;
@@ -81,7 +81,7 @@ export async function savePromptToSupabase(input: Partial<Prompt>) {
     const { data, error } = await supabase
         .from('prompts')
         .insert(insertPayload)
-        .select()
+        .select('id')
         .single();
 
     if (error) throw error;

@@ -22,7 +22,7 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
             .update(updatePayload)
             .eq('id', input.remoteId)
             .eq('user_id', user.id)
-            .select()
+            .select('id')
             .single();
 
         if (error) throw error;
@@ -41,7 +41,7 @@ export async function saveCategoryToSupabase(input: Partial<Category>) {
         const { data, error } = await supabase
             .from('categories')
             .insert(insertPayload)
-            .select()
+            .select('id')
             .single();
 
         if (error) throw error;
