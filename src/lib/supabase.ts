@@ -5,10 +5,9 @@ import {
 } from "@/lib/supabaseConfig";
 import type { Database } from "@/lib/supabase.types";
 
-// @ts-expect-error - import.meta.env is provided by VITE, but causes issues in Jest/ts-jest
 const env =
-  (import.meta as unknown as { env: Record<string, string | undefined> }).env ||
-  process.env;
+  (import.meta as unknown as { env?: Record<string, string | undefined> }).env ||
+  ((typeof process !== "undefined" ? process.env : {}) as Record<string, string | undefined>);
 const resolvedSupabaseConfig = resolveSupabaseConfig(env);
 
 export const isSupabaseConfigured = resolvedSupabaseConfig.isConfigured;

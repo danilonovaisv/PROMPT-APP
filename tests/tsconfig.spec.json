@@ -2,7 +2,7 @@
   "extends": "../tsconfig.app.json",
   "compilerOptions": {
     "types": [
-      "NEXTst/globals",
+      "@jest/globals",
       "node"
     ]
   },

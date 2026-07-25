@@ -63,12 +63,12 @@ minimumReleaseAgeExclude:
   - "@workflow/cli@4.3.2"
   - "@workflow/core@4.6.2"
   - "@workflow/nest@4.0.14"
-  - "@workflow/VITE@4.1.2"
+  - "@workflow/next@4.1.2"
   - "@workflow/nitro@4.1.4"
   - "@workflow/nuxt@4.0.14"
   - "@workflow/rollup@4.0.13"
   - "@workflow/sveltekit@4.0.13"
-  - "@workflow/VITE@4.0.13"
+  - "@workflow/vite@4.0.13"
   - "@workflow/web@4.1.14"
   - netlify-cli@27.0.0
   - playwright-core@1.62.0

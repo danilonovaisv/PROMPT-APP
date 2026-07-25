@@ -22,7 +22,8 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
         "types": [
-            "NEXT/client"
+            "vite/client",
+            "node"
         ],
         "paths": {
             "@/*": [

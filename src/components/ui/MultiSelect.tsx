@@ -250,9 +250,9 @@ const MultiSelectItem = React.forwardRef<
       onClick?.(e as any)
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
-      const VITESibling = e.currentTarget.VITEElementSibling as HTMLElement | null
-      if (VITESibling && VITESibling.classList.contains('multi-select__option')) {
-        VITESibling.focus()
+      const nextSibling = e.currentTarget.nextElementSibling as HTMLElement | null
+      if (nextSibling && nextSibling.classList.contains('multi-select__option')) {
+        nextSibling.focus()
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()

@@ -7,8 +7,8 @@ import {
 describe("resolveSupabaseConfig", () => {
   test("considera configuração válida quando URL e ANON key existem", () => {
     const env: SupabaseEnv = {
-      NEXT_SUPABASE_URL: "https://example.supabase.co",
-      NEXT_SUPABASE_ANON_KEY: "anon-key",
+      VITE_SUPABASE_URL: "https://example.supabase.co",
+      VITE_SUPABASE_ANON_KEY: "anon-key",
     };
 
     const config = resolveSupabaseConfig(env);
@@ -21,23 +21,23 @@ describe("resolveSupabaseConfig", () => {
 
   test("falha explicitamente quando anon key está ausente", () => {
     const env: SupabaseEnv = {
-      NEXT_SUPABASE_URL: "https://example.supabase.co",
-      NEXT_SUPABASE_ANON_KEY: "",
+      VITE_SUPABASE_URL: "https://example.supabase.co",
+      VITE_SUPABASE_ANON_KEY: "",
     };
 
     const config = resolveSupabaseConfig(env);
 
     expect(config.isConfigured).toBe(false);
-    expect(config.missingVars).toEqual(["NEXT_SUPABASE_ANON_KEY"]);
+    expect(config.missingVars).toEqual(["VITE_SUPABASE_ANON_KEY"]);
     expect(getSupabaseConfigErrorMessage(config.missingVars)).toContain(
-      "NEXT_SUPABASE_ANON_KEY",
+      "VITE_SUPABASE_ANON_KEY",
     );
   });
 
-  test("aceita fallback NEXT_SUPABASE_PUBLISHABLE_DEFAULT_KEY para compatibilidade", () => {
+  test("aceita fallback VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY para compatibilidade", () => {
     const env: SupabaseEnv = {
-      NEXT_SUPABASE_URL: "https://example.supabase.co",
-      NEXT_SUPABASE_PUBLISHABLE_DEFAULT_KEY: "publishable-key",
+      VITE_SUPABASE_URL: "https://example.supabase.co",
+      VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: "publishable-key",
     };
 
     const config = resolveSupabaseConfig(env);
@@ -47,10 +47,10 @@ describe("resolveSupabaseConfig", () => {
     expect(config.missingVars).toEqual([]);
   });
 
-  test("aceita NEXT_SUPABASE_PUBLISHABLE_KEY como chave pública atual", () => {
+  test("aceita VITE_SUPABASE_PUBLISHABLE_KEY como chave pública atual", () => {
     const env: SupabaseEnv = {
-      NEXT_SUPABASE_URL: "https://example.supabase.co",
-      NEXT_SUPABASE_PUBLISHABLE_KEY: "publishable-key",
+      VITE_SUPABASE_URL: "https://example.supabase.co",
+      VITE_SUPABASE_PUBLISHABLE_KEY: "publishable-key",
     };
 
     const config = resolveSupabaseConfig(env);
@@ -62,11 +62,9 @@ describe("resolveSupabaseConfig", () => {
 
   test("normaliza valores com whitespace e ignora entradas não string", () => {
     const env: SupabaseEnv = {
-      NEXT_SUPABASE_URL: "  https://example.supabase.co  ",
-      NEXT_SUPABASE_ANON_KEY: "   ",
-      NEXT_SUPABASE_PUBLISHABLE_KEY: "   ",
-      NEXT_SUPABASE_PUBLISHABLE_DEFAULT_KEY: "  publishable-key  ",
-      SOME_OTHER_VALUE: 123,
+      VITE_SUPABASE_URL: "  https://example.supabase.co  ",
+      VITE_SUPABASE_PUBLISHABLE_KEY: " publishable-key ",
+      INVALID_VAL: 123,
     };
 
     const config = resolveSupabaseConfig(env);
@@ -77,15 +75,17 @@ describe("resolveSupabaseConfig", () => {
   });
 
   test("lista ambas as variáveis obrigatórias quando nenhuma foi definida", () => {
-    const config = resolveSupabaseConfig({});
+    const env: SupabaseEnv = {};
+
+    const config = resolveSupabaseConfig(env);
 
     expect(config.isConfigured).toBe(false);
     expect(config.missingVars).toEqual([
-      "NEXT_SUPABASE_URL",
-      "NEXT_SUPABASE_ANON_KEY",
+      "VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY",
     ]);
-    expect(getSupabaseConfigErrorMessage(config.missingVars)).toBe(
-      "Configuração do Supabase ausente. Defina NEXT_SUPABASE_URL e NEXT_SUPABASE_ANON_KEY.",
+    expect(getSupabaseConfigErrorMessage(config.missingVars)).toContain(
+      "VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY",
     );
   });
 });

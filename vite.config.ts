@@ -1,6 +1,6 @@
-import { sentryVITEPlugin } from "@sentry/VITE-plugin";
-import { defineConfig } from "VITE";
-import react from "@VITEjs/plugin-react";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 // Audit Fix #13: Bundle analysis
 // Ativa com: ANALYZE=true pnpm build
@@ -13,7 +13,7 @@ const shouldEnableSentryBuild = process.env.CI === "true" ||
 async function getPlugins() {
   const base = [
     react(),
-    sentryVITEPlugin({
+    sentryVitePlugin({
       org: "dannovaisv",
       project: "javascript-react",
       disable: !shouldEnableSentryBuild,

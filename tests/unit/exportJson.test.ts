@@ -83,7 +83,7 @@ describe("getTemplateFile", () => {
     const json = JSON.parse(text);
 
     // Verify it matches the schema
-    const result = PromptContractSchema.safeParse(json);
+    const result = PromptContractSchema.safeParse(json.prompts?.[0]);
     if (!result.success) {
       console.error(JSON.stringify(result.error.format(), null, 2));
     }

@@ -5,10 +5,10 @@
   "packageManager": "pnpm@11.17.0",
   "type": "module",
   "scripts": {
-    "dev": "VITE",
-    "build": "tsc -p tsconfig.app.json && VITE build",
+    "dev": "vite",
+    "build": "tsc -p tsconfig.app.json && vite build",
     "update": "(pnpm outdated || [ $? -eq 1 ]) && pnpm dlx npm-check-updates -u && pnpm install",
-    "preview": "VITE preview",
+    "preview": "vite preview",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -24,7 +24,7 @@
     "setup:cloud-env": "bash scripts/setup-cloud-env.sh",
     "clean": "pnpm clean:build && pnpm clean:cache && pnpm clean:reports",
     "clean:build": "rm -rf dist",
-    "clean:cache": "rm -rf node_modules/.cache node_modules/.VITE .eslintcache pnpm-lock.yaml",
+    "clean:cache": "rm -rf node_modules/.cache node_modules/.vite .eslintcache pnpm-lock.yaml",
     "clean:reports": "rm -rf coverage playwright-report test-results",
     "clean:modules": "rm -rf node_modules",
     "clean:reset": "pnpm clean && pnpm clean:modules && pnpm store prune && pnpm install",
@@ -35,7 +35,7 @@
       "update",
       "outdated",
       "pnpm",
-      "VITE",
+      "vite",
       "tsconfig",
       "noEmit",
       "drizzle",
@@ -66,12 +66,12 @@
   },
   "dependencies": {
     "@netlify/neon": "^0.1.2",
-    "@netlify/VITE-plugin": "^2.12.9",
+    "@netlify/vite-plugin": "^2.12.9",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-select": "^2.3.7",
     "@sentry/browser": "^10.68.0",
     "@sentry/react": "^10.68.0",
-    "@sentry/VITE-plugin": "^5.4.0",
+    "@sentry/vite-plugin": "^5.4.0",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.8",
     "dexie": "^4.4.4",
@@ -98,7 +98,7 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.65.0",
-    "@VITEjs/plugin-react": "^6.0.4",
+    "@vitejs/plugin-react": "^6.0.4",
     "drizzle-kit": "^0.31.10",
     "eslint": "^10.8.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -114,6 +114,6 @@
     "ts-jest": "^29.4.12",
     "typescript": "5.8.2",
     "typescript-eslint": "^8.65.0",
-    "VITE": "^8.1.5"
+    "vite": "^8.1.5"
   }
 }
