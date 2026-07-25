@@ -1,0 +1,490 @@
+{
+  "timestamp": "2026-07-25T22:48:55.907Z",
+  "metrics": {
+    "pagesCount": 9,
+    "componentsCount": 22,
+    "hooksCount": 5,
+    "servicesCount": 19,
+    "utilsCount": 22,
+    "contextsCount": 5,
+    "brokenLinksCount": 95
+  },
+  "files": {
+    "pages": [
+      "AboutPage.tsx",
+      "CategoryManagerPage.tsx",
+      "CategoryPage.tsx",
+      "ContactPage.tsx",
+      "EditorPage.tsx",
+      "HomePage.tsx",
+      "MenuManagerPage.tsx",
+      "NotFoundPage.tsx",
+      "PrivacyPage.tsx"
+    ],
+    "components": [
+      "AuthModal.tsx",
+      "Breadcrumb.tsx",
+      "CategoryCard.tsx",
+      "CloudSyncItem.tsx",
+      "ErrorBoundary.tsx",
+      "ImportExportModal.tsx",
+      "ImportMenusModal.tsx",
+      "Layout.tsx",
+      "PromptCard.tsx",
+      "SEO.tsx",
+      "SkeletonLoader.tsx",
+      "editor/EditorDefinitionForm.tsx",
+      "editor/EditorMetaForm.tsx",
+      "editor/EditorPlayground.tsx",
+      "editor/EditorPreviewModal.tsx",
+      "layout/Header.tsx",
+      "menu-manager/MenuCard.tsx",
+      "menu-manager/MenuForm.tsx",
+      "menu-manager/MenuOptionEditor.tsx",
+      "ui/MultiSelect.tsx",
+      "ui/MultiSelectDemo.tsx",
+      "ui/checkbox.tsx"
+    ],
+    "hooks": [
+      "useAccessibleModal.ts",
+      "useCloudSync.ts",
+      "useConfirm.ts",
+      "useDebounce.ts",
+      "useSearchFilter.ts"
+    ],
+    "services": [
+      "assetManager.ts",
+      "auditResourceContent.ts",
+      "autoSync.ts",
+      "contextMenuSync.ts",
+      "importService.ts",
+      "memoryService.ts",
+      "realtimeService.ts",
+      "storage/dexieMemory.ts",
+      "storage/localMemory.ts",
+      "supabaseCategories.ts",
+      "supabaseMenus.ts",
+      "supabasePrompts.ts",
+      "sync/categorySync.ts",
+      "sync/memorySync.ts",
+      "sync/menuSync.ts",
+      "sync/promptSync.ts",
+      "sync/utils.ts",
+      "syncService.ts",
+      "syncStatus.ts"
+    ],
+    "utils": [
+      "__tests__/promptArtifacts.test.ts",
+      "backupManager.d.ts",
+      "backupManager.ts",
+      "batchingUtils.ts",
+      "constants.d.ts",
+      "constants.ts",
+      "contextMenuOptions.ts",
+      "crypto.ts",
+      "exportJson.d.ts",
+      "exportJson.ts",
+      "importJson.d.ts",
+      "importMenusJson.d.ts",
+      "importMenusJson.ts",
+      "logger.ts",
+      "menuValidation.ts",
+      "normalizeFewShot.d.ts",
+      "normalizeFewShot.ts",
+      "promptArtifacts.ts",
+      "routeMetadata.ts",
+      "schemaCompatibility.ts",
+      "schemaValidation.ts",
+      "templateMigration.ts"
+    ],
+    "contexts": [
+      "CloudSyncContext.shared.ts",
+      "CloudSyncContext.tsx",
+      "ConfirmContext.tsx",
+      "ConfirmProvider.tsx",
+      "ToastContext.tsx"
+    ],
+    "brokenLinks": [
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/GPT-AGENT-SELF-CONFIG-PROMPT.md",
+        "link": "URL_REAL_DO_ARQUIVO"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/package.json"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/main.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/VITE.config.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/db/database.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/EditorPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/autoSync.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/contextMenuSync.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/utils/backupManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/tests/unit/autoSync.test.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/tests/unit/syncService.test.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/autoSync.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/hooks/useAccessibleModal.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/context/ToastContext.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/ImportExportModal.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/tests/unit/useAccessibleModal.test.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/models/types.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/models/promptSchema.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/lib/supabase.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/tests/unit/schemaCompatibility.test.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/HomePage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/AboutPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/ContactPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/PrivacyPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/VITE.config.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audit_plan_prompt_app.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/package.json"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/HomePage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/AboutPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/ContactPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/pages/PrivacyPage.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/App.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/autoSync.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/hooks/useAccessibleModal.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/context/ToastContext.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/ImportExportModal.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/realtimeService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/assetManager.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/importService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/index.html"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/public/robots.txt"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/public/sitemap.xml"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/index.html"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/netlify.toml"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit-evidence.md"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/services/syncService.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/index.html"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/src/components/SEO.tsx"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/NEXT.config.ts"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/public/robots.txt"
+      },
+      {
+        "file": "/Users/PROJETOS-DEV/PROMPT-APP/docs/audits/2026-04-08-prompt-app-runtime-audit.md",
+        "link": "/Users/PROJETOS%20DEV/PROMPT-APP/public/sitemap.xml"
+      }
+    ]
+  }
+}

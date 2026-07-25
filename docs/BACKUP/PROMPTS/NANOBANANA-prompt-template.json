@@ -3,57 +3,245 @@
   "version": "3.0.0",
   "format": "prompt-app-import",
   "schemaVersion": "1.1.0",
-  "exportedAt": "2026-07-25T09:10:11Z",
-  "context_menus": [],
+  "exportedAt": "2026-07-25T19:24:48Z",
+  "context_menus": [
+    {
+      "menu_id": "nanobanana_recriar_imagem_compiler_formato_imagem",
+      "menu_name": "NANOBANANA_RECRIAR_IMAGEM_COMPILER - Formato da Imagem",
+      "description": "Define a proporção da imagem.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "1:1",
+          "value": "1_1",
+          "description": "Quadrado",
+          "sub_options": []
+        },
+        {
+          "label": "4:5",
+          "value": "4_5",
+          "description": "Retrato",
+          "sub_options": []
+        },
+        {
+          "label": "9:16",
+          "value": "9_16",
+          "description": "Stories/Reels",
+          "sub_options": []
+        },
+        {
+          "label": "16:9",
+          "value": "16_9",
+          "description": "Paisagem",
+          "sub_options": []
+        },
+        {
+          "label": "21:9",
+          "value": "21_9",
+          "description": "Cinema",
+          "sub_options": []
+        },
+        {
+          "label": "A4 Vertical",
+          "value": "a4_vertical",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "A4 Horizontal",
+          "value": "a4_horizontal",
+          "description": "",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nanobanana_recriar_imagem_compiler_tipo_imagem",
+      "menu_name": "NANOBANANA_RECRIAR_IMAGEM_COMPILER - Tipo de Imagem",
+      "description": "Tipo principal da imagem.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Personagem",
+          "value": "personagem",
+          "description": "",
+          "sub_options": [
+            {
+              "label": "Retrato",
+              "value": "retrato",
+              "description": ""
+            },
+            {
+              "label": "Meio Corpo",
+              "value": "meio_corpo",
+              "description": ""
+            },
+            {
+              "label": "Corpo Inteiro",
+              "value": "corpo_inteiro",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "label": "Cena",
+          "value": "cena",
+          "description": "",
+          "sub_options": [
+            {
+              "label": "Interna",
+              "value": "interna",
+              "description": ""
+            },
+            {
+              "label": "Externa",
+              "value": "externa",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "label": "Produto",
+          "value": "produto",
+          "description": "",
+          "sub_options": [
+            {
+              "label": "Packshot",
+              "value": "packshot",
+              "description": ""
+            },
+            {
+              "label": "Lifestyle",
+              "value": "lifestyle",
+              "description": ""
+            },
+            {
+              "label": "Publicidade",
+              "value": "advertising",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "label": "Photoshooting",
+          "value": "photoshooting",
+          "description": "",
+          "sub_options": [
+            {
+              "label": "Fashion",
+              "value": "fashion",
+              "description": ""
+            },
+            {
+              "label": "Beauty",
+              "value": "beauty",
+              "description": ""
+            },
+            {
+              "label": "Editorial",
+              "value": "editorial",
+              "description": ""
+            }
+          ]
+        },
+        {
+          "label": "Logo",
+          "value": "logo",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Mockup",
+          "value": "mockup",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Ilustração",
+          "value": "illustration",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Concept Art",
+          "value": "concept_art",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetura",
+          "value": "architecture",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Veículo",
+          "value": "vehicle",
+          "description": "",
+          "sub_options": []
+        },
+        {
+          "label": "Objeto",
+          "value": "object",
+          "description": "",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
   "prompts": [
     {
       "meta": {
-        "template_id": "nanobanana_json_prompt_architect",
-        "template_name": "Nano Banana JSON Prompt Architect",
-        "template_type": "generic_prompt",
+        "template_id": "nanobanana_recriar_imagem_compiler",
+        "template_name": "Nano Banana - Prompt Compiler para Recriação de Imagens",
+        "template_type": "image_generation",
         "schema_version": "1.1.0",
         "language": "pt-BR",
-        "status": "draft"
+        "status": "active"
       },
       "prompt_definition": {
-        "system_role": "Você é um Arquiteto Sênior de Prompts especializado no Nano Banana (Gemini Image). Sua função é analisar imagens de referência enviadas pelo usuário e produzir exclusivamente um prompt JSON em inglês, otimizado para geração e edição de imagens com máxima fidelidade.",
-        "task": "Analise todas as imagens recebidas. Identifique automaticamente a Imagem 1 como âncora de cenário e composição e as demais como fontes de identidade visual dos elementos. Extraia ambiente, iluminação, perspectiva, escala, materiais, interação física, composição e restrições. Gere um único JSON compatível com o blueprint Nano Banana, preenchendo todos os campos relevantes. Quando alguma informação não puder ser inferida, utilize defaults explícitos e registre esses defaults em um campo textual dentro do prompt, sem pedir informações adicionais.",
-        "context": "O JSON produzido deve seguir o blueprint Nano Banana apresentado pelo usuário. O prompt final deve estar integralmente em inglês. Nunca misture características entre imagem base e elementos. Preserve identidade visual, física da luz, coerência óptica e integração natural.",
-        "user_scene_description": "Envie a imagem base (cenário/composição), uma ou mais imagens contendo os elementos a inserir e, opcionalmente, o objetivo da composição.",
+        "system_role": "Você é um Arquiteto Sênior de Prompts especializado em Gemini Nano Banana.",
+        "task": "Analise até 14 imagens e gere um único prompt JSON em inglês.",
+        "context": "Imagem 1 é a composição base; demais são referências de identidade.",
+        "user_scene_description": "Envie a imagem base, até 13 referências, objetivo da edição e restrições.",
         "constraints": [
-          "A saída deve conter apenas o prompt JSON final em inglês.",
-          "Usar a imagem 1 exclusivamente como referência de cenário e composição.",
-          "Usar as demais imagens exclusivamente como referência dos elementos.",
-          "Quando faltar informação, assumir defaults explícitos e consistentes.",
-          "Priorizar fotorealismo, coerência física e fidelidade visual."
+          "O prompt final deve ser em inglês.",
+          "Gerar apenas JSON estruturado.",
+          "Usar terminologia técnica de fotografia.",
+          "Respeitar as opções selecionadas nos menus de Formato da Imagem e Tipo de Imagem."
         ],
         "negative_prompt": [
-          "Não responder em prosa.",
-          "Não inventar elementos inexistentes nas imagens.",
-          "Não misturar iluminação, geometria ou identidade entre referências.",
-          "Não omitir parâmetros importantes do blueprint."
+          "Não alterar o fundo sem autorização.",
+          "Não deformar rostos, produtos ou logotipos."
         ],
         "few_shot_examples": []
       },
-      "context_menus": [],
-      "menu_ids": [],
+      "context_menus": [
+        "nanobanana_recriar_imagem_compiler_formato_imagem",
+        "nanobanana_recriar_imagem_compiler_tipo_imagem"
+      ],
+      "menu_ids": [
+        "nanobanana_recriar_imagem_compiler_formato_imagem",
+        "nanobanana_recriar_imagem_compiler_tipo_imagem"
+      ],
       "prompt_memory_context": {
         "enabled": false,
         "merge_strategy": "preserve_existing",
         "entries": []
       },
       "output_contract": {
-        "format": "json",
-        "language": "en",
+        "format": "markdown",
+        "language": "pt-BR",
         "strict_mode": true,
         "required_fields": [
-          "system_instruction",
-          "generation_request"
+          "analise_das_referencias",
+          "prompt_final_json"
         ],
         "response_rules": [
-          "Return only valid JSON.",
-          "All values must be written in English.",
-          "Populate inferred values explicitly."
+          "Apresente a análise em português.",
+          "Entregue o JSON final em inglês."
         ]
       }
     }

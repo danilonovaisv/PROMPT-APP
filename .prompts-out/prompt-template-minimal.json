@@ -1,0 +1,38 @@
+{
+  "app": "Prompt App",
+  "version": "3.0.0",
+  "format": "prompt-app-import",
+  "schemaVersion": "1.1.0",
+  "exportedAt": "2026-07-25T20:15:19.000Z",
+  "context_menus": [],
+  "prompts": [
+    {
+      "meta": {
+        "template_id": "template_minimal_001",
+        "template_name": "Template Mínimo Válido",
+        "template_type": "generic_prompt",
+        "schema_version": "1.1.0",
+        "language": "pt-BR",
+        "status": "draft"
+      },
+      "prompt_definition": {
+        "system_role": "",
+        "task": "",
+        "context": "",
+        "user_scene_description": "",
+        "constraints": [],
+        "negative_prompt": [],
+        "few_shot_examples": []
+      },
+      "menu_definitions": [],
+      "menu_ids": [],
+      "output_contract": {
+        "format": "markdown",
+        "language": "pt-BR",
+        "strict_mode": true,
+        "required_fields": [],
+        "response_rules": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "app": "Prompt App",
+  "version": "3.0.0",
+  "format": "prompt-app-import",
+  "schemaVersion": "1.1.0",
+  "exportedAt": "2026-07-25T19:28:19.604Z",
+  "context_menus": [
+    {
+      "menu_id": "nanobanana_recriar_imagem_compiler_formato_imagem",
+      "menu_name": "NANOBANANA_RECRIAR_IMAGEM_COMPILER - Formato da Imagem",
+      "description": "Define a proporção e a orientação final da imagem.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Quadrado (1:1)",
+          "value": "1_1",
+          "description": "Composição quadrada para posts, capas e catálogos.",
+          "sub_options": []
+        },
+        {
+          "label": "Retrato (4:5)",
+          "value": "4_5",
+          "description": "Composição vertical para feed e peças editoriais.",
+          "sub_options": []
+        },
+        {
+          "label": "Vertical (9:16)",
+          "value": "9_16",
+          "description": "Composição vertical para Stories, Reels e Shorts.",
+          "sub_options": []
+        },
+        {
+          "label": "Paisagem (16:9)",
+          "value": "16_9",
+          "description": "Composição horizontal para vídeo, apresentações e banners.",
+          "sub_options": []
+        },
+        {
+          "label": "Ultrawide (21:9)",
+          "value": "21_9",
+          "description": "Composição cinematográfica panorâmica.",
+          "sub_options": []
+        },
+        {
+          "label": "A4 Vertical",
+          "value": "a4_vertical",
+          "description": "Formato vertical orientado a impressão.",
+          "sub_options": []
+        },
+        {
+          "label": "A4 Horizontal",
+          "value": "a4_horizontal",
+          "description": "Formato horizontal orientado a impressão.",
+          "sub_options": []
+        }
+      ]
+    },
+    {
+      "menu_id": "nanobanana_recriar_imagem_compiler_tipo_imagem",
+      "menu_name": "NANOBANANA_RECRIAR_IMAGEM_COMPILER - Tipo de Imagem",
+      "description": "Define a categoria visual principal que orientará composição, enquadramento e linguagem técnica.",
+      "selection_mode": "single",
+      "required": false,
+      "options": [
+        {
+          "label": "Personagem",
+          "value": "personagem",
+          "description": "Imagem centrada em uma pessoa ou personagem.",
+          "sub_options": [
+            {
+              "label": "Retrato",
+              "value": "retrato",
+              "description": "Enquadramento de rosto ou busto."
+            },
+            {
+              "label": "Meio Corpo",
+              "value": "meio_corpo",
+              "description": "Enquadramento da cintura para cima."
+            },
+            {
+              "label": "Corpo Inteiro",
+              "value": "corpo_inteiro",
+              "description": "Personagem exibido integralmente."
+            }
+          ]
+        },
+        {
+          "label": "Cena",
+          "value": "cena",
+          "description": "Composição narrativa com ambiente e múltiplos elementos.",
+          "sub_options": [
+            {
+              "label": "Interna",
+              "value": "interna",
+              "description": "Cena em ambiente fechado."
+            },
+            {
+              "label": "Externa",
+              "value": "externa",
+              "description": "Cena em ambiente aberto."
+            }
+          ]
+        },
+        {
+          "label": "Produto",
+          "value": "produto",
+          "description": "Imagem comercial centrada em um produto.",
+          "sub_options": [
+            {
+              "label": "Packshot",
+              "value": "packshot",
+              "description": "Produto isolado com apresentação limpa."
+            },
+            {
+              "label": "Lifestyle",
+              "value": "lifestyle",
+              "description": "Produto integrado a uma situação de uso."
+            },
+            {
+              "label": "Publicidade",
+              "value": "publicidade",
+              "description": "Composição publicitária com direção de arte."
+            }
+          ]
+        },
+        {
+          "label": "Photoshooting",
+          "value": "photoshooting",
+          "description": "Ensaio fotográfico dirigido.",
+          "sub_options": [
+            {
+              "label": "Fashion",
+              "value": "fashion",
+              "description": "Ensaio de moda."
+            },
+            {
+              "label": "Beauty",
+              "value": "beauty",
+              "description": "Ensaio focado em beleza, pele e maquiagem."
+            },
+            {
+              "label": "Editorial",
+              "value": "editorial",
+              "description": "Ensaio com narrativa visual editorial."
+            }
+          ]
+        },
+        {
+          "label": "Logo",
+          "value": "logo",
+          "description": "Criação, composição ou aplicação de identidade visual.",
+          "sub_options": []
+        },
+        {
+          "label": "Mockup",
+          "value": "mockup",
+          "description": "Apresentação simulada de embalagem, interface ou peça gráfica.",
+          "sub_options": []
+        },
+        {
+          "label": "Ilustração",
+          "value": "ilustracao",
+          "description": "Imagem com linguagem ilustrada.",
+          "sub_options": []
+        },
+        {
+          "label": "Concept Art",
+          "value": "concept_art",
+          "description": "Arte conceitual para personagens, ambientes ou objetos.",
+          "sub_options": []
+        },
+        {
+          "label": "Arquitetura",
+          "value": "arquitetura",
+          "description": "Visualização de interiores, exteriores ou estruturas.",
+          "sub_options": []
+        },
+        {
+          "label": "Veículo",
+          "value": "veiculo",
+          "description": "Imagem centrada em carro, moto, aeronave ou outro veículo.",
+          "sub_options": []
+        },
+        {
+          "label": "Objeto",
+          "value": "objeto",
+          "description": "Imagem centrada em um objeto específico.",
+          "sub_options": []
+        }
+      ]
+    }
+  ],
+  "prompts": [
+    {
+      "meta": {
+        "template_id": "nanobanana_recriar_imagem_compiler",
+        "template_name": "Nano Banana - Prompt Compiler para Recriação de Imagens",
+        "template_type": "image_generation",
+        "schema_version": "1.1.0",
+        "language": "pt-BR",
+        "status": "active"
+      },
+      "prompt_definition": {
+        "system_role": "Você é um Arquiteto Sênior de Prompts especializado em engenharia de prompts para Gemini Nano Banana. Sua função é analisar múltiplas imagens de referência e produzir um único prompt final estruturado em JSON, usando o Framework SCHEMA, para edição, recriação ou composição de imagens.",
+        "task": "Analise até 14 imagens. Considere a Imagem 1 como blueprint absoluto da composição, cenário e iluminação. Trate as demais imagens como fontes de identidade estrita. Classifique cada referência, preserve a composição base, calcule a integração física, incluindo escala, perspectiva, reflexos, sombras e temperatura de cor, e gere um payload JSON estruturado contendo as chaves meta, subject, scene, technical e advanced. O prompt gerado deve ser em inglês. Aplique também o formato e o tipo de imagem selecionados nos menus, quando houver seleção.",
+        "context": "Priorize fidelidade visual, preservação de identidade e mascaramento semântico. A arquitetura de raciocínio do modelo exige precisão técnica de física óptica, geometria, materiais, iluminação e direção de fotografia, em vez de descrições poéticas ou adjetivos genéricos. Quando nenhum menu for selecionado, infira o formato e o tipo de imagem a partir da Imagem 1 e do objetivo informado pelo usuário.",
+        "user_scene_description": "Envie a Imagem 1 como base e até 13 imagens adicionais como referências. Informe o objetivo da edição, o elemento que deve ser inserido, removido ou substituído, as restrições específicas e qualquer texto ou logotipo que precise ser preservado. Selecione também, quando necessário, o formato final e o tipo de imagem nos menus.",
+        "constraints": [
+          "O prompt final gerado para o Nano Banana deve ser estritamente em inglês.",
+          "O output final deve ser um payload JSON usando o Framework SCHEMA, sem blocos de texto contínuo.",
+          "Use terminologia técnica de direção de fotografia, óptica, iluminação, materiais e composição, incluindo especificações como 85mm lens, f/1.8, ISO 100 e 3200K somente quando forem coerentes com as referências.",
+          "Não use adjetivos de embelezamento vagos como beautiful, perfect ou hyper-realistic.",
+          "Para referências de personagens, use a instrução absoluta: Keep the facial features 100% identical to the reference image.",
+          "Se houver texto em logotipos, embalagens ou elementos gráficos, preserve as strings exatas entre aspas duplas e descreva tipografia, peso, espaçamento, alinhamento e posicionamento.",
+          "Respeite o formato de imagem selecionado e adapte enquadramento, distribuição de espaço negativo e posicionamento dos elementos à proporção escolhida.",
+          "Respeite o tipo de imagem selecionado e ajuste a estrutura técnica do prompt para personagem, cena, produto, photoshooting ou outra categoria escolhida.",
+          "Quando informações indispensáveis estiverem ausentes, sinalize a lacuna na análise em português e adote somente inferências conservadoras no JSON final."
+        ],
+        "negative_prompt": [
+          "Não modificar o fundo sem autorização explícita.",
+          "Não deformar rostos, corpos, logotipos, textos, embalagens ou produtos.",
+          "Não criar sombras, reflexos ou temperatura de cor incompatíveis com a iluminação original.",
+          "Não alterar identidade facial, proporções essenciais ou características distintivas das referências.",
+          "Não gerar o prompt final em português.",
+          "Não inventar textos, marcas, detalhes de produto ou elementos que não estejam presentes nas referências ou na solicitação."
+        ],
+        "few_shot_examples": []
+      },
+      "context_menus": [],
+      "menu_ids": [
+        "nanobanana_recriar_imagem_compiler_formato_imagem",
+        "nanobanana_recriar_imagem_compiler_tipo_imagem"
+      ],
+      "prompt_memory_context": {
+        "enabled": false,
+        "merge_strategy": "preserve_existing",
+        "entries": []
+      },
+      "output_contract": {
+        "format": "markdown",
+        "language": "pt-BR",
+        "strict_mode": true,
+        "required_fields": [
+          "analise_das_referencias",
+          "prompt_final_json"
+        ],
+        "response_rules": [
+          "Apresente primeiro uma análise técnica em português das referências, indicando a função de cada imagem, as relações entre elas e as integrações físicas necessárias.",
+          "Considere explicitamente as escolhas dos menus de formato e tipo de imagem quando estiverem disponíveis.",
+          "Entregue o prompt final em inglês, estruturado como JSON válido, dentro de um único bloco de código markdown.",
+          "O JSON final deve conter exatamente as chaves de primeiro nível meta, subject, scene, technical e advanced.",
+          "Não adicione comentários dentro do JSON.",
+          "Não adicione texto, observações ou explicações após o bloco de código JSON."
+        ]
+      }
+    }
+  ]
+}
