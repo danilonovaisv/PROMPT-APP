@@ -1,5 +1,6 @@
 import type { TemplatePayload } from '@/models/promptSchema';
 import type { Category } from '@/models/types';
+import { CURRENT_PROMPT_SCHEMA_VERSION } from '@/utils/schemaCompatibility';
 
 type EditorMetaFormProps = {
   template: TemplatePayload;
@@ -128,7 +129,7 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
           name="schema_version"
           value={template.meta.schema_version}
           onChange={(event) => updateMetaField('schema_version', event.target.value)}
-          placeholder="1.0.0"
+          placeholder={CURRENT_PROMPT_SCHEMA_VERSION}
         />
       </div>
 
@@ -148,4 +149,3 @@ export function EditorMetaForm({ template, categoryId, categories, updateMetaFie
     </div>
   );
 }
-

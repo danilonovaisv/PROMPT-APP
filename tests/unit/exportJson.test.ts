@@ -1,7 +1,7 @@
 import { toExportFormat, formatPromptAsMarkdown, getTemplateFile } from "@/utils/exportJson";
 import {
   type CompiledPromptPayload,
-  PromptContractSchema,
+  parseTemplatePayload,
   type TemplatePayload,
 } from "@/models/promptSchema";
 import { Prompt } from "@/models/types";
@@ -71,7 +71,7 @@ describe("toExportFormat", () => {
 });
 
 describe("getTemplateFile", () => {
-  it("returns a Blob with valid JSON content matching PromptContractSchema", async () => {
+  it("returns a canonical envelope with external context_menus", async () => {
     const blob = getTemplateFile();
 
     // Verify it is a Blob
@@ -82,21 +82,17 @@ describe("getTemplateFile", () => {
     const text = await blob.text();
     const json = JSON.parse(text);
 
-    // Verify it matches the schema
-    const result = PromptContractSchema.safeParse(json.prompts?.[0]);
-    if (!result.success) {
-      console.error(JSON.stringify(result.error.format(), null, 2));
-    }
-    expect(result.success).toBe(true);
+    expect(json.format).toBe("prompt-app-import");
+    expect(json.schemaVersion).toBe("1.1.0");
+    expect(json.prompts[0].context_menus).toEqual([]);
+    expect(json.prompts[0].menu_definitions).toBeUndefined();
 
-    // Verify specific fields
-    if (result.success) {
-      expect(result.data.meta.template_id).toBe("novo_template");
-      expect(result.data.meta.template_name).toBe("Novo Template");
-      expect(result.data.meta.status).toBe("draft");
-      expect(result.data.prompt_definition).toBeDefined();
-      expect(result.data.output_contract).toBeDefined();
-    }
+    const prompt = parseTemplatePayload(json.prompts[0]);
+    expect(prompt.meta.template_id).toBe("novo_template");
+    expect(prompt.meta.template_name).toBe("Novo Template");
+    expect(prompt.meta.status).toBe("draft");
+    expect(prompt.prompt_definition).toBeDefined();
+    expect(prompt.output_contract).toBeDefined();
   });
 });
 

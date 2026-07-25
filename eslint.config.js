@@ -5,7 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'coverage/**', '*.config.{js,ts,cjs}', '.claude/**', 'playwright/**', '.netlify/**', '.venv/**'] },
+  { ignores: ['dist/**', 'node_modules/**', '.pnpm-store/**', 'coverage/**', '*.config.{js,ts,cjs}', '.claude/**', 'playwright/**', '.netlify/**', '.venv/**'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],

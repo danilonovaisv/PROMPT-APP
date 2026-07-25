@@ -1,11 +1,12 @@
 import { TemplatePayload } from "@/models/promptSchema";
+import { CURRENT_PROMPT_SCHEMA_VERSION } from "@/utils/schemaCompatibility";
 
 export const ARCHITECTURE_AUDITOR_PROMPT: TemplatePayload = {
   meta: {
     template_id: "auditor-arquitetura-prompt-app",
     template_name: "Auditor de Arquitetura PROMPT-APP",
     template_type: "Arquitetura / Refactoring",
-    schema_version: "1.0.0",
+    schema_version: CURRENT_PROMPT_SCHEMA_VERSION,
     language: "pt-BR",
     status: "active",
   },

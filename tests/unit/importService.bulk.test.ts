@@ -1,4 +1,6 @@
-import { importFromJsonText } from '@/services/importService';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { importFromJsonText, parseImportData } from '@/services/importService';
 import { db } from '@/db/database';
 
 jest.mock('@/lib/supabase', () => ({
@@ -158,5 +160,29 @@ describe('importService Bulk Export', () => {
     expect(prompts[0].promptPayload.prompt_memory_context?.entries).toHaveLength(1);
     expect(memory[0].key).toBe('nome_empresa');
     expect(memory[0].value).toBe('Acme');
+  });
+
+  test('should validate the prompt-template architect import artifact', async () => {
+    const templatePath = resolve(
+      process.cwd(),
+      'docs/BACKUP/PROMPTS/PROMPT-TEMPLATE-prompt-app-import.json',
+    );
+    const rawJson = readFileSync(templatePath, 'utf8');
+    const preview = await parseImportData(rawJson, 'PROMPT-TEMPLATE-prompt-app-import.json');
+    const payload = JSON.parse(rawJson);
+
+    expect(preview.errors).toEqual([]);
+    expect(preview.detectedFormat).toBe('canonical-envelope');
+    expect(preview.menus).toHaveLength(3);
+    expect(preview.prompts).toHaveLength(1);
+    expect(payload.prompts[0].output_contract.format).toBe('markdown');
+
+    payload.prompts[0].prompt_definition.few_shot_examples.forEach(
+      (example: { output: string }) => {
+        expect(example.output).toMatch(
+          /^\[Baixar [A-Z0-9-]+-prompt-template\.json\]\(sandbox:\/mnt\/data\/[A-Z0-9-]+-prompt-template\.json\)$/,
+        );
+      },
+    );
   });
 });

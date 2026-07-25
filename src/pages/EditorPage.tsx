@@ -29,6 +29,7 @@ import { renderFinalPromptText, syncTemplateWithLinkedMenus } from '@/utils/prom
 import { saveLocalBackup } from '@/utils/backupManager';
 import { copyToClipboard, downloadJson, formatPromptAsMarkdown } from '@/utils/exportJson';
 import { migrateTemplateToCurrentSchema } from '@/utils/templateMigration';
+import { CURRENT_PROMPT_SCHEMA_VERSION } from '@/utils/schemaCompatibility';
 
 import { EditorMetaForm } from '@/components/editor/EditorMetaForm';
 import { EditorDefinitionForm } from '@/components/editor/EditorDefinitionForm';
@@ -205,7 +206,9 @@ function buildPersistedArtifacts(
         form.template.meta.template_name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
       template_name: form.template.meta.template_name.trim(),
       template_type: form.template.meta.template_type.trim(),
-      schema_version: form.template.meta.schema_version.trim() || '1.0.0',
+      schema_version:
+        form.template.meta.schema_version.trim() ||
+        CURRENT_PROMPT_SCHEMA_VERSION,
       language: form.template.meta.language.trim() || 'pt-BR',
     },
     prompt_definition: {
@@ -366,7 +369,7 @@ export default function EditorPage() {
 
       if (draftData?.template?.meta?.template_name) {
         draftAppliedRef.current = true;
-        // eslint-disable-VITE-line react-hooks/set-state-in-effect
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setForm({ ...baseState, ...draftData });
         setDraftRestored(true);
         showToast('Rascunho recuperado automaticamente!', 'info');
@@ -453,7 +456,7 @@ export default function EditorPage() {
     startTransition(() => {
       setForm((current) => ({ ...current, ...draftData }));
     });
-    // eslint-disable-VITE-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraftRestored(true);
     showToast('Rascunho recuperado automaticamente!', 'info');
   }, [id, loaded, showToast]);

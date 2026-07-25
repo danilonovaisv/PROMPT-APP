@@ -64,7 +64,7 @@ export async function downloadAllPrompts() {
 }
 
 export function getTemplateFile(): Blob {
-  const template = ImportEnvelopeSchema.parse({
+  const internalTemplate = ImportEnvelopeSchema.parse({
     app: "Prompt App",
     version: "3.0.0",
     format: "prompt-app-import",
@@ -107,6 +107,17 @@ export function getTemplateFile(): Blob {
       }),
     ],
   });
+
+  const template = {
+    ...internalTemplate,
+    prompts: internalTemplate.prompts.map((prompt) => {
+      const { menu_definitions: menuDefinitions, ...externalPrompt } = prompt;
+      return {
+        ...externalPrompt,
+        context_menus: menuDefinitions,
+      };
+    }),
+  };
 
   return new Blob([JSON.stringify(template, null, 2)], {
     type: "application/json",
