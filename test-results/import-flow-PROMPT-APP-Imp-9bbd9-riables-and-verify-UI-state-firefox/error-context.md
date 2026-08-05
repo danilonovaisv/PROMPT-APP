@@ -52,7 +52,7 @@ Call log:
     - text: Configuração do Supabase ausente. Defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Recursos em nuvem permanecem desativados.
   - button "Voltar"
   - heading "E2E Test Fixed Memory" [level=1]
-  - text: Rascunho salvo às 01:20 PM
+  - text: Rascunho salvo às 12:01 PM
   - button "Foco"
   - button "Copiar"
   - button "Baixar"

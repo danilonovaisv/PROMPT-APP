@@ -426,31 +426,7 @@ export function normalizeTemplatePayloadAliases(rawPayload: unknown): unknown {
     return rawPayload;
   }
 
-  // Create a shallow copy to avoid mutating the original
-  const raw = { ...(rawPayload as Record<string, unknown>) };
-
-  // Transform root fixed_variables into prompt_memory_context entries if present and no memory context exists
-  if (raw.fixed_variables && typeof raw.fixed_variables === "object") {
-      const fixedVars = raw.fixed_variables as Record<string, string>;
-      const existingEntries = Array.isArray(raw.prompt_memory_context) && Array.isArray((raw.prompt_memory_context as any).entries) ? (raw.prompt_memory_context as any).entries : [];
-      const newEntries = Object.entries(fixedVars).map(([key, value]) => ({
-          key,
-          label: key,
-          type: "text",
-          scope: "user",
-          required: false,
-          editable: true,
-          description: "",
-          value
-      }));
-
-      raw.prompt_memory_context = {
-          enabled: true,
-          merge_strategy: "preserve_existing",
-          entries: [...existingEntries, ...newEntries]
-      };
-  }
-
+  const raw = rawPayload as Record<string, unknown>;
   const menuDefinitions = Array.isArray(raw.menu_definitions)
     ? raw.menu_definitions
     : Array.isArray(raw.context_menus)
@@ -896,24 +872,6 @@ export function parseTemplatePayload(
         ? (legacyPromptContract.input_data as Record<string, unknown>)
         : undefined;
 
-      // Recover fixed variables if present in root (e.g. from tests or external sources)
-      const rootFixedVariables = legacyPromptContract.fixed_variables && typeof legacyPromptContract.fixed_variables === "object"
-        ? (legacyPromptContract.fixed_variables as Record<string, string>)
-        : undefined;
-
-      const memoryEntriesFromFixedVariables = rootFixedVariables
-        ? Object.entries(rootFixedVariables).map(([key, value]) => ({
-            key,
-            label: key,
-            type: "text",
-            scope: "user",
-            required: false,
-            editable: true,
-            description: "",
-            value
-          }))
-        : [];
-
       const legacyRecord: LegacyPromptRecord = {
         title: typeof legacyPromptContract.title === "string"
           ? legacyPromptContract.title
@@ -974,8 +932,7 @@ export function parseTemplatePayload(
         prompt_memory_context: normalizePromptMemoryContext(
           legacyPromptContract.prompt_memory_context ??
             legacyPromptContract.memory_context ??
-            legacyPromptContract.memory_entries ??
-            { entries: memoryEntriesFromFixedVariables },
+            legacyPromptContract.memory_entries,
         ),
       };
 
