@@ -777,6 +777,16 @@ export default function EditorPage() {
         delete VITE[key];
         return VITE;
       });
+      updateTemplate((current) => {
+        if (!current.prompt_memory_context) return current;
+        return {
+          ...current,
+          prompt_memory_context: {
+            ...current.prompt_memory_context,
+            entries: current.prompt_memory_context.entries.filter((entry) => entry.key !== key),
+          },
+        };
+      });
       showToast('Chave de memória removida', 'success');
     } catch (error) {
       if (!isUnauthenticatedCloudError(error)) {
@@ -793,6 +803,39 @@ export default function EditorPage() {
     // Adiciona ao estado local, o autosave cuidará do resto assim que houver valor
     // ou podemos salvar imediatamente como vazio se quisermos persistir a existência da chave
     setFixedMemory((prev) => ({ ...prev, [key]: '' }));
+
+    updateTemplate((current) => {
+      const existingContext = current.prompt_memory_context || {
+        enabled: true,
+        merge_strategy: 'preserve_existing',
+        entries: [],
+      };
+
+      // Apenas adiciona se não existir
+      if (existingContext.entries.some(e => e.key === key)) {
+        return current;
+      }
+
+      return {
+        ...current,
+        prompt_memory_context: {
+          ...existingContext,
+          entries: [
+            ...existingContext.entries,
+            {
+              key,
+              label: key,
+              type: 'text',
+              scope: 'user',
+              required: false,
+              editable: true,
+              description: '',
+              value: ''
+            },
+          ],
+        },
+      };
+    });
   };
 
   const handleCopy = async () => {
