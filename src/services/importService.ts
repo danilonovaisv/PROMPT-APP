@@ -201,7 +201,8 @@ function detectImportFormat(value: unknown): ImportSourceFormat {
     'prompt_definition' in value ||
     'system_role' in value ||
     'task' in value ||
-    'input_data' in value;
+    'input_data' in value ||
+    'fixed_variables' in value;
 
   if (hasMenuEnvelope && !hasPromptShape) {
     return 'legacy-menu-import';
@@ -332,13 +333,13 @@ function normalizeToCanonicalPayload(parsed: unknown): CanonicalImportPayload {
 
   return {
     app: 'Prompt App',
-    version: typeof parsed.version === 'string' ? parsed.version : '3.0.0',
+    version: typeof (parsed as any).version === 'string' ? (parsed as any).version : '3.0.0',
     format: 'prompt-app-import',
     schemaVersion:
-      typeof parsed.schemaVersion === 'string'
-        ? parsed.schemaVersion
-        : typeof parsed.schema_version === 'string'
-        ? parsed.schema_version
+      typeof (parsed as any).schemaVersion === 'string'
+        ? (parsed as any).schemaVersion
+        : typeof (parsed as any).schema_version === 'string'
+        ? (parsed as any).schema_version
         : '1.0.0',
     exportedAt,
     contextMenus: [],
@@ -571,15 +572,27 @@ async function buildImportState(
 
       placeholderKeys.forEach((key) => {
         if (!memoryKeys.has(key)) {
-          errors.push({
-            type: 'validation',
-            field: `prompts[${index}].prompt_memory_context.entries`,
-            message: `Variável de memória obrigatória ausente para placeholder: ${key}`,
+          // Add missing placeholder keys to entries dynamically
+          memoryEntries.push({
+            key,
+            label: key,
+            type: 'text',
+            scope: 'user',
+            required: false,
+            editable: true,
+            description: '',
+            value: ''
           });
+          memoryKeys.add(key);
         }
       });
 
-      const memoryPlan = memoryContext?.enabled
+      // Update template payload after filling missing entries
+      if (memoryContext) {
+        memoryContext.entries = memoryEntries;
+      }
+
+      const memoryPlan = memoryContext?.enabled || memoryEntries.length > 0
         ? await planMemoryUpserts(
             templateId,
             memoryEntries,
