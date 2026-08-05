@@ -35,10 +35,10 @@ test.describe("PROMPT-APP: Import Flow & Fixed Memory", () => {
 
     // Check for success toast or result message
     await expect(page.locator(".import-result--success")).toBeVisible();
-    await expect(page.getByText("✓ 1 prompts importados")).toBeVisible();
+    await expect(page.getByText("✓ 1 prompt(s) processado(s)")).toBeVisible();
 
     // Close modal
-    await page.getByRole("button", { name: "Fechar", exact: true }).click();
+    await page.locator(".modal-overlay > div > .modal-header > .btn-icon").click();
 
     // Navigate to the newly imported prompt
     // It should be in "Importados" category
@@ -57,9 +57,9 @@ test.describe("PROMPT-APP: Import Flow & Fixed Memory", () => {
     // Wait for the playground to load
     await expect(page.getByText("Memória Fixa")).toBeVisible();
 
-    await expect(page.getByText("TEST_KEY", { exact: true })).toBeVisible();
+    await expect(page.locator("label", { hasText: "TEST_KEY" })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "TEST_KEY" })).toHaveValue("TEST_VALUE");
-    await expect(page.getByText("ANOTHER_KEY", { exact: true })).toBeVisible();
+    await expect(page.locator("label", { hasText: "ANOTHER_KEY" })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "ANOTHER_KEY" })).toHaveValue("ANOTHER_VALUE");
 
     // Test compilation
