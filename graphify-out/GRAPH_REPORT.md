@@ -1,143 +1,168 @@
-# Graph Report - src  (2026-05-04)
+# Graph Report - src  (2026-08-11)
 
 ## Corpus Check
-- Corpus is ~35,976 words - fits in a single context window. You may not need a graph.
+- 100 files · ~50,157 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 305 nodes · 429 edges · 16 communities detected
-- Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 77 edges (avg confidence: 0.8)
+- 504 nodes · 671 edges · 20 communities detected
+- Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 87 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Prompt Schema Builders|Prompt Schema Builders]]
-- [[_COMMUNITY_Editor Form State|Editor Form State]]
-- [[_COMMUNITY_ImportExport Pipeline|Import/Export Pipeline]]
-- [[_COMMUNITY_Auth & Cloud Sync|Auth & Cloud Sync]]
-- [[_COMMUNITY_Category Management|Category Management]]
-- [[_COMMUNITY_Sync Conflict Resolution|Sync Conflict Resolution]]
-- [[_COMMUNITY_Context Menu Editor|Context Menu Editor]]
-- [[_COMMUNITY_Realtime Subscriptions|Realtime Subscriptions]]
-- [[_COMMUNITY_Menu Import Flow|Menu Import Flow]]
-- [[_COMMUNITY_ExportDownload Tools|Export/Download Tools]]
-- [[_COMMUNITY_Prompt Rendering Engine|Prompt Rendering Engine]]
-- [[_COMMUNITY_Resource Audit Utils|Resource Audit Utils]]
-- [[_COMMUNITY_Memory Service|Memory Service]]
+- [[_COMMUNITY_Prompt Payload Engine|Prompt Payload Engine]]
+- [[_COMMUNITY_Import & Export Components|Import & Export Components]]
+- [[_COMMUNITY_Legacy Schema Normalizer|Legacy Schema Normalizer]]
+- [[_COMMUNITY_UI Hooks & Category Manager|UI Hooks & Category Manager]]
+- [[_COMMUNITY_Supabase Config & Assertions|Supabase Config & Assertions]]
+- [[_COMMUNITY_Cloud Sync Auth & Workflows|Cloud Sync Auth & Workflows]]
+- [[_COMMUNITY_Editor Definition Forms|Editor Definition Forms]]
+- [[_COMMUNITY_Auth & Import Modals|Auth & Import Modals]]
+- [[_COMMUNITY_Menu Manager Page|Menu Manager Page]]
+- [[_COMMUNITY_Realtime Synchronization Service|Realtime Synchronization Service]]
+- [[_COMMUNITY_Database & Seeder Context|Database & Seeder Context]]
+- [[_COMMUNITY_Memory Service & Storage|Memory Service & Storage]]
+- [[_COMMUNITY_Resource Audit Service|Resource Audit Service]]
+- [[_COMMUNITY_Batching & Local Cache Utils|Batching & Local Cache Utils]]
+- [[_COMMUNITY_Menu Validation Helpers|Menu Validation Helpers]]
+- [[_COMMUNITY_Prompt Renderer Engine|Prompt Renderer Engine]]
+- [[_COMMUNITY_Backup & Sync Utilities|Backup & Sync Utilities]]
+- [[_COMMUNITY_Category Service|Category Service]]
 - [[_COMMUNITY_Few-Shot Normalizer|Few-Shot Normalizer]]
-- [[_COMMUNITY_Supabase Config|Supabase Config]]
-- [[_COMMUNITY_Auth Modal|Auth Modal]]
+- [[_COMMUNITY_Context Menu Utils|Context Menu Utils]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `buildPersistedArtifacts()` - 11 edges
-2. `syncToCloud()` - 11 edges
-3. `saveLocalBackup()` - 10 edges
-4. `importFromJsonText()` - 10 edges
-5. `createTemplatePayloadFromLegacyRecord()` - 8 edges
-6. `getLegacyPromptColumns()` - 8 edges
-7. `buildPromptRecordFromRaw()` - 8 edges
-8. `compilePromptPayload()` - 7 edges
-9. `handleSave()` - 7 edges
-10. `pushLocalChanges()` - 7 edges
+1. `saveLocalBackup()` - 18 edges
+2. `buildImportState()` - 15 edges
+3. `compilePromptPayload()` - 13 edges
+4. `getLegacyPromptColumns()` - 11 edges
+5. `buildPersistedArtifacts()` - 10 edges
+6. `normalizeContextMenuOptions()` - 10 edges
+7. `parseTemplatePayload()` - 9 edges
+8. `getPromptSummaryFields()` - 9 edges
+9. `withRetry()` - 9 edges
+10. `createTemplatePayloadFromLegacyRecord()` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `handleSmartSync()` --calls--> `smartSync()`  [INFERRED]
-  components/CloudSyncItem.tsx → services/assetManager.ts
-- `syncToCloud()` --calls--> `normalizeContextMenuOptions()`  [INFERRED]
-  services/syncService.ts → utils/contextMenuOptions.ts
 - `handleMenuChange()` --calls--> `normalizeContextMenuOptions()`  [INFERRED]
-  services/realtimeService.ts → utils/contextMenuOptions.ts
+  src/services/realtimeService.ts → /Users/PROJETOS DEV/PROMPT-APP/src/utils/contextMenuOptions.ts
 - `saveMenuToSupabase()` --calls--> `normalizeContextMenuOptions()`  [INFERRED]
-  services/supabaseMenus.ts → utils/contextMenuOptions.ts
-- `importMenusFromFile()` --calls--> `saveMenuToSupabase()`  [INFERRED]
-  utils/importMenusJson.ts → services/supabaseMenus.ts
+  src/services/supabaseMenus.ts → /Users/PROJETOS DEV/PROMPT-APP/src/utils/contextMenuOptions.ts
+- `contextMenuToDefinition()` --calls--> `normalizeContextMenuOptions()`  [INFERRED]
+  src/utils/promptArtifacts.ts → /Users/PROJETOS DEV/PROMPT-APP/src/utils/contextMenuOptions.ts
+- `runAutoSyncIfAuthenticated()` --calls--> `syncToCloud()`  [INFERRED]
+  src/services/autoSync.ts → src/services/syncService.ts
+- `handleSmartSync()` --calls--> `smartSync()`  [INFERRED]
+  src/components/CloudSyncItem.tsx → src/services/assetManager.ts
 
 ## Communities
 
-### Community 0 - "Prompt Schema Builders"
-Cohesion: 0.14
-Nodes (25): compilePromptPayload(), convertContextMenuSelectionToSelectedMenus(), createDefaultOutputContract(), createEmptyPromptPayload(), createEmptyTemplatePayload(), createEmptyUserSelection(), createPromptPayloadFromLegacyRecord(), createTemplatePayloadFromLegacyRecord() (+17 more)
+### Community 0 - "Prompt Payload Engine"
+Cohesion: 0.06
+Nodes (37): compilePromptPayload(), createEmptyPromptPayload(), createEmptyUserSelection(), getMissingRequiredMemoryKeys(), buildFormStateFromPrompt(), buildInitialFormState(), buildPersistedArtifacts(), fromFreeInputEntries() (+29 more)
 
-### Community 1 - "Editor Form State"
-Cohesion: 0.12
-Nodes (17): buildFormStateFromPrompt(), buildPersistedArtifacts(), clearDraft(), fromFreeInputEntries(), getLinkedContextMenusFromSelection(), handleDeleteMemory(), handleSave(), isUnauthenticatedCloudError() (+9 more)
+### Community 1 - "Import & Export Components"
+Cohesion: 0.11
+Nodes (28): handleConfirmImport(), handleDownloadTemplate(), handleImport(), handleImportFromText(), listMemoryPlaceholderKeys(), appendIssuesFromZod(), buildImportState(), detectImportFormat() (+20 more)
 
-### Community 2 - "Import/Export Pipeline"
-Cohesion: 0.16
-Nodes (18): handleImport(), handleImportFromText(), buildPromptRecordFromRaw(), definitionToContextMenu(), importFromFile(), importFromJsonText(), importMenuDefinitions(), isBulkExport() (+10 more)
-
-### Community 3 - "Auth & Cloud Sync"
-Cohesion: 0.12
-Nodes (8): handleRestore(), handleSmartSync(), assertSupabaseConfigured(), runAutoSyncIfAuthenticated(), persistContextMenuRecord(), downloadFromCloud(), syncToCloud(), withRetry()
-
-### Community 4 - "Category Management"
+### Community 2 - "Legacy Schema Normalizer"
 Cohesion: 0.15
-Nodes (11): cancel(), handleDelete(), save(), ensureImportCategory(), deleteCategoryFromSupabase(), saveCategoryToSupabase(), deletePromptFromSupabase(), createSnapshot() (+3 more)
+Nodes (23): convertContextMenuSelectionToSelectedMenus(), createDefaultOutputContract(), createEmptyTemplatePayload(), createPromptPayloadFromLegacyRecord(), createTemplatePayloadFromLegacyRecord(), getLegacyPromptColumns(), getPromptSummaryFields(), normalizeFewShotExamples() (+15 more)
 
-### Community 5 - "Sync Conflict Resolution"
-Cohesion: 0.24
-Nodes (14): getPrimaryReferenceUrl(), getPromptSummaryFields(), applyRemoteChanges(), checkForUpdates(), detectConflicts(), getLocalItem(), mergeChanges(), pullLatestChanges() (+6 more)
+### Community 3 - "UI Hooks & Category Manager"
+Cohesion: 0.13
+Nodes (16): useConfirm(), useDebounce(), useSearchFilter(), cancel(), handleDelete(), save(), deleteCategoryFromSupabase(), saveCategoryToSupabase() (+8 more)
 
-### Community 6 - "Context Menu Editor"
-Cohesion: 0.14
-Nodes (4): cancel(), save(), toSlug(), saveMenuToSupabase()
+### Community 4 - "Supabase Config & Assertions"
+Cohesion: 0.13
+Nodes (18): handleRestore(), assertSupabaseConfigured(), getSupabaseConfigErrorMessage(), normalize(), resolveSupabaseConfig(), downloadFromCloud(), runPhase(), syncToCloud() (+10 more)
 
-### Community 7 - "Realtime Subscriptions"
-Cohesion: 0.23
-Nodes (11): cleanupRealtimeListeners(), handleMenuChange(), reconnectRealtime(), setupRealtimeListeners(), isRecord(), normalizeContextMenuOptions(), normalizeOption(), normalizeSubOption() (+3 more)
+### Community 5 - "Cloud Sync Auth & Workflows"
+Cohesion: 0.15
+Nodes (19): handleSmartSync(), useCloudSync(), parsePromptPayload(), parseUserSelection(), applyRemoteChanges(), checkForUpdates(), detectConflicts(), fetchRemoteSummaries() (+11 more)
 
-### Community 8 - "Menu Import Flow"
-Cohesion: 0.27
-Nodes (10): handleConfirmImport(), handleFileSelect(), checkMenuIdConflicts(), importMenusFromFile(), isObject(), toContextMenu(), validateMenu(), validateMenuImportFile() (+2 more)
+### Community 6 - "Editor Definition Forms"
+Cohesion: 0.12
+Nodes (7): addItems(), handleBlur(), handleKeyDown(), handlePaste(), cn(), Checkbox(), MultiSelect()
 
-### Community 9 - "Export/Download Tools"
-Cohesion: 0.21
-Nodes (12): handleDownloadTemplate(), handleCopy(), handleDownload(), async(), copyToClipboard(), downloadAllPrompts(), downloadJson(), downloadPrompt() (+4 more)
+### Community 7 - "Auth & Import Modals"
+Cohesion: 0.15
+Nodes (11): getAuthErrorMessage(), handleSubmit(), handleConfirmImport(), handleFileSelect(), useAccessibleModal(), saveMenusToSupabaseBulk(), checkMenuIdConflicts(), getExistingMenuState() (+3 more)
 
-### Community 10 - "Prompt Rendering Engine"
-Cohesion: 0.33
-Nodes (8): buildListBlock(), buildMenuLines(), getCompiledPayloadForPrompt(), renderFinalPromptText(), renderPromptTextFromPrompt(), syncTemplateWithLinkedMenus(), syncTemplateWithMenuDefinitions(), uniqueStrings()
+### Community 8 - "Menu Manager Page"
+Cohesion: 0.13
+Nodes (7): async(), cancel(), save(), toSlug(), deleteMenuFromSupabase(), saveMenuToSupabase(), exportMenusToJson()
 
-### Community 11 - "Resource Audit Utils"
+### Community 9 - "Realtime Synchronization Service"
+Cohesion: 0.19
+Nodes (12): cleanupRealtimeListeners(), createEmptySetupResult(), handleMenuChange(), reconnectRealtime(), setupRealtimeListeners(), subscribeWithStatus(), isRecord(), normalizeContextMenuOptions() (+4 more)
+
+### Community 10 - "Database & Seeder Context"
+Cohesion: 0.15
+Nodes (7): CloudSyncProvider(), seedDatabase(), getDuplicateIds(), getMissingSeedRecords(), runAutoSyncIfAuthenticated(), setupAutoSync(), init()
+
+### Community 11 - "Memory Service & Storage"
+Cohesion: 0.29
+Nodes (10): applyMemoryPlan(), deleteMemory(), fetchMemory(), saveMemory(), syncMemory(), deleteDexieMemory(), getDexieMemory(), migrateLegacyMemory() (+2 more)
+
+### Community 12 - "Resource Audit Service"
 Cohesion: 0.57
 Nodes (7): asError(), getMainResourceSafely(), hasValidResourceId(), isApiUnsupportedError(), isRecord(), log(), runGetResourceContentAudit()
 
-### Community 12 - "Memory Service"
-Cohesion: 0.73
-Nodes (5): deleteMemory(), fetchMemory(), getLocalMemory(), saveMemory(), setLocalMemory()
+### Community 13 - "Batching & Local Cache Utils"
+Cohesion: 0.25
+Nodes (1): LocalCache
 
-### Community 13 - "Few-Shot Normalizer"
+### Community 14 - "Menu Validation Helpers"
+Cohesion: 0.48
+Nodes (5): isObject(), normalizeAndValidateMenu(), normalizeMenuBatch(), normalizeOptions(), normalizeRawMenu()
+
+### Community 15 - "Prompt Renderer Engine"
+Cohesion: 0.67
+Nodes (4): isSemanticallyEmpty(), validateImportPayload(), validatePromptDefinition(), validateTextField()
+
+### Community 16 - "Backup & Sync Utilities"
 Cohesion: 0.5
 Nodes (2): hasNonEmptyTrimmedString(), isValidFewShotExample()
 
-### Community 17 - "Supabase Config"
+### Community 18 - "Category Service"
 Cohesion: 0.67
-Nodes (2): normalize(), resolveSupabaseConfig()
+Nodes (2): SEO(), getRouteMetadata()
 
-### Community 20 - "Auth Modal"
-Cohesion: 1.0
-Nodes (2): getAuthErrorMessage(), handleSubmit()
+### Community 20 - "Few-Shot Normalizer"
+Cohesion: 0.67
+Nodes (2): emitState(), syncToCloudWithPhases()
+
+### Community 21 - "Context Menu Utils"
+Cohesion: 0.67
+Nodes (1): Header()
 
 ## Knowledge Gaps
-- **Thin community `Few-Shot Normalizer`** (5 nodes): `hasNonEmptyTrimmedString()`, `isValidFewShotExample()`, `normalizeFewShotExamples()`, `toNonEmptyString()`, `normalizeFewShot.ts`
+- **Thin community `Batching & Local Cache Utils`** (8 nodes): `batchingUtils.ts`, `createBatcher()`, `LocalCache`, `.constructor()`, `.get()`, `.invalidate()`, `.invalidateAll()`, `.set()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Supabase Config`** (4 nodes): `getSupabaseConfigErrorMessage()`, `normalize()`, `resolveSupabaseConfig()`, `supabaseConfig.ts`
+- **Thin community `Backup & Sync Utilities`** (5 nodes): `normalizeFewShot.ts`, `hasNonEmptyTrimmedString()`, `isValidFewShotExample()`, `normalizeFewShotExamples()`, `toNonEmptyString()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Auth Modal`** (3 nodes): `getAuthErrorMessage()`, `handleSubmit()`, `AuthModal.tsx`
+- **Thin community `Category Service`** (4 nodes): `SEO()`, `SEO.tsx`, `routeMetadata.ts`, `getRouteMetadata()`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Few-Shot Normalizer`** (4 nodes): `emitState()`, `subscribeSyncState()`, `syncToCloudWithPhases()`, `syncStatus.ts`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Context Menu Utils`** (3 nodes): `Header()`, `Header.tsx`, `HomePage.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `saveLocalBackup()` connect `Category Management` to `Editor Form State`, `Import/Export Pipeline`, `Sync Conflict Resolution`, `Context Menu Editor`?**
-  _High betweenness centrality (0.135) - this node is a cross-community bridge._
-- **Why does `handleSave()` connect `Editor Form State` to `Category Management`, `Sync Conflict Resolution`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **Why does `syncToCloud()` connect `Auth & Cloud Sync` to `Prompt Schema Builders`, `Category Management`, `Sync Conflict Resolution`, `Realtime Subscriptions`?**
-  _High betweenness centrality (0.080) - this node is a cross-community bridge._
-- **Are the 5 inferred relationships involving `buildPersistedArtifacts()` (e.g. with `migrateTemplateToCurrentSchema()` and `syncTemplateWithLinkedMenus()`) actually correct?**
-  _`buildPersistedArtifacts()` has 5 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 8 inferred relationships involving `syncToCloud()` (e.g. with `assertSupabaseConfigured()` and `createSnapshot()`) actually correct?**
-  _`syncToCloud()` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 7 inferred relationships involving `saveLocalBackup()` (e.g. with `handleSave()` and `save()`) actually correct?**
-  _`saveLocalBackup()` has 7 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 3 inferred relationships involving `importFromJsonText()` (e.g. with `handleImportFromText()` and `getBulkExportWarning()`) actually correct?**
-  _`importFromJsonText()` has 3 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `saveLocalBackup()` connect `UI Hooks & Category Manager` to `Prompt Payload Engine`, `Import & Export Components`, `Supabase Config & Assertions`, `Cloud Sync Auth & Workflows`, `Menu Manager Page`, `Realtime Synchronization Service`?**
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
+- **Why does `getPromptSummaryFields()` connect `Legacy Schema Normalizer` to `Prompt Payload Engine`, `Database & Seeder Context`, `Cloud Sync Auth & Workflows`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `normalizeContextMenuOptions()` connect `Realtime Synchronization Service` to `Menu Manager Page`, `Prompt Payload Engine`, `Supabase Config & Assertions`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Are the 8 inferred relationships involving `saveLocalBackup()` (e.g. with `save()` and `handleDelete()`) actually correct?**
+  _`saveLocalBackup()` has 8 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 7 inferred relationships involving `buildImportState()` (e.g. with `getBulkExportWarning()` and `parseTemplatePayload()`) actually correct?**
+  _`buildImportState()` has 7 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 4 inferred relationships involving `compilePromptPayload()` (e.g. with `buildPersistedArtifacts()` and `applyRemoteChanges()`) actually correct?**
+  _`compilePromptPayload()` has 4 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 3 inferred relationships involving `getLegacyPromptColumns()` (e.g. with `pushLocalChanges()` and `savePromptToSupabase()`) actually correct?**
+  _`getLegacyPromptColumns()` has 3 INFERRED edges - model-reasoned connections that need verification._
