@@ -418,7 +418,7 @@ export default function EditorPage() {
     }
 
     setForm((current) => {
-      let VITEState = current;
+      let nextState = current;
 
       // If a draft was applied, its selectedMenuIds take precedence — do not
       // overwrite them with the inference from menu_ids.
@@ -433,14 +433,14 @@ export default function EditorPage() {
           .map((menu) => menu.id);
 
         if (inferredSelectedMenuIds.length > 0) {
-          VITEState = {
+          nextState = {
             ...current,
             selectedMenuIds: inferredSelectedMenuIds,
           };
         }
       }
 
-      return syncFormMenus(VITEState, availableContextMenus);
+      return syncFormMenus(nextState, availableContextMenus);
     });
   }, [availableContextMenus, loaded]);
 
@@ -655,12 +655,12 @@ export default function EditorPage() {
 
   const updateTemplate = (updater: (current: TemplatePayload) => TemplatePayload) => {
     setForm((current) => {
-      const VITETemplate = updater(current.template);
-      const VITESelection =
+      const nextTemplate = updater(current.template);
+      const nextSelection =
         current.selection.template_id === current.template.meta.template_id
-          ? { ...current.selection, template_id: VITETemplate.meta.template_id }
+          ? { ...current.selection, template_id: nextTemplate.meta.template_id }
           : current.selection;
-      return { ...current, template: VITETemplate, selection: VITESelection };
+      return { ...current, template: nextTemplate, selection: nextSelection };
     });
   };
 
@@ -673,12 +673,12 @@ export default function EditorPage() {
     value: TemplatePayload['prompt_definition'][K]
   ) => {
     updateTemplate((current) => {
-      const VITEDefinition = { ...current.prompt_definition, [field]: value };
+      const nextDefinition = { ...current.prompt_definition, [field]: value };
       // Strip incomplete few-shot entries so Zod's min(1) constraint doesn't
       // fire while the user is actively typing into a newly-added row.
       return TemplatePayloadSchema.parse({
         ...current,
-        prompt_definition: VITEDefinition,
+        prompt_definition: nextDefinition,
       });
     });
   };
@@ -750,8 +750,8 @@ export default function EditorPage() {
     }));
   };
 
-  const updateFreeInput = (index: number, VITEEntry: FreeInputEntry) => {
-    setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? VITEEntry : entry)) }));
+  const updateFreeInput = (index: number, newEntry: FreeInputEntry) => {
+    setForm((current) => ({ ...current, freeInputs: current.freeInputs.map((entry, i) => (i === index ? newEntry : entry)) }));
   };
 
   const addFreeInput = () => setForm((current) => ({ ...current, freeInputs: [...current.freeInputs, { key: '', value: '' }] }));
@@ -773,9 +773,9 @@ export default function EditorPage() {
     try {
       await deleteMemory(form.template.meta.template_id, key);
       setFixedMemory((prev) => {
-        const VITE = { ...prev };
-        delete VITE[key];
-        return VITE;
+        const nextMemory = { ...prev };
+        delete nextMemory[key];
+        return nextMemory;
       });
       showToast('Chave de memória removida', 'success');
     } catch (error) {
@@ -785,14 +785,14 @@ export default function EditorPage() {
     }
   };
 
-  const handleAddMemoryKey = (key: string) => {
+  const handleAddMemoryKey = (key: string, value: string = '') => {
     if (fixedMemory[key] !== undefined) {
       showToast('Esta chave já existe', 'info');
       return;
     }
     // Adiciona ao estado local, o autosave cuidará do resto assim que houver valor
     // ou podemos salvar imediatamente como vazio se quisermos persistir a existência da chave
-    setFixedMemory((prev) => ({ ...prev, [key]: '' }));
+    setFixedMemory((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleCopy = async () => {

@@ -41,6 +41,10 @@ Thumbs.db
 coverage/
 htmlcov/
 .coverage
+
+# Testing
+playwright-report/
+test-results/
 .agent/skills/superpowers
 
 # Compressed files
