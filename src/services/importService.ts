@@ -675,7 +675,7 @@ function buildPromptRecord(
     syncStatus: 'pending',
     isDeleted: false,
     categoryId,
-    title: summary.template_name,
+    title: summary.template_name || 'Untitled Prompt',
     selectedMenuIds,
     promptPayload,
     selectionPayload: {
@@ -727,7 +727,7 @@ export async function parseImportData(
     detectedFormat: builtState.canonical.sourceFormat,
     schemaVersion: builtState.canonical.schemaVersion,
     prompts: builtState.preparedPrompts.map((prompt) => ({
-      title: prompt.promptPayload.meta.template_name,
+      title: prompt.promptPayload.meta.template_name || 'Untitled Prompt',
       description: prompt.promptPayload.prompt_definition.task,
       category: prompt.categoryName,
       action: prompt.existingPrompt ? 'update' : 'create',

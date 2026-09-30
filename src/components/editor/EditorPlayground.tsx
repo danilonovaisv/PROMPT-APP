@@ -21,7 +21,7 @@ type EditorPlaygroundProps = {
   onUpdateFreeInput: (index: number, entry: { key: string; value: string }) => void;
   onSaveMemory?: (key: string, value: string) => void;
   onDeleteMemory?: (key: string) => void;
-  onAddMemoryKey?: (key: string) => void;
+  onAddMemoryKey?: (key: string, value?: string) => void;
   onToggleOption: (menuId: string, selectionMode: string, optionValue: string) => void;
   onToggleSubOption: (menuId: string, optionValue: string, subOptionValue: string) => void;
 };
@@ -63,8 +63,7 @@ export function EditorPlayground({
   const handleConfirmAddKey = () => {
     const trimmedKey = newKeyName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '_');
     if (trimmedKey && onAddMemoryKey) {
-      onAddMemoryKey(trimmedKey);
-      onSaveMemory?.(trimmedKey, newKeyValue);
+      onAddMemoryKey(trimmedKey, newKeyValue);
       setNewKeyName('');
       setNewKeyValue('');
       setIsAddingKey(false);

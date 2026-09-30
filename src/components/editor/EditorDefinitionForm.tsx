@@ -345,10 +345,10 @@ export function EditorDefinitionForm({
                           value={String(option.id)}
                           onClick={() => {
                             const id = option.id;
-                            const VITE = selectedMenuIds.includes(id)
+                            const newSelected = selectedMenuIds.includes(id)
                               ? selectedMenuIds.filter(v => v !== id)
                               : [...selectedMenuIds, id];
-                            onMenuSelectionChange?.(VITE);
+                            onMenuSelectionChange?.(newSelected);
                           }}
                           icons={
                             <div>
@@ -357,10 +357,10 @@ export function EditorDefinitionForm({
                                 checked={selectedMenuIds.includes(option.id)}
                                 onChange={() => {
                                   const id = option.id;
-                                  const VITE = selectedMenuIds.includes(id)
+                                  const newSelected = selectedMenuIds.includes(id)
                                     ? selectedMenuIds.filter(v => v !== id)
                                     : [...selectedMenuIds, id];
-                                  onMenuSelectionChange?.(VITE);
+                                  onMenuSelectionChange?.(newSelected);
                                 }}
                               />
                             </div>
@@ -416,8 +416,8 @@ export function EditorDefinitionForm({
                       type="button"
                       className="btn btn--ghost btn--icon btn--sm"
                       onClick={() => {
-                        const VITE = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
-                        updatePromptDefinitionField('few_shot_examples', VITE);
+                        const newExamples = template.prompt_definition.few_shot_examples.filter((_, i) => i !== index);
+                        updatePromptDefinitionField('few_shot_examples', newExamples);
                       }}
                       title="Remover exemplo"
                       aria-label={`Remover exemplo ${index + 1}`}
@@ -436,9 +436,9 @@ export function EditorDefinitionForm({
                       ref={index === template.prompt_definition.few_shot_examples.length - 1 ? lastItemRef : null}
                       value={example.input}
                       onChange={(e) => {
-                        const VITE = [...template.prompt_definition.few_shot_examples];
-                        VITE[index] = { ...VITE[index], input: e.target.value };
-                        updatePromptDefinitionField('few_shot_examples', VITE);
+                        const newExamples = [...template.prompt_definition.few_shot_examples];
+                        newExamples[index] = { ...newExamples[index], input: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', newExamples);
                       }}
                       rows={2}
                       placeholder="Ex: Como faço para..."
@@ -462,9 +462,9 @@ export function EditorDefinitionForm({
                       id={`${formId}-few-shot-output-${index}`}
                       value={example.output}
                       onChange={(e) => {
-                        const VITE = [...template.prompt_definition.few_shot_examples];
-                        VITE[index] = { ...VITE[index], output: e.target.value };
-                        updatePromptDefinitionField('few_shot_examples', VITE);
+                        const newExamples = [...template.prompt_definition.few_shot_examples];
+                        newExamples[index] = { ...newExamples[index], output: e.target.value };
+                        updatePromptDefinitionField('few_shot_examples', newExamples);
                       }}
                       rows={2}
                       placeholder="Ex: Para fazer isso, você deve..."
