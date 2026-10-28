@@ -138,14 +138,16 @@ export const syncPrompts = async (
           if (prompt.id) await db.prompts.update(prompt.id, { syncStatus: "error" });
         }
       } else if (result.data) {
-        for (const prompt of promptsWithRemoteId) {
-          if (prompt.id && prompt.remoteId) {
-            await db.prompts.update(prompt.id, {
-              remoteId: prompt.remoteId,
-              syncStatus: "synced"
-            });
+        await db.transaction('rw', db.prompts, async () => {
+          for (const prompt of promptsWithRemoteId) {
+            if (prompt.id && prompt.remoteId) {
+              await db.prompts.update(prompt.id, {
+                remoteId: prompt.remoteId,
+                syncStatus: "synced"
+              });
+            }
           }
-        }
+        });
       }
     }
 

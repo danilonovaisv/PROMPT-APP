@@ -5,6 +5,8 @@ import { syncToCloud, downloadFromCloud } from '@/services/syncService';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({
+  isSupabaseConfigured: true,
+  assertSupabaseConfigured: jest.fn(),
   assertSupabaseConfigured: jest.fn(),
   supabase: {
     auth: {

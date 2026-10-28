@@ -12,6 +12,8 @@ jest.mock('@/db/database', () => ({
 jest.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: true,
   assertSupabaseConfigured: jest.fn(),
+  isSupabaseConfigured: true,
+  assertSupabaseConfigured: jest.fn(),
   supabase: {
     auth: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
