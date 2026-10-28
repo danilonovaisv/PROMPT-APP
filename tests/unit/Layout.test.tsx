@@ -1,12 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import { ToastProvider } from '@/context/ToastContext';
+import { ConfirmProvider } from '@/context/ConfirmProvider';
+import { CloudSyncProvider } from '@/context/CloudSyncContext';
 
 jest.mock('dexie-react-hooks', () => ({
   useLiveQuery: jest.fn(() => []),
 }));
 
-jest.mock('@/components/CloudSyncItem', () => () => <div>Cloud Sync</div>);
+jest.mock('@/components/CloudSyncItem', () => ({
+  CloudSyncItem: () => <div>Cloud Sync</div>
+}));
 
 jest.mock('@/utils/exportJson', () => ({
   downloadAllPrompts: jest.fn(),
@@ -30,14 +35,16 @@ describe('Layout', () => {
   test('renders a non-blocking Supabase configuration warning in the shell', () => {
     render(
       <MemoryRouter>
-        <Layout onOpenImportExport={jest.fn()}>
-          <div>Conteúdo</div>
-        </Layout>
+        <ToastProvider><ConfirmProvider><CloudSyncProvider>
+          <Layout onOpenImportExport={jest.fn()}>
+            <div>Conteúdo</div>
+          </Layout>
+        </CloudSyncProvider></ConfirmProvider></ToastProvider>
       </MemoryRouter>,
     );
 
     expect(
-      screen.getByText(/configuração do supabase ausente/i),
+      screen.getByText(/Supabase não configurado./i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/recursos em nuvem permanecem desativados/i),

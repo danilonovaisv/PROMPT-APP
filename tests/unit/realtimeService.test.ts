@@ -10,6 +10,8 @@ const subscriptions: MockSubscription[] = [];
 
 jest.mock('@/lib/supabase', () => ({
   isSupabaseConfigured: true,
+  assertSupabaseConfigured: jest.fn(),
+  isSupabaseConfigured: true,
   supabase: {
     auth: {
       getSession: jest.fn(),

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AuthModal from '@/components/AuthModal';
+import { ToastProvider } from '@/context/ToastContext';
 
 const showToast = jest.fn();
 
@@ -25,7 +26,7 @@ describe('AuthModal', () => {
   test('associates visible labels with form controls', async () => {
     const user = userEvent.setup();
 
-    render(<AuthModal isOpen onClose={jest.fn()} />);
+    render(<ToastProvider><AuthModal isOpen onClose={jest.fn()} /></ToastProvider>);
 
     const emailInput = screen.getByLabelText('Email');
     const passwordInput = screen.getByLabelText('Senha');
@@ -38,11 +39,11 @@ describe('AuthModal', () => {
   });
 
   test('renders the correct form shape for different initial modes', () => {
-    const { rerender } = render(<AuthModal key="login" isOpen onClose={jest.fn()} initialMode="login" />);
+    const { rerender } = render(<ToastProvider><AuthModal key="login" isOpen onClose={jest.fn()} initialMode="login" /></ToastProvider>);
 
     expect(screen.getByRole('heading', { name: 'Login' })).toBeInTheDocument();
 
-    rerender(<AuthModal key="update-password" isOpen onClose={jest.fn()} initialMode="update-password" />);
+    rerender(<ToastProvider><AuthModal key="update-password" isOpen onClose={jest.fn()} initialMode="update-password" /></ToastProvider>);
 
     expect(screen.getByRole('heading', { name: 'Atualizar Senha' })).toBeInTheDocument();
     expect(screen.queryByLabelText('Email')).not.toBeInTheDocument();

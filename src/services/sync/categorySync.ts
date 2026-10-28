@@ -109,15 +109,17 @@ export const syncCategories = async (userId: string, categories: Category[]) => 
           if (cat.id) await db.categories.update(cat.id, { syncStatus: "error" });
         }
       } else if (result.data) {
-        for (const cat of categoriesWithRemoteId) {
-          if (cat.id && cat.remoteId) {
-            await db.categories.update(cat.id, {
-              remoteId: cat.remoteId,
-              syncStatus: "synced"
-            });
-            localToRemoteCategoryMap.set(cat.id, cat.remoteId);
+        await db.transaction('rw', db.categories, async () => {
+          for (const cat of categoriesWithRemoteId) {
+            if (cat.id && cat.remoteId) {
+              await db.categories.update(cat.id, {
+                remoteId: cat.remoteId,
+                syncStatus: "synced"
+              });
+              localToRemoteCategoryMap.set(cat.id, cat.remoteId);
+            }
           }
-        }
+        });
       }
     }
 

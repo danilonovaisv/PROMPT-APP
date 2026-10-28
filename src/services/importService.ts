@@ -294,8 +294,16 @@ function normalizeToCanonicalPayload(parsed: unknown): CanonicalImportPayload {
       prompts: Array.isArray(parsed.prompts)
         ? parsed.prompts.map((item) => {
             const promptItem = isObject(item) ? item : {};
+            const raw = promptItem.prompt ?? promptItem;
+
+            // Se raw é objeto e o título não está nele mas está no container superior, merge nele.
+            if (isObject(raw)) {
+              if (!raw.title && promptItem.title) raw.title = promptItem.title;
+              if (!raw.name && promptItem.name) raw.name = promptItem.name;
+            }
+
             return {
-              rawPrompt: promptItem.prompt ?? promptItem,
+              rawPrompt: raw,
               category: typeof promptItem.category === 'string' ? promptItem.category : undefined,
             };
           })

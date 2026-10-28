@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Plus, Trash2, Check, X } from 'lucide-react';
 import type { TemplatePayload, UserSelection } from '@/models/promptSchema';
+import { listMemoryPlaceholderKeys } from '@/models/promptSchema';
 import type { ContextMenu } from '@/models/types';
 
 type FreeInputEntry = { key: string; value: string };
@@ -56,7 +57,10 @@ export function EditorPlayground({
   const [newKeyName, setNewKeyName] = useState('');
   const [newKeyValue, setNewKeyValue] = useState('');
   const [isAddingKey, setIsAddingKey] = useState(false);
-  const memoryKeys = Object.keys(fixedMemory);
+  const explicitKeys = Object.keys(fixedMemory);
+  const templateKeys = template.prompt_memory_context?.entries?.map(e => e.key) || [];
+  const placeholderKeys = listMemoryPlaceholderKeys(template);
+  const memoryKeys = Array.from(new Set([...explicitKeys, ...templateKeys, ...placeholderKeys]));
   const memoryHelpId = 'fixed-memory-help';
   const templateLabel = template.meta.template_name.trim() || 'este template';
 

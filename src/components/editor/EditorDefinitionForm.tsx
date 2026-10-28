@@ -353,15 +353,9 @@ export function EditorDefinitionForm({
                           icons={
                             <div>
                               <Checkbox
-                                className="w-5 h-5"
+                                className="w-5 h-5 pointer-events-none"
                                 checked={selectedMenuIds.includes(option.id)}
-                                onChange={() => {
-                                  const id = option.id;
-                                  const VITE = selectedMenuIds.includes(id)
-                                    ? selectedMenuIds.filter(v => v !== id)
-                                    : [...selectedMenuIds, id];
-                                  onMenuSelectionChange?.(VITE);
-                                }}
+                                onChange={() => {}}
                               />
                             </div>
                           }
